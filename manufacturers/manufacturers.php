@@ -1,13 +1,20 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: Mike
+ * Date: 09-Aug-18
+ * Time: 5:41 PM
+ */
+
 include("../include/main.php");
 include("../include/tables.php");
 
 $db = new Main(1, 'UTF-8');
-$db->admin_title = "Customers";
+$db->admin_title = "Manufacturers";
 
 $db->show_header();
 
-$table = new draw_table('customers', 'cst_customer_ID', 'ASC');
+$table = new draw_table('manufacturers', 'mnf_manufacturer_ID', 'ASC');
 
 $table->generate_data();
 
@@ -23,10 +30,11 @@ $table->generate_data();
                 <table class="table table-hover">
                     <thead>
                     <tr>
-                        <th scope="col"><?php $table->display_order_links('ID', 'cst_customer_ID'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Name', 'usg_group_name'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('ID', 'mnf_manufacturer_ID'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Code', 'mnf_code'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Name', 'mnf_name'); ?></th>
                         <th scope="col">
-                            <a href="customers_modify.php">
+                            <a href="manufacturers_modify.php">
                                 <i class="fas fa-plus-circle"></i>
                             </a>
                         </th>
@@ -36,14 +44,15 @@ $table->generate_data();
                     <?php
                     while ($row = $table->fetch_data()) {
                     ?>
-                    <tr onclick="editCustomer(<?php echo $row["cst_customer_ID"];?>);">
-                        <th scope="row"><?php echo $row["cst_customer_ID"]; ?></th>
-                        <td><?php echo $row["cst_name"]; ?></td>
+                    <tr onclick="editLine(<?php echo $row["mnf_manufacturer_ID"];?>);">
+                        <th scope="row"><?php echo $row["mnf_manufacturer_ID"]; ?></th>
+                        <td><?php echo $row["mnf_code"]; ?></td>
+                        <td><?php echo $row["mnf_name"]; ?></td>
                         <td>
-                            <a href="customers_modify.php?lid=<?php echo $row["cst_customer_ID"]; ?>"><i
+                            <a href="manufacturers_modify.php?lid=<?php echo $row["mnf_manufacturer_ID"]; ?>"><i
                                         class="fas fa-edit"></i></a>&nbsp
-                            <a href="customers_delete.php?lid=<?php echo $row["cst_customer_ID"]; ?>"
-                               onclick="return confirm('Are you sure you want to delete this customer?');"><i
+                            <a href="manufacturers_delete.php?lid=<?php echo $row["mnf_manufacturer_ID"]; ?>"
+                               onclick="return confirm('Are you sure you want to delete this manufacturers?');"><i
                                         class="fas fa-minus-circle"></i></a>
                         </td>
                     </tr>
@@ -58,8 +67,8 @@ $table->generate_data();
     </div>
 </div>
 <script>
-    function editCustomer(id){
-        window.location.assign('customers_modify.php?lid='+id);
+    function editLine(id){
+        window.location.assign('manufacturers_modify.php?lid='+id);
     }
 </script>
 <?php

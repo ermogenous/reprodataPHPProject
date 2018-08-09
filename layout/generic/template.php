@@ -13,9 +13,7 @@ function template_header()
         <LINK REL="SHORTCUT ICON" HREF="<?php echo $main["site_url"]; ?>/favicon.png">
         <link rel="stylesheet" href="<?php echo $db->admin_layout_url; ?>style.css" rel="stylesheet">
 
-        <link rel="stylesheet" href="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/css/bootstrap.min.css"
-              rel="stylesheet" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-              crossorigin="anonymous">
+        <link rel="stylesheet" href="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/css/bootstrap.min.css" rel="stylesheet">
         <script defer src="https://use.fontawesome.com/releases/v5.0.10/js/all.js"
                 integrity="sha384-slN8GvtUJGnv6ca26v8EzVaR9DC58QEwsIk9q1QXdCU8Yu8ck/tL/5szYlBbqmS+"
                 crossorigin="anonymous"></script>
@@ -52,6 +50,7 @@ function template_header()
                         <a class="nav-link" href="<?php echo $main["site_url"]; ?>/login.php?action=logout"><i
                                     class="fas fa-sign-out-alt"></i> Logout</a>
                     </li>
+                    <!-- CUSTOMERS -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -64,6 +63,29 @@ function template_header()
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/customers/customers_modify.php"><i
                                         class="fas fa-plus-circle"></i> New Customer</a>
+                        </div>
+                    </li>
+                    <!-- PRODUCTS -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-users"></i> Products
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/products/products.php"><i
+                                        class="fas fa-eye"></i> View Products</a>
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/products/products_modify.php"><i
+                                        class="fas fa-plus-circle"></i> New Product</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/manufacturers/manufacturers.php"><i
+                                        class="fas fa-eye"></i> View Manufacturers</a>
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/manufacturers/manufacturers_modify.php"><i
+                                        class="fas fa-plus-circle"></i> New Manufacturer</a>
+
                         </div>
                     </li>
                     <!-- USERS -->

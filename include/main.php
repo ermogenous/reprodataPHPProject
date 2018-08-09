@@ -14,6 +14,7 @@
 //- 27/8/2015 Added process_lock_validate
 //- 21/10/2015 Change from Mysql functions to Mysqli - Class can receive custom $main settings without being affected
 //- 29/9/2016 username/password session has been added the $main["environment"]
+//- 09/8/2018 add insert/update automatically fields insert_date_time, last_update_date_time and by
 //usefull information
 //
 //mysqli_query("SET NAMES 'utf8'");
@@ -1010,6 +1011,7 @@ class Main
 
     function db_tool_insert_row($table, $data_array, $data_prefix = 'fld_', $return_serial = 0, $fields_prefix = '', $return_or_execute = 'execute')
     {
+        $log_new_values = '';
 //start the SQL
         $sql = "INSERT INTO `" . $table . "` SET \n";
         //LOOP in all the array
@@ -1035,6 +1037,21 @@ class Main
             }//if the name of the field matches with the prefix
 
         }
+        //insert dates fields auto
+        //check if the fields exists in the db
+        $sqlColumns = 'SHOW COLUMNS FROM '.$table;
+        $columnsResult = $this->query($sqlColumns);
+        while ($column = $this->fetch_assoc($columnsResult)){
+            if ($column['Field'] == $fields_prefix.'created_date_time'){
+                $sql .= " , `".$fields_prefix.'created_date_time'.'`'." = '".date('Y-m-d G:i:s')."' \n";
+                $log_new_values .= "`".$fields_prefix.'created_date_time'.'`'." = '".date('Y-m-d G:i:s')."'\n";
+            }
+            if ($column['Field'] == $fields_prefix.'created_by'){
+                $sql .= " , `".$fields_prefix.'created_by'.'`'." = '".$this->user_data['usr_users_ID']."' \n";
+                $log_new_values .= "`".$fields_prefix.'created_by'.'`'." = '".$this->user_data['usr_users_ID']."'\n";
+            }
+        }
+
         if ($return_or_execute == 'execute') {
             $this->query($sql);
             $new_serial = $this->insert_id();
@@ -1054,7 +1071,8 @@ class Main
 
     function db_tool_update_row($table, $data_array, $where_clause, $row_serial, $data_prefix = 'fld_', $return_or_execute = 'execute', $fields_prefix = '')
     {
-
+        $log_new_values = '';
+        $log_old_values = '';
 //get the previous values
         $previous = $this->query_fetch("SELECT * FROM `" . $table . "` WHERE " . $where_clause);
 
@@ -1095,7 +1113,27 @@ class Main
 
         }
 
-//if nothing found to change
+        //insert dates fields auto
+        //check if the fields exists in the db
+        if ($found_change == 1) {
+            foreach ($previous as $name => $value) {
+
+                echo $name . "-" . $value . "<br>";
+
+                if ($name == $fields_prefix . 'created_date_time') {
+                    $sql .= " , `" . $fields_prefix . 'last_update_date_time' . '`' . " = '" . date('Y-m-d G:i:s') . "' \n";
+                    $log_new_values .= "`" . $fields_prefix . 'last_update_date_time' . '`' . " = '" . date('Y-m-d G:i:s') . "'\n";
+                    $log_old_values .= "`" . $fields_prefix . 'last_update_date_time' . '`' . " = '" . $previous[$fields_prefix.'last_update_date_time'] . "'\n";
+                }
+                if ($name == $fields_prefix . 'created_by') {
+                    $sql .= " , `" . $fields_prefix . 'last_update_by' . '`' . " = '" . $this->user_data['usr_users_ID'] . "' \n";
+                    $log_new_values .= "`" . $fields_prefix . 'last_update_by' . '`' . " = '" . $this->user_data['usr_users_ID'] . "'\n";
+                    $log_old_values .= "`" . $fields_prefix . 'last_update_by' . '`' . " = '" . $previous[$fields_prefix.'last_update_by'] . "'\n";
+                }
+            }
+        }
+
+        //if nothing found to change
         if ($found_change == 0) {
             //do nonthing
         }//if no changes found

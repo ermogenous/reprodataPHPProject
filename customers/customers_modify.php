@@ -47,9 +47,9 @@ $db->show_header();
                 </div>
 
                 <div class="form-group row">
-                    <label for="fld_business_type_ID" class="col-sm-4 col-form-label">Business Type</label>
+                    <label for="fld_business_type_code_ID" class="col-sm-4 col-form-label">Business Type</label>
                     <div class="col-sm-8">
-                        <select name="fld_business_type_ID" id="fld_business_type_ID"
+                        <select name="fld_business_type_code_ID" id="fld_business_type_code_ID"
                                 class="form-control"
                                 required>
                             <option value=""></option>
@@ -59,7 +59,7 @@ $db->show_header();
 
                             ?>
                             <option value="<?php echo $bt['cde_code_ID'];?>"
-                                <?php if ($bt['cde_code_ID'] == $data['cst_business_type_ID']) echo 'selected';?>>
+                                <?php if ($bt['cde_code_ID'] == $data['cst_business_type_code_ID']) echo 'selected';?>>
                                 <?php echo $bt['cde_value'];?>
                             </option>
                             <?php } ?>
@@ -115,9 +115,9 @@ $db->show_header();
                 </div>
 
                 <div class="form-group row">
-                    <label for="fld_city_ID" class="col-sm-4 col-form-label">City</label>
+                    <label for="fld_city_code_ID" class="col-sm-4 col-form-label">City</label>
                     <div class="col-sm-8">
-                        <select name="fld_city_ID" id="fld_city_ID"
+                        <select name="fld_city_code_ID" id="fld_city_code_ID"
                                 class="form-control"
                                 required>
                             <option value=""></option>
@@ -127,7 +127,7 @@ $db->show_header();
 
                                 ?>
                                 <option value="<?php echo $bt['cde_code_ID'];?>"
-                                    <?php if ($bt['cde_code_ID'] == $data['cst_city_ID']) echo 'selected';?>>
+                                    <?php if ($bt['cde_code_ID'] == $data['cst_city_code_ID']) echo 'selected';?>>
                                     <?php echo $bt['cde_value'];?>
                                 </option>
                             <?php } ?>
@@ -145,20 +145,20 @@ $db->show_header();
                 </div>
 
                 <div class="form-group row">
-                    <label for="fld_contact_person_title_ID" class="col-sm-4 col-form-label">C.P. Title</label>
+                    <label for="fld_contact_person_title_code_ID" class="col-sm-4 col-form-label">C.P. Title</label>
                     <div class="col-sm-8">
-                        <select name="fld_contact_person_title_ID" id="fld_contact_person_title_ID"
+                        <select name="fld_contact_person_title_code_ID" id="fld_contact_person_title_code_ID"
                                 class="form-control"
                                 required>
                             <option value=""
-                                <?php if ('' == $data['cst_contact_person_title_ID']) echo 'selected';?>>-----</option>
+                                <?php if ('' == $data['cst_contact_person_title_code_ID']) echo 'selected';?>>-----</option>
                             <?php
                             $btResult = $db->query("SELECT * FROM codes WHERE cde_type = 'ContactPersonTitle' ORDER BY cde_value ASC");
                             while($bt = $db->fetch_assoc($btResult)){
 
                                 ?>
                                 <option value="<?php echo $bt['cde_code_ID'];?>"
-                                    <?php if ($bt['cde_code_ID'] == $data['cst_contact_person_title_ID']) echo 'selected';?>>
+                                    <?php if ($bt['cde_code_ID'] == $data['cst_contact_person_title_code_ID']) echo 'selected';?>>
                                     <?php echo $bt['cde_value'];?>
                                 </option>
                             <?php } ?>
