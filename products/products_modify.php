@@ -22,15 +22,20 @@ if ($db->user_data["usr_user_rights"] > 0) {
 if ($_POST["action"] == "insert") {
 
     $db->db_tool_insert_row('products', $_POST, 'fld_', 0, 'prd_');
-    header("Location: products.php");
-    exit();
 
+    if ($_POST['subaction'] == 'update') {
+        header("Location: products.php");
+        exit();
+    }
 } else if ($_POST["action"] == "update") {
 
     $db->db_tool_update_row('products', $_POST, "`prd_product_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'prd_');
-    header("Location: products.php");
-    exit();
+
+    if ($_POST['subaction'] == 'update') {
+        header("Location: products.php");
+        exit();
+    }
 
 
 }
@@ -210,10 +215,18 @@ $db->show_header();
                         <div class="col-sm-8">
                             <input name="action" type="hidden" id="action"
                                    value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
+                            <input name="subaction" type="hidden" id="subaction"
+                                   value="">
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
+                            <input type="submit" name="Save" id="Save"
+                                   value="Save"
+                                   class="btn btn-secondary"
+                                   onclick="saveForm();">
                             <input type="submit" name="Submit" id="Submit"
                                    value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Product"
-                                   class="btn btn-secondary" onclick="document.getElementById('Submit').disabled = true">
+                                   class="btn btn-secondary"
+                                   onclick="updateForm();">
+
                         </div>
                     </div>
 
@@ -224,6 +237,19 @@ $db->show_header();
 
     </div>
 </form>
+<script>
+    function saveForm() {
+        document.getElementById('Submit').disabled = true;
+        document.getElementById('Save').disabled = true;
+        document.getElementById('subaction').value = 'save';
+    }
+
+    function updateForm() {
+        document.getElementById('Submit').disabled = true;
+        document.getElementById('Save').disabled = true;
+        document.getElementById('subaction').value = 'update';
+    }
+</script>
 <?php
 $db->show_footer();
 ?>

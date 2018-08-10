@@ -3,7 +3,7 @@
 -- noinspection SqlNoDataSourceInspectionForFile
 
 // 09/8/2018 VORKE
-
+/*
 CREATE TABLE `manufacturers` (
 	`mnf_manufacturer_ID` INT(8) NOT NULL AUTO_INCREMENT,
 	`mnf_code` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8_bin',
@@ -56,8 +56,6 @@ ENGINE=InnoDB
 ;
 
 
-
-
 ALTER TABLE `customers`
 	ADD COLUMN IF NOT EXISTS `cst_created_date_time` DATETIME NULL DEFAULT NULL AFTER `cst_business_type_ID`,
 	ADD COLUMN IF NOT EXISTS `cst_created_by` INT(8) NULL DEFAULT NULL AFTER `cst_created_date_time`,
@@ -68,3 +66,5 @@ ALTER TABLE `customers`
 	CHANGE COLUMN `cst_contact_person_title_ID` `cst_contact_person_title_code_ID` VARCHAR(30) NULL DEFAULT NULL AFTER `cst_contact_person`,
 	CHANGE COLUMN `cst_business_type_ID` `cst_business_type_code_ID` INT(8) NULL DEFAULT NULL AFTER `cst_email_newsletter`
 	CHANGE COLUMN `cst_city_ID` `cst_city_code_ID` VARCHAR(30) NULL DEFAULT NULL AFTER `cst_address_line_2`;
+
+*/

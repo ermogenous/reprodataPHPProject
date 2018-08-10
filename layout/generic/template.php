@@ -31,6 +31,7 @@ function template_header()
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
                     <a class="nav-link" href="<?php echo $main["site_url"]; ?>/home.php"><i class="fas fa-home"></i>
@@ -149,16 +150,9 @@ function template_header()
                             </li>
                  -->
             </ul>
-
+            <img src="<?php echo $main["site_url"]; ?>/images/logo_transparent.gif" height="40">
         </div>
     </nav>
-
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-1"></div>
-            <div class="col-11">LOGO</div>
-        </div>
-    </div>
 
     <br>
     <?php
