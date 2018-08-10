@@ -835,7 +835,7 @@ class Main
 
     public function show_empty_header()
     {
-        $_GET["layout_action"] = "printer";
+        $this->admin_layout_printer = 'yes';
         $this->show_header();
     }
 
@@ -848,7 +848,7 @@ class Main
 
     public function show_empty_footer()
     {
-        $_GET["layout_action"] = "printer";
+        $this->admin_layout_printer = 'yes';
         $this->show_footer();
     }
 

@@ -121,7 +121,8 @@ $db->show_header();
                         <input name="action" type="hidden" id="action"
                                value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
                         <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
-                        <input type="submit" name="Submit" value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Manufacturer" class="btn btn-secondary">
+                        <input type="submit" name="Submit" id="Submit" value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Manufacturer"
+                               class="btn btn-secondary" onclick="document.getElementById('Submit').disabled = true">
                     </div>
                 </div>
 

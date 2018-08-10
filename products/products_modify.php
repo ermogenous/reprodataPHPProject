@@ -44,33 +44,42 @@ if ($_GET["lid"] != "") {
 
 $db->show_header();
 ?>
+<form name="groups" method="post" action="" onsubmit="">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
+            <div class="col-lg-6 col-md-6 col-xs-12 col-sm-12">
+                <div class="row">
+                    <div class="col-12 text-center alert alert-dark">
+                        <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
+                            &nbsp;Product</b></div>
+                </div>
+                <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="pills-general-tab" data-toggle="pill" href="#pills-general"
+                           role="tab"
+                           aria-controls="pills-general" aria-selected="true">General</a>
+                    </li>
 
-<div class="container">
-    <div class="row">
-        <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
-        <div class="col-lg-6 col-md-6 col-xs-12 col-sm-12">
-            <div class="row">
-                <div class="col-12 text-center alert alert-dark">
-                    <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
-                        &nbsp;Product</b></div>
-            </div>
-            <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="pills-general-tab" data-toggle="pill" href="#pills-general"
-                       role="tab"
-                       aria-controls="pills-general" aria-selected="true">General</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="pills-relations-tab" data-toggle="pill" href="#pills-relations" role="tab"
-                       aria-controls="pills-relations" aria-selected="false">Relations</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="pills-stock-tab" data-toggle="pill" href="#pills-stock" role="tab"
-                       aria-controls="pills-stock" aria-selected="false">Stock</a>
-                </li>
-            </ul>
-            <div class="tab-content" id="pills-tabContent">
-                <form name="groups" method="post" action="" onsubmit="">
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-consumables-tab" data-toggle="pill" href="#pills-consumables"
+                           role="tab"
+                           aria-controls="pills-consumables" aria-selected="false">Consumables</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-spare-parts-tab" data-toggle="pill" href="#pills-spare-parts"
+                           role="tab"
+                           aria-controls="pills-spare-parts" aria-selected="false">Spare Parts</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-stock-tab" data-toggle="pill" href="#pills-stock" role="tab"
+                           aria-controls="pills-stock" aria-selected="false">Stock</a>
+                    </li>
+                </ul>
+                <div class="tab-content" id="pills-tabContent">
+
                     <div class="tab-pane fade show active" id="pills-general" role="tabpanel"
                          aria-labelledby="pills-general-tab">
 
@@ -80,11 +89,13 @@ $db->show_header();
                                 <select name="fld_active" id="fld_active"
                                         class="form-control"
                                         required>
+                                    <option value="1" <?php if ($data['prd_active'] == 1) echo 'selected'; ?>>
+                                        Active
+                                    </option>
                                     <option value="0" <?php if ($data['prd_active'] == 0) echo 'selected'; ?>>
                                         In-active
                                     </option>
-                                    <option value="1" <?php if ($data['prd_active'] == 1) echo 'selected'; ?>>Active
-                                    </option>
+
                                 </select>
                             </div>
                         </div>
@@ -96,23 +107,14 @@ $db->show_header();
                                         class="form-control"
                                         required>
                                     <option value="" <?php if ($data['prd_type'] == '') echo 'selected'; ?>></option>
-                                    <option value="Printer" <?php if ($data['prd_type'] == 'Printer') echo 'selected'; ?>>
-                                        Printer
+                                    <option value="Machine" <?php if ($data['prd_type'] == 'Machine') echo 'selected'; ?>>
+                                        Machine
                                     </option>
-                                    <option value="Copier" <?php if ($data['prd_type'] == 'Copier') echo 'selected'; ?>>
-                                        Copier
+                                    <option value="Consumable" <?php if ($data['prd_type'] == 'Consumable') echo 'selected'; ?>>
+                                        Consumable
                                     </option>
-                                    <option value="Multifunction" <?php if ($data['prd_type'] == 'Multifunction') echo 'selected'; ?>>
-                                        Multifunction
-                                    </option>
-                                    <option value="Scanner" <?php if ($data['prd_type'] == 'Scanner') echo 'selected'; ?>>
-                                        Scanner
-                                    </option>
-                                    <option value="Toner" <?php if ($data['prd_type'] == 'Toner') echo 'selected'; ?>>
-                                        Toner
-                                    </option>
-                                    <option value="SpareParts" <?php if ($data['prd_type'] == 'SpareParts') echo 'selected'; ?>>
-                                        Spare Parts
+                                    <option value="SparePart" <?php if ($data['prd_type'] == 'SparePart') echo 'selected'; ?>>
+                                        SparePart
                                     </option>
                                     <option value="Other" <?php if ($data['prd_type'] == 'Other') echo 'selected'; ?>>
                                         Other
@@ -182,9 +184,22 @@ $db->show_header();
                         </div>
 
                     </div>
-                    <div class="tab-pane fade" id="pills-relations" role="tabpanel"
-                         aria-labelledby="pills-relations-tab">Relations
+                    <div class="tab-pane fade" id="pills-consumables" role="tabpanel"
+                         aria-labelledby="pills-consumables-tab">
+
+                        <iframe src="relations.php?lid=<?php echo $_GET["lid"]; ?>&type=consumables" frameborder="0"
+                                scrolling="0" width="100%" height="400"></iframe>
+
                     </div>
+
+                    <div class="tab-pane fade" id="pills-spare-parts" role="tabpanel"
+                         aria-labelledby="pills-spare-parts-tab">
+
+                        <iframe src="relations.php?lid=<?php echo $_GET["lid"]; ?>&type=spare-parts" frameborder="0"
+                                scrolling="0" width="100%" height="400"></iframe>
+
+                    </div>
+
                     <div class="tab-pane fade" id="pills-stock" role="tabpanel" aria-labelledby="pills-stock-tab">
                         ...
                     </div>
@@ -196,19 +211,19 @@ $db->show_header();
                             <input name="action" type="hidden" id="action"
                                    value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
-                            <input type="submit" name="Submit"
+                            <input type="submit" name="Submit" id="Submit"
                                    value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Product"
-                                   class="btn btn-secondary">
+                                   class="btn btn-secondary" onclick="document.getElementById('Submit').disabled = true">
                         </div>
                     </div>
 
-                </form>
+
+                </div>
             </div>
         </div>
+
     </div>
-
-</div>
-
+</form>
 <?php
 $db->show_footer();
 ?>

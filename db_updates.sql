@@ -23,6 +23,7 @@ COLLATE='utf8_bin'
 ENGINE=InnoDB
 ;
 
+
 CREATE TABLE `products` (
 	`prd_product_ID` INT(8) NOT NULL AUTO_INCREMENT,
 	`prd_manufacturer_ID` INT(8) NULL DEFAULT NULL,
@@ -41,6 +42,20 @@ CREATE TABLE `products` (
 COLLATE='utf8_bin'
 ENGINE=InnoDB
 ;
+
+
+CREATE TABLE `product_relations` (
+	`prdr_product_relations_ID` INT(8) NOT NULL AUTO_INCREMENT,
+	`prdr_product_parent_ID` INT(8) NULL DEFAULT NULL,
+	`prdr_child_type` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8_bin',
+	`prdr_product_child_ID` INT(8) NULL DEFAULT NULL,
+	PRIMARY KEY (`prdr_product_relations_ID`)
+)
+COLLATE='utf8_bin'
+ENGINE=InnoDB
+;
+
+
 
 
 ALTER TABLE `customers`
