@@ -47,6 +47,12 @@ class Main
     var $started_transaction = 0;
     var $issued_rollback = 0;
 
+    //template
+    var $dismissWarning;
+    var $dismissError;
+    var $dismissSuccess;
+    var $dismissInfo;
+
 //query variables
     var $allow_query_select = 1;
     var $allow_query_update = 1;
@@ -850,6 +856,22 @@ class Main
     {
         $this->admin_layout_printer = 'yes';
         $this->show_footer();
+    }
+
+    public function generateDismissWarning($message){
+        $this->dismissWarning = $message;
+    }
+
+    public function generateDismissError($message){
+        $this->dismissError = $message;
+    }
+
+    public function generateDismissSuccess($message){
+        $this->dismissSuccess = $message;
+    }
+
+    public function generateDismissInfo($message){
+        $this->dismissInfo = $message;
     }
 
     public function fix_num($digit, $type = 'remove')

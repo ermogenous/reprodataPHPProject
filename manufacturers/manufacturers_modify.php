@@ -47,7 +47,7 @@ $db->show_header();
     <div class="row">
         <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
         <div class="col-lg-6 col-md-6 col-xs-12 col-sm-12">
-            <form name="groups" method="post" action="" onsubmit="">
+            <form name="myForm" id="myForm" method="post" action="" onsubmit="">
                 <div class="alert alert-dark text-center">
                     <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
                         &nbsp;Manufacturer</b>
@@ -121,8 +121,10 @@ $db->show_header();
                         <input name="action" type="hidden" id="action"
                                value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
                         <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
+                        <input type="button" value="Back" class="btn btn-secondary"
+                               onclick="window.location.assign('manufacturers.php')" >
                         <input type="submit" name="Submit" id="Submit" value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Manufacturer"
-                               class="btn btn-secondary" onclick="document.getElementById('Submit').disabled = true">
+                               class="btn btn-secondary" onclick="submitForm()">
                     </div>
                 </div>
 
@@ -131,7 +133,17 @@ $db->show_header();
         <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
     </div>
 </div>
+<script>
+    function submitForm(){
+        frm = document.getElementById('myForm');
+        if (frm.checkValidity() === false){
 
+        }
+        else {
+            document.getElementById('Submit').disabled = true
+        }
+    }
+</script>
 <?php
 $db->show_footer();
 ?>

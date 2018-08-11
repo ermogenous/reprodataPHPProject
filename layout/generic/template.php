@@ -13,7 +13,8 @@ function template_header()
         <LINK REL="SHORTCUT ICON" HREF="<?php echo $main["site_url"]; ?>/favicon.png">
         <link rel="stylesheet" href="<?php echo $db->admin_layout_url; ?>style.css" rel="stylesheet">
 
-        <link rel="stylesheet" href="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/css/bootstrap.min.css"
+              rel="stylesheet">
         <script defer src="https://use.fontawesome.com/releases/v5.0.10/js/all.js"
                 integrity="sha384-slN8GvtUJGnv6ca26v8EzVaR9DC58QEwsIk9q1QXdCU8Yu8ck/tL/5szYlBbqmS+"
                 crossorigin="anonymous"></script>
@@ -186,7 +187,64 @@ if ($db->admin_layout_printer != 'yes')
 {
 
     ?>
-<br><br>
+<br>
+    <?php if ($db->dismissWarning != '') { ?>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-6">
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <strong>Warning! </strong> <?php echo $db->dismissWarning; ?>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+        <div class="col-3"></div>
+    </div>
+    <?php }
+    if ($db->dismissError != '') { ?>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-6">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Error! </strong> <?php echo $db->dismissError; ?>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+        <div class="col-3"></div>
+    </div>
+    <?php }
+    if ($db->dismissSuccess != '') { ?>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-6">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>Success! </strong> <?php echo $db->dismissSuccess; ?>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+        <div class="col-3"></div>
+    </div>
+    <?php }
+    if ($db->dismissInfo != '') { ?>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-6">
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <strong>Info! </strong> <?php echo $db->dismissInfo; ?>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        </div>
+        <div class="col-3"></div>
+    </div>
+<?php } ?>
+<br>
     <div class="container-fluid">
         <div class="row">&nbsp</div>
         <div class="row glyphicon-copyright-mark navbar-custom">&nbsp</div>

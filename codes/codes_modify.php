@@ -21,13 +21,13 @@ if ($db->user_data["usr_user_rights"] > 0) {
 if ($_POST["action"] == "insert") {
 
     $db->db_tool_insert_row('codes', $_POST, 'fld_', 0, 'cde_');
-    header("Location: codes.php?type=".$_POST['codeSelection']."&search_code=search");
+    header("Location: codes.php?type=" . $_POST['codeSelection'] . "&search_code=search");
     exit();
 
 } else if ($_POST["action"] == "update") {
 
     $db->db_tool_update_row('codes', $_POST, "`cde_code_ID` = " . $_POST["lid"], $_POST["lid"], 'fld_', 'execute', 'cde_');
-    header("Location: codes.php?type=".$_POST['codeSelection']."&search_code=search");
+    header("Location: codes.php?type=" . $_POST['codeSelection'] . "&search_code=search");
     exit();
 
 }
@@ -35,21 +35,18 @@ if ($_POST["action"] == "insert") {
 if ($_GET['codeSelection'] == 'code') {
     $codeLabels['cde_value_label'] = 'Value';
     $codeLabels['cde_value_label_2'] = 'Value 2';
-}
-else{
-    $codeLabels = $db->query_fetch("SELECT * FROM `codes` WHERE `cde_type` = 'code' AND `cde_value` = '".$_GET['codeSelection']."'");
+} else {
+    $codeLabels = $db->query_fetch("SELECT * FROM `codes` WHERE `cde_type` = 'code' AND `cde_value` = '" . $_GET['codeSelection'] . "'");
 }
 
 if ($_GET["lid"] != "") {
     $sql = "SELECT * FROM `codes` WHERE `cde_code_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
 
-}
-else {
+} else {
     $data['cde_type'] = $_GET['codeSelection'];
 }
 //get the labels
-
 
 
 $db->show_header();
@@ -58,7 +55,7 @@ $db->show_header();
     <div class="row">
         <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
         <div class="col-lg-6 col-md-6 col-xs-12 col-sm-12">
-            <form name="code" method="post" action="" onsubmit="">
+            <form name="myForm" id="myForm" method="post" action="" onsubmit="">
                 <div class="alert alert-dark text-center">
                     <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
                         &nbsp;Code</b>
@@ -70,7 +67,7 @@ $db->show_header();
                         <select name="fld_type" id="fld_type"
                                 class="form-control"
                                 required
-                                <?php if($_GET['lid'] != '') echo 'disabled';?>>
+                            <?php if ($_GET['lid'] != '') echo 'disabled'; ?>>
                             <option value="code" <?php if ($data['cde_type'] == 'code') echo 'selected'; ?>>Code
                             </option>
 
@@ -89,54 +86,60 @@ $db->show_header();
                 </div>
                 <?php
                 if ($_GET['codeSelection'] == 'code') {
-                ?>
-                <div class="form-group row">
+                    ?>
+                    <div class="form-group row">
 
-                    <label for="name" class="col-sm-4 col-form-label">Value Label</label>
-                    <div class="col-sm-8">
+                        <label for="name" class="col-sm-4 col-form-label">Value Label</label>
+                        <div class="col-sm-8">
 
-                        <input name="fld_value_label" type="text" id="fld_value_label"
-                               class="form-control"
-                               value="<?php echo $data["cde_value_label"]; ?>">
+                            <input name="fld_value_label" type="text" id="fld_value_label"
+                                   class="form-control"
+                                   value="<?php echo $data["cde_value_label"]; ?>"
+                                   required>
 
+                        </div>
                     </div>
-                </div>
                 <?php } else { ?>
-                    <input type="hidden" name="fld_value_label" id="fld_value_label" value="<?php echo $codeLabels['cde_value_label'];?>">
+                    <input type="hidden" name="fld_value_label" id="fld_value_label"
+                           value="<?php echo $codeLabels['cde_value_label']; ?>">
                 <?php } ?>
                 <div class="form-group row">
-                    <label for="surname" class="col-sm-4 col-form-label"><?php echo $codeLabels['cde_value_label'];?></label>
+                    <label for="surname"
+                           class="col-sm-4 col-form-label"><?php echo $codeLabels['cde_value_label']; ?></label>
                     <div class="col-sm-8">
                         <input name="fld_value" type="text" id="fld_value"
                                class="form-control"
-                               value="<?php echo $data["cde_value"]; ?>">
+                               value="<?php echo $data["cde_value"]; ?>"
+                               required>
                     </div>
                 </div>
 
                 <?php
                 if ($_GET['codeSelection'] == 'code') {
-                ?>
-                <div class="form-group row">
-                    <label for="name" class="col-sm-4 col-form-label">Value Label 2</label>
-                    <div class="col-sm-8">
-                        <input name="fld_value_label_2" type="text" id="fld_value_label_2"
-                               class="form-control"
-                               value="<?php echo $data["cde_value_label_2"]; ?>">
+                    ?>
+                    <div class="form-group row">
+                        <label for="name" class="col-sm-4 col-form-label">Value Label 2</label>
+                        <div class="col-sm-8">
+                            <input name="fld_value_label_2" type="text" id="fld_value_label_2"
+                                   class="form-control"
+                                   value="<?php echo $data["cde_value_label_2"]; ?>">
+                        </div>
                     </div>
-                </div>
                 <?php } else { ?>
-                    <input type="hidden" name="fld_value_label_2" id="fld_value_label_2" value="<?php echo $codeLabels['cde_value_label_2'];?>">
+                    <input type="hidden" name="fld_value_label_2" id="fld_value_label_2"
+                           value="<?php echo $codeLabels['cde_value_label_2']; ?>">
                 <?php }
-                    if ($codeLabels['cde_value_label_2'] != '') {
-                ?>
-                <div class="form-group row">
-                    <label for="surname" class="col-sm-4 col-form-label"><?php echo $codeLabels['cde_value_label_2'];?></label>
-                    <div class="col-sm-8">
-                        <input name="fld_value_2" type="text" id="fld_value_2"
-                               class="form-control"
-                               value="<?php echo $data["cde_value_2"]; ?>">
+                if ($codeLabels['cde_value_label_2'] != '') {
+                    ?>
+                    <div class="form-group row">
+                        <label for="surname"
+                               class="col-sm-4 col-form-label"><?php echo $codeLabels['cde_value_label_2']; ?></label>
+                        <div class="col-sm-8">
+                            <input name="fld_value_2" type="text" id="fld_value_2"
+                                   class="form-control"
+                                   value="<?php echo $data["cde_value_2"]; ?>">
+                        </div>
                     </div>
-                </div>
                 <?php } ?>
 
 
@@ -146,10 +149,12 @@ $db->show_header();
                         <input name="action" type="hidden" id="action"
                                value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
                         <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
-                        <input name="codeSelection" id="codeSelection" type="hidden" value="<?php echo $_GET['codeSelection'];?>">
+                        <input name="codeSelection" id="codeSelection" type="hidden"
+                               value="<?php echo $_GET['codeSelection']; ?>">
                         <input type="button" value="Back" class="btn btn-secondary"
-                               onclick="window.location.assign('codes.php?type=<?php echo $_GET['codeSelection'];?>&search_code=search')" >
-                        <input type="submit" name="Submit" value="Save Code" class="btn btn-secondary">
+                               onclick="window.location.assign('codes.php?type=<?php echo $_GET['codeSelection']; ?>&search_code=search')">
+                        <input type="submit" name="Submit" id="Submit" value="Save Code" class="btn btn-secondary"
+                               onclick="submitForm()">
                     </div>
                 </div>
 
@@ -158,7 +163,17 @@ $db->show_header();
         <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
     </div>
 </div>
+<script>
+    function submitForm() {
+        frm = document.getElementById('myForm');
+        if (frm.checkValidity() === false) {
 
+        }
+        else {
+            document.getElementById('Submit').disabled = true
+        }
+    }
+</script>
 <?php
 $db->show_footer();
 ?>

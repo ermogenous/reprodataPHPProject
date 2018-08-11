@@ -15,10 +15,27 @@ $db->admin_title = "Product Relations";
 $db->show_empty_header();
 
 $table = new draw_table('product_relations', 'prdr_product_relations_ID', 'ASC');
-$table->extras = '';
+
+if ($_GET['type'] == 'Machine') {
+
+    $table->extra_from_section = "JOIN products ON prd_product_ID = prdr_product_child_ID";
+    if ($_GET['area'] == 'consumables') {
+        $table->extras = 'prdr_product_parent_ID = ' . $_GET['lid'] . " AND prdr_child_type = 'Consumable'";
+    } else {
+        $table->extras = 'prdr_product_parent_ID = ' . $_GET['lid'] . " AND prdr_child_type = 'SparePart'";
+    }
+
+} else if ($_GET['type'] == 'SparePart') {
+    $table->extra_from_section = "JOIN products ON prd_product_ID = prdr_product_parent_ID";
+    $table->extras = 'prdr_product_child_ID = ' . $_GET['lid'] . " AND prdr_child_type = 'SparePart'";
+
+} else if ($_GET['type'] == 'Consumable') {
+    $table->extra_from_section = "JOIN products ON prd_product_ID = prdr_product_parent_ID";
+    $table->extras = 'prdr_product_child_ID = ' . $_GET['lid'] . " AND prdr_child_type = 'Consumable'";
+}
+
 
 $table->generate_data();
-
 ?>
 
 
@@ -31,10 +48,11 @@ $table->generate_data();
                 <table class="table table-hover">
                     <thead>
                     <tr>
-                        <th scope="col"><?php $table->display_order_links('ID', 'cst_customer_ID'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Name', 'usg_group_name'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('ID', 'prdr_product_relations_ID'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Code', 'prd_code'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Name', 'prd_name'); ?></th>
                         <th scope="col">
-                            <a href="customers_modify.php">
+                            <a href="relations_modify.php?pid=<?php echo $_GET['lid'] . "&type=" . $_GET['type'] . "&area=" . $_GET['area']; ?>">
                                 <i class="fas fa-plus-circle"></i>
                             </a>
                         </th>
@@ -44,15 +62,16 @@ $table->generate_data();
                     <?php
                     while ($row = $table->fetch_data()) {
                         ?>
-                        <tr onclick="editCustomer(<?php echo $row["cst_customer_ID"];?>);">
-                            <th scope="row"><?php echo $row["cst_customer_ID"]; ?></th>
-                            <td><?php echo $row["cst_name"]; ?></td>
+                        <tr onclick="editRow(<?php echo $row["prdr_product_relations_ID"]; ?>);">
+                            <th scope="row"><?php echo $row["prdr_product_relations_ID"]; ?></th>
+                            <td><?php echo $row["prd_code"]; ?></td>
+                            <td><?php echo $row["prd_name"]; ?></td>
                             <td>
-                                <a href="customers_modify.php?lid=<?php echo $row["cst_customer_ID"]; ?>"><i
-                                        class="fas fa-edit"></i></a>&nbsp
-                                <a href="customers_delete.php?lid=<?php echo $row["cst_customer_ID"]; ?>"
-                                   onclick="return confirm('Are you sure you want to delete this customer?');"><i
-                                        class="fas fa-minus-circle"></i></a>
+                                <a href="relations_modify.php?lid=<?php echo $row["prdr_product_relations_ID"]; ?>&pid=<?php echo $_GET['lid'] . "&type=" . $_GET['type'] . "&area=" . $_GET['area']; ?>"><i
+                                            class="fas fa-edit"></i></a>&nbsp
+                                <a href="relations_modify.php?lid=<?php echo $row["prdr_product_relations_ID"]; ?>&pid=<?php echo $_GET['lid'] . "&type=" . $_GET['type'] . "&area=" . $_GET['area']; ?>"
+                                   onclick="return confirm('Are you sure you want to delete this relation?');"><i
+                                            class="fas fa-minus-circle"></i></a>
                             </td>
                         </tr>
                         <?php
@@ -66,8 +85,8 @@ $table->generate_data();
     </div>
 </div>
 <script>
-    function editCustomer(id){
-        window.location.assign('customers_modify.php?lid='+id);
+    function editRow(id) {
+        window.location.assign('relations_modify.php?lid=' + id + '&pid=<?php echo $_GET['lid'] . "&type=" . $_GET['type'] . "&area=" . $_GET['area'];?>');
     }
 </script>
 

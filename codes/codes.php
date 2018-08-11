@@ -84,7 +84,7 @@ else {
                     <?php
                         while ($row = $table->fetch_data()) {
                     ?>
-                    <tr>
+                    <tr onclick="editLine(<?php echo $row["cde_code_ID"]; ?>)">
                         <th scope="row"><?php echo $row["cde_code_ID"]; ?></th>
                         <td><?php echo $row["cde_value_label"]; ?></td>
                         <td><?php echo $row["cde_value"]; ?></td>
@@ -104,7 +104,11 @@ else {
         <div class="col-lg-2"></div>
     </div>
 </div>
-
+<script>
+    function editLine(id){
+        window.location.assign('codes_modify.php?lid='+id+'&codeSelection=<?php echo $codeSelection;?>');
+    }
+</script>
 <?php
 $db->show_footer();
 ?>

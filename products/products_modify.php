@@ -21,11 +21,15 @@ if ($db->user_data["usr_user_rights"] > 0) {
 
 if ($_POST["action"] == "insert") {
 
-    $db->db_tool_insert_row('products', $_POST, 'fld_', 0, 'prd_');
+    $newId = $db->db_tool_insert_row('products', $_POST, 'fld_', 1, 'prd_');
 
     if ($_POST['subaction'] == 'update') {
         header("Location: products.php");
         exit();
+    } else {
+        $db->generateDismissSuccess('Product created successfully');
+        $_GET['lid'] = $newId;
+        echo $newId;
     }
 } else if ($_POST["action"] == "update") {
 
@@ -49,7 +53,7 @@ if ($_GET["lid"] != "") {
 
 $db->show_header();
 ?>
-<form name="groups" method="post" action="" onsubmit="">
+<form name="myForm" id="myForm" method="post" action="" onsubmit="">
     <div class="container">
         <div class="row">
             <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
@@ -60,28 +64,41 @@ $db->show_header();
                             &nbsp;Product</b></div>
                 </div>
                 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+
                     <li class="nav-item">
                         <a class="nav-link active" id="pills-general-tab" data-toggle="pill" href="#pills-general"
                            role="tab"
                            aria-controls="pills-general" aria-selected="true">General</a>
                     </li>
+                    <?php
+                    if ($_GET['lid'] != '') {
+                        if ($data['prd_type'] != 'Machine') { ?>
+                            <li class="nav-item">
+                                <a class="nav-link" id="pills-machines-tab" data-toggle="pill" href="#pills-machines"
+                                   role="tab"
+                                   aria-controls="pills-machines" aria-selected="false">Machines</a>
+                            </li>
+                        <?php }
+                        if ($data['prd_type'] == 'Machine') { ?>
+                            <li class="nav-item">
+                                <a class="nav-link" id="pills-consumables-tab" data-toggle="pill"
+                                   href="#pills-consumables"
+                                   role="tab"
+                                   aria-controls="pills-consumables" aria-selected="false">Consumables</a>
+                            </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" id="pills-consumables-tab" data-toggle="pill" href="#pills-consumables"
-                           role="tab"
-                           aria-controls="pills-consumables" aria-selected="false">Consumables</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" id="pills-spare-parts-tab" data-toggle="pill" href="#pills-spare-parts"
-                           role="tab"
-                           aria-controls="pills-spare-parts" aria-selected="false">Spare Parts</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" id="pills-stock-tab" data-toggle="pill" href="#pills-stock" role="tab"
-                           aria-controls="pills-stock" aria-selected="false">Stock</a>
-                    </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="pills-spare-parts-tab" data-toggle="pill"
+                                   href="#pills-spare-parts"
+                                   role="tab"
+                                   aria-controls="pills-spare-parts" aria-selected="false">Spare Parts</a>
+                            </li>
+                        <?php } ?>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-stock-tab" data-toggle="pill" href="#pills-stock" role="tab"
+                               aria-controls="pills-stock" aria-selected="false">Stock</a>
+                        </li>
+                    <?php } ?>
                 </ul>
                 <div class="tab-content" id="pills-tabContent">
 
@@ -122,6 +139,46 @@ $db->show_header();
                                         SparePart
                                     </option>
                                     <option value="Other" <?php if ($data['prd_type'] == 'Other') echo 'selected'; ?>>
+                                        Other
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="fld_size" class="col-sm-4 col-form-label">Size</label>
+                            <div class="col-sm-8">
+                                <select name="fld_size" id="fld_size"
+                                        class="form-control"
+                                        required>
+                                    <option value="" <?php if ($data['prd_size'] == '') echo 'selected'; ?>></option>
+                                    <option value="A4" <?php if ($data['prd_size'] == 'A4') echo 'selected'; ?>>
+                                        A4
+                                    </option>
+                                    <option value="A3" <?php if ($data['prd_size'] == 'A3') echo 'selected'; ?>>
+                                        A3
+                                    </option>
+                                    <option value="Other" <?php if ($data['prd_size'] == 'Other') echo 'selected'; ?>>
+                                        Other
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="fld_color" class="col-sm-4 col-form-label">Color</label>
+                            <div class="col-sm-8">
+                                <select name="fld_color" id="fld_color"
+                                        class="form-control"
+                                        required>
+                                    <option value="" <?php if ($data['prd_color'] == '') echo 'selected'; ?>></option>
+                                    <option value="Black" <?php if ($data['prd_color'] == 'Black') echo 'selected'; ?>>
+                                        Black
+                                    </option>
+                                    <option value="Color" <?php if ($data['prd_color'] == 'Color') echo 'selected'; ?>>
+                                        Color
+                                    </option>
+                                    <option value="Other" <?php if ($data['prd_color'] == 'Other') echo 'selected'; ?>>
                                         Other
                                     </option>
                                 </select>
@@ -189,22 +246,35 @@ $db->show_header();
                         </div>
 
                     </div>
-                    <div class="tab-pane fade" id="pills-consumables" role="tabpanel"
-                         aria-labelledby="pills-consumables-tab">
+                    <?php if ($data['prd_type'] != 'Machine') { ?>
+                        <div class="tab-pane fade" id="pills-machines" role="tabpanel"
+                             aria-labelledby="pills-machines-tab">
 
-                        <iframe src="relations.php?lid=<?php echo $_GET["lid"]; ?>&type=consumables" frameborder="0"
-                                scrolling="0" width="100%" height="400"></iframe>
+                            <iframe src="relations.php?lid=<?php echo $_GET["lid"]; ?>&type=<?php echo $data['prd_type']; ?>&area=machines"
+                                    frameborder="0"
+                                    scrolling="0" width="100%" height="400"></iframe>
 
-                    </div>
+                        </div>
+                    <?php }
+                    if ($data['prd_type'] == 'Machine') { ?>
+                        <div class="tab-pane fade" id="pills-consumables" role="tabpanel"
+                             aria-labelledby="pills-consumables-tab">
 
-                    <div class="tab-pane fade" id="pills-spare-parts" role="tabpanel"
-                         aria-labelledby="pills-spare-parts-tab">
+                            <iframe src="relations.php?lid=<?php echo $_GET["lid"]; ?>&type=<?php echo $data['prd_type']; ?>&area=consumables"
+                                    frameborder="0"
+                                    scrolling="0" width="100%" height="400"></iframe>
 
-                        <iframe src="relations.php?lid=<?php echo $_GET["lid"]; ?>&type=spare-parts" frameborder="0"
-                                scrolling="0" width="100%" height="400"></iframe>
+                        </div>
 
-                    </div>
+                        <div class="tab-pane fade" id="pills-spare-parts" role="tabpanel"
+                             aria-labelledby="pills-spare-parts-tab">
 
+                            <iframe src="relations.php?lid=<?php echo $_GET["lid"]; ?>&type=<?php echo $data['prd_type']; ?>&area=spare-parts"
+                                    frameborder="0"
+                                    scrolling="0" width="100%" height="400"></iframe>
+
+                        </div>
+                    <?php } ?>
                     <div class="tab-pane fade" id="pills-stock" role="tabpanel" aria-labelledby="pills-stock-tab">
                         ...
                     </div>
@@ -217,6 +287,8 @@ $db->show_header();
                                    value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
                             <input name="subaction" type="hidden" id="subaction"
                                    value="">
+                            <input type="button" value="Back" class="btn btn-secondary"
+                                   onclick="window.location.assign('products.php')">
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
                             <input type="submit" name="Save" id="Save"
                                    value="Save"
@@ -238,18 +310,34 @@ $db->show_header();
     </div>
 </form>
 <script>
+
     function saveForm() {
-        document.getElementById('Submit').disabled = true;
-        document.getElementById('Save').disabled = true;
-        document.getElementById('subaction').value = 'save';
+        var frm = document.getElementById('myForm');
+        if (frm.checkValidity() === false) {
+
+        }
+        else {
+            document.getElementById('Submit').disabled = true;
+            document.getElementById('Save').disabled = true;
+            document.getElementById('subaction').value = 'save';
+        }
     }
 
     function updateForm() {
-        document.getElementById('Submit').disabled = true;
-        document.getElementById('Save').disabled = true;
-        document.getElementById('subaction').value = 'update';
+        frm = document.getElementById('myForm');
+        if (frm.checkValidity() === false) {
+
+        }
+        else {
+            document.getElementById('Submit').disabled = true;
+            document.getElementById('Save').disabled = true;
+            document.getElementById('subaction').value = 'update';
+        }
     }
+
+
 </script>
+
 <?php
 $db->show_footer();
 ?>

@@ -68,3 +68,10 @@ ALTER TABLE `customers`
 	CHANGE COLUMN `cst_city_ID` `cst_city_code_ID` VARCHAR(30) NULL DEFAULT NULL AFTER `cst_address_line_2`;
 
 */
+
+//11/8/2018
+
+ALTER TABLE `products`
+	ADD COLUMN `prd_size` VARCHAR(20) NULL DEFAULT '0' AFTER `prd_type`,
+	ADD COLUMN `prd_color` VARCHAR(20) NULL DEFAULT '0' AFTER `prd_size`,
+	CHANGE COLUMN `prd_code` `prd_code` VARCHAR(20) NOT NULL DEFAULT '0' COLLATE 'utf8_bin' AFTER `prd_color`;
