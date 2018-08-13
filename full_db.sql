@@ -29,42 +29,56 @@ CREATE TABLE IF NOT EXISTS `codes` (
   `cde_value_label` varchar(30) DEFAULT NULL,
   `cde_value_2` varchar(100) DEFAULT NULL,
   `cde_value_label_2` varchar(30) DEFAULT NULL,
-  `cde_option_values` varchar(255) DEFAULT NULL,
+  `cde_option_value` varchar(255) DEFAULT NULL,
+  `cde_option_label` varchar(30) DEFAULT NULL,
   `cde_created_date_time` datetime DEFAULT NULL,
   `cde_created_by` int(8) DEFAULT NULL,
   `cde_last_update_date_time` datetime DEFAULT NULL,
   `cde_last_update_by` int(8) DEFAULT NULL,
   PRIMARY KEY (`cde_code_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=latin1 COMMENT='Codes';
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=latin1 COMMENT='Codes';
 
--- Dumping data for table reprodata.codes: ~25 rows (approximately)
+-- Dumping data for table reprodata.codes: ~38 rows (approximately)
 /*!40000 ALTER TABLE `codes` DISABLE KEYS */;
-INSERT INTO `codes` (`cde_code_ID`, `cde_type`, `cde_table_field`, `cde_table_field2`, `cde_table_field3`, `cde_value`, `cde_value_label`, `cde_value_2`, `cde_value_label_2`, `cde_option_values`, `cde_created_date_time`, `cde_created_by`, `cde_last_update_date_time`, `cde_last_update_by`) VALUES
-	(1, 'code', 'customers#cst_city_code_ID', NULL, NULL, 'Cities', 'City Name', 'CityShort', 'City Name Short', NULL, NULL, NULL, NULL, NULL),
-	(2, 'code', 'customers#cst_business_type_code_ID', NULL, NULL, 'BusinessType', 'Business Type', '', '', NULL, NULL, NULL, NULL, NULL),
-	(3, 'BusinessType', NULL, NULL, NULL, 'Bank', 'Business Type', NULL, '', NULL, NULL, NULL, NULL, NULL),
-	(4, 'BusinessType', NULL, NULL, NULL, 'Insurance', 'Business Type', NULL, '', NULL, NULL, NULL, NULL, NULL),
-	(5, 'BusinessType', NULL, NULL, NULL, 'Private', 'Business Type', NULL, '', NULL, NULL, NULL, NULL, NULL),
-	(6, 'Cities', NULL, NULL, NULL, 'Nicosia', 'City Name', 'NIC', 'City Name Short', NULL, NULL, NULL, NULL, NULL),
-	(7, 'Cities', NULL, NULL, NULL, 'Limassol', 'City Name', 'LIM', 'City Name Short', NULL, NULL, NULL, NULL, NULL),
-	(8, 'Cities', NULL, NULL, NULL, 'Larnaca', 'City Name', 'LAR', 'City Name Short', NULL, NULL, NULL, NULL, NULL),
-	(9, 'Cities', NULL, NULL, NULL, 'Paphos', 'City Name', 'PAF', 'City Name Short', NULL, NULL, NULL, NULL, NULL),
-	(10, 'Cities', NULL, NULL, NULL, 'Famagusta', 'City Name', 'FAM', 'City Name Short', NULL, NULL, NULL, NULL, NULL),
-	(11, 'BusinessType', NULL, NULL, NULL, 'Public School', 'Business Type', NULL, '', NULL, NULL, NULL, NULL, NULL),
-	(12, 'BusinessType', NULL, NULL, NULL, 'Accounting', 'Business Type', NULL, '', NULL, NULL, NULL, NULL, NULL),
-	(13, 'BusinessType', NULL, NULL, NULL, 'Law', 'Business Type', NULL, '', NULL, NULL, NULL, NULL, NULL),
-	(14, 'BusinessType', NULL, NULL, NULL, 'Private School', 'Business Type', NULL, '', NULL, NULL, NULL, NULL, NULL),
-	(15, 'code', 'customers#cst_contact_person_title_code_ID', NULL, NULL, 'ContactPersonTitle', 'Contact Person Title', '', '', NULL, NULL, NULL, NULL, NULL),
-	(16, 'ContactPersonTitle', NULL, NULL, NULL, 'Owner', 'Contact Person Title', NULL, '', NULL, NULL, NULL, NULL, NULL),
-	(17, 'ContactPersonTitle', NULL, NULL, NULL, 'Secretary', 'Contact Person Title', NULL, '', NULL, NULL, NULL, NULL, NULL),
-	(18, 'ContactPersonTitle', NULL, NULL, NULL, 'Director', 'Contact Person Title', NULL, '', NULL, NULL, NULL, NULL, NULL),
-	(19, 'ContactPersonTitle', NULL, NULL, NULL, 'IT Manager', 'Contact Person Title', NULL, '', NULL, NULL, NULL, NULL, NULL),
-	(20, 'ContactPersonTitle', NULL, NULL, NULL, 'IT Technitian', 'Contact Person Title', NULL, '', NULL, NULL, NULL, NULL, NULL),
-	(21, 'code', 'manufacturers#mnf_country_code_ID', NULL, NULL, 'Countries', 'Country Name', '', 'Short Code', NULL, NULL, NULL, NULL, NULL),
-	(22, 'Countries', NULL, NULL, NULL, 'Cyprus', 'Country Name', 'CYP', 'Short Code', NULL, NULL, NULL, NULL, NULL),
-	(23, 'Countries', NULL, NULL, NULL, 'Germany', 'Country Name', 'DEU', 'Short Code', NULL, NULL, NULL, NULL, NULL),
-	(24, 'Countries', NULL, NULL, NULL, 'Greece', 'Country Name', 'GRC', 'Short Code', NULL, NULL, NULL, NULL, NULL),
-	(25, 'code', NULL, NULL, NULL, 'ProductsSubType', 'Products SubType', '', '', NULL, NULL, NULL, NULL, NULL);
+INSERT INTO `codes` (`cde_code_ID`, `cde_type`, `cde_table_field`, `cde_table_field2`, `cde_table_field3`, `cde_value`, `cde_value_label`, `cde_value_2`, `cde_value_label_2`, `cde_option_value`, `cde_option_label`, `cde_created_date_time`, `cde_created_by`, `cde_last_update_date_time`, `cde_last_update_by`) VALUES
+	(1, 'code', 'customers#cst_city_code_ID', NULL, NULL, 'Cities', 'City Name', 'CityShort', 'City Name Short', NULL, NULL, NULL, NULL, NULL, NULL),
+	(2, 'code', 'customers#cst_business_type_code_ID', NULL, NULL, 'BusinessType', 'Business Type', '', '', NULL, NULL, NULL, NULL, NULL, NULL),
+	(3, 'BusinessType', NULL, NULL, NULL, 'Bank', 'Business Type', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL),
+	(4, 'BusinessType', NULL, NULL, NULL, 'Insurance', 'Business Type', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL),
+	(5, 'BusinessType', NULL, NULL, NULL, 'Private', 'Business Type', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL),
+	(6, 'Cities', NULL, NULL, NULL, 'Nicosia', 'City Name', 'NIC', 'City Name Short', NULL, NULL, NULL, NULL, NULL, NULL),
+	(7, 'Cities', NULL, NULL, NULL, 'Limassol', 'City Name', 'LIM', 'City Name Short', NULL, NULL, NULL, NULL, NULL, NULL),
+	(8, 'Cities', NULL, NULL, NULL, 'Larnaca', 'City Name', 'LAR', 'City Name Short', NULL, NULL, NULL, NULL, NULL, NULL),
+	(9, 'Cities', NULL, NULL, NULL, 'Paphos', 'City Name', 'PAF', 'City Name Short', NULL, NULL, NULL, NULL, NULL, NULL),
+	(10, 'Cities', NULL, NULL, NULL, 'Famagusta', 'City Name', 'FAM', 'City Name Short', NULL, NULL, NULL, NULL, NULL, NULL),
+	(11, 'BusinessType', NULL, NULL, NULL, 'Public School', 'Business Type', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL),
+	(12, 'BusinessType', NULL, NULL, NULL, 'Accounting', 'Business Type', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL),
+	(13, 'BusinessType', NULL, NULL, NULL, 'Law', 'Business Type', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL),
+	(14, 'BusinessType', NULL, NULL, NULL, 'Private School', 'Business Type', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL),
+	(15, 'code', 'customers#cst_contact_person_title_code_ID', NULL, NULL, 'ContactPersonTitle', 'Contact Person Title', '', '', NULL, NULL, NULL, NULL, NULL, NULL),
+	(16, 'ContactPersonTitle', NULL, NULL, NULL, 'Owner', 'Contact Person Title', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL),
+	(17, 'ContactPersonTitle', NULL, NULL, NULL, 'Secretary', 'Contact Person Title', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL),
+	(18, 'ContactPersonTitle', NULL, NULL, NULL, 'Director', 'Contact Person Title', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL),
+	(19, 'ContactPersonTitle', NULL, NULL, NULL, 'IT Manager', 'Contact Person Title', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL),
+	(20, 'ContactPersonTitle', NULL, NULL, NULL, 'IT Technitian', 'Contact Person Title', NULL, '', NULL, NULL, NULL, NULL, NULL, NULL),
+	(21, 'code', 'manufacturers#mnf_country_code_ID', NULL, NULL, 'Countries', 'Country Name', '', 'Short Code', NULL, NULL, NULL, NULL, NULL, NULL),
+	(22, 'Countries', NULL, NULL, NULL, 'Cyprus', 'Country Name', 'CYP', 'Short Code', NULL, NULL, NULL, NULL, NULL, NULL),
+	(23, 'Countries', NULL, NULL, NULL, 'Germany', 'Country Name', 'DEU', 'Short Code', NULL, NULL, NULL, NULL, NULL, NULL),
+	(24, 'Countries', NULL, NULL, NULL, 'Greece', 'Country Name', 'GRC', 'Short Code', NULL, NULL, NULL, NULL, NULL, NULL),
+	(25, 'code', 'products#prd_sub_type_code_ID', NULL, NULL, 'ProductsSubType', 'Products SubType', '', '', 'Machine#Consumables#Spare Parts', 'For Type', NULL, NULL, '2018-08-13 23:00:29', 1),
+	(27, 'ProductsSubType', NULL, NULL, NULL, 'MultiFunction', 'Products SubType', NULL, '', 'Machine', NULL, '2018-08-13 23:03:56', 1, '2018-08-13 23:41:01', 1),
+	(28, 'ProductsSubType', NULL, NULL, NULL, 'Printer', 'Products SubType', NULL, '', 'Machine', NULL, '2018-08-13 23:45:21', 1, NULL, NULL),
+	(29, 'ProductsSubType', NULL, NULL, NULL, 'Toners', 'Products SubType', NULL, '', 'Consumables', NULL, '2018-08-13 23:45:30', 1, NULL, NULL),
+	(30, 'ProductsSubType', NULL, NULL, NULL, 'Waste Box', 'Products SubType', NULL, '', 'Consumables', NULL, '2018-08-13 23:45:39', 1, NULL, NULL),
+	(31, 'ProductsSubType', NULL, NULL, NULL, 'Stables', 'Products SubType', NULL, '', 'Consumables', NULL, '2018-08-13 23:45:48', 1, NULL, NULL),
+	(32, 'ProductsSubType', NULL, NULL, NULL, 'Developers', 'Products SubType', NULL, '', 'Consumables', NULL, '2018-08-13 23:45:58', 1, NULL, NULL),
+	(33, 'ProductsSubType', NULL, NULL, NULL, 'Drums', 'Products SubType', NULL, '', 'Consumables', NULL, '2018-08-13 23:46:06', 1, NULL, NULL),
+	(34, 'ProductsSubType', NULL, NULL, NULL, 'CL.Blades', 'Products SubType', NULL, '', 'Consumables', NULL, '2018-08-13 23:46:19', 1, NULL, NULL),
+	(35, 'ProductsSubType', NULL, NULL, NULL, 'Heat Rollers/Belts', 'Products SubType', NULL, '', 'Consumables', NULL, '2018-08-13 23:46:35', 1, NULL, NULL),
+	(36, 'ProductsSubType', NULL, NULL, NULL, 'Press Rollers', 'Products SubType', NULL, '', 'Consumables', NULL, '2018-08-13 23:46:45', 1, NULL, NULL),
+	(37, 'ProductsSubType', NULL, NULL, NULL, 'Feed Rollers', 'Products SubType', NULL, '', 'Consumables', NULL, '2018-08-13 23:46:54', 1, NULL, NULL),
+	(38, 'ProductsSubType', NULL, NULL, NULL, 'Maintenance Kits', 'Products SubType', NULL, '', 'Consumables', NULL, '2018-08-13 23:47:05', 1, NULL, NULL),
+	(39, 'ProductsSubType', NULL, NULL, NULL, 'Spare Parts', 'Products SubType', NULL, '', 'Spare Parts', NULL, '2018-08-13 23:47:14', 1, NULL, NULL);
 /*!40000 ALTER TABLE `codes` ENABLE KEYS */;
 
 -- Dumping structure for table reprodata.customers
@@ -115,7 +129,7 @@ CREATE TABLE IF NOT EXISTS `ip_locations` (
   PRIMARY KEY (`ipl_ip_location_serial`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- Dumping data for table reprodata.ip_locations: ~1 rows (approximately)
+-- Dumping data for table reprodata.ip_locations: ~0 rows (approximately)
 /*!40000 ALTER TABLE `ip_locations` DISABLE KEYS */;
 INSERT INTO `ip_locations` (`ipl_ip_location_serial`, `ipl_ip`, `ipl_hostname`, `ipl_city`, `ipl_region`, `ipl_country`, `ipl_location`, `ipl_provider`, `ipl_last_check`) VALUES
 	(1, '::1', '', '', '', '', '', '', '2018-08-06 10:29:44');
@@ -136,9 +150,9 @@ CREATE TABLE IF NOT EXISTS `log_file` (
   `lgf_description` text COLLATE utf8_bin,
   PRIMARY KEY (`lgf_log_file_ID`),
   KEY `lgf_user_ID` (`lgf_user_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=115 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=148 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- Dumping data for table reprodata.log_file: ~114 rows (approximately)
+-- Dumping data for table reprodata.log_file: ~138 rows (approximately)
 /*!40000 ALTER TABLE `log_file` DISABLE KEYS */;
 INSERT INTO `log_file` (`lgf_log_file_ID`, `lgf_user_ID`, `lgf_ip`, `lgf_date_time`, `lgf_table_name`, `lgf_row_serial`, `lgf_action`, `lgf_new_values`, `lgf_old_values`, `lgf_description`) VALUES
 	(1, 0, '::1', '2018-07-21 10:21:02', 'ip_locations', '1', 'UPDATE RECORD', 'ipl_last_check = \'2018-07-21 10:21:02\'\r\n', 'ipl_last_check = \'2018-07-05 12:15:49\'\r\n', 'UPDATE `ip_locations` SET \n`ipl_last_check` = \'2018-07-21 10:21:02\' \nWHERE ipl_ip_location_serial = 1'),
@@ -254,7 +268,34 @@ INSERT INTO `log_file` (`lgf_log_file_ID`, `lgf_user_ID`, `lgf_ip`, `lgf_date_ti
 	(111, 1, '::1', '2018-08-12 19:37:35', 'stock', '1', 'INSERT RECORD', 'stk_product_ID = 1 \r\nstk_type = transaction \r\nstk_description = Initial \r\nstk_status = Pending \r\nstk_add_minus = 1 \r\nstk_amount = 10 \r\nstk_date_time = 2018-08-12 19:37:35 \r\nstk_month = 08 \r\nstk_year = 2018 \r\n', '', 'INSERT INTO `stock` SET \n`stk_product_ID` = \'1\' \n , `stk_type` = \'transaction\' \n , `stk_description` = \'Initial\' \n , `stk_status` = \'Pending\' \n , `stk_add_minus` = \'1\' \n , `stk_amount` = \'10\' \n , `stk_date_time` = \'2018-08-12 19:37:35\' \n , `stk_month` = \'08\' \n , `stk_year` = \'2018\' \n'),
 	(112, 1, '::1', '2018-08-12 19:37:35', 'products', '1', 'UPDATE RECORD', 'prd_current_stock = \'10\'\r\n', 'prd_current_stock = \'0\'\r\n', 'UPDATE `products` SET \n`prd_current_stock` = \'10\' \nWHERE prd_product_ID = 1'),
 	(113, 1, '::1', '2018-08-12 19:39:25', 'stock', '2', 'INSERT RECORD', 'stk_product_ID = 1 \r\nstk_type = transaction \r\nstk_description = Transaction \r\nstk_status = Pending \r\nstk_add_minus = 1 \r\nstk_amount = 5 \r\nstk_date_time = 2018-08-12 19:39:24 \r\nstk_month = 08 \r\nstk_year = 2018 \r\n`stk_created_date_time` = \'2018-08-12 19:39:24\'\n`stk_created_by` = \'1\'\n', '', 'INSERT INTO `stock` SET \n`stk_product_ID` = \'1\' \n , `stk_type` = \'transaction\' \n , `stk_description` = \'Transaction\' \n , `stk_status` = \'Pending\' \n , `stk_add_minus` = \'1\' \n , `stk_amount` = \'5\' \n , `stk_date_time` = \'2018-08-12 19:39:24\' \n , `stk_month` = \'08\' \n , `stk_year` = \'2018\' \n , `stk_created_date_time` = \'2018-08-12 19:39:24\' \n , `stk_created_by` = \'1\' \n'),
-	(114, 1, '::1', '2018-08-12 19:39:25', 'products', '1', 'UPDATE RECORD', 'prd_current_stock = \'15\'\r\n`prd_last_update_date_time` = \'2018-08-12 19:39:25\'\n`prd_last_update_by` = \'1\'\n', 'prd_current_stock = \'10\'\r\n`prd_last_update_date_time` = \'2018-08-11 09:31:27\'\n`prd_last_update_by` = \'1\'\n', 'UPDATE `products` SET \n`prd_current_stock` = \'15\' \n , `prd_last_update_date_time` = \'2018-08-12 19:39:25\' \n , `prd_last_update_by` = \'1\' \nWHERE prd_product_ID = 1');
+	(114, 1, '::1', '2018-08-12 19:39:25', 'products', '1', 'UPDATE RECORD', 'prd_current_stock = \'15\'\r\n`prd_last_update_date_time` = \'2018-08-12 19:39:25\'\n`prd_last_update_by` = \'1\'\n', 'prd_current_stock = \'10\'\r\n`prd_last_update_date_time` = \'2018-08-11 09:31:27\'\n`prd_last_update_by` = \'1\'\n', 'UPDATE `products` SET \n`prd_current_stock` = \'15\' \n , `prd_last_update_date_time` = \'2018-08-12 19:39:25\' \n , `prd_last_update_by` = \'1\' \nWHERE prd_product_ID = 1'),
+	(118, 1, '::1', '2018-08-13 22:34:51', 'stock', '6', 'INSERT RECORD', 'stk_product_ID = 1 \r\nstk_type = transaction \r\nstk_description = Initial \r\nstk_status = Pending \r\nstk_add_minus = 1 \r\nstk_amount = 1 \r\nstk_date_time = 2018-08-13 22:34:51 \r\nstk_month = 08 \r\nstk_year = 2018 \r\n`stk_created_date_time` = \'2018-08-13 22:34:51\'\n`stk_created_by` = \'1\'\n', '', 'INSERT INTO `stock` SET \n`stk_product_ID` = \'1\' \n , `stk_type` = \'transaction\' \n , `stk_description` = \'Initial\' \n , `stk_status` = \'Pending\' \n , `stk_add_minus` = \'1\' \n , `stk_amount` = \'1\' \n , `stk_date_time` = \'2018-08-13 22:34:51\' \n , `stk_month` = \'08\' \n , `stk_year` = \'2018\' \n , `stk_created_date_time` = \'2018-08-13 22:34:51\' \n , `stk_created_by` = \'1\' \n'),
+	(119, 1, '::1', '2018-08-13 22:34:51', 'product', '1', 'UPDATE RECORD', 'prd_current_stock = \'16\'\r\nprd_stock_last_update = \'2018-08-13 22:34:51\'\r\n', 'prd_current_stock = \'\'\r\nprd_stock_last_update = \'\'\r\n', 'UPDATE `product` SET \n`prd_current_stock` = \'16\' \n, `prd_stock_last_update` = \'2018-08-13 22:34:51\' \nWHERE prd_product_ID = 1'),
+	(121, 1, '::1', '2018-08-13 22:37:30', 'Error', '0', '', '', '', 'SELECT * FROM `product` WHERE prd_product_ID = 1<hr>Table \'reprodata.product\' doesn\'t exist'),
+	(123, 1, '::1', '2018-08-13 22:40:48', 'Error', '0', 'Stock Transaction', 'User:1', '$_GET->Array\n(\n    [pid] => 1\n)\n\\n$_POST->Array\n(\n    [fld_description] => Initial\n    [fld_amount] => 3\n    [action] => insert\n    [pid] => 1\n)\n', 'SELECT * FROM `product` WHERE prd_product_ID = 1<hr>Table \'reprodata.product\' doesn\'t exist'),
+	(125, 1, '::1', '2018-08-13 22:45:48', 'Error', '0', 'Stock Transaction Section:Update product@addRemoveStock', 'User:1', '$_GET->Array\n(\n    [pid] => 1\n)\n\\n$_POST->Array\n(\n    [fld_description] => Transaction\n    [fld_amount] => 3\n    [action] => insert\n    [pid] => 1\n)\n', 'SELECT * FROM `product` WHERE prd_product_ID = 1<hr>Table \'reprodata.product\' doesn\'t exist'),
+	(126, 1, '::1', '2018-08-13 23:00:11', 'Error', '0', 'Codes Modify Section:', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n    [lid] => 25\n    [codeSelection] => code\n)\n\\n$_POST->Array\n(\n    [fld_table_field] => products#prd_sub_type_code_ID\n    [fld_table_field2] => \n    [fld_table_field3] => \n    [fld_value_label] => Products SubType\n    [fld_option_values] => Machine#Consumables#Spare Parts\n    [fld_option_label] => For Type\n    [fld_value] => ProductsSubType\n    [fld_value_label_2] => \n    [fld_value_2] => \n    [action] => update\n    [lid] => 25\n    [codeSelection] => code\n)\n', 'UPDATE `codes` SET \n`cde_table_field` = \'products#prd_sub_type_code_ID\' \n, `cde_option_values` = \'Machine#Consumables#Spare Parts\' \n, `cde_option_label` = \'For Type\' \n , `cde_last_update_date_time` = \'2018-08-13 23:00:11\' \n , `cde_last_update_by` = \'1\' \nWHERE `cde_code_ID` = 25<hr>Unknown column \'cde_option_label\' in \'field list\''),
+	(127, 1, '::1', '2018-08-13 23:00:29', 'codes', '25', 'UPDATE RECORD', 'cde_table_field = \'products#prd_sub_type_code_ID\'\r\ncde_option_values = \'Machine#Consumables#Spare Parts\'\r\ncde_option_label = \'For Type\'\r\n`cde_last_update_date_time` = \'2018-08-13 23:00:29\'\n`cde_last_update_by` = \'1\'\n', 'cde_table_field = \'\'\r\ncde_option_values = \'\'\r\ncde_option_label = \'\'\r\n`cde_last_update_date_time` = \'\'\n`cde_last_update_by` = \'\'\n', 'UPDATE `codes` SET \n`cde_table_field` = \'products#prd_sub_type_code_ID\' \n, `cde_option_values` = \'Machine#Consumables#Spare Parts\' \n, `cde_option_label` = \'For Type\' \n , `cde_last_update_date_time` = \'2018-08-13 23:00:29\' \n , `cde_last_update_by` = \'1\' \nWHERE `cde_code_ID` = 25'),
+	(128, 1, '::1', '2018-08-13 23:03:56', 'codes', '27', 'INSERT RECORD', 'cde_type = ProductsSubType \r\ncde_value_label = Products SubType \r\ncde_value = test \r\ncde_value_label_2 =  \r\ncde_option_values = pp \r\n`cde_created_date_time` = \'2018-08-13 23:03:56\'\n`cde_created_by` = \'1\'\n', '', 'INSERT INTO `codes` SET \n`cde_type` = \'ProductsSubType\' \n , `cde_value_label` = \'Products SubType\' \n , `cde_value` = \'test\' \n , `cde_value_label_2` = \'\' \n , `cde_option_values` = \'pp\' \n , `cde_created_date_time` = \'2018-08-13 23:03:56\' \n , `cde_created_by` = \'1\' \n'),
+	(129, 1, '::1', '2018-08-13 23:39:58', 'codes', '27', 'UPDATE RECORD', 'cde_option_values = \'Consumables\'\r\n`cde_last_update_date_time` = \'2018-08-13 23:39:58\'\n`cde_last_update_by` = \'1\'\n', 'cde_option_values = \'pp\'\r\n`cde_last_update_date_time` = \'\'\n`cde_last_update_by` = \'\'\n', 'UPDATE `codes` SET \n`cde_option_values` = \'Consumables\' \n , `cde_last_update_date_time` = \'2018-08-13 23:39:58\' \n , `cde_last_update_by` = \'1\' \nWHERE `cde_code_ID` = 27'),
+	(130, 1, '::1', '2018-08-13 23:40:03', 'codes', '27', 'UPDATE RECORD', 'cde_option_values = \'Spare Parts\'\r\n`cde_last_update_date_time` = \'2018-08-13 23:40:03\'\n`cde_last_update_by` = \'1\'\n', 'cde_option_values = \'Consumables\'\r\n`cde_last_update_date_time` = \'2018-08-13 23:39:58\'\n`cde_last_update_by` = \'1\'\n', 'UPDATE `codes` SET \n`cde_option_values` = \'Spare Parts\' \n , `cde_last_update_date_time` = \'2018-08-13 23:40:03\' \n , `cde_last_update_by` = \'1\' \nWHERE `cde_code_ID` = 27'),
+	(131, 1, '::1', '2018-08-13 23:41:01', 'codes', '27', 'UPDATE RECORD', 'cde_value = \'MultiFunction\'\r\ncde_option_values = \'Machine\'\r\n`cde_last_update_date_time` = \'2018-08-13 23:41:01\'\n`cde_last_update_by` = \'1\'\n', 'cde_value = \'test\'\r\ncde_option_values = \'Spare Parts\'\r\n`cde_last_update_date_time` = \'2018-08-13 23:40:03\'\n`cde_last_update_by` = \'1\'\n', 'UPDATE `codes` SET \n`cde_value` = \'MultiFunction\' \n, `cde_option_values` = \'Machine\' \n , `cde_last_update_date_time` = \'2018-08-13 23:41:01\' \n , `cde_last_update_by` = \'1\' \nWHERE `cde_code_ID` = 27'),
+	(132, 1, '::1', '2018-08-13 23:42:18', 'Error', '0', 'Codes Modify Section:', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n    [lid] => 27\n    [codeSelection] => ProductsSubType\n)\n\\n$_POST->Array\n(\n    [fld_value_label] => Products SubType\n    [fld_value] => MultiFunction\n    [fld_value_label_2] => \n    [fld_option_values] => Machine\n    [action] => update\n    [lid] => 27\n    [codeSelection] => ProductsSubType\n)\n', 'UPDATE `codes` SET \n`cde_option_values` = \'Machine\' \n , `cde_last_update_date_time` = \'2018-08-13 23:42:18\' \n , `cde_last_update_by` = \'1\' \nWHERE `cde_code_ID` = 27<hr>Unknown column \'cde_option_values\' in \'field list\''),
+	(133, 1, '::1', '2018-08-13 23:45:21', 'codes', '28', 'INSERT RECORD', 'cde_type = ProductsSubType \r\ncde_value_label = Products SubType \r\ncde_value = Printer \r\ncde_value_label_2 =  \r\ncde_option_value = Machine \r\n`cde_created_date_time` = \'2018-08-13 23:45:21\'\n`cde_created_by` = \'1\'\n', '', 'INSERT INTO `codes` SET \n`cde_type` = \'ProductsSubType\' \n , `cde_value_label` = \'Products SubType\' \n , `cde_value` = \'Printer\' \n , `cde_value_label_2` = \'\' \n , `cde_option_value` = \'Machine\' \n , `cde_created_date_time` = \'2018-08-13 23:45:21\' \n , `cde_created_by` = \'1\' \n'),
+	(134, 1, '::1', '2018-08-13 23:45:30', 'codes', '29', 'INSERT RECORD', 'cde_type = ProductsSubType \r\ncde_value_label = Products SubType \r\ncde_value = Toners \r\ncde_value_label_2 =  \r\ncde_option_value = Consumables \r\n`cde_created_date_time` = \'2018-08-13 23:45:30\'\n`cde_created_by` = \'1\'\n', '', 'INSERT INTO `codes` SET \n`cde_type` = \'ProductsSubType\' \n , `cde_value_label` = \'Products SubType\' \n , `cde_value` = \'Toners\' \n , `cde_value_label_2` = \'\' \n , `cde_option_value` = \'Consumables\' \n , `cde_created_date_time` = \'2018-08-13 23:45:30\' \n , `cde_created_by` = \'1\' \n'),
+	(135, 1, '::1', '2018-08-13 23:45:39', 'codes', '30', 'INSERT RECORD', 'cde_type = ProductsSubType \r\ncde_value_label = Products SubType \r\ncde_value = Waste Box \r\ncde_value_label_2 =  \r\ncde_option_value = Consumables \r\n`cde_created_date_time` = \'2018-08-13 23:45:39\'\n`cde_created_by` = \'1\'\n', '', 'INSERT INTO `codes` SET \n`cde_type` = \'ProductsSubType\' \n , `cde_value_label` = \'Products SubType\' \n , `cde_value` = \'Waste Box\' \n , `cde_value_label_2` = \'\' \n , `cde_option_value` = \'Consumables\' \n , `cde_created_date_time` = \'2018-08-13 23:45:39\' \n , `cde_created_by` = \'1\' \n'),
+	(136, 1, '::1', '2018-08-13 23:45:48', 'codes', '31', 'INSERT RECORD', 'cde_type = ProductsSubType \r\ncde_value_label = Products SubType \r\ncde_value = Stables \r\ncde_value_label_2 =  \r\ncde_option_value = Consumables \r\n`cde_created_date_time` = \'2018-08-13 23:45:48\'\n`cde_created_by` = \'1\'\n', '', 'INSERT INTO `codes` SET \n`cde_type` = \'ProductsSubType\' \n , `cde_value_label` = \'Products SubType\' \n , `cde_value` = \'Stables\' \n , `cde_value_label_2` = \'\' \n , `cde_option_value` = \'Consumables\' \n , `cde_created_date_time` = \'2018-08-13 23:45:48\' \n , `cde_created_by` = \'1\' \n'),
+	(137, 1, '::1', '2018-08-13 23:45:58', 'codes', '32', 'INSERT RECORD', 'cde_type = ProductsSubType \r\ncde_value_label = Products SubType \r\ncde_value = Developers \r\ncde_value_label_2 =  \r\ncde_option_value = Consumables \r\n`cde_created_date_time` = \'2018-08-13 23:45:58\'\n`cde_created_by` = \'1\'\n', '', 'INSERT INTO `codes` SET \n`cde_type` = \'ProductsSubType\' \n , `cde_value_label` = \'Products SubType\' \n , `cde_value` = \'Developers\' \n , `cde_value_label_2` = \'\' \n , `cde_option_value` = \'Consumables\' \n , `cde_created_date_time` = \'2018-08-13 23:45:58\' \n , `cde_created_by` = \'1\' \n'),
+	(138, 1, '::1', '2018-08-13 23:46:06', 'codes', '33', 'INSERT RECORD', 'cde_type = ProductsSubType \r\ncde_value_label = Products SubType \r\ncde_value = Drums \r\ncde_value_label_2 =  \r\ncde_option_value = Consumables \r\n`cde_created_date_time` = \'2018-08-13 23:46:06\'\n`cde_created_by` = \'1\'\n', '', 'INSERT INTO `codes` SET \n`cde_type` = \'ProductsSubType\' \n , `cde_value_label` = \'Products SubType\' \n , `cde_value` = \'Drums\' \n , `cde_value_label_2` = \'\' \n , `cde_option_value` = \'Consumables\' \n , `cde_created_date_time` = \'2018-08-13 23:46:06\' \n , `cde_created_by` = \'1\' \n'),
+	(139, 1, '::1', '2018-08-13 23:46:19', 'codes', '34', 'INSERT RECORD', 'cde_type = ProductsSubType \r\ncde_value_label = Products SubType \r\ncde_value = CL.Blades \r\ncde_value_label_2 =  \r\ncde_option_value = Consumables \r\n`cde_created_date_time` = \'2018-08-13 23:46:19\'\n`cde_created_by` = \'1\'\n', '', 'INSERT INTO `codes` SET \n`cde_type` = \'ProductsSubType\' \n , `cde_value_label` = \'Products SubType\' \n , `cde_value` = \'CL.Blades\' \n , `cde_value_label_2` = \'\' \n , `cde_option_value` = \'Consumables\' \n , `cde_created_date_time` = \'2018-08-13 23:46:19\' \n , `cde_created_by` = \'1\' \n'),
+	(140, 1, '::1', '2018-08-13 23:46:35', 'codes', '35', 'INSERT RECORD', 'cde_type = ProductsSubType \r\ncde_value_label = Products SubType \r\ncde_value = Heat Rollers/Belts \r\ncde_value_label_2 =  \r\ncde_option_value = Consumables \r\n`cde_created_date_time` = \'2018-08-13 23:46:35\'\n`cde_created_by` = \'1\'\n', '', 'INSERT INTO `codes` SET \n`cde_type` = \'ProductsSubType\' \n , `cde_value_label` = \'Products SubType\' \n , `cde_value` = \'Heat Rollers/Belts\' \n , `cde_value_label_2` = \'\' \n , `cde_option_value` = \'Consumables\' \n , `cde_created_date_time` = \'2018-08-13 23:46:35\' \n , `cde_created_by` = \'1\' \n'),
+	(141, 1, '::1', '2018-08-13 23:46:45', 'codes', '36', 'INSERT RECORD', 'cde_type = ProductsSubType \r\ncde_value_label = Products SubType \r\ncde_value = Press Rollers \r\ncde_value_label_2 =  \r\ncde_option_value = Consumables \r\n`cde_created_date_time` = \'2018-08-13 23:46:45\'\n`cde_created_by` = \'1\'\n', '', 'INSERT INTO `codes` SET \n`cde_type` = \'ProductsSubType\' \n , `cde_value_label` = \'Products SubType\' \n , `cde_value` = \'Press Rollers\' \n , `cde_value_label_2` = \'\' \n , `cde_option_value` = \'Consumables\' \n , `cde_created_date_time` = \'2018-08-13 23:46:45\' \n , `cde_created_by` = \'1\' \n'),
+	(142, 1, '::1', '2018-08-13 23:46:54', 'codes', '37', 'INSERT RECORD', 'cde_type = ProductsSubType \r\ncde_value_label = Products SubType \r\ncde_value = Feed Rollers \r\ncde_value_label_2 =  \r\ncde_option_value = Consumables \r\n`cde_created_date_time` = \'2018-08-13 23:46:54\'\n`cde_created_by` = \'1\'\n', '', 'INSERT INTO `codes` SET \n`cde_type` = \'ProductsSubType\' \n , `cde_value_label` = \'Products SubType\' \n , `cde_value` = \'Feed Rollers\' \n , `cde_value_label_2` = \'\' \n , `cde_option_value` = \'Consumables\' \n , `cde_created_date_time` = \'2018-08-13 23:46:54\' \n , `cde_created_by` = \'1\' \n'),
+	(143, 1, '::1', '2018-08-13 23:47:05', 'codes', '38', 'INSERT RECORD', 'cde_type = ProductsSubType \r\ncde_value_label = Products SubType \r\ncde_value = Maintenance Kits \r\ncde_value_label_2 =  \r\ncde_option_value = Consumables \r\n`cde_created_date_time` = \'2018-08-13 23:47:05\'\n`cde_created_by` = \'1\'\n', '', 'INSERT INTO `codes` SET \n`cde_type` = \'ProductsSubType\' \n , `cde_value_label` = \'Products SubType\' \n , `cde_value` = \'Maintenance Kits\' \n , `cde_value_label_2` = \'\' \n , `cde_option_value` = \'Consumables\' \n , `cde_created_date_time` = \'2018-08-13 23:47:05\' \n , `cde_created_by` = \'1\' \n'),
+	(144, 1, '::1', '2018-08-13 23:47:14', 'codes', '39', 'INSERT RECORD', 'cde_type = ProductsSubType \r\ncde_value_label = Products SubType \r\ncde_value = Spare Parts \r\ncde_value_label_2 =  \r\ncde_option_value = Spare Parts \r\n`cde_created_date_time` = \'2018-08-13 23:47:14\'\n`cde_created_by` = \'1\'\n', '', 'INSERT INTO `codes` SET \n`cde_type` = \'ProductsSubType\' \n , `cde_value_label` = \'Products SubType\' \n , `cde_value` = \'Spare Parts\' \n , `cde_value_label_2` = \'\' \n , `cde_option_value` = \'Spare Parts\' \n , `cde_created_date_time` = \'2018-08-13 23:47:14\' \n , `cde_created_by` = \'1\' \n'),
+	(145, 1, '::1', '2018-08-14 00:11:40', 'Error', '0', 'Products Modify Section:', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n    [lid] => 1\n)\n\\n$_POST->Array\n(\n)\n', 'SELECT * FROM code WHERE cde_type = \'ProductsSubType\' ORDER BY cde_option_value ASC<hr>Table \'reprodata.code\' doesn\'t exist'),
+	(146, 1, '::1', '2018-08-14 00:12:23', 'products', '1', 'UPDATE RECORD', 'prd_sub_type = \'MultiFunction\'\r\n`prd_last_update_date_time` = \'2018-08-14 0:12:23\'\n`prd_last_update_by` = \'1\'\n', 'prd_sub_type = \'\'\r\n`prd_last_update_date_time` = \'2018-08-12 19:39:25\'\n`prd_last_update_by` = \'1\'\n', 'UPDATE `products` SET \n`prd_sub_type` = \'MultiFunction\' \n , `prd_last_update_date_time` = \'2018-08-14 0:12:23\' \n , `prd_last_update_by` = \'1\' \nWHERE `prd_product_ID` = 1'),
+	(147, 1, '::1', '2018-08-14 00:32:44', 'products', '1', 'UPDATE RECORD', 'prd_sub_type = \'Printer\'\r\n`prd_last_update_date_time` = \'2018-08-14 0:32:44\'\n`prd_last_update_by` = \'1\'\n', 'prd_sub_type = \'MultiFunction\'\r\n`prd_last_update_date_time` = \'2018-08-14 00:12:23\'\n`prd_last_update_by` = \'1\'\n', 'UPDATE `products` SET \n`prd_sub_type` = \'Printer\' \n , `prd_last_update_date_time` = \'2018-08-14 0:32:44\' \n , `prd_last_update_by` = \'1\' \nWHERE `prd_product_ID` = 1');
 /*!40000 ALTER TABLE `log_file` ENABLE KEYS */;
 
 -- Dumping structure for table reprodata.manufacturers
@@ -397,6 +438,7 @@ CREATE TABLE IF NOT EXISTS `products` (
   `prd_manufacturer_ID` int(8) DEFAULT NULL,
   `prd_active` int(1) DEFAULT NULL,
   `prd_type` varchar(20) COLLATE utf8_bin DEFAULT NULL,
+  `prd_sub_type` varchar(20) COLLATE utf8_bin DEFAULT NULL,
   `prd_size` varchar(20) COLLATE utf8_bin DEFAULT '0',
   `prd_color` varchar(20) COLLATE utf8_bin DEFAULT '0',
   `prd_code` varchar(20) COLLATE utf8_bin NOT NULL DEFAULT '0',
@@ -414,13 +456,13 @@ CREATE TABLE IF NOT EXISTS `products` (
 
 -- Dumping data for table reprodata.products: ~6 rows (approximately)
 /*!40000 ALTER TABLE `products` DISABLE KEYS */;
-INSERT INTO `products` (`prd_product_ID`, `prd_manufacturer_ID`, `prd_active`, `prd_type`, `prd_size`, `prd_color`, `prd_code`, `prd_bar_code`, `prd_name`, `prd_description`, `prd_current_stock`, `prd_stock_last_update`, `prd_created_date_time`, `prd_created_by`, `prd_last_update_date_time`, `prd_last_update_by`) VALUES
-	(1, 1, 1, 'Machine', 'A4', 'Black', 'LP 3130', '', 'LP 3130', '', 15, NULL, '2018-08-09 17:54:51', 1, '2018-08-12 19:39:25', 1),
-	(2, 1, 1, 'SparePart', 'A4', 'Black', 'Developer Unit', '', 'Developer Unit', 'Developer Unit', 0, NULL, '2018-08-10 09:09:49', 1, '2018-08-11 09:39:24', 1),
-	(3, 1, 1, 'Machine', 'A4', 'Black', 'LP 3035', '', 'LP 3035', 'LP 3035', 0, NULL, '2018-08-10 09:10:56', 1, '2018-08-11 09:39:33', 1),
-	(4, 1, 1, 'Consumable', 'A4', 'Black', 'TK-160/162', '', 'TK-160/162', '', 0, NULL, '2018-08-10 11:26:36', 1, '2018-08-11 09:39:40', 1),
-	(5, 1, 1, 'Consumable', 'A4', 'Color', 'Yellow', '', 'Yellow', '', 0, NULL, '2018-08-11 12:41:46', 1, NULL, NULL),
-	(7, 1, 1, 'Consumable', 'A4', 'Color', 'Magenta', '', 'Magenta', '', 0, NULL, '2018-08-11 12:43:06', 1, NULL, NULL);
+INSERT INTO `products` (`prd_product_ID`, `prd_manufacturer_ID`, `prd_active`, `prd_type`, `prd_sub_type`, `prd_size`, `prd_color`, `prd_code`, `prd_bar_code`, `prd_name`, `prd_description`, `prd_current_stock`, `prd_stock_last_update`, `prd_created_date_time`, `prd_created_by`, `prd_last_update_date_time`, `prd_last_update_by`) VALUES
+	(1, 1, 1, 'Machine', 'Printer', 'A4', 'Black', 'LP 3130', '', 'LP 3130', '', 15, NULL, '2018-08-09 17:54:51', 1, '2018-08-14 00:32:44', 1),
+	(2, 1, 1, 'SparePart', NULL, 'A4', 'Black', 'Developer Unit', '', 'Developer Unit', 'Developer Unit', 0, NULL, '2018-08-10 09:09:49', 1, '2018-08-11 09:39:24', 1),
+	(3, 1, 1, 'Machine', NULL, 'A4', 'Black', 'LP 3035', '', 'LP 3035', 'LP 3035', 0, NULL, '2018-08-10 09:10:56', 1, '2018-08-11 09:39:33', 1),
+	(4, 1, 1, 'Consumable', NULL, 'A4', 'Black', 'TK-160/162', '', 'TK-160/162', '', 0, NULL, '2018-08-10 11:26:36', 1, '2018-08-11 09:39:40', 1),
+	(5, 1, 1, 'Consumable', NULL, 'A4', 'Color', 'Yellow', '', 'Yellow', '', 0, NULL, '2018-08-11 12:41:46', 1, NULL, NULL),
+	(7, 1, 1, 'Consumable', NULL, 'A4', 'Color', 'Magenta', '', 'Magenta', '', 0, NULL, '2018-08-11 12:43:06', 1, NULL, NULL);
 /*!40000 ALTER TABLE `products` ENABLE KEYS */;
 
 -- Dumping structure for table reprodata.product_relations
@@ -527,13 +569,14 @@ CREATE TABLE IF NOT EXISTS `stock` (
   `stk_last_update_date_time` datetime DEFAULT NULL,
   `stk_last_update_by` int(8) DEFAULT NULL,
   PRIMARY KEY (`stk_stock_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- Dumping data for table reprodata.stock: ~2 rows (approximately)
+-- Dumping data for table reprodata.stock: ~4 rows (approximately)
 /*!40000 ALTER TABLE `stock` DISABLE KEYS */;
 INSERT INTO `stock` (`stk_stock_ID`, `stk_product_ID`, `stk_type`, `stk_description`, `stk_status`, `stk_add_minus`, `stk_amount`, `stk_date_time`, `stk_month`, `stk_year`, `stk_created_date_time`, `stk_created_by`, `stk_last_update_date_time`, `stk_last_update_by`) VALUES
 	(1, 1, 'transaction', 'Initial', 'Pending', 1, 10, '2018-08-12 19:37:35', 8, 2018, NULL, NULL, NULL, NULL),
-	(2, 1, 'transaction', 'Transaction', 'Pending', 1, 5, '2018-08-12 19:39:24', 8, 2018, '2018-08-12 19:39:24', 1, NULL, NULL);
+	(2, 1, 'transaction', 'Transaction', 'Pending', 1, 5, '2018-08-12 19:39:24', 8, 2018, '2018-08-12 19:39:24', 1, NULL, NULL),
+	(6, 1, 'transaction', 'Initial', 'Pending', 1, 1, '2018-08-13 22:34:51', 8, 2018, '2018-08-13 22:34:51', 1, NULL, NULL);
 /*!40000 ALTER TABLE `stock` ENABLE KEYS */;
 
 -- Dumping structure for table reprodata.users

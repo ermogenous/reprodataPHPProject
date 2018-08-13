@@ -129,6 +129,7 @@ $db->show_header();
                             <div class="col-sm-8">
                                 <select name="fld_type" id="fld_type"
                                         class="form-control"
+                                        onchange="fillSubType('<?php echo $data['prd_sub_type'];?>');"
                                         required>
                                     <option value="" <?php if ($data['prd_type'] == '') echo 'selected'; ?>></option>
                                     <option value="Machine" <?php if ($data['prd_type'] == 'Machine') echo 'selected'; ?>>
@@ -147,6 +148,84 @@ $db->show_header();
                             </div>
                         </div>
 
+                        <div class="form-group row">
+                            <label for="fld_sub_type" class="col-sm-4 col-form-label">Product Sub Type</label>
+                            <div class="col-sm-8">
+                                <select name="fld_sub_type" id="fld_sub_type"
+                                        class="form-control"
+                                        required>
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
+<script>
+
+    function fillSubType(currentValue = ''){
+        <?php //get values from codes
+            $res = $db->query("SELECT * FROM codes WHERE cde_type = 'ProductsSubType' ORDER BY cde_option_value ASC");
+            $machinesTotal = 0;
+            $consumablesTotal = 0;
+            $sparePartsTotal = 0;
+            while ($code = $db->fetch_assoc($res)){
+                if ($code['cde_option_value'] == 'Machine'){
+                    $machines .= "'".$code['cde_value']."',";
+                    $machinesTotal++;
+                }
+                if ($code['cde_option_value'] == 'Consumables'){
+                    $consumables .= "'".$code['cde_value']."',";
+                    $consumablesTotal++;
+                }
+                if ($code['cde_option_value'] == 'Spare Parts'){
+                    $spareParts .= "'".$code['cde_value']."',";
+                    $sparePartsTotal++;
+                }
+            }
+            $machines = $db->remove_last_char($machines);
+            $consumables = $db->remove_last_char($consumables);
+            $spareParts = $db->remove_last_char($spareParts);
+
+            echo "var machines = new Array('',".$machines.");\n";
+            echo "var consumables = new Array('',".$consumables.");\n";
+            echo "var spareParts = new Array('',".$spareParts.");";
+            echo "var machinesTotal = ".$machinesTotal.";";
+            echo "var consumablesTotal = ".$consumablesTotal.";";
+            echo "var sparePartsTotal = ".$sparePartsTotal.";";
+
+        ?>
+        var type = $('#fld_type').val();
+        if (type == 'Machine'){
+            var values = machines;
+            var total = machinesTotal;
+        }
+        else if(type == 'Consumable'){
+            var values = consumables;
+            var total = consumablesTotal;
+        }
+        else if(type == 'SparePart'){
+            var values = spareParts;
+            var total = sparePartsTotal;
+        }
+
+        var listItems = '';
+
+        $.each(values, function(key, value){
+            if (currentValue == value || total == 1) {
+                listItems += '<option value=' + value + ' selected>' + value + '</option>';
+            }
+            else {
+                listItems += '<option value=' + value + '>' + value + '</option>';
+            }
+
+        });
+        $('#fld_sub_type').empty();
+        $('#fld_sub_type').append(listItems);
+    }
+
+    <?php if ($_GET["lid"] != ""){
+        echo "fillSubType('".$data['prd_sub_type']."');";
+    }
+    ?>
+</script>
                         <div class="form-group row">
                             <label for="fld_size" class="col-sm-4 col-form-label">Size</label>
                             <div class="col-sm-8">

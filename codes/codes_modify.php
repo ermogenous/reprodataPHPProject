@@ -121,7 +121,7 @@ $db->show_header();
                     </div>
                     <div class="form-group row">
 
-                        <label for="name" class="col-sm-4 col-form-label">Value Label</label>
+                        <label for="fld_value_label" class="col-sm-4 col-form-label">Value Label</label>
                         <div class="col-sm-8">
 
                             <input name="fld_value_label" type="text" id="fld_value_label"
@@ -130,6 +130,32 @@ $db->show_header();
 
                         </div>
                     </div>
+
+                    <div class="form-group row">
+
+                        <label for="fld_option_values" class="col-sm-4 col-form-label">Options Values</label>
+                        <div class="col-sm-8">
+
+                            <input name="fld_option_values" type="text" id="fld_option_values"
+                                   class="form-control"
+                                   value="<?php echo $data["cde_option_value"]; ?>">
+                            Separate by #
+
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+
+                        <label for="fld_option_label" class="col-sm-4 col-form-label">Options Label</label>
+                        <div class="col-sm-8">
+
+                            <input name="fld_option_label" type="text" id="fld_option_label"
+                                   class="form-control"
+                                   value="<?php echo $data["cde_option_label"]; ?>">
+
+                        </div>
+                    </div>
+
                 <?php } else { ?>
                     <input type="hidden" name="fld_value_label" id="fld_value_label"
                            value="<?php echo $codeLabels['cde_value_label']; ?>">
@@ -171,7 +197,28 @@ $db->show_header();
                                    value="<?php echo $data["cde_value_2"]; ?>">
                         </div>
                     </div>
+                <?php }
+                if ($_GET['codeSelection'] != 'code') {?>
+                    <div class="form-group row">
+                        <label for="fld_option_value"
+                               class="col-sm-4 col-form-label"><?php echo $codeLabels['cde_option_label']; ?></label>
+                        <div class="col-sm-8">
+                            <select name="fld_option_value" id="fld_option_value"
+                                    class="form-control"
+                                    required>
+                            <?php echo $data["cde_option_value"]; ?>
+
+                                <?php
+                                    $options = explode("#",$codeLabels['cde_option_value']);
+                                    foreach ($options as $value){
+                                ?>
+                                <option value="<?php echo $value;?>" <?php if($value == $data['cde_option_value']) echo 'selected';?>><?php echo $value;?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
                 <?php } ?>
+
 
 
                 <div class="form-group row">

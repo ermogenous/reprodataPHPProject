@@ -82,6 +82,9 @@ if ($_GET['search_code'] == 'search') {
                         <th scope="col"><?php $table->display_order_links('ID', 'cde_code_ID'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Name', 'cde_value_label'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Value', 'cde_value'); ?></th>
+                        <?php if ($_GET['type'] != 'code') { ?>
+                        <th scope="col"><?php $table->display_order_links('Option', 'cde_option_value'); ?></th>
+                        <?php } ?>
                         <th scope="col">
                             <a href="codes_modify.php?codeSelection=<?php echo $codeSelection; ?>">
                                 <i class="fas fa-plus-circle"></i>
@@ -97,6 +100,9 @@ if ($_GET['search_code'] == 'search') {
                             <th scope="row"><?php echo $row["cde_code_ID"]; ?></th>
                             <td><?php echo $row["cde_value_label"]; ?></td>
                             <td><?php echo $row["cde_value"]; ?></td>
+                            <?php if ($_GET['type'] != 'code') { ?>
+                            <td><?php echo $row["cde_option_value"]; ?></td>
+                            <?php } ?>
                             <td>
                                 <a href="codes_modify.php?lid=<?php echo $row["cde_code_ID"]; ?>&codeSelection=<?php echo $codeSelection; ?>"><i
                                             class="fas fa-edit"></i></a>&nbsp

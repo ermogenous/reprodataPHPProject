@@ -66,6 +66,9 @@ class Main
 //settings array
     var $settings;
 
+//errors
+    var $working_section;
+
 //login 1 -> normal permissions.
 //login 0 does not login but all else works.
 //login -1 ignores the settings. this is to use superclass with a database that does not have the settings table.
@@ -530,6 +533,13 @@ class Main
         $this->query("ROLLBACK;");
     }
 
+    public function throwException($exception){
+        //first rollback
+        $this->rollback_transaction();
+        //add error in db
+        $this->update_log_file('error',0, $this->admin_title,'','',$exception);
+    }
+
     public function update_table_data($table, $prefix, $action, $update_sql = '')
     {
 
@@ -618,6 +628,10 @@ class Main
             $this->rollback_transaction();
             $this->issued_rollback = 1;
         }
+
+        $this->update_log_file('Error',0,$this->admin_title.' Section:'.$this->working_section,
+            'User[ID]:'.$this->user_data['usr_name'].'['.$this->user_data['usr_users_ID'].']',
+            '$_GET->'.print_r($_GET,true).'\n$_POST->'.print_r($_POST,true),$string);
 
         if ($this->user_data["user_rights"] == 0) {
             //$this->show_header();

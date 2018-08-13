@@ -63,13 +63,16 @@ class Stock {
         $stock['date_time'] = date('Y-m-d G:i:s');
         $stock['month'] = date('m');
         $stock['year'] = date('Y');
-        $this->newStockRowID = $db->db_tool_insert_row('stock',$stock,'',1,'stk_');
+        $db->start_transaction();
+        $this->newStockRowID = $db->db_tool_insert_row('stock', $stock, '', 1, 'stk_');
 
         //update product
         $product['current_stock'] = $this->productData['prd_current_stock'] + $amount;
         $product['stock_last_update'] = date('Y-m-d G:i:s');
-        $db->db_tool_update_row('products',$product,'prd_product_ID = '.$this->productID, $this->productID,'','execute', 'prd_');
+        $db->working_section = 'Update product@addRemoveStock';
+        $db->db_tool_update_row('product', $product, 'prd_product_ID = ' . $this->productID, $this->productID, '', 'execute', 'prd_');
 
+        $db->commit_transaction();
     }
 
     public function checkForErrors(){
