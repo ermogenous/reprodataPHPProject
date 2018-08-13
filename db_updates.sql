@@ -125,3 +125,6 @@ ALTER TABLE `codes`
 	ADD COLUMN `cde_created_by` INT(8) NULL DEFAULT NULL AFTER `cde_created_date_time`,
 	ADD COLUMN `cde_last_update_date_time` DATETIME NULL DEFAULT NULL AFTER `cde_created_by`,
 	ADD COLUMN `cde_last_update_by` INT(8) NULL DEFAULT NULL AFTER `cde_last_update_date_time`;
+	
+ALTER TABLE `codes`
+ADD COLUMN `cde_option_values`  varchar(255) NULL AFTER `cde_value_label_2`;
