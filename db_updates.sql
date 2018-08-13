@@ -70,7 +70,7 @@ ALTER TABLE `customers`
 */
 
 //11/8/2018
-
+/*
 ALTER TABLE `products`
 	ADD COLUMN `prd_size` VARCHAR(20) NULL DEFAULT '0' AFTER `prd_type`,
 	ADD COLUMN `prd_color` VARCHAR(20) NULL DEFAULT '0' AFTER `prd_size`,
@@ -129,4 +129,4 @@ ALTER TABLE `codes`
 ALTER TABLE `codes`
 ADD COLUMN `cde_option_values`  varchar(255) NULL AFTER `cde_value_label_2`;
 
-//test
+*/
