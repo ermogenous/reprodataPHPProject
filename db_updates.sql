@@ -75,3 +75,6 @@ ALTER TABLE `products`
 	ADD COLUMN `prd_size` VARCHAR(20) NULL DEFAULT '0' AFTER `prd_type`,
 	ADD COLUMN `prd_color` VARCHAR(20) NULL DEFAULT '0' AFTER `prd_size`,
 	CHANGE COLUMN `prd_code` `prd_code` VARCHAR(20) NOT NULL DEFAULT '0' COLLATE 'utf8_bin' AFTER `prd_color`;
+
+ALTER TABLE `codes`
+ADD COLUMN `cde_option_values`  varchar(255) NULL AFTER `cde_value_label_2`;
