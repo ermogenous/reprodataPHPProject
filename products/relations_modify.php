@@ -19,12 +19,14 @@ if ($db->user_data["usr_user_rights"] > 0) {
 }
 
 if ($_POST["action"] == "insert") {
+    $db->check_restriction_area('insert');
 
     $db->db_tool_insert_row('product_relations', $_POST, 'fld_', 0, 'prdr_');
     header("Location: relations.php?lid=" . $_POST['pid'] . "&type=" . $_POST['type'] . "&area=" . $_POST['area']);
     exit();
 
 } else if ($_POST["action"] == "update") {
+    $db->check_restriction_area('update');
 
     $db->db_tool_update_row('product_relations', $_POST, "`prdr_product_relations_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'prdr_');
@@ -62,7 +64,8 @@ $db->show_empty_header();
                             required>
                         <option value=""></option>
                         <?php
-                        $prdResult = $db->query("SELECT * FROM products WHERE prd_type = 'Consumable' ORDER BY prd_code ASC");
+                        $sql = getQueryMachine($_GET['pid'],'Consumable');
+                        $prdResult = $db->query($sql);
                         while ($prd = $db->fetch_assoc($prdResult)) {
 
                             ?>
@@ -86,7 +89,8 @@ $db->show_empty_header();
                             required>
                         <option value=""></option>
                         <?php
-                        $prdResult = $db->query("SELECT * FROM products WHERE prd_type = 'SparePart' ORDER BY prd_code ASC");
+                        $sql = getQueryMachine($_GET['pid'],'SparePart');
+                        $prdResult = $db->query($sql);
                         while ($prd = $db->fetch_assoc($prdResult)) {
 
                             ?>
@@ -110,7 +114,8 @@ $db->show_empty_header();
                             required>
                         <option value=""></option>
                         <?php
-                        $prdResult = $db->query("SELECT * FROM products WHERE prd_type = 'Machine' ORDER BY prd_code ASC");
+                        $sql = getQueryNotMachine($_GET['pid'],'Consumable');
+                        $prdResult = $db->query($sql);
                         while ($prd = $db->fetch_assoc($prdResult)) {
 
                             ?>
@@ -134,7 +139,8 @@ $db->show_empty_header();
                             required>
                         <option value=""></option>
                         <?php
-                        $prdResult = $db->query("SELECT * FROM products WHERE prd_type = 'Machine' ORDER BY prd_code ASC");
+                        $sql = getQueryNotMachine($_GET['pid'],'SparePart');
+                        $prdResult = $db->query($sql);
                         while ($prd = $db->fetch_assoc($prdResult)) {
 
                             ?>
@@ -164,7 +170,8 @@ $db->show_empty_header();
 
 
 
-
+                <input type="button" value="Back" class="btn btn-secondary"
+                       onclick="window.location.assign('relations.php?lid=<?php echo $_GET["pid"]."&type=".$_GET["type"]."&area=".$_GET["area"];?>')">
                 <input type="submit" name="Submit" id="Submit"
                        value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Relation"
                        class="btn btn-secondary" onclick="submitForm()">
@@ -187,4 +194,53 @@ $db->show_empty_header();
 
 <?php
 $db->show_empty_footer();
+
+function getQueryMachine($id, $type) {
+    global $db;
+    $sqlCheck = "SELECT * FROM product_relations WHERE prdr_child_type = '".$type."' AND prdr_product_parent_ID = ".$id;
+    $resultCheck = $db->query($sqlCheck);
+    $excluded = "AND (";
+    while ($prdr = $db->fetch_assoc($resultCheck)){
+        $excluded .= " prd_product_ID <> ".$prdr["prdr_product_child_ID"]." AND";
+    }
+    if ($excluded == "AND ("){
+        $excluded = '';
+    }
+    else {
+        $excluded = $db->remove_last_char($excluded);
+        $excluded = $db->remove_last_char($excluded);
+        $excluded = $db->remove_last_char($excluded);
+        $excluded = $excluded . ")";
+    }
+
+
+    $sql = "SELECT * FROM products WHERE prd_type = '".$type."' ".$excluded." ORDER BY prd_code ASC";
+    echo $sql;
+    return $sql;
+}
+
+function getQueryNotMachine($id, $type) {
+
+    global $db;
+    $sqlCheck = "SELECT * FROM product_relations WHERE prdr_child_type = '".$type."' AND prdr_product_child_ID = ".$id;
+    $resultCheck = $db->query($sqlCheck);
+    $excluded = "AND (";
+    while ($prdr = $db->fetch_assoc($resultCheck)){
+        $excluded .= " prd_product_ID <> ".$prdr["prdr_product_parent_ID"]." AND";
+    }
+    if ($excluded == "AND ("){
+        $excluded = '';
+    }
+    else {
+        $excluded = $db->remove_last_char($excluded);
+        $excluded = $db->remove_last_char($excluded);
+        $excluded = $db->remove_last_char($excluded);
+        $excluded = $excluded . ")";
+    }
+
+
+    $sql = "SELECT * FROM products WHERE prd_type = 'Machine' ".$excluded." ORDER BY prd_code ASC";
+    echo $sql;
+    return $sql;
+}
 ?>

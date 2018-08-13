@@ -52,7 +52,8 @@ $table->generate_data();
                             <a href="manufacturers_modify.php?lid=<?php echo $row["mnf_manufacturer_ID"]; ?>"><i
                                         class="fas fa-edit"></i></a>&nbsp
                             <a href="manufacturers_delete.php?lid=<?php echo $row["mnf_manufacturer_ID"]; ?>"
-                               onclick="return confirm('Are you sure you want to delete this manufacturers?');"><i
+                               onclick="ignoreEdit = true;
+                               return confirm('Are you sure you want to delete this manufacturer?');"><i
                                         class="fas fa-minus-circle"></i></a>
                         </td>
                     </tr>
@@ -67,8 +68,11 @@ $table->generate_data();
     </div>
 </div>
 <script>
+    var ignoreEdit = false;
     function editLine(id){
-        window.location.assign('manufacturers_modify.php?lid='+id);
+        if (ignoreEdit === false) {
+            window.location.assign('manufacturers_modify.php?lid=' + id);
+        }
     }
 </script>
 <?php

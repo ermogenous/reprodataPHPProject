@@ -19,12 +19,14 @@ if ($db->user_data["usr_user_rights"] > 0) {
 }
 
 if ($_POST["action"] == "insert") {
+    $db->check_restriction_area('insert');
 
     $db->db_tool_insert_row('codes', $_POST, 'fld_', 0, 'cde_');
     header("Location: codes.php?type=" . $_POST['codeSelection'] . "&search_code=search");
     exit();
 
 } else if ($_POST["action"] == "update") {
+    $db->check_restriction_area('update');
 
     $db->db_tool_update_row('codes', $_POST, "`cde_code_ID` = " . $_POST["lid"], $_POST["lid"], 'fld_', 'execute', 'cde_');
     header("Location: codes.php?type=" . $_POST['codeSelection'] . "&search_code=search");
@@ -88,14 +90,43 @@ $db->show_header();
                 if ($_GET['codeSelection'] == 'code') {
                     ?>
                     <div class="form-group row">
+                        <label for="fld_table_field"
+                               class="col-sm-4 col-form-label">Table#FieldName</label>
+                        <div class="col-sm-8">
+                            <input name="fld_table_field" type="text" id="fld_table_field"
+                                   class="form-control"
+                                   value="<?php echo $data["cde_table_field"]; ?>"
+                                   required>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="fld_table_field2"
+                               class="col-sm-4 col-form-label">Table#FieldName</label>
+                        <div class="col-sm-8">
+                            <input name="fld_table_field2" type="text" id="fld_table_field2"
+                                   class="form-control"
+                                   value="<?php echo $data["cde_table_field2"]; ?>">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="fld_table_field3"
+                               class="col-sm-4 col-form-label">Table#FieldName</label>
+                        <div class="col-sm-8">
+                            <input name="fld_table_field3" type="text" id="fld_table_field3"
+                                   class="form-control"
+                                   value="<?php echo $data["cde_table_field3"]; ?>">
+                        </div>
+                    </div>
+                    <div class="form-group row">
 
                         <label for="name" class="col-sm-4 col-form-label">Value Label</label>
                         <div class="col-sm-8">
 
                             <input name="fld_value_label" type="text" id="fld_value_label"
                                    class="form-control"
-                                   value="<?php echo $data["cde_value_label"]; ?>"
-                                   required>
+                                   value="<?php echo $data["cde_value_label"]; ?>">
 
                         </div>
                     </div>

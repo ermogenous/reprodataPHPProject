@@ -62,7 +62,7 @@ $table->generate_data();
                     <?php
                     while ($row = $table->fetch_data()) {
                         ?>
-                        <tr onclick="editRow(<?php echo $row["prdr_product_relations_ID"]; ?>);">
+                        <tr onclick="editLine(<?php echo $row["prdr_product_relations_ID"]; ?>);">
                             <th scope="row"><?php echo $row["prdr_product_relations_ID"]; ?></th>
                             <td><?php echo $row["prd_code"]; ?></td>
                             <td><?php echo $row["prd_name"]; ?></td>
@@ -70,7 +70,7 @@ $table->generate_data();
                                 <a href="relations_modify.php?lid=<?php echo $row["prdr_product_relations_ID"]; ?>&pid=<?php echo $_GET['lid'] . "&type=" . $_GET['type'] . "&area=" . $_GET['area']; ?>"><i
                                             class="fas fa-edit"></i></a>&nbsp
                                 <a href="relations_modify.php?lid=<?php echo $row["prdr_product_relations_ID"]; ?>&pid=<?php echo $_GET['lid'] . "&type=" . $_GET['type'] . "&area=" . $_GET['area']; ?>"
-                                   onclick="return confirm('Are you sure you want to delete this relation?');"><i
+                                   onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this relation?');"><i
                                             class="fas fa-minus-circle"></i></a>
                             </td>
                         </tr>
@@ -85,8 +85,12 @@ $table->generate_data();
     </div>
 </div>
 <script>
-    function editRow(id) {
-        window.location.assign('relations_modify.php?lid=' + id + '&pid=<?php echo $_GET['lid'] . "&type=" . $_GET['type'] . "&area=" . $_GET['area'];?>');
+    var ignoreEdit = false;
+
+    function editLine(id) {
+        if (ignoreEdit === false) {
+            window.location.assign('relations_modify.php?lid=' + id + '&pid=<?php echo $_GET['lid'] . "&type=" . $_GET['type'] . "&area=" . $_GET['area'];?>');
+        }
     }
 </script>
 

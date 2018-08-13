@@ -14,17 +14,23 @@ $db->admin_title = "Codes";
 
 $db->show_header();
 
-if ($_GET['search_code'] == 'search'){
+if ($_GET['search_code'] == 'search') {
     $table = new draw_table('codes', 'cde_code_ID', 'ASC');
-    $table->extras = "cde_type = '".$_GET['type']."'";
+    $table->extras = "cde_type = '" . $_GET['type'] . "'";
     $codeSelection = $_GET['type'];
     $table->generate_data();
-}
-else {
+} else {
+
 
     $table = new draw_table('codes', 'cde_code_ID', 'ASC');
     $table->extras = "cde_type = 'code'";
     $codeSelection = 'code';
+
+    //if not admin return empty sql
+    if($db->user_data['usr_user_rights'] > 0){
+        $table->extras = "1=2";
+    }
+
     $table->generate_data();
 }
 ?>
@@ -39,10 +45,13 @@ else {
                     <div class="col-9">
                         <select name="type" id="type"
                                 class="form-control">
+                            <?php if ($db->user_data['usr_user_rights'] == 0) { ?>
                             <option value="code" <?php if ($data['cde_type'] == 'code') echo 'selected'; ?>>Code
                             </option>
-
+                            <?php } else { ?>
+                                <option value="" <?php if ($data['cde_type'] == 'code') echo 'selected'; ?>></option>
                             <?php
+                            }
                             $sql = "SELECT * FROM codes WHERE cde_type = 'code' ORDER BY cde_value_label";
                             $result = $db->query($sql);
                             while ($codes = $db->fetch_assoc($result)) {
@@ -74,7 +83,7 @@ else {
                         <th scope="col"><?php $table->display_order_links('Name', 'cde_value_label'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Value', 'cde_value'); ?></th>
                         <th scope="col">
-                            <a href="codes_modify.php?codeSelection=<?php echo $codeSelection;?>">
+                            <a href="codes_modify.php?codeSelection=<?php echo $codeSelection; ?>">
                                 <i class="fas fa-plus-circle"></i>
                             </a>
                         </th>
@@ -82,20 +91,20 @@ else {
                     </thead>
                     <tbody>
                     <?php
-                        while ($row = $table->fetch_data()) {
-                    ?>
-                    <tr onclick="editLine(<?php echo $row["cde_code_ID"]; ?>)">
-                        <th scope="row"><?php echo $row["cde_code_ID"]; ?></th>
-                        <td><?php echo $row["cde_value_label"]; ?></td>
-                        <td><?php echo $row["cde_value"]; ?></td>
-                        <td>
-                            <a href="codes_modify.php?lid=<?php echo $row["cde_code_ID"]; ?>&codeSelection=<?php echo $codeSelection;?>"><i
-                                        class="fas fa-edit"></i></a>&nbsp
-                            <a href="codes_delete.php?lid=<?php echo $row["cde_code_ID"]; ?>&codeSelection=<?php echo $codeSelection;?>"
-                               onclick="return confirm('Are you sure you want to delete this code?');"><i
-                                        class="fas fa-minus-circle"></i></a>
-                        </td>
-                    </tr>
+                    while ($row = $table->fetch_data()) {
+                        ?>
+                        <tr onclick="editLine(<?php echo $row["cde_code_ID"]; ?>)">
+                            <th scope="row"><?php echo $row["cde_code_ID"]; ?></th>
+                            <td><?php echo $row["cde_value_label"]; ?></td>
+                            <td><?php echo $row["cde_value"]; ?></td>
+                            <td>
+                                <a href="codes_modify.php?lid=<?php echo $row["cde_code_ID"]; ?>&codeSelection=<?php echo $codeSelection; ?>"><i
+                                            class="fas fa-edit"></i></a>&nbsp
+                                <a href="codes_delete.php?lid=<?php echo $row["cde_code_ID"]; ?>&codeSelection=<?php echo $codeSelection; ?>"
+                                   onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this code?');"><i
+                                            class="fas fa-minus-circle"></i></a>
+                            </td>
+                        </tr>
                     <?php } ?>
                     </tbody>
                 </table>
@@ -105,8 +114,13 @@ else {
     </div>
 </div>
 <script>
-    function editLine(id){
-        window.location.assign('codes_modify.php?lid='+id+'&codeSelection=<?php echo $codeSelection;?>');
+    var ignoreEdit = false;
+
+    function editLine(id) {
+        if (ignoreEdit === false) {
+            window.location.assign('codes_modify.php?lid=' + id + '&codeSelection=<?php echo $codeSelection;?>');
+
+        }
     }
 </script>
 <?php

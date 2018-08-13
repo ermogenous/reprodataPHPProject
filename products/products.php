@@ -54,7 +54,7 @@ $table->generate_data();
                             <a href="products_modify.php?lid=<?php echo $row["prd_product_ID"]; ?>"><i
                                         class="fas fa-edit"></i></a>&nbsp
                             <a href="products_delete.php?lid=<?php echo $row["prd_product_ID"]; ?>"
-                               onclick="return confirm('Are you sure you want to delete this product?');"><i
+                               onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this product?');"><i
                                         class="fas fa-minus-circle"></i></a>
                         </td>
                     </tr>
@@ -69,8 +69,12 @@ $table->generate_data();
     </div>
 </div>
 <script>
-    function editLine(id){
-        window.location.assign('products_modify.php?lid='+id);
+    var ignoreEdit = false;
+
+    function editLine(id) {
+        if (ignoreEdit === false) {
+            window.location.assign('products_modify.php?lid=' + id);
+        }
     }
 </script>
 <?php

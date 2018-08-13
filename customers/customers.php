@@ -36,14 +36,14 @@ $table->generate_data();
                     <?php
                     while ($row = $table->fetch_data()) {
                     ?>
-                    <tr onclick="editCustomer(<?php echo $row["cst_customer_ID"];?>);">
+                    <tr onclick="editLine(<?php echo $row["cst_customer_ID"];?>);">
                         <th scope="row"><?php echo $row["cst_customer_ID"]; ?></th>
                         <td><?php echo $row["cst_name"]; ?></td>
                         <td>
                             <a href="customers_modify.php?lid=<?php echo $row["cst_customer_ID"]; ?>"><i
                                         class="fas fa-edit"></i></a>&nbsp
                             <a href="customers_delete.php?lid=<?php echo $row["cst_customer_ID"]; ?>"
-                               onclick="return confirm('Are you sure you want to delete this customer?');"><i
+                               onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this customer?');"><i
                                         class="fas fa-minus-circle"></i></a>
                         </td>
                     </tr>
@@ -58,8 +58,12 @@ $table->generate_data();
     </div>
 </div>
 <script>
-    function editCustomer(id){
-        window.location.assign('customers_modify.php?lid='+id);
+    var ignoreEdit = false;
+
+    function editLine(id) {
+        if (ignoreEdit === false) {
+            window.location.assign('customers_modify.php?lid=' + id);
+        }
     }
 </script>
 <?php

@@ -19,12 +19,14 @@ if ($db->user_data["usr_user_rights"] > 0) {
 }
 
 if ($_POST["action"] == "insert") {
+    $db->check_restriction_area('insert');
 
     $db->db_tool_insert_row('manufacturers', $_POST, 'fld_',0, 'mnf_');
     header("Location: manufacturers.php");
     exit();
 
 } else if ($_POST["action"] == "update") {
+    $db->check_restriction_area('update');
 
     $db->db_tool_update_row('manufacturers', $_POST, "`mnf_manufacturer_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'mnf_');
@@ -38,6 +40,9 @@ if ($_POST["action"] == "insert") {
 if ($_GET["lid"] != "") {
     $sql = "SELECT * FROM `manufacturers` WHERE `mnf_manufacturer_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
+}
+else {
+    $data['mnf_active'] = 1;
 }
 
 
@@ -59,8 +64,8 @@ $db->show_header();
                         <select name="fld_active" id="fld_active"
                                 class="form-control"
                                 required>
-                            <option value="0" <?php if ($data['mnf_active'] == 0) echo 'selected';?>>In-active</option>
                             <option value="1" <?php if ($data['mnf_active'] == 1) echo 'selected';?>>Active</option>
+                            <option value="0" <?php if ($data['mnf_active'] == 0) echo 'selected';?>>In-active</option>
                         </select>
                     </div>
                 </div>

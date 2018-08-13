@@ -20,6 +20,7 @@ if ($db->user_data["usr_user_rights"] > 0) {
 }
 
 if ($_POST["action"] == "insert") {
+    $db->check_restriction_area('insert');
 
     $newId = $db->db_tool_insert_row('products', $_POST, 'fld_', 1, 'prd_');
 
@@ -32,6 +33,7 @@ if ($_POST["action"] == "insert") {
         echo $newId;
     }
 } else if ($_POST["action"] == "update") {
+    $db->check_restriction_area('update');
 
     $db->db_tool_update_row('products', $_POST, "`prd_product_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'prd_');
@@ -249,7 +251,6 @@ $db->show_header();
                     <?php if ($data['prd_type'] != 'Machine') { ?>
                         <div class="tab-pane fade" id="pills-machines" role="tabpanel"
                              aria-labelledby="pills-machines-tab">
-
                             <iframe src="relations.php?lid=<?php echo $_GET["lid"]; ?>&type=<?php echo $data['prd_type']; ?>&area=machines"
                                     frameborder="0"
                                     scrolling="0" width="100%" height="400"></iframe>
@@ -276,7 +277,9 @@ $db->show_header();
                         </div>
                     <?php } ?>
                     <div class="tab-pane fade" id="pills-stock" role="tabpanel" aria-labelledby="pills-stock-tab">
-                        ...
+                        <iframe src="../stock/stock_month_list.php?pid=<?php echo $_GET["lid"]; ?>"
+                                frameborder="0"
+                                scrolling="0" width="100%" height="400"></iframe>
                     </div>
 
 

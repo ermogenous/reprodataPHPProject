@@ -125,6 +125,7 @@ function template_header()
                                 <?php } ?>
                             </div>
                         </li>
+                    <?php } ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -140,7 +141,7 @@ function template_header()
                             </div>
 
                         </li>
-                    <?php } ?>
+
 
 
                 <?php } ?>
@@ -201,8 +202,8 @@ if ($db->admin_layout_printer != 'yes')
         </div>
         <div class="col-3"></div>
     </div>
-    <?php }
-    if ($db->dismissError != '') { ?>
+<?php }
+if ($db->dismissError != '') { ?>
     <div class="row">
         <div class="col-3"></div>
         <div class="col-6">
@@ -215,8 +216,8 @@ if ($db->admin_layout_printer != 'yes')
         </div>
         <div class="col-3"></div>
     </div>
-    <?php }
-    if ($db->dismissSuccess != '') { ?>
+<?php }
+if ($db->dismissSuccess != '') { ?>
     <div class="row">
         <div class="col-3"></div>
         <div class="col-6">
@@ -229,8 +230,8 @@ if ($db->admin_layout_printer != 'yes')
         </div>
         <div class="col-3"></div>
     </div>
-    <?php }
-    if ($db->dismissInfo != '') { ?>
+<?php }
+if ($db->dismissInfo != '') { ?>
     <div class="row">
         <div class="col-3"></div>
         <div class="col-6">
@@ -243,7 +244,52 @@ if ($db->admin_layout_printer != 'yes')
         </div>
         <div class="col-3"></div>
     </div>
+<?php }
+if ($db->alertWarning != '') { ?>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-6">
+            <div class="alert alert-warning" role="alert">
+                <strong>Warning! </strong> <?php echo $db->alertWarning; ?>
+            </div>
+        </div>
+        <div class="col-3"></div>
+    </div>
+<?php }
+if ($db->alertError != '') { ?>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-6">
+            <div class="alert alert-danger" role="alert">
+                <strong>Error! </strong> <?php echo $db->alertError; ?>
+            </div>
+        </div>
+        <div class="col-3"></div>
+    </div>
+<?php }
+if ($db->alertSuccess != '') { ?>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-6">
+            <div class="alert alert-success" role="alert">
+                <strong>Success! </strong> <?php echo $db->alertSuccess; ?>
+            </div>
+        </div>
+        <div class="col-3"></div>
+    </div>
+<?php }
+if ($db->alertInfo != '') { ?>
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-6">
+            <div class="alert alert-info" role="alert">
+                <strong>Info! </strong> <?php echo $db->alertInfo; ?>
+            </div>
+        </div>
+        <div class="col-3"></div>
+    </div>
 <?php } ?>
+
 <br>
     <div class="container-fluid">
         <div class="row">&nbsp</div>

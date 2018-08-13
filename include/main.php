@@ -52,6 +52,10 @@ class Main
     var $dismissError;
     var $dismissSuccess;
     var $dismissInfo;
+    var $alertWarning;
+    var $alertError;
+    var $alertSuccess;
+    var $alertInfo;
 
 //query variables
     var $allow_query_select = 1;
@@ -115,6 +119,8 @@ class Main
 
         $this->check_ip_location();
 
+        $this->generateSessionDismiss();
+        $this->generateSessionAlert();
 
         if ($login == 1) {
 
@@ -872,6 +878,96 @@ class Main
 
     public function generateDismissInfo($message){
         $this->dismissInfo = $message;
+    }
+
+    public function generateAlertWarning($message){
+        $this->alertWarning = $message;
+    }
+
+    public function generateAlertError($message){
+        $this->alertError = $message;
+    }
+
+    public function generateAlertSuccess($message){
+        $this->alertSuccess = $message;
+    }
+
+    public function generateAlertInfo($message){
+        $this->alertInfo = $message;
+    }
+
+    public function generateSessionDismissWarning($message){
+        $_SESSION['SessionDismissWarning'] = $message;
+    }
+    public function generateSessionDismissError($message){
+        $_SESSION['SessionDismissError'] = $message;
+    }
+    public function generateSessionDismissSuccess($message){
+        $_SESSION['SessionDismissSuccess'] = $message;
+    }
+    public function generateSessionDismissInfo($message){
+        $_SESSION['SessionDismissInfo'] = $message;
+    }
+
+    public function generateSessionAlertWarning($message){
+        $_SESSION['SessionAlertWarning'] = $message;
+    }
+    public function generateSessionAlertError($message){
+        $_SESSION['SessionAlertError'] = $message;
+    }
+    public function generateSessionAlertSuccess($message){
+        $_SESSION['SessionAlertSuccess'] = $message;
+    }
+    public function generateSessionAlertInfo($message){
+        $_SESSION['SessionAlertInfo'] = $message;
+    }
+
+    private function generateSessionDismiss(){
+
+        if ($_SESSION['SessionDismissWarning'] != '') {
+            $this->generateDismissWarning($_SESSION['SessionDismissWarning']);
+            $_SESSION['SessionDismissWarning'] = '';
+            unset($_SESSION['SessionDismissWarning']);
+        }
+        else if ($_SESSION['SessionDismissError'] != '') {
+            $this->generateDismissError($_SESSION['SessionDismissError']);
+            $_SESSION['SessionDismissError'] = '';
+            unset($_SESSION['SessionDismissError']);
+        }
+        else if ($_SESSION['SessionDismissSuccess'] != '') {
+            $this->generateDismissSuccess($_SESSION['SessionDismissSuccess']);
+            $_SESSION['SessionDismissSuccess'] = '';
+            unset($_SESSION['SessionDismissSuccess']);
+        }
+        else if ($_SESSION['SessionDismissInfo'] != '') {
+            $this->generateDismissInfo($_SESSION['SessionDismissInfo']);
+            $_SESSION['SessionDismissInfo'] = '';
+            unset($_SESSION['SessionDismissInfo']);
+        }
+    }
+
+    private function generateSessionAlert(){
+
+        if ($_SESSION['SessionAlertWarning'] != '') {
+            $this->generateAlertWarning($_SESSION['SessionAlertWarning']);
+            $_SESSION['SessionAlertWarning'] = '';
+            unset($_SESSION['SessionAlertWarning']);
+        }
+        else if ($_SESSION['SessionAlertError'] != '') {
+            $this->generateAlertError($_SESSION['SessionAlertError']);
+            $_SESSION['SessionAlertError'] = '';
+            unset($_SESSION['SessionAlertError']);
+        }
+        else if ($_SESSION['SessionAlertSuccess'] != '') {
+            $this->generateAlertSuccess($_SESSION['SessionAlertSuccess']);
+            $_SESSION['SessionAlertSuccess'] = '';
+            unset($_SESSION['SessionAlertSuccess']);
+        }
+        else if ($_SESSION['SessionAlertInfo'] != '') {
+            $this->generateAlertInfo($_SESSION['SessionAlertInfo']);
+            $_SESSION['SessionAlertInfo'] = '';
+            unset($_SESSION['SessionAlertInfo']);
+        }
     }
 
     public function fix_num($digit, $type = 'remove')

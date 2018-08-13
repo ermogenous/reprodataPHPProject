@@ -12,12 +12,14 @@ if ($db->user_data["usr_user_rights"] > 0) {
 }
 
 if ($_POST["action"] == "insert") {
+    $db->check_restriction_area('insert');
 
     $db->db_tool_insert_row('customers', $_POST, 'fld_',0, 'cst_');
     header("Location: customers.php");
     exit();
 
 } else if ($_POST["action"] == "update") {
+    $db->check_restriction_area('update');
 
     $db->db_tool_update_row('customers', $_POST, "`cst_customer_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'cst_');
