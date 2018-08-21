@@ -358,7 +358,7 @@ $db->show_header();
                     <div class="tab-pane fade" id="pills-stock" role="tabpanel" aria-labelledby="pills-stock-tab">
                         <iframe src="../stock/stock_month_list.php?pid=<?php echo $_GET["lid"]; ?>"
                                 frameborder="0"
-                                scrolling="0" width="100%" height="400"></iframe>
+                                scrolling="0" width="100%" height="700"></iframe>
                     </div>
 
 

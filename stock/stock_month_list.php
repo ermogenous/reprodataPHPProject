@@ -8,14 +8,27 @@
 
 include("../include/main.php");
 include("../include/tables.php");
+include('stock.class.php');
 
 $db = new Main(1, 'UTF-8');
 $db->admin_title = "Stock Month List";
 
+
+if ($_GET['pid'] > 0) {
+    $stock = new Stock($_GET['pid']);
+} else {
+
+    $db->alertError('Must supply product');
+    $db->show_header();
+    $db->show_footer();
+    exit();
+
+}
+
 $db->show_empty_header();
 
-$sql = 'SELECT * FROM stock WHERE stk_product_ID = '.$_GET["pid"];
-$result = $db->query($sql);
+echo $stock->closePeriod();
+
 ?>
 
 
@@ -24,28 +37,84 @@ $result = $db->query($sql);
         <div class="col-lg-2"></div>
         <div class="col-lg-8">
             <div class="table-responsive">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-12 text-right text-success">Current Stock - <?php echo $stock->currentStock; ?></div>
+                    </div>
+                </div>
                 <table class="table table-hover">
                     <thead>
                     <tr>
-                        <th scope="col">Month</th>
-                        <th scope="col">Total +/-&nbsp;&nbsp;&nbsp;&nbsp;<a href="stock_transaction.php?pid=<?php echo $_GET['pid'];?>">
+                        <th scope="col" class="text-center">Month</th>
+                        <th scope="col" class="text-center">Total +/-&nbsp;&nbsp;</th>
+                        <th scope="col" class="text-center">
+                            Balance
+                            <a href="stock_transaction.php?pid=<?php echo $_GET['pid']; ?>">
                                 <i class="fas fa-plus-circle"></i>
-                            </a></th>
+                            </a>
                         </th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr>
                         <th>January</th>
-                        <td>0</td>
+                        <td class="text-center">0</td>
+                        <td class="text-center">0</td>
                     </tr>
                     <tr>
                         <th>February</th>
-                        <td>0</td>
+                        <td class="text-center">0</td>
+                        <td class="text-center">0</td>
                     </tr>
                     <tr>
                         <th>March</th>
-                        <td>0</td>
+                        <td class="text-center">0</td>
+                        <td class="text-center">0</td>
+                    </tr>
+                    <tr>
+                        <th>April</th>
+                        <td class="text-center">0</td>
+                        <td class="text-center">0</td>
+                    </tr>
+                    <tr>
+                        <th>May</th>
+                        <td class="text-center">0</td>
+                        <td class="text-center">0</td>
+                    </tr>
+                    <tr>
+                        <th>June</th>
+                        <td class="text-center">0</td>
+                        <td class="text-center">0</td>
+                    </tr>
+                    <tr>
+                        <th>July</th>
+                        <td class="text-center">0</td>
+                        <td class="text-center">0</td>
+                    </tr>
+                    <tr>
+                        <th>August</th>
+                        <td class="text-center">0</td>
+                        <td class="text-center">0</td>
+                    </tr>
+                    <tr>
+                        <th>September</th>
+                        <td class="text-center">0</td>
+                        <td class="text-center">0</td>
+                    </tr>
+                    <tr>
+                        <th>October</th>
+                        <td class="text-center">0</td>
+                        <td class="text-center">0</td>
+                    </tr>
+                    <tr>
+                        <th>November</th>
+                        <td class="text-center">0</td>
+                        <td class="text-center">0</td>
+                    </tr>
+                    <tr>
+                        <th>December</th>
+                        <td class="text-center">0</td>
+                        <td class="text-center">0</td>
                     </tr>
                     </tbody>
                 </table>
