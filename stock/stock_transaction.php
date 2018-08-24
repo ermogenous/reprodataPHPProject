@@ -11,8 +11,18 @@ include("stock.class.php");
 $db = new Main();
 $db->admin_title = "Stock Transaction";
 
-if ($_POST["action"] == 'insert'){
+if ($_GET["pid"] != ''){
     $stock = new Stock($_GET['pid']);
+}
+else {
+    $db->show_empty_header();
+    echo "Must supply product";
+    $db->show_empty_footer();
+    exit();
+}
+
+if ($_POST["action"] == 'insert'){
+
     $stock->addRemoveStock($_POST['fld_amount'],$_POST['fld_description']);
     header("Location: stock_month_list.php?pid=".$_POST["pid"]);
     exit();
@@ -36,9 +46,11 @@ $db->show_empty_header();
                         <select name="fld_description" id="fld_description"
                                 class="form-control"
                                 required>
-                            <option value=""></option>
+                            <?php if ($stock->isInitialTypeAvailable() == true) { ?>
                             <option value="Initial">Initial Stock</option>
-                            <option value="Transaction">Transaction</option>
+                            <?php } else { ?>
+                            <option value="Manual">Manual Transaction</option>
+                            <?php } ?>
                         </select>
                     </div>
                 </div>

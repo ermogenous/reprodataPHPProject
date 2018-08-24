@@ -8,12 +8,12 @@
 
 include("../include/main.php");
 $db = new Main();
-$db->admin_title = "Manufacturers Modify";
+$db->admin_title = "Manufacturer delete";
 
 $db->check_restriction_area('delete');
 
 if ($_GET["lid"] == ''){
-    header("Location: relations.php");
+    header("Location: manufacturers.php");
     exit();
 }
 

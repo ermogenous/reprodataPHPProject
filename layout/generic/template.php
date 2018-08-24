@@ -22,6 +22,8 @@ function template_header()
         <script language="JavaScript" type="text/javascript"
                 src="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/js/jquery-3.3.1.min.js"></script>
 
+        <?php echo $db->admin_more_head;?>
+
     </head>
     <body>
     <?php if ($db->admin_layout_printer != 'yes') { ?>
@@ -87,7 +89,18 @@ function template_header()
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/manufacturers/manufacturers_modify.php"><i
                                         class="fas fa-plus-circle"></i> New Manufacturer</a>
-
+                        </div>
+                    </li>
+                    <!-- STOCK -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-bars"></i> Stock
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/stock/stock_transactions_list.php"><i
+                                        class="fas fa-eye"></i> View Stock Transactions</a>
                         </div>
                     </li>
                     <!-- USERS -->
@@ -177,32 +190,20 @@ function template_header()
         <?php
     }
 
-
-}//printer layout
-}//template_header
-function template_footer()
-{
-    global $db, $main;
-
-if ($db->admin_layout_printer != 'yes')
-{
-
-    ?>
-<br>
-    <?php if ($db->dismissWarning != '') { ?>
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col-6">
-            <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                <strong>Warning! </strong> <?php echo $db->dismissWarning; ?>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+         if ($db->dismissWarning != '') { ?>
+            <div class="row">
+                <div class="col-3"></div>
+                <div class="col-6">
+                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                        <strong>Warning! </strong> <?php echo $db->dismissWarning; ?>
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-3"></div>
             </div>
-        </div>
-        <div class="col-3"></div>
-    </div>
-<?php }
+        <?php }
 if ($db->dismissError != '') { ?>
     <div class="row">
         <div class="col-3"></div>
@@ -288,7 +289,20 @@ if ($db->alertInfo != '') { ?>
         </div>
         <div class="col-3"></div>
     </div>
-<?php } ?>
+<?php }
+
+
+
+        }//printer layout
+}//template_header
+function template_footer()
+{
+    global $db, $main;
+
+if ($db->admin_layout_printer != 'yes')
+{
+
+    ?>
 
 <br>
     <div class="container-fluid">

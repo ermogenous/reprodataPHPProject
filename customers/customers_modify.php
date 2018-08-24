@@ -35,7 +35,6 @@ if ($_GET["lid"] != "") {
     $data = $db->query_fetch($sql);
 }
 
-
 $db->show_header();
 ?>
 <div class="container">

@@ -34,6 +34,7 @@ $table->generate_data();
                         <th scope="col"><?php $table->display_order_links('Type', 'prd_type'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Code', 'prd_code'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Name', 'prd_name'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Current Stock', 'prd_current_stock'); ?></th>
                         <th scope="col">
                             <a href="products_modify.php">
                                 <i class="fas fa-plus-circle"></i>
@@ -50,6 +51,7 @@ $table->generate_data();
                         <td><?php echo $row["prd_type"]; ?></td>
                         <td><?php echo $row["prd_code"]; ?></td>
                         <td><?php echo $row["prd_name"]; ?></td>
+                        <td><?php echo $row["prd_current_stock"]; ?></td>
                         <td>
                             <a href="products_modify.php?lid=<?php echo $row["prd_product_ID"]; ?>"><i
                                         class="fas fa-edit"></i></a>&nbsp

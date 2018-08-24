@@ -15,10 +15,15 @@ class Stock {
     private $errorCount = 0;
     private $errorDescription = '';
 
+
     public $currentStock = 0;
     public $currentMonth = 0;
     public $currentYear = 0;
 
+    /**
+     * Stock constructor.
+     * @param int $productID
+     */
     public function __construct($productID = 0)
     {
         global $db;
@@ -52,13 +57,18 @@ class Stock {
         }
     }
 
+    /**
+     * @param $amount     The amount to +/- from stock
+     * @param $description A description of the +/-
+     */
     public function addRemoveStock($amount, $description) {
         global $db;
         $this->checkForErrors();
 
+
         //first create stock transaction
         $stock['product_ID'] = $this->productID;
-        $stock['type'] = 'transaction';
+        $stock['type'] = 'Transaction';
         $stock['description'] = $description;
         $stock['status'] = 'Pending';
         if ($amount > 0) {
@@ -90,10 +100,124 @@ class Stock {
             return $this->errorDescription;
         }
     }
+    /**
+     * You can have only one initial type stock for each product.
+     * if true then is available to insert if false then already exists
+     *
+     */
+    public function isInitialTypeAvailable($year = 0) {
+        global $db;
+        if ($year == 0){
+            $year = $this->currentYear;
+        }
+        //first check if initial stock transaction already exists.
+        $initialCheck = $db->query_fetch("SELECT COUNT(*) as clo_check FROM stock WHERE stk_product_ID = ".$this->productID." AND stk_description = 'Initial'");
+        //echo "Mic".$initialCheck["clo_check"]." - ".$this->productID;
+        if ($initialCheck["clo_check"] > 0){
+            return false;
+        }
+
+
+
+        //no other check then return true
+        return true;
+    }
+
+    public function getTotalsOfAllPeriods(){
+        global $db;
+
+        $sql = "SELECT
+        stk_month,
+        SUM(stk_add_minus * stk_amount)as clo_total
+        FROM
+        stock
+        WHERE
+        stk_product_ID = ".$this->productID."
+        AND stk_year = ".$this->currentYear."
+        GROUP BY
+        stk_month";
+
+        $result = $db->query($sql);
+        while ($row = $db->fetch_assoc($result)) {
+            $return[$row['stk_month']] = $row['clo_total'];
+        }
+        return $return;
+    }
+
+    public function updateTransaction($transactionID, $amount){
+        global $db;
+        if ($transactionID == '' || $transactionID == 0) {
+            return 'Must provide transaction ID';
+        }
+
+
+        //get the data of the transaction
+        $previousData = $db->query_fetch('SELECT * FROM  stock WHERE stk_stock_ID = '.$transactionID);
+
+        //check if the transaction is not posted
+        if ($previousData['stk_status'] == 'Posted') {
+            return 'Can only change pending stock transactions';
+        }
+
+        $difference = $amount - $previousData['stk_amount'] * $previousData['stk_add_minus'];
+
+        if ($amount < 0){
+            $newAddMinus = -1;
+        }
+        else {
+            $newAddMinus = 1;
+        }
+
+        $newStockData['add_minus'] = $newAddMinus;
+        $newStockData['amount'] = $amount;
+        $db->start_transaction();
+        $db->db_tool_update_row('stock',$newStockData,'stk_stock_ID = '.$transactionID, $transactionID,''
+        ,'execute','stk_');
+
+        //update the product
+        $newProductData['current_stock'] = $this->productData['prd_current_stock'] + $difference;
+        $db->db_tool_update_row('products',$newProductData,'prd_product_ID = '.$this->productID,
+            $this->productID,'','execute','prd_');
+        $db->commit_transaction();
+        return true;
+
+    }
+
+    public function deleteTransaction($transactionID) {
+        global $db;
+        if ($transactionID == '' || $transactionID == 0) {
+            return 'Must provide transaction ID';
+        }
+
+
+        //get the data of the transaction
+        $previousData = $db->query_fetch('SELECT * FROM  stock WHERE stk_stock_ID = '.$transactionID);
+
+        if ($previousData['stk_stock_ID'] != $transactionID){
+            return 'Stock transaction not found.';
+        }
+
+        //check if the transaction is not posted
+        if ($previousData['stk_status'] == 'Posted') {
+            return 'Can only delete pending stock transactions';
+        }
+
+        $db->start_transaction();
+        //delete the transaction
+        $db->db_tool_delete_row('stock', $transactionID, 'stk_stock_ID = '.$transactionID);
+
+        //update the product
+        $newProductData['current_stock'] = $this->productData['prd_current_stock'] - ($previousData['stk_amount'] * $previousData['stk_add_minus']);
+        $db->db_tool_update_row('products',$newProductData,'prd_product_ID = '.$this->productID,
+            $this->productID,'','execute','prd_');
+        $db->commit_transaction();
+        return true;
+
+    }
 
     public function closePeriod() {
         global $db;
-
+        $db->start_transaction();
         $messages = '';
         //first check if the active period is the same with the current period
         if ($this->currentYear == Date('Y') && $this->currentMonth == Date('m')){
@@ -122,9 +246,18 @@ class Stock {
             ORDER BY stk_stock_ID");
             while ($trans = $db->fetch_assoc($allTransResult)){
                 $messages .= '<br>Posting Transaction: ID:'.$trans['stk_stock_ID']." Product:".$trans['prd_name'];
+
+                $stockData['status'] = "Posted";
+                $db->db_tool_update_row('stock',$stockData,'stk_stock_ID = '.$trans['stk_stock_ID'],
+                    $trans['stk_stock_ID'],
+                    '','execute','stk_');
+
             }
 
+            //update closed period setting
+            $db->update_setting('stk_active_month',($prevTransPeriod + 1));
 
+            $db->commit_transaction();
         }
 
 

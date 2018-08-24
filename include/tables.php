@@ -17,6 +17,12 @@ var $holder;
 var $type_of_database = 'mysql';
 var $select_section = '*';
 
+//autoComplete
+public $autoCompleteFieldName = '';
+public $autoCompleteSourceAPI = '';
+public $autoCompleteDelay = 500;
+public $autoCompleteMinLength = 2;
+
 
 public function __construct($table_name,$default_order,$default_order_type="ASC") {
 
@@ -212,6 +218,43 @@ public function show_per_page_links($extra=0) {
 	}
 	
 	return $return;
+}
+
+public function showAutoCompleteJsCode() {
+    global $db;
+
+    if ($db->enabled_jquery_ui != 'yes') {
+        echo 'MUST ENABLE JQUERY UI';
+    }
+    if ($this->autoCompleteFieldName == '') {
+        echo "Must specify the field name";
+    }
+    if ($this->autoCompleteSourceAPI == ''){
+        echo "Must supply the source api";
+    }
+
+    echo "<script>
+        $('#".$this->autoCompleteFieldName."').autocomplete({
+        source: '".$this->autoCompleteSourceAPI."',
+        delay: ".$this->autoCompleteDelay.",
+        minLength: ".$this->autoCompleteMinLength.",
+        messages: {
+            noResults: '',
+            results: function () {
+            }
+        },
+        focus: function( event, ui ) {
+            $( '#".$this->autoCompleteFieldName."' ).val( ui.item.label );
+            return false;
+        },
+        select: function( event, ui ) {
+        $( '#".$this->autoCompleteFieldName."' ).val( ui.item.label );
+        $( '#".$this->autoCompleteFieldName."-id' ).val( ui.item.value );
+        return false;
+      }
+
+    });
+    </script>";
 }
 
 }

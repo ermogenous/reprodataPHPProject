@@ -533,11 +533,12 @@ class Main
         $this->query("ROLLBACK;");
     }
 
-    public function throwException($exception){
+    public function throwException($exception)
+    {
         //first rollback
         $this->rollback_transaction();
         //add error in db
-        $this->update_log_file('error',0, $this->admin_title,'','',$exception);
+        $this->update_log_file('error', 0, $this->admin_title, '', '', $exception);
     }
 
     public function update_table_data($table, $prefix, $action, $update_sql = '')
@@ -629,9 +630,9 @@ class Main
             $this->issued_rollback = 1;
         }
 
-        $this->update_log_file('Error',0,$this->admin_title.' Section:'.$this->working_section,
-            'User[ID]:'.$this->user_data['usr_name'].'['.$this->user_data['usr_users_ID'].']',
-            '$_GET->'.print_r($_GET,true).'\n$_POST->'.print_r($_POST,true),$string);
+        $this->update_log_file('Error', 0, $this->admin_title . ' Section:' . $this->working_section,
+            'User[ID]:' . $this->user_data['usr_name'] . '[' . $this->user_data['usr_users_ID'] . ']',
+            '$_GET->' . print_r($_GET, true) . '\n$_POST->' . print_r($_POST, true), $string);
 
         if ($this->user_data["user_rights"] == 0) {
             //$this->show_header();
@@ -669,6 +670,13 @@ class Main
         } else if ($field == 'serial') {
             return $row["stg_settings_ID"];
         }
+    }
+
+    public function update_setting($section, $newValue = '')
+    {
+        $newData['value'] = $newValue;
+        $this->db_tool_update_row('settings', $newData, "stg_section = '" . $section . "'", ''
+            , '', 'execute', 'stg_');
     }
 
     function process_lock_validate($name, $description)
@@ -797,26 +805,21 @@ class Main
     public function enable_jquery()
     {
 
-        $this->include_js_file($this->settings["site_url"] . "/scripts/jquery/jquery.js");
+        //$this->include_js_file($this->settings["site_url"] . "/node_modules/jquery-slim/dist/jquery.slim.js");
         $this->enabled_jquery = 'yes';
     }
 
     public function enable_jquery_ui($css = '')
     {
 
-
         if ($this->enabled_jquery != 'yes') {
             $this->enable_jquery();
         }
 
-        $this->include_js_file($this->settings["site_url"] . "/scripts/jquery/jquery-ui.js");
+        $this->include_js_file($this->settings["site_url"] . "/scripts/jquery-ui-1.12.1/jquery-ui.js");
         $this->enabled_jquery_ui = 'yes';
 
-        if ($css == '') {
-            $this->include_css_file($this->settings["site_url"] . "/scripts/jquery/smoothness/jquery-ui.css");
-        } else {
-            $this->include_css_file($this->settings["site_url"] . "/scripts/jquery/" . $css . "/jquery-ui.css");
-        }
+        $this->include_css_file($this->settings["site_url"] . "/scripts/jquery-ui-1.12.1/jquery-ui.theme.css");
 
     }
 
@@ -851,6 +854,19 @@ class Main
         $this->include_js_file($this->settings["site_url"] . "/scripts/tiny_mce_wysiwyg/tinymce.min.js");
     }
 
+    public function enable_rxjs_lite()
+    {
+
+        if ($this->enabled_rxjs_lite != 'yes') {
+            if ($this->enabled_jquery != 'yes') {
+                //$this->enable_jquery();
+            }
+            $this->include_js_file($this->settings["site_url"] . "/node_modules/rx-lite/rx.lite.js");
+            $this->enabled_rxjs_lite = 'yes';
+        }
+
+    }
+
     public function show_header()
     {
         global $main, $db;
@@ -878,106 +894,124 @@ class Main
         $this->show_footer();
     }
 
-    public function generateDismissWarning($message){
+    public function generateDismissWarning($message)
+    {
         $this->dismissWarning = $message;
     }
 
-    public function generateDismissError($message){
+    public function generateDismissError($message)
+    {
         $this->dismissError = $message;
     }
 
-    public function generateDismissSuccess($message){
+    public function generateDismissSuccess($message)
+    {
         $this->dismissSuccess = $message;
     }
 
-    public function generateDismissInfo($message){
+    public function generateDismissInfo($message)
+    {
         $this->dismissInfo = $message;
     }
 
-    public function generateAlertWarning($message){
+    public function generateAlertWarning($message)
+    {
         $this->alertWarning = $message;
     }
 
-    public function generateAlertError($message){
+    public function generateAlertError($message)
+    {
         $this->alertError = $message;
     }
 
-    public function generateAlertSuccess($message){
+    public function generateAlertSuccess($message)
+    {
         $this->alertSuccess = $message;
     }
 
-    public function generateAlertInfo($message){
+    public function generateAlertInfo($message)
+    {
         $this->alertInfo = $message;
     }
 
-    public function generateSessionDismissWarning($message){
+    public function generateSessionDismissWarning($message)
+    {
         $_SESSION['SessionDismissWarning'] = $message;
     }
-    public function generateSessionDismissError($message){
+
+    public function generateSessionDismissError($message)
+    {
         $_SESSION['SessionDismissError'] = $message;
     }
-    public function generateSessionDismissSuccess($message){
+
+    public function generateSessionDismissSuccess($message)
+    {
         $_SESSION['SessionDismissSuccess'] = $message;
     }
-    public function generateSessionDismissInfo($message){
+
+    public function generateSessionDismissInfo($message)
+    {
         $_SESSION['SessionDismissInfo'] = $message;
     }
 
-    public function generateSessionAlertWarning($message){
+    public function generateSessionAlertWarning($message)
+    {
         $_SESSION['SessionAlertWarning'] = $message;
     }
-    public function generateSessionAlertError($message){
+
+    public function generateSessionAlertError($message)
+    {
         $_SESSION['SessionAlertError'] = $message;
     }
-    public function generateSessionAlertSuccess($message){
+
+    public function generateSessionAlertSuccess($message)
+    {
         $_SESSION['SessionAlertSuccess'] = $message;
     }
-    public function generateSessionAlertInfo($message){
+
+    public function generateSessionAlertInfo($message)
+    {
         $_SESSION['SessionAlertInfo'] = $message;
     }
 
-    private function generateSessionDismiss(){
+    private function generateSessionDismiss()
+    {
 
         if ($_SESSION['SessionDismissWarning'] != '') {
             $this->generateDismissWarning($_SESSION['SessionDismissWarning']);
             $_SESSION['SessionDismissWarning'] = '';
             unset($_SESSION['SessionDismissWarning']);
-        }
-        else if ($_SESSION['SessionDismissError'] != '') {
+        } else if ($_SESSION['SessionDismissError'] != '') {
             $this->generateDismissError($_SESSION['SessionDismissError']);
             $_SESSION['SessionDismissError'] = '';
             unset($_SESSION['SessionDismissError']);
-        }
-        else if ($_SESSION['SessionDismissSuccess'] != '') {
+        } else if ($_SESSION['SessionDismissSuccess'] != '') {
             $this->generateDismissSuccess($_SESSION['SessionDismissSuccess']);
             $_SESSION['SessionDismissSuccess'] = '';
             unset($_SESSION['SessionDismissSuccess']);
-        }
-        else if ($_SESSION['SessionDismissInfo'] != '') {
+        } else if ($_SESSION['SessionDismissInfo'] != '') {
             $this->generateDismissInfo($_SESSION['SessionDismissInfo']);
             $_SESSION['SessionDismissInfo'] = '';
             unset($_SESSION['SessionDismissInfo']);
         }
     }
 
-    private function generateSessionAlert(){
+    private function generateSessionAlert()
+    {
 
         if ($_SESSION['SessionAlertWarning'] != '') {
             $this->generateAlertWarning($_SESSION['SessionAlertWarning']);
             $_SESSION['SessionAlertWarning'] = '';
             unset($_SESSION['SessionAlertWarning']);
-        }
-        else if ($_SESSION['SessionAlertError'] != '') {
+        } else if ($_SESSION['SessionAlertError'] != '') {
             $this->generateAlertError($_SESSION['SessionAlertError']);
             $_SESSION['SessionAlertError'] = '';
             unset($_SESSION['SessionAlertError']);
-        }
-        else if ($_SESSION['SessionAlertSuccess'] != '') {
+        } else if ($_SESSION['SessionAlertSuccess'] != '') {
             $this->generateAlertSuccess($_SESSION['SessionAlertSuccess']);
             $_SESSION['SessionAlertSuccess'] = '';
             unset($_SESSION['SessionAlertSuccess']);
-        }
-        else if ($_SESSION['SessionAlertInfo'] != '') {
+        } else if ($_SESSION['SessionAlertInfo'] != '') {
             $this->generateAlertInfo($_SESSION['SessionAlertInfo']);
             $_SESSION['SessionAlertInfo'] = '';
             unset($_SESSION['SessionAlertInfo']);
@@ -1171,16 +1205,16 @@ class Main
         }
         //insert dates fields auto
         //check if the fields exists in the db
-        $sqlColumns = 'SHOW COLUMNS FROM '.$table;
+        $sqlColumns = 'SHOW COLUMNS FROM ' . $table;
         $columnsResult = $this->query($sqlColumns);
-        while ($column = $this->fetch_assoc($columnsResult)){
-            if ($column['Field'] == $fields_prefix.'created_date_time'){
-                $sql .= " , `".$fields_prefix.'created_date_time'.'`'." = '".date('Y-m-d G:i:s')."' \n";
-                $log_new_values .= "`".$fields_prefix.'created_date_time'.'`'." = '".date('Y-m-d G:i:s')."'\n";
+        while ($column = $this->fetch_assoc($columnsResult)) {
+            if ($column['Field'] == $fields_prefix . 'created_date_time') {
+                $sql .= " , `" . $fields_prefix . 'created_date_time' . '`' . " = '" . date('Y-m-d G:i:s') . "' \n";
+                $log_new_values .= "`" . $fields_prefix . 'created_date_time' . '`' . " = '" . date('Y-m-d G:i:s') . "'\n";
             }
-            if ($column['Field'] == $fields_prefix.'created_by'){
-                $sql .= " , `".$fields_prefix.'created_by'.'`'." = '".$this->user_data['usr_users_ID']."' \n";
-                $log_new_values .= "`".$fields_prefix.'created_by'.'`'." = '".$this->user_data['usr_users_ID']."'\n";
+            if ($column['Field'] == $fields_prefix . 'created_by') {
+                $sql .= " , `" . $fields_prefix . 'created_by' . '`' . " = '" . $this->user_data['usr_users_ID'] . "' \n";
+                $log_new_values .= "`" . $fields_prefix . 'created_by' . '`' . " = '" . $this->user_data['usr_users_ID'] . "'\n";
             }
         }
 
@@ -1250,17 +1284,17 @@ class Main
         if ($found_change == 1) {
             foreach ($previous as $name => $value) {
 
-                echo $name . "-" . $value . "<br>";
+                //echo $name . "-" . $value . "<br>";
 
                 if ($name == $fields_prefix . 'created_date_time') {
                     $sql .= " , `" . $fields_prefix . 'last_update_date_time' . '`' . " = '" . date('Y-m-d G:i:s') . "' \n";
                     $log_new_values .= "`" . $fields_prefix . 'last_update_date_time' . '`' . " = '" . date('Y-m-d G:i:s') . "'\n";
-                    $log_old_values .= "`" . $fields_prefix . 'last_update_date_time' . '`' . " = '" . $previous[$fields_prefix.'last_update_date_time'] . "'\n";
+                    $log_old_values .= "`" . $fields_prefix . 'last_update_date_time' . '`' . " = '" . $previous[$fields_prefix . 'last_update_date_time'] . "'\n";
                 }
                 if ($name == $fields_prefix . 'created_by') {
                     $sql .= " , `" . $fields_prefix . 'last_update_by' . '`' . " = '" . $this->user_data['usr_users_ID'] . "' \n";
                     $log_new_values .= "`" . $fields_prefix . 'last_update_by' . '`' . " = '" . $this->user_data['usr_users_ID'] . "'\n";
-                    $log_old_values .= "`" . $fields_prefix . 'last_update_by' . '`' . " = '" . $previous[$fields_prefix.'last_update_by'] . "'\n";
+                    $log_old_values .= "`" . $fields_prefix . 'last_update_by' . '`' . " = '" . $previous[$fields_prefix . 'last_update_by'] . "'\n";
                 }
             }
         }
@@ -1343,9 +1377,9 @@ class Main
 
     }//
 
-    function update_log_file_custom($sql)
+    function update_log_file_custom($sql, $action = 'CUSTOM')
     {
-        $this->update_log_file('CUSTOM', 0, 'CUSTOM', 'CUSTOM', 'CUSTOM', $sql);
+        $this->update_log_file('CUSTOM', 0, $action, 'CUSTOM', 'CUSTOM', $sql);
     }//update_log_file_custom
 
     function convert_date_format($date, $from_format, $to_format, $date_time = 0)
@@ -1658,6 +1692,21 @@ class Main
         $time_elapsed_secs = microtime(true) - $main["start_script_time"];
         $time_elapsed_secs = round($time_elapsed_secs, 6);
         return $time_elapsed_secs;
+    }
+
+    //api methods
+    //headers
+    public function apiGetReadHeaders(){
+        header("Access-Control-Allow-Origin: *");
+        header("Content-Type: application/json; charset=UTF-8");
+    }
+
+    public function apiGetPostHeaders() {
+        header("Access-Control-Allow-Origin: *");
+        header("Content-Type: application/json; charset=UTF-8");
+        header("Access-Control-Allow-Methods: POST");
+        header("Access-Control-Max-Age: 3600");
+        header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
     }
 
 }//main class
