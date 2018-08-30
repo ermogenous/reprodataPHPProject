@@ -11,22 +11,17 @@ $db = new Main();
 $db->admin_title = "Manufacturers Modify";
 
 
-if ($db->user_data["usr_user_rights"] > 0) {
-
-    header("Location: manufacturers.php");
-    exit();
-
-}
-
 if ($_POST["action"] == "insert") {
     $db->check_restriction_area('insert');
 
+    $db->working_section = 'Manufacturers Insert';
     $db->db_tool_insert_row('manufacturers', $_POST, 'fld_',0, 'mnf_');
     header("Location: manufacturers.php");
     exit();
 
 } else if ($_POST["action"] == "update") {
     $db->check_restriction_area('update');
+    $db->working_section = 'Manufacturers Modify';
 
     $db->db_tool_update_row('manufacturers', $_POST, "`mnf_manufacturer_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'mnf_');
@@ -38,6 +33,7 @@ if ($_POST["action"] == "insert") {
 
 
 if ($_GET["lid"] != "") {
+    $db->working_section = 'Manufacturers Get data';
     $sql = "SELECT * FROM `manufacturers` WHERE `mnf_manufacturer_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
 }

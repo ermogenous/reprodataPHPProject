@@ -34,6 +34,7 @@ if ($_GET["lid"] != "") {
     $data = $db->query_fetch($sql);
 }
 
+$db->enable_jquery_ui();
 $db->show_empty_header();
 ?>
 <div class="container">
@@ -52,9 +53,13 @@ $db->show_empty_header();
                             Select Product
                         </div>
                         <div class="card-text">
-                            fdslfjlsd
-                            sadfsd<br>
-                            sdf
+                            <input name="productSelect" type="text" id="productSelect"
+                                   class="form-control" value="">
+                            <input type="hidden" name="productSelect-id" id="productSelect-id">
+
+                        </div>
+                        <div class="row">
+                            <div class="col-12" id="productSelect-description"></div>
                         </div>
                     </div>
                 </div>
@@ -99,6 +104,34 @@ $db->show_empty_header();
             document.getElementById('Submit').disabled = true
         }
     }
+
+    $('#productSelect').autocomplete({
+        source: 'customers_api.php?section=customers',
+        delay: 500,
+        minLength: 2,
+        messages: {
+            noResults: '',
+            results: function () {
+            }
+        },
+        focus: function( event, ui ) {
+            $( '#productSelect' ).val( ui.item.label );
+            return false;
+        },
+        select: function( event, ui ) {
+            $( '#productSelect' ).val( ui.item.label );
+            $( '#productSelect-id' ).val( ui.item.value );
+            $( '#productSelect-description' ).html(
+                '#:'
+                + ui.item.value
+                + '&nbsp;&nbsp;&nbsp; ID:' + ui.item.identity_card
+                + '&nbsp;&nbsp;&nbsp; Work Tel:' + ui.item.work_tel
+                + '&nbsp;&nbsp;&nbsp; Mobile Tel:' + ui.item.mobile
+            );
+            return false;
+        }
+
+    });
 </script>
 <?php
 $db->show_empty_footer();

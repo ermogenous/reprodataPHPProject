@@ -69,6 +69,23 @@ function template_header()
                                         class="fas fa-plus-circle"></i> New Customer</a>
                         </div>
                     </li>
+
+                    <!-- AGREEMENTS -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="far fa-handshake"></i> Agreements
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/agreements/agreements.php"><i
+                                        class="fas fa-eye"></i> View Agreements</a>
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/agreements/agreements_modify.php"><i
+                                        class="fas fa-plus-circle"></i> New Agreement</a>
+                        </div>
+                    </li>
+
                     <!-- PRODUCTS -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"

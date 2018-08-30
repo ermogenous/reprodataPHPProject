@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: micac
- * Date: 23/8/2018
- * Time: 5:35 ΜΜ
+ * Date: 28/8/2018
+ * Time: 1:23 ΜΜ
  */
 
 include("../include/main.php");
@@ -11,7 +11,7 @@ $db = new Main(1);
 $db->working_section = 'Customers API';
 $db->apiGetReadHeaders();
 
-if ($_GET['section'] == 'customers') {
+if ($_GET['section'] == 'products_search') {
 
     $sql = "SELECT 
               cst_customer_ID as value, 
@@ -19,7 +19,7 @@ if ($_GET['section'] == 'customers') {
               cst_identity_card as identity_card,
               cst_work_tel_1 as work_tel,
               cst_mobile_1 as mobile
-               FROM customers WHERE 
+               FROM products WHERE 
               (
 CONCAT(cst_identity_card, ' ', cst_name, ' ', cst_surname) 
                 LIKE '%".$_GET['term']."%'
