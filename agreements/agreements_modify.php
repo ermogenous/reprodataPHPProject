@@ -36,12 +36,11 @@ if ($_GET["lid"] != "") {
     $db->working_section = 'Agreements Get data';
     $sql = "SELECT * FROM `manufacturers` WHERE `mnf_manufacturer_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
-}
-else {
+} else {
     $data['mnf_active'] = 1;
 }
 
-
+$db->enable_jquery_ui();
 $db->show_header();
 ?>
     <div class="container">
@@ -54,67 +53,144 @@ $db->show_header();
                             &nbsp;Agreement</b>
                     </div>
 
+                    <div class="card" >
+                        <div class="card-body alert-light">
+                            <div class="card-title text-center">
+                                Select Customer
+                            </div>
+                            <div class="card-text">
+                                <input name="customerSelect" type="text" id="customerSelect"
+                                       class="form-control" value="">
+                                <input type="hidden" name="customerSelect-id" id="customerSelect-id">
+
+
+                                <div class="row">
+                                    <div class="col-sm-6 col-lg-2">#</div>
+                                    <div class="col-sm-6 col-lg-4" id="cus_number"></div>
+                                    <div class="col-sm-6 col-lg-2">ID</div>
+                                    <div class="col-sm-6 col-lg-4" id="cus_id"></div>
+                                    <div class="col-sm-6 col-lg-2">Tel:</div>
+                                    <div class="col-sm-6 col-lg-4" id="cus_work_tel"></div>
+                                    <div class="col-sm-6 col-lg-2">Mobile</div>
+                                    <div class="col-sm-6 col-lg-4" id="cus_mobile"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div class="form-group row">
-                        <label for="fld_active" class="col-sm-4 col-form-label">Status</label>
+                        <label for="fld_status" class="col-sm-4 col-form-label">Status</label>
                         <div class="col-sm-8">
-                            <select name="fld_active" id="fld_active"
-                                    class="form-control"
-                                    required>
-                                <option value="1" <?php if ($data['mnf_active'] == 1) echo 'selected';?>>Active</option>
-                                <option value="0" <?php if ($data['mnf_active'] == 0) echo 'selected';?>>In-active</option>
-                            </select>
+
                         </div>
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_code" class="col-sm-4 col-form-label">Code</label>
-                        <div class="col-sm-8">
-                            <input name="fld_code" type="text" id="fld_code"
+                        <label for="fld_starting_date" class="col-sm-3 col-form-label">Starting Date</label>
+                        <div class="col-sm-3">
+                            <input name="fld_starting_date" type="text" id="fld_starting_date"
+                                   class="form-control" onchange="setAutoExpiryDate()"
+                                   value="<?php echo $data["agr_starting_date"]; ?>"
+                                   required>
+                        </div>
+
+                        <label for="fld_expiry_date" class="col-sm-3 col-form-label">
+                            Expiry Date
+                            <i class="fas fa-sync" onclick="setAutoExpiryDate(true);" style="cursor: pointer;"></i>
+                        </label>
+                        <div class="col-sm-3">
+                            <input name="fld_expiry_date" type="text" id="fld_expiry_date"
                                    class="form-control"
-                                   value="<?php echo $data["mnf_code"]; ?>"
+                                   value="<?php echo $data["agr_expiry_date"]; ?>"
                                    required>
                         </div>
                     </div>
+                    <script>
+                        $(function () {
+                            $("#fld_starting_date").datepicker();
+                            $("#fld_starting_date").datepicker("option", "dateFormat", "dd/mm/yy");
+                        });
 
-                    <div class="form-group row">
-                        <label for="fld_name" class="col-sm-4 col-form-label">Name</label>
-                        <div class="col-sm-8">
-                            <input name="fld_name" type="text" id="fld_name"
-                                   class="form-control"
-                                   value="<?php echo $data["mnf_name"]; ?>"
-                                   required>
+                        $(function () {
+                            $("#fld_expiry_date").datepicker();
+                            $("#fld_expiry_date").datepicker("option", "dateFormat", "dd/mm/yy");
+                        });
+
+                        function setAutoExpiryDate(ignoreNotEmpty = false) {
+
+                            var start = $("#fld_starting_date").val();
+
+                            if (start != "") {
+                                var split = start.split("/");
+                                var newExpiry = new Date((split[2] * 1) + 1, (split[1] * 1) - 1, (split[0] * 1) - 1);
+
+                                if ($("#fld_expiry_date").val() == "" || ignoreNotEmpty == true) {
+
+                                    $("#fld_expiry_date").val(newExpiry.getDate() + "/" + ((newExpiry.getMonth() * 1) + 1) + "/" + newExpiry.getFullYear());
+
+                                }
+                            }
+
+                        }
+                    </script>
+
+
+
+
+
+                    <div class="card">
+                        <div class="card-body alert-light">
+                            <div class="card-title text-center">
+                                Products
+                            </div>
+                            <div class="card-text">
+                                <input name="productSelect" type="text" id="productSelect"
+                                       class="form-control" value="">
+                                <input type="hidden" name="productSelect-id" id="productSelect-id">
+
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-6 col-lg-2">#</div>
+                                <div class="col-sm-6 col-lg-4" id="prod_number"></div>
+                                <div class="col-sm-6 col-lg-2">Stock</div>
+                                <div class="col-sm-6 col-lg-4" id="prod_stock"></div>
+                                <div class="col-sm-2 col-lg-2">Description</div>
+                                <div class="col-sm-10 col-lg-10" id="prod_description"></div>
+                            </div>
                         </div>
                     </div>
+                    <script>
+                        $('#productSelect').autocomplete({
+                            source: '../products/products_api.php?section=products_search_machines',
+                            delay: 500,
+                            minLength: 1,
+                            messages: {
+                                noResults: '',
+                                results: function () {
+                                }
+                            },
+                            focus: function (event, ui) {
+                                $('#productSelect').val(ui.item.label);
+                                return false;
+                            },
+                            select: function (event, ui) {
+                                $('#productSelect').val(ui.item.label);
+                                $('#productSelect-id').val(ui.item.value);
 
-                    <div class="form-group row">
-                        <label for="fld_description" class="col-sm-4 col-form-label">Description</label>
-                        <div class="col-sm-8">
-                            <input name="fld_description" type="text" id="fld_description"
-                                   class="form-control"
-                                   value="<?php echo $data["mnf_description"]; ?>">
-                        </div>
-                    </div>
+                                $('#prod_number').html(ui.item.value);
+                                $('#prod_stock').html(ui.item.current_stock);
+                                $('#prod_description').html(ui.item.description);
+                                return false;
+                            }
 
-                    <div class="form-group row">
-                        <label for="fld_country_code_ID" class="col-sm-4 col-form-label">Country</label>
-                        <div class="col-sm-8">
-                            <select name="fld_country_code_ID" id="fld_country_code_ID"
-                                    class="form-control"
-                                    required>
-                                <option value=""></option>
-                                <?php
-                                $btResult = $db->query("SELECT * FROM codes WHERE cde_type = 'Countries' ORDER BY cde_value ASC");
-                                while($bt = $db->fetch_assoc($btResult)){
+                        });
+                    </script>
 
-                                    ?>
-                                    <option value="<?php echo $bt['cde_code_ID'];?>"
-                                        <?php if ($bt['cde_code_ID'] == $data['mnf_country_code_ID']) echo 'selected';?>>
-                                        <?php echo $bt['cde_value'];?>
-                                    </option>
-                                <?php } ?>
-                            </select>
-                        </div>
-                    </div>
+
+
+
+
 
                     <div class="form-group row">
                         <label for="name" class="col-sm-4 col-form-label"></label>
@@ -123,8 +199,9 @@ $db->show_header();
                                    value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
                             <input type="button" value="Back" class="btn btn-secondary"
-                                   onclick="window.location.assign('manufacturers.php')" >
-                            <input type="submit" name="Submit" id="Submit" value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Manufacturer"
+                                   onclick="window.location.assign('manufacturers.php')">
+                            <input type="submit" name="Submit" id="Submit"
+                                   value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Agreement"
                                    class="btn btn-secondary" onclick="submitForm()">
                         </div>
                     </div>
@@ -135,15 +212,41 @@ $db->show_header();
         </div>
     </div>
     <script>
-        function submitForm(){
+        function submitForm() {
             frm = document.getElementById('myForm');
-            if (frm.checkValidity() === false){
+            if (frm.checkValidity() === false) {
 
             }
             else {
                 document.getElementById('Submit').disabled = true
             }
         }
+
+        $('#customerSelect').autocomplete({
+            source: '../customers/customers_api.php?section=customers',
+            delay: 500,
+            minLength: 2,
+            messages: {
+                noResults: '',
+                results: function () {
+                }
+            },
+            focus: function (event, ui) {
+                $('#customerSelect').val(ui.item.label);
+                return false;
+            },
+            select: function (event, ui) {
+                $('#customerSelect').val(ui.item.label);
+                $('#customerSelect-id').val(ui.item.value);
+
+                $('#cus_number').html(ui.item.value);
+                $('#cus_id').html(ui.item.identity_card);
+                $('#cus_work_tel').html(ui.item.work_tel);
+                $('#cus_mobile').html(ui.item.mobile);
+                return false;
+            }
+
+        });
     </script>
 <?php
 $db->show_footer();

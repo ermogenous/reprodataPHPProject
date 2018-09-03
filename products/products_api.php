@@ -11,32 +11,31 @@ $db = new Main(1);
 $db->working_section = 'Customers API';
 $db->apiGetReadHeaders();
 
-if ($_GET['section'] == 'products_search') {
+if ($_GET['section'] == 'products_search_machines') {
 
     $sql = "SELECT 
-              cst_customer_ID as value, 
-              CONCAT(cst_name, ' ', cst_surname) as label,
-              cst_identity_card as identity_card,
-              cst_work_tel_1 as work_tel,
-              cst_mobile_1 as mobile
-               FROM products WHERE 
-              (
-CONCAT(cst_identity_card, ' ', cst_name, ' ', cst_surname) 
-                LIKE '%".$_GET['term']."%'
-OR
-CONCAT(cst_work_tel_1, ' ', cst_work_tel_2, ' ', cst_fax, ' ', cst_mobile_1, ' ', cst_mobile_2 )
-	LIKE '%".$_GET['term']."%') 
-	LIMIT 0,25";
+              prd_product_ID as value, 
+              CONCAT(prd_code, ' ', prd_name) as label,
+              prd_current_stock as current_stock,
+              prd_description as description
+              FROM 
+              products 
+              JOIN manufacturers ON mnf_manufacturer_ID = prd_manufacturer_ID
+              WHERE 
+              CONCAT(prd_code, prd_name) LIKE '%".$_GET['term']."%'
+              AND prd_type = 'Machine'
+	            
+	          LIMIT 0,25";
 
     $result = $db->query($sql);
     while ($row = $db->fetch_assoc($result)) {
         $data[] = $row;
     }
 
-    $db->update_log_file_custom($sql, 'Transaction API:none GET:'.print_r($_GET,true));
+    $db->update_log_file_custom($sql, 'Products API:products_search_machines GET:'.print_r($_GET,true));
 }
 else {
-    $db->update_log_file_custom('NONE', 'Transaction API:none GET:'.print_r($_GET,true));
+    $db->update_log_file_custom('NONE', 'Products API:none GET:'.print_r($_GET,true));
 }
 
 

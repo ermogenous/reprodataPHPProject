@@ -70,7 +70,7 @@ $table->generate_data();
                         <th scope="col"><?php $table->display_order_links('Customer', 'cst_name'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Starting Date', 'agr_starting_date'); ?></th>
                         <th scope="col">
-                            <a href="customers_modify.php">
+                            <a href="agreements_modify.php">
                                 <i class="fas fa-plus-circle"></i>
                             </a>
                         </th>
@@ -86,9 +86,9 @@ $table->generate_data();
                             <td><?php echo $row["cst_name"]; ?></td>
                             <td><?php echo $row["agr_starting_date"]; ?></td>
                             <td>
-                                <a href="customers_modify.php?lid=<?php echo $row["agr_agreement_ID"]; ?>"><i
+                                <a href="agreements_modify.php?lid=<?php echo $row["agr_agreement_ID"]; ?>"><i
                                             class="fas fa-edit"></i></a>&nbsp
-                                <a href="customers_delete.php?lid=<?php echo $row["agr_agreement_ID"]; ?>"
+                                <a href="agreements_delete.php?lid=<?php echo $row["agr_agreement_ID"]; ?>"
                                    onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this agreement?');"><i
                                             class="fas fa-minus-circle"></i></a>
                             </td>
