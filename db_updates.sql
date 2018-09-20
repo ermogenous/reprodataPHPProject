@@ -29,7 +29,7 @@ CREATE TABLE `products` (
 	`prd_manufacturer_ID` INT(8) NULL DEFAULT NULL,
 	`prd_active` INT(1) NULL DEFAULT NULL,
 	`prd_type` VARCHAR(20) NULL DEFAULT NULL COLLATE 'utf8_bin',
-	`prd_code` VARCHAR(20) NOT NULL DEFAULT '0' COLLATE 'utf8_bin',
+	`prd_model` VARCHAR(20) NOT NULL DEFAULT '0' COLLATE 'utf8_bin',
 	`prd_bar_code` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8_bin',
 	`prd_name` VARCHAR(50) NULL DEFAULT NULL COLLATE 'utf8_bin',
 	`prd_description` VARCHAR(100) NULL DEFAULT NULL COLLATE 'utf8_bin',
@@ -74,7 +74,7 @@ ALTER TABLE `customers`
 ALTER TABLE `products`
 	ADD COLUMN `prd_size` VARCHAR(20) NULL DEFAULT '0' AFTER `prd_type`,
 	ADD COLUMN `prd_color` VARCHAR(20) NULL DEFAULT '0' AFTER `prd_size`,
-	CHANGE COLUMN `prd_code` `prd_code` VARCHAR(20) NOT NULL DEFAULT '0' COLLATE 'utf8_bin' AFTER `prd_color`;
+	CHANGE COLUMN `prd_model` `prd_model` VARCHAR(20) NOT NULL DEFAULT '0' COLLATE 'utf8_bin' AFTER `prd_color`;
 
 ALTER TABLE `product_relations`
 	COMMENT='Products Relations';

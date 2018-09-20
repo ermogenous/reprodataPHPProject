@@ -32,7 +32,7 @@ $table->generate_data();
                     <tr>
                         <th scope="col"><?php $table->display_order_links('ID', 'prd_product_ID'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Type', 'prd_type'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Code', 'prd_code'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Model', 'prd_model'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Name', 'prd_name'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Current Stock', 'prd_current_stock'); ?></th>
                         <th scope="col">
@@ -49,7 +49,7 @@ $table->generate_data();
                     <tr onclick="editLine(<?php echo $row["prd_product_ID"];?>);">
                         <th scope="row"><?php echo $row["prd_product_ID"]; ?></th>
                         <td><?php echo $row["prd_type"]; ?></td>
-                        <td><?php echo $row["prd_code"]; ?></td>
+                        <td><?php echo $row["prd_model"]; ?></td>
                         <td><?php echo $row["prd_name"]; ?></td>
                         <td><?php echo $row["prd_current_stock"]; ?></td>
                         <td>

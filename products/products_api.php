@@ -15,14 +15,14 @@ if ($_GET['section'] == 'products_search_machines') {
 
     $sql = "SELECT 
               prd_product_ID as value, 
-              CONCAT(prd_code, ' ', prd_name) as label,
+              CONCAT(prd_model, ' ', prd_name) as label,
               prd_current_stock as current_stock,
               prd_description as description
               FROM 
               products 
               JOIN manufacturers ON mnf_manufacturer_ID = prd_manufacturer_ID
               WHERE 
-              CONCAT(prd_code, prd_name) LIKE '%".$_GET['term']."%'
+              CONCAT(prd_model, prd_name) LIKE '%".$_GET['term']."%'
               AND prd_type = 'Machine'
 	            
 	          LIMIT 0,25";

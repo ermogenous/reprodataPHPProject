@@ -49,7 +49,7 @@ $table->generate_data();
                     <thead>
                     <tr>
                         <th scope="col"><?php $table->display_order_links('ID', 'prdr_product_relations_ID'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Code', 'prd_code'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Model', 'prd_model'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Name', 'prd_name'); ?></th>
                         <th scope="col">
                             <a href="relations_modify.php?pid=<?php echo $_GET['lid'] . "&type=" . $_GET['type'] . "&area=" . $_GET['area']; ?>">
@@ -64,7 +64,7 @@ $table->generate_data();
                         ?>
                         <tr onclick="editLine(<?php echo $row["prdr_product_relations_ID"]; ?>);">
                             <th scope="row"><?php echo $row["prdr_product_relations_ID"]; ?></th>
-                            <td><?php echo $row["prd_code"]; ?></td>
+                            <td><?php echo $row["prd_model"]; ?></td>
                             <td><?php echo $row["prd_name"]; ?></td>
                             <td>
                                 <a href="relations_modify.php?lid=<?php echo $row["prdr_product_relations_ID"]; ?>&pid=<?php echo $_GET['lid'] . "&type=" . $_GET['type'] . "&area=" . $_GET['area']; ?>"><i

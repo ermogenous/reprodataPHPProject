@@ -33,7 +33,7 @@ $table->generate_data();
                     <thead>
                     <tr>
                         <th scope="col"><?php $table->display_order_links('ID', 'cspr_customer_product_ID'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Machine', 'prd_code'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Machine', 'prd_model'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Name', 'cst_name'); ?></th>
                         <th scope="col">
                             <a href="customers_products_modify.php?lid=<?php echo $_GET['lid']; ?>">
@@ -48,7 +48,7 @@ $table->generate_data();
                         ?>
                         <tr onclick="editLine(<?php echo $row["cspr_customer_product_ID"]; ?>);">
                             <th scope="row"><?php echo $row["cspr_customer_product_ID"]; ?></th>
-                            <td><?php echo $row["prd_code"]; ?></td>
+                            <td><?php echo $row["prd_model"]; ?></td>
                             <td><?php echo $row["cst_name"]; ?></td>
                             <td>
                                 <a href="customers_products_modify.php?lid=<?php echo $row["cspr_customer_product_ID"]; ?>">

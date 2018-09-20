@@ -214,7 +214,7 @@ function getQueryMachine($id, $type) {
     }
 
 
-    $sql = "SELECT * FROM products WHERE prd_type = '".$type."' ".$excluded." ORDER BY prd_code ASC";
+    $sql = "SELECT * FROM products WHERE prd_type = '".$type."' ".$excluded." ORDER BY prd_model ASC";
     echo $sql;
     return $sql;
 }
@@ -239,7 +239,7 @@ function getQueryNotMachine($id, $type) {
     }
 
 
-    $sql = "SELECT * FROM products WHERE prd_type = 'Machine' ".$excluded." ORDER BY prd_code ASC";
+    $sql = "SELECT * FROM products WHERE prd_type = 'Machine' ".$excluded." ORDER BY prd_model ASC";
     echo $sql;
     return $sql;
 }

@@ -267,11 +267,11 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_code" class="col-sm-4 col-form-label">Code</label>
+                            <label for="fld_code" class="col-sm-4 col-form-label">Model</label>
                             <div class="col-sm-8">
-                                <input name="fld_code" type="text" id="fld_code"
+                                <input name="fld_model" type="text" id="fld_model"
                                        class="form-control"
-                                       value="<?php echo $data["prd_code"]; ?>"
+                                       value="<?php echo $data["prd_model"]; ?>"
                                        required>
                             </div>
                         </div>
