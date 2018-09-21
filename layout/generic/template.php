@@ -15,9 +15,8 @@ function template_header()
 
         <link rel="stylesheet" href="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/css/bootstrap.min.css"
               rel="stylesheet">
-        <script defer src="https://use.fontawesome.com/releases/v5.0.10/js/all.js"
-                integrity="sha384-slN8GvtUJGnv6ca26v8EzVaR9DC58QEwsIk9q1QXdCU8Yu8ck/tL/5szYlBbqmS+"
-                crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+              integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
 
         <script language="JavaScript" type="text/javascript"
                 src="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/js/jquery-3.3.1.min.js"></script>
@@ -164,10 +163,13 @@ function template_header()
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/codes/codes.php">
-                                    <i class="fas fa-envelope"></i> Codes</a>
+                                    <i class="fab fa-linode"></i> Codes</a>
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/send_auto_emails/send_auto_emails.php">
                                     <i class="fas fa-envelope"></i> Auto Emails</a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/settings/settings_update.php">
+                                    <i class="fas fa-screwdriver"></i> System Settings</a>
                             </div>
 
                         </li>

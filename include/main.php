@@ -675,8 +675,10 @@ class Main
     public function update_setting($section, $newValue = '')
     {
         $newData['value'] = $newValue;
+        $newData['section'] = $section;
         $this->db_tool_update_row('settings', $newData, "stg_section = '" . $section . "'", ''
             , '', 'execute', 'stg_');
+        //$this->db_tool_insert_update_row('settings', $newData, "stg_section = '" . $section . "'", '', '', 'stg_');
     }
 
     function process_lock_validate($name, $description)
@@ -1307,6 +1309,7 @@ class Main
 
             $sql .= "WHERE " . $where_clause;
             if ($return_or_execute == 'execute') {
+                echo $sql;
                 $this->query($sql);
                 //update the log file.
                 $this->update_log_file($table, $row_serial, 'UPDATE RECORD', $log_new_values, $log_old_values, $sql);
@@ -1707,6 +1710,20 @@ class Main
         header("Access-Control-Allow-Methods: POST");
         header("Access-Control-Max-Age: 3600");
         header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+    }
+
+    public function buildNumber($prefix, $totalLeadingZeros, $number){
+        $out = $prefix;
+        if ($totalLeadingZeros > 0 && $totalLeadingZeros <= 100) {
+            $numLength = strlen($number);
+            for ($i = 1; $i <= $totalLeadingZeros; $i++) {
+                if ($i > $numLength){
+                    $out .= "0";
+                }
+            }
+            $out .= $number;
+        }
+        return $out;
     }
 
 }//main class

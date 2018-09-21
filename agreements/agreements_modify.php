@@ -91,9 +91,8 @@ if ($_POST["action"] == "insert") {
 
 
     $db->commit_transaction();
-    //header("Location: agreements.php");
-    //exit();
-
+    header("Location: agreements.php");
+    exit();
 
 }
 
