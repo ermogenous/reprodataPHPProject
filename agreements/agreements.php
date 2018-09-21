@@ -8,6 +8,7 @@
 
 include("../include/main.php");
 include("../include/tables.php");
+include("agreements_functions.php");
 
 $db = new Main(1, 'UTF-8');
 $db->admin_title = "Agreements";
@@ -62,12 +63,13 @@ $table->generate_data();
 
             <div class="text-center"><?php $table->show_pages_links(); ?></div>
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover alert alert-success">
                     <thead>
                     <tr>
                         <th scope="col"><?php $table->display_order_links('#', 'agr_agreement_ID'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Number', 'agr_agreement_number'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Customer', 'cst_name'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Status', 'agr_status'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Starting Date', 'agr_starting_date'); ?></th>
                         <th scope="col">
                             <a href="agreements_modify.php">
@@ -80,17 +82,20 @@ $table->generate_data();
                     <?php
                     while ($row = $table->fetch_data()) {
                         ?>
-                        <tr onclick="editLine(<?php echo $row["agr_agreement_ID"]; ?>);">
+                        <tr onclick="editLine(<?php echo $row["agr_agreement_ID"]; ?>);" class="<?php echo getAgreementColor($row['agr_status']);?>">
                             <th scope="row"><?php echo $row["agr_agreement_ID"]; ?></th>
                             <td><?php echo $row["agr_agreement_number"]; ?></td>
                             <td><?php echo $row["cst_name"]; ?></td>
+                            <td><?php echo $row["agr_status"]; ?></td>
                             <td><?php echo $row["agr_starting_date"]; ?></td>
                             <td>
                                 <a href="agreements_modify.php?lid=<?php echo $row["agr_agreement_ID"]; ?>"><i
                                             class="fas fa-edit"></i></a>&nbsp
+                                <?php if ($row['agr_status'] == 'Pending') { ?>
                                 <a href="agreements_delete.php?lid=<?php echo $row["agr_agreement_ID"]; ?>"
                                    onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this agreement?');"><i
                                             class="fas fa-minus-circle"></i></a>
+                                <?php } ?>
                             </td>
                         </tr>
                         <?php
@@ -99,7 +104,28 @@ $table->generate_data();
                     </tbody>
                 </table>
             </div>
+            <div class="row">
+                <div class="col-2 agrPendingColor text-center">
+                    Pending
+                </div>
+                <div class="col-2 agrLockedColor text-center">
+                    Locked
+                </div>
+                <div class="col-2 agrActiveColor text-center">
+                    Active
+                </div>
+                <div class="col-2 agrExpiredColor text-center">
+                    Expired
+                </div>
+                <div class="col-2 agrDeletedColor text-center">
+                    Deleted
+                </div>
+                <div class="col-2 agrCancelledColor text-center">
+                    Cancelled
+                </div>
+            </div>
         </div>
+
         <div class="col-lg-2"></div>
     </div>
 </div>

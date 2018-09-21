@@ -125,7 +125,7 @@ $db->show_header();
                         $numberPrefix = $db->get_setting('agr_agreement_number_prefix');
                         ?>
                         <div class="form-group row">
-                            <label for="fld_identity_card" class="col-sm-4 col-form-label">Number Prefix</label>
+                            <label for="fld_agr_agreement_number_prefix" class="col-sm-4 col-form-label">Number Prefix</label>
                             <div class="col-sm-8">
                                 <input name="fld_agr_agreement_number_prefix" type="text" id="fld_agr_agreement_number_prefix"
                                        class="form-control"
@@ -136,7 +136,7 @@ $db->show_header();
                         $numberLeadingZeros = $db->get_setting('agr_agreement_number_leading_zeros');
                         ?>
                         <div class="form-group row">
-                            <label for="fld_identity_card" class="col-sm-4 col-form-label">Leading Zeros</label>
+                            <label for="fld_agr_agreement_number_leading_zeros" class="col-sm-4 col-form-label">Leading Zeros</label>
                             <div class="col-sm-8">
                                 <input name="fld_agr_agreement_number_leading_zeros" type="text" id="fld_agr_agreement_number_leading_zeros"
                                        class="form-control"
@@ -147,7 +147,7 @@ $db->show_header();
                         $numberLastUsed = $db->get_setting('agr_agreement_number_last_used');
                         ?>
                         <div class="form-group row">
-                            <label for="fld_identity_card" class="col-sm-4 col-form-label">Last Number Used</label>
+                            <label for="fld_agr_agreement_number_last_used" class="col-sm-4 col-form-label">Last Number Used</label>
                             <div class="col-sm-4">
                                 <input name="fld_agr_agreement_number_last_used" type="text" id="fld_agr_agreement_number_last_used"
                                        class="form-control"
@@ -155,6 +155,18 @@ $db->show_header();
                             </div>
                             <div class="col-sm-4">
                                 <?php echo $db->buildNumber($numberPrefix, $numberLeadingZeros, $numberLastUsed); ?>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="fld_agr_agreement_status_on_insert" class="col-sm-4 col-form-label">Status On Insert</label>
+                            <div class="col-sm-8">
+                                <select name="fld_agr_agreement_status_on_insert" id="fld_agr_agreement_status_on_insert"
+                                        class="form-control"
+                                        required>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Locked">Locked</option>
+                                </select>
                             </div>
                         </div>
 

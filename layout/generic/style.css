@@ -92,3 +92,22 @@
 .purpleColor{
     color:purple;
 }
+
+.agrPendingColor{
+    background-color: #fffec1;
+}
+.agrLockedColor{
+    background-color: lightblue;
+}
+.agrActiveColor{
+    background-color: lightgreen;
+}
+.agrExpiredColor{
+    background-color: darkgray;
+}
+.agrDeletedColor{
+    background-color: #ffc6c3;
+}
+.agrCancelledColor{
+    background-color: #ffa7a3;
+}

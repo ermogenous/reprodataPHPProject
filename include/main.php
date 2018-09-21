@@ -1237,6 +1237,16 @@ class Main
     }//function db_tool_insert_row
 
 
+    /**
+     * @param $table
+     * @param $data_array
+     * @param $where_clause
+     * @param $row_serial
+     * @param string $data_prefix
+     * @param string $return_or_execute
+     * @param string $fields_prefix
+     * @return string
+     */
     function db_tool_update_row($table, $data_array, $where_clause, $row_serial, $data_prefix = 'fld_', $return_or_execute = 'execute', $fields_prefix = '')
     {
         $log_new_values = '';
@@ -1309,7 +1319,7 @@ class Main
 
             $sql .= "WHERE " . $where_clause;
             if ($return_or_execute == 'execute') {
-                echo $sql;
+                //echo $sql;
                 $this->query($sql);
                 //update the log file.
                 $this->update_log_file($table, $row_serial, 'UPDATE RECORD', $log_new_values, $log_old_values, $sql);
