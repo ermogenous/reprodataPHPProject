@@ -82,6 +82,9 @@ class Main
             $this->settings = $main;
         }
 
+        //set timezone
+        date_default_timezone_set($main["timeZone"]);
+
         $this->db_total_queries = 0;
         $this->encoding = $enc;
         if ($this->settings["disable_headers"] != 'yes') {
@@ -370,8 +373,11 @@ class Main
             //get the folder details.
             //get the currenct folder
             $folder = substr($_SERVER['PHP_SELF'], strlen($this->settings["remote_folder"]) + 1);
+//echo $folder."<br>";
             $pos = strripos($folder, '/');
-            $folder = substr($folder, 0, $pos + 1);
+            //$folder = substr($folder, 0, $pos + 1);
+            $folder = substr($folder, 0, $pos );
+//echo $folder."<br>";
             $sql = "SELECT  IF( us.usr_user_rights =0 OR COUNT(per.prm_permissions_ID) = 0,1, pel.prl_view) as view
 					FROM `permissions` as per
 					LEFT OUTER JOIN `permissions_lines` as `pel` ON pel.prl_permissions_ID = per.prm_permissions_ID
@@ -382,7 +388,7 @@ class Main
 					AND `prm_type` = 'folder' 
 					AND us.usr_users_ID = " . $this->user_data["usr_users_ID"];
             $folder_result = $this->query_fetch($sql);
-
+//echo $sql;
 
             if ($menu_result["view"] == 0) {
                 header("Location: " . $this->settings["site_url"] . "/home.php");
@@ -420,17 +426,50 @@ class Main
 					`prm_filename` = '" . substr($_SERVER['PHP_SELF'], strlen($this->settings["remote_folder"]) + 1) . "' 
 					AND `prm_type` = 'file' 
 					AND us.usr_users_ID = " . $this->user_data["usr_users_ID"];
+//echo $sql."<br><br>\n\n";
 
-        $result = $this->query_fetch($sql);
+        $resultFile = $this->query_fetch($sql);
 
+
+        $folder = substr($_SERVER['PHP_SELF'], strlen($this->settings["remote_folder"]) + 1);
+        $pos = strripos($folder, '/');
+        $folder = substr($folder, 0, $pos );
+        $sqlFolder = "SELECT  IF( us.usr_user_rights =0 OR COUNT(per.prm_permissions_ID) = 0,1,  pel.prl_" . $area . ") as result
+					FROM `permissions` as per
+					LEFT OUTER JOIN `permissions_lines` as `pel` ON pel.prl_permissions_ID = per.prm_permissions_ID
+					LEFT OUTER JOIN `users_groups` as usg ON usg.usg_users_groups_ID = pel.prl_users_groups_ID
+					LEFT OUTER JOIN `users` as us ON us.usr_users_groups_ID = usg.usg_users_groups_ID
+					WHERE 
+					`prm_filename` = '" . $folder . "' 
+					AND `prm_type` = 'folder' 
+					AND us.usr_users_ID = " . $this->user_data["usr_users_ID"];
+//echo $sqlFolder."<br><br>\n\n";
+
+        $resultFolder = $this->query_fetch($sqlFolder);
+
+        //first check the file
         if ($return_result == 1) {
-            return $result["result"];
+            return $resultFile["result"];
         }
 
-        if ($result["result"] != 1) {
-            $this->error("PERMISSION DENIED");
+        if ($resultFile["result"] != 1) {
+            $this->generateSessionAlert('PERMISSION DENIED (F)');
+            header("Location: " . $this->settings["site_url"] . "/home.php");
+            exit();
+            //$this->error("PERMISSION DENIED");
         }
-//echo $sql;
+
+        //check the folder
+        if ($return_result == 1) {
+            return $resultFolder["result"];
+        }
+
+        if ($resultFolder["result"] != 1) {
+            $this->generateSessionDismissError('PERMISSION DENIED (D)');
+            header("Location: " . $this->settings["site_url"] . "/home.php");
+            exit();
+            //$this->error("PERMISSION DENIED");
+        }
 
     }//public function check_restriction_area
 

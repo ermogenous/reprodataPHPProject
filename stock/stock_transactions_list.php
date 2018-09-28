@@ -30,7 +30,7 @@ $table->generate_data();
                 <div class="text-center"><?php $table->show_pages_links(); ?></div>
                 <div class="table-responsive">
                     <table class="table table-hover">
-                        <thead>
+                        <thead class="alert alert-success">
                         <tr>
                             <th scope="col"><?php $table->display_order_links('ID', 'stk_stock_ID'); ?></th>
                             <th scope="col"><?php $table->display_order_links('Status', 'stk_status'); ?></th>

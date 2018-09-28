@@ -31,6 +31,8 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
 
     $main["login_page_filename"] = 'login.php';
 
+    $main["timeZone"] = 'Europe/Athens';
+
 } else {
 
 	//TIME ZONE
@@ -58,6 +60,8 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
     //no-reply email
     $main["no-reply-email"] = 'no-reply@akdemetriou.com';
     $main["no-reply-email-name"] = $main["admin_title"].' - No-Reply';
+
+    $main["timeZone"] = 'Europe/Athens';
 
 
     $main["environment"] = 'extranet';

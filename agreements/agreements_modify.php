@@ -7,13 +7,13 @@
  */
 
 include("../include/main.php");
+include("agreements_functions.php");
 $db = new Main();
 $db->admin_title = "Agreements Modify";
 
 //print_r($_POST);
 //echo "\n\n\n\n<br><br><br>";
 if ($_POST["action"] == "insert") {
-    echo "Inserting";
     $db->check_restriction_area('insert');
 
     $db->working_section = 'Agreements Insert';
@@ -23,10 +23,23 @@ if ($_POST["action"] == "insert") {
 
     $db->start_transaction();
 
+    //if has no items then the status will always be pending
+    $itemsFound = false;
+    for ($i = 1; $i <= 25; $i++) {
+        if ($_POST['productLine_' . $i] == 1) {
+            $itemsFound = true;
+        }
+    }
+    if ($itemsFound == true){
+        $agrData['status'] = $db->get_setting('agr_agreement_status_on_insert');
+    }
+    else {
+        $agrData['status'] = 'Pending';
+    }
+
     $newAgreementNumber = issueAgreementNumber();
     //first insert the agreement
     $agrData['customer_ID'] = $_POST['customerSelectId'];
-    $agrData['status'] = $db->get_setting('agr_agreement_status_on_insert');
     $agrData['agreement_number'] = $newAgreementNumber;
     $agrData['starting_date'] = $db->convert_date_format($_POST['fld_starting_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $agrData['expiry_date'] = $db->convert_date_format($_POST['fld_expiry_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
@@ -55,6 +68,14 @@ if ($_POST["action"] == "insert") {
 } else if ($_POST["action"] == "update") {
     $db->check_restriction_area('update');
     $db->working_section = 'Agreements Modify';
+
+    //only allow update if pending agreement
+    $data = $db->query_fetch('SELECT * FROM agreements WHERE agr_agreement_ID = '.$_GET['lid']);
+    if ($data['agr_status'] != 'Pending') {
+        $db->generateSessionDismissError('Can only edit Pending Agreements');
+        header("Location: agreements.php");
+        exit();
+    }
 
     $db->start_transaction();
 
@@ -101,14 +122,16 @@ if ($_POST["action"] == "insert") {
 
 
 if ($_GET["lid"] != "") {
+    $db->check_restriction_area('update');
     $db->working_section = 'Agreements Get data';
     $sql = "SELECT * FROM 
             `agreements` 
             JOIN customers ON agr_customer_ID = cst_customer_ID
             WHERE `agr_agreement_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
-
-
+}
+else {
+    $db->check_restriction_area('insert');
 }
 
 $db->enable_jquery_ui();
@@ -126,7 +149,7 @@ $db->show_header();
 
                     <div class="form-group row">
                         <div class="col-lg-2 col-sm-3">Status</div>
-                        <div class="col-lg-4 col-sm-3 text-left">
+                        <div class="col-lg-4 col-sm-3 text-left <?php echo getAgreementColor($data['agr_status']);?>">
                             <?php echo $data["agr_status"]; ?>
                         </div>
                         <div class="col-lg-2 col-sm-3">Ag. Number</div>
@@ -191,11 +214,9 @@ $db->show_header();
                             <input name="customerSelect" type="text" id="customerSelect"
                                    class="form-control"
                                    value="<?php echo $data['cst_name'] . " " . $data['cst_surname']; ?>"
-                            required
+                                   required>
+                                   <!--pattern="\d{13,16}"-->
 
-                                   data-value-missing="Translate('Required')"
-                                   pattern="\d{13,16}" data-pattern-mismatch="Translate('Invalid credit card')"
-                            >
                             <input name="customerSelectId" id="customerSelectId" type="hidden"
                                    value="<?php echo $data['cst_customer_ID']; ?>">
                         </div>
@@ -287,7 +308,7 @@ $db->show_header();
                                     <div class="col-12 alert alert-success">
                                         <div class="row">
                                          <div class="col-11">Product ` + TotalProductsShow + `</div>
-                                         <div class="col-1"><i class="fas fa-minus-circle" style="cursor: pointer" onclick="removeProductLine(` + TotalProductsShow + `)"></i></div>
+                                         <div class="col-1"><i class="fas fa-minus-circle redColor" style="cursor: pointer" onclick="removeProductLine(` + TotalProductsShow + `)"></i></div>
                                         </div>
                                     </div>
                                     <input type="hidden" id="productLine_` + TotalProductsShow + `"
@@ -331,10 +352,11 @@ $db->show_header();
                                     <div class="col-lg-2 col-sm-3">Product</div>
                                     <div class="col-lg-4 col-sm-3">
                                         <input name="productSelect_` + TotalProductsShow + `" type="text" id="productSelect_` + TotalProductsShow + `"
-                                                   class="form-control" value="">
+                                                   class="form-control" value="" required>
+
                                         <input name="productSelectId_` + TotalProductsShow + `"
                                                id="productSelectId_` + TotalProductsShow + `"
-                                               type="hidden" value="">
+                                               type="hidden" value="" >
                                         </div>
                                         <div class="col-6">
                                             <b>#</b><span id="productSelect-id_` + TotalProductsShow + `"></span>
@@ -368,7 +390,7 @@ $db->show_header();
                         if ($_GET["lid"] > 0) {
                             //js data for the lines
                             $sql = "SELECT * FROM agreement_items 
-                                        JOIN products ON agri_product_ID = prd_product_ID
+                                        LEFT OUTER JOIN products ON agri_product_ID = prd_product_ID
                                         WHERE agri_agreement_ID = " . $_GET["lid"] . "
                                         ORDER BY agri_line_number ASC";
                             $result = $db->query($sql);
@@ -436,9 +458,11 @@ $db->show_header();
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
                             <input type="button" value="Back" class="btn btn-secondary"
                                    onclick="window.location.assign('agreements.php')">
+                            <?php if ($data["agr_status"] == 'Pending') { ?>
                             <input type="submit" name="Submit" id="Submit"
                                    value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Agreement"
-                                   class="btn btn-secondary" onclick="submitForm()">
+                                   class="btn btn-secondary" onclick="return submitForm()">
+                            <?php } ?>
                         </div>
                     </div>
 
@@ -448,12 +472,34 @@ $db->show_header();
     </div>
     <script>
         function submitForm() {
-            frm = document.getElementById('myForm');
-            if (frm.checkValidity() === false) {
+            //extra validations
+            for (let i=1; i<= TotalProductsShow; i++){
+                if ($('#productSelectId_' + i).val() == ''){
+                    //if no actual product is selected then empty the product text field
+                    $('#productSelect_' + i).val('');
+                }
+
+                //console.log($('#colorPerCopyCost' + i).val());
+                if (1==2) {
+                    $('#colorPerCopyCost' + i).attr('Required', true);
+                    $('#colorPerCopyCost' + i).val(' ');
+                    $('#colorPerCopyCost' + i).val('');
+                }
+
 
             }
+
+            //console.log('Submit');
+            let frm = document.getElementById('myForm');
+            if (frm.checkValidity() === false) {
+                //console.log('Invalid Form');
+                return false;
+            }
             else {
+                //console.log('Valid Form');
                 document.getElementById('Submit').disabled = true
+                return true;
+                //return false;
             }
         }
 

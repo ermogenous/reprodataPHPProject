@@ -29,7 +29,7 @@ $table->generate_data();
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead>
-                    <tr>
+                    <tr class="alert alert-success">
                         <th scope="col"><?php $table->display_order_links('ID', 'prd_product_ID'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Type', 'prd_type'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Model', 'prd_model'); ?></th>

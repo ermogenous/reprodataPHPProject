@@ -22,7 +22,7 @@ $table->extra_from_section = "JOIN customers ON cst_customer_ID = agr_customer_I
 
 if ($_POST['search'] == 'search') {
     $db->working_section = 'Agreements Search';
-    $table->extras = "cst_customer_ID = ".$_POST['search_field-id'];
+    $table->extras = "cst_customer_ID = " . $_POST['search_field-id'];
 }
 
 
@@ -82,20 +82,36 @@ $table->generate_data();
                     <?php
                     while ($row = $table->fetch_data()) {
                         ?>
-                        <tr onclick="editLine(<?php echo $row["agr_agreement_ID"]; ?>);" class="<?php echo getAgreementColor($row['agr_status']);?>">
+                        <tr onclick="editLine(<?php echo $row["agr_agreement_ID"]; ?>);"
+                            class="<?php echo getAgreementColor($row['agr_status']); ?>">
                             <th scope="row"><?php echo $row["agr_agreement_ID"]; ?></th>
                             <td><?php echo $row["agr_agreement_number"]; ?></td>
                             <td><?php echo $row["cst_name"]; ?></td>
                             <td><?php echo $row["agr_status"]; ?></td>
-                            <td><?php echo $row["agr_starting_date"]; ?></td>
+                            <td><?php echo $db->convert_date_format($row["agr_starting_date"],'yyyy-mm-dd','dd/mm/yyyy'); ?></td>
                             <td>
-                                <a href="agreements_modify.php?lid=<?php echo $row["agr_agreement_ID"]; ?>"><i
-                                            class="fas fa-edit"></i></a>&nbsp
+
                                 <?php if ($row['agr_status'] == 'Pending') { ?>
-                                <a href="agreements_delete.php?lid=<?php echo $row["agr_agreement_ID"]; ?>"
-                                   onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this agreement?');"><i
-                                            class="fas fa-minus-circle"></i></a>
+                                    <a href="agreements_modify.php?lid=<?php echo $row["agr_agreement_ID"]; ?>">
+                                        <i class="fas fa-edit"></i></a>&nbsp
+                                    <a href="agreements_delete.php?lid=<?php echo $row["agr_agreement_ID"]; ?>"
+                                       onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this agreement?');">
+                                        <i class="fas fa-minus-circle"></i></a>&nbsp
+                                    <a href="agreements_change_status.php?lid=<?php echo $row["agr_agreement_ID"]; ?>">
+                                        <i class="fas fa-lock"></i></a>
+                                <?php } else if ($row['agr_status'] == 'Locked') { ?>
+                                    <a href="agreements_modify.php?lid=<?php echo $row["agr_agreement_ID"]; ?>">
+                                        <i class="fas fa-eye"></i></a>&nbsp
+                                    <a href="agreements_change_status.php?lid=<?php echo $row["agr_agreement_ID"]; ?>">
+                                        <i class="fas fa-plug"></i></a>
+                                <?php } else if ($row['agr_status'] == 'Active') { ?>
+                                    <a href="agreements_modify.php?lid=<?php echo $row["agr_agreement_ID"]; ?>">
+                                        <i class="fas fa-eye"></i></a>&nbsp
+                                    <a href="agreements_change_status.php?lid=<?php echo $row["agr_agreement_ID"]; ?>">
+                                        <i class="fas fa-ban"></i></a>
                                 <?php } ?>
+
+
                             </td>
                         </tr>
                         <?php
