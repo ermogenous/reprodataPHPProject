@@ -20,14 +20,34 @@ $db->show_header();
 $table = new draw_table('agreements', 'agr_agreement_ID', 'ASC');
 $table->extra_from_section = "JOIN customers ON cst_customer_ID = agr_customer_ID";
 
+
 if ($_POST['search'] == 'search') {
     $db->working_section = 'Agreements Search';
-    $table->extras = "cst_customer_ID = " . $_POST['search_field-id'];
+    if ($_POST['search_field-id'] > 0){
+        $table->extras = "agr_agreement_ID = " . $_POST['search_field-id'];
+    }
+    else {
+        $table->extras = "cst_identity_card LIKE '%".$_POST['search_field']."%'
+                            OR 
+                            cst_name LIKE '%".$_POST['search_field']."%'
+                            OR
+                            cst_surname LIKE '%".$_POST['search_field']."%'
+                            OR
+                            cst_work_tel_1 LIKE '%".$_POST['search_field']."%'
+                            OR
+                            cst_work_tel_2  LIKE '%".$_POST['search_field']."%'
+                            OR 
+                            cst_fax  LIKE '%".$_POST['search_field']."%'
+                            OR
+                            cst_mobile_1 LIKE '%".$_POST['search_field']."%'
+                            OR
+                            cst_mobile_2 LIKE '%".$_POST['search_field']."%'
+                            OR
+                            agr_agreement_number  LIKE '%".$_POST['search_field']."%'";
+    }
 }
-
-
+$table->order_by = 'DESC';
 $table->generate_data();
-
 ?>
 
 
@@ -153,11 +173,14 @@ $table->generate_data();
             window.location.assign('agreements_modify.php?lid=' + id);
         }
     }
+
 </script>
 
 <?php
 $table->autoCompleteFieldName = 'search_field';
-$table->autoCompleteSourceAPI = "agreements_api.php?section=agreements_search";
+$table->autoCompleteSourceAPI = "agreements_api.php?section=agreements";
+$table->autoJsCodeHideFocus = true;
+$table->autoJsCodeAddedSelectSection = "$('#myForm').submit();";
 $table->showAutoCompleteJsCode();
 $db->show_footer();
 ?>

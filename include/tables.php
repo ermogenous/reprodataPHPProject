@@ -220,6 +220,8 @@ public function show_per_page_links($extra=0) {
 	return $return;
 }
 
+public $autoJsCodeHideFocus = false;
+public $autoJsCodeAddedSelectSection = '';
 public function showAutoCompleteJsCode() {
     global $db;
 
@@ -243,13 +245,19 @@ public function showAutoCompleteJsCode() {
             results: function () {
             }
         },
-        focus: function( event, ui ) {
+        focus: function( event, ui ) {";
+        if ($this->autoJsCodeHideFocus == false) {
+            echo "
             $( '#".$this->autoCompleteFieldName."' ).val( ui.item.label );
             return false;
-        },
+        ";
+        }
+
+        echo "},
         select: function( event, ui ) {
         $( '#".$this->autoCompleteFieldName."' ).val( ui.item.label );
         $( '#".$this->autoCompleteFieldName."-id' ).val( ui.item.value );
+        ".$this->autoJsCodeAddedSelectSection."
         return false;
       }
 

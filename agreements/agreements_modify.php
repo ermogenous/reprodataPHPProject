@@ -7,7 +7,7 @@
  */
 
 include("../include/main.php");
-include("agreements_functions.php");
+include_once("agreements_functions.php");
 $db = new Main();
 $db->admin_title = "Agreements Modify";
 
@@ -18,9 +18,6 @@ if ($_POST["action"] == "insert") {
 
     $db->working_section = 'Agreements Insert';
 
-    include('agreements_functions.php');
-
-
     $db->start_transaction();
 
     //if has no items then the status will always be pending
@@ -30,13 +27,9 @@ if ($_POST["action"] == "insert") {
             $itemsFound = true;
         }
     }
-    if ($itemsFound == true){
-        $agrData['status'] = $db->get_setting('agr_agreement_status_on_insert');
-    }
-    else {
-        $agrData['status'] = 'Pending';
-    }
 
+    $agrData['status'] = 'Pending';
+    $agrData['process_status'] = 'New';
     $newAgreementNumber = issueAgreementNumber();
     //first insert the agreement
     $agrData['customer_ID'] = $_POST['customerSelectId'];
@@ -58,9 +51,21 @@ if ($_POST["action"] == "insert") {
             $lines[$i]['per_copy_color_cost'] = $_POST['colorPerCopyCost' . $i];
             $lines[$i]['rent_cost'] = $_POST['rentCost_' . $i];
 
-            $db->db_tool_insert_row('agreement_items', $lines[$i], '', 0, 'agri_');
+            $newSerial = $db->db_tool_insert_row('agreement_items', $lines[$i], '', 1, 'agri_');
         }
     }
+
+    if ($itemsFound == true) {
+        if ($db->get_setting('agr_agreement_status_on_insert') == 'Locked'){
+            $agr = new Agreements($newSerial);
+            $agr->disableCommit = true;
+            if ($agr->lockAgreement() == false) {
+                $db->generateSessionDismissError($agr->errorDescription);
+
+            }
+        }
+    }
+
     $db->commit_transaction();
     header("Location: agreements.php");
     exit();
@@ -70,7 +75,7 @@ if ($_POST["action"] == "insert") {
     $db->working_section = 'Agreements Modify';
 
     //only allow update if pending agreement
-    $data = $db->query_fetch('SELECT * FROM agreements WHERE agr_agreement_ID = '.$_GET['lid']);
+    $data = $db->query_fetch('SELECT * FROM agreements WHERE agr_agreement_ID = ' . $_GET['lid']);
     if ($data['agr_status'] != 'Pending') {
         $db->generateSessionDismissError('Can only edit Pending Agreements');
         header("Location: agreements.php");
@@ -129,14 +134,19 @@ if ($_GET["lid"] != "") {
             JOIN customers ON agr_customer_ID = cst_customer_ID
             WHERE `agr_agreement_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
-}
-else {
+} else {
     $db->check_restriction_area('insert');
+    $data["agr_status"] = "Pending";
 }
 
 $db->enable_jquery_ui();
 $db->show_header();
 ?>
+<script>
+    //global variables
+    let outOfStockFound = false;
+    let proceedSubmit = true;
+</script>
     <div class="container">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12">
@@ -149,7 +159,7 @@ $db->show_header();
 
                     <div class="form-group row">
                         <div class="col-lg-2 col-sm-3">Status</div>
-                        <div class="col-lg-4 col-sm-3 text-left <?php echo getAgreementColor($data['agr_status']);?>">
+                        <div class="col-lg-4 col-sm-3 text-left <?php echo getAgreementColor($data['agr_status']); ?>">
                             <?php echo $data["agr_status"]; ?>
                         </div>
                         <div class="col-lg-2 col-sm-3">Ag. Number</div>
@@ -163,7 +173,8 @@ $db->show_header();
                         <div class="col-lg-4 col-sm-3">
                             <input name="fld_starting_date" type="text" id="fld_starting_date"
                                    class="form-control" onchange="setAutoExpiryDate()"
-                                   required>
+                                   required
+                                <?php disable(); ?>>
                         </div>
 
                         <label for="fld_expiry_date" class="col-lg-2 col-sm-3 col-form-label">
@@ -173,7 +184,8 @@ $db->show_header();
                         <div class="col-lg-4 col-sm-3">
                             <input name="fld_expiry_date" type="text" id="fld_expiry_date"
                                    class="form-control"
-                                   required>
+                                   required
+                                <?php disable(); ?>>
                         </div>
                     </div>
                     <script>
@@ -214,8 +226,9 @@ $db->show_header();
                             <input name="customerSelect" type="text" id="customerSelect"
                                    class="form-control"
                                    value="<?php echo $data['cst_name'] . " " . $data['cst_surname']; ?>"
-                                   required>
-                                   <!--pattern="\d{13,16}"-->
+                                   required
+                                <?php disable();?>>
+                            <!--pattern="\d{13,16}"-->
 
                             <input name="customerSelectId" id="customerSelectId" type="hidden"
                                    value="<?php echo $data['cst_customer_ID']; ?>">
@@ -231,15 +244,18 @@ $db->show_header();
                     <div class="row">
                         <div class="col-12"> &nbsp;</div>
                     </div>
-
+                    <?php if ($data['agr_status'] == 'Pending') { ?>
                     <div class="row">
                         <div class="alert alert-primary col-12">
                             <i class="fas fa-plus-circle" onclick="addNewProduct();" style="cursor: pointer;"></i>
                             Insert Products
                         </div>
                     </div>
+                    <?php } ?>
+
 
                     <?php
+
                     for ($i = 1; $i <= 25; $i++) {
                         echo '
                             <div id="productHolder_' . $i . '"></div>';
@@ -270,11 +286,11 @@ $db->show_header();
 
                         function addNewProduct() {
                             if ($('#productHolder_' + (TotalProductsShow * 1 + 1)).length) {
-                                console.log("Inserting New Product" + (TotalProductsShow + 1));
+                                //console.log("Inserting New Product" + (TotalProductsShow + 1));
                                 addNewProductLine();
                             }
                             else {
-                                console.log("Cannot insert more lines");
+                                //console.log("Cannot insert more lines");
                                 alert('Reached Max amount of lines. Ask admin to add more');
                             }
                         }
@@ -287,16 +303,20 @@ $db->show_header();
                                 $('#productLine_' + lineNum).val(
                                     $('#productLine_' + lineNum).val() * -1
                                 );
+                                checkStockAllLines();
                             }
                         }
 
                         function reAppearProductLine(lineNum) {
-                            console.log('ReAppearing line' + lineNum);
-                            $('#productHtmlHolder_' + lineNum).show();
-                            $('#productHtmlDelete_' + lineNum).hide();
-                            $('#productLine_' + lineNum).val(
-                                $('#productLine_' + lineNum).val() * -1
-                            );
+                            if (confirm('Are you sure you want to re-appear line '+ lineNum)){
+                                console.log('ReAppearing line' + lineNum);
+                                $('#productHtmlHolder_' + lineNum).show();
+                                $('#productHtmlDelete_' + lineNum).hide();
+                                $('#productLine_' + lineNum).val(
+                                    $('#productLine_' + lineNum).val() * -1
+                                );
+                                checkStockAllLines();
+                            }
                         }
 
                         function addNewProductLine() {
@@ -308,12 +328,14 @@ $db->show_header();
                                     <div class="col-12 alert alert-success">
                                         <div class="row">
                                          <div class="col-11">Product ` + TotalProductsShow + `</div>
+                                         <?php if ($data['agr_status'] == 'Pending') { ?>
                                          <div class="col-1"><i class="fas fa-minus-circle redColor" style="cursor: pointer" onclick="removeProductLine(` + TotalProductsShow + `)"></i></div>
+                                         <?php } ?>
                                         </div>
                                     </div>
                                     <input type="hidden" id="productLine_` + TotalProductsShow + `"
                                         name="productLine_` + TotalProductsShow + `"
-                                        value="1">
+                                        value="1" >
                                     <input type="hidden" id="agreementItemID_` + TotalProductsShow + `"
                                         name="agreementItemID_` + TotalProductsShow + `"
                                         value="">
@@ -323,15 +345,19 @@ $db->show_header();
                                     <div class="col-lg-4 col-sm-3">
                                         <select name="agreementType_` + TotalProductsShow + `" id="agreementType_` + TotalProductsShow + `"
                                             class="form-control"
-                                            required>
+                                            required <?php disable();?>>
                                             <option value=""></option>
-                                            <option value="Type">Type</option>
+                                            <option value="Rent">Rent +CPC</option>
+                                            <option value="CPC">Charge Per Copy</option>
+                                            <option value="Min">Minimum Charge</option>
+                                            <option value="Labour">Labour Only</option>
+                                            <option value="No">No Agreement</option>
                                         </select>
                                     </div>
                                     <div class="col-lg-2 col-sm-3">Rent Cost</div>
                                     <div class="col-lg-4 col-sm-3">
                                         <input name="rentCost_` + TotalProductsShow + `" type="text" id="rentCost_` + TotalProductsShow + `"
-                                                   class="form-control" value="">
+                                                   class="form-control" value="" <?php disable();?>>
                                     </div>
                                 </div>
 
@@ -339,12 +365,12 @@ $db->show_header();
                                     <div class="col-lg-2 col-sm-3">Black Per Copy Cost</div>
                                     <div class="col-lg-4 col-sm-3">
                                         <input name="blackPerCopyCost` + TotalProductsShow + `" type="text" id="blackPerCopyCost` + TotalProductsShow + `"
-                                                   class="form-control" value="">
+                                                   class="form-control" value="" <?php disable();?>>
                                     </div>
                                     <div class="col-lg-2 col-sm-3">Color Per Copy Cost</div>
                                     <div class="col-lg-4 col-sm-3">
                                         <input name="colorPerCopyCost` + TotalProductsShow + `" type="text" id="colorPerCopyCost` + TotalProductsShow + `"
-                                                   class="form-control" value="">
+                                                   class="form-control" value="" <?php disable();?>>
                                     </div>
                                 </div>
 
@@ -352,21 +378,29 @@ $db->show_header();
                                     <div class="col-lg-2 col-sm-3">Product</div>
                                     <div class="col-lg-4 col-sm-3">
                                         <input name="productSelect_` + TotalProductsShow + `" type="text" id="productSelect_` + TotalProductsShow + `"
-                                                   class="form-control" value="" required>
+                                                   class="form-control" value="" required <?php disable();?>>
 
                                         <input name="productSelectId_` + TotalProductsShow + `"
                                                id="productSelectId_` + TotalProductsShow + `"
-                                               type="hidden" value="" >
+                                               type="hidden" value="" <?php disable();?>>
                                         </div>
                                         <div class="col-6">
                                             <b>#</b><span id="productSelect-id_` + TotalProductsShow + `"></span>
                                             <b>Model:</b> <span id="prod_number_` + TotalProductsShow + `"></span>
                                             <b>Stock:</b> <span id="prod_stock_` + TotalProductsShow + `"></span>
                                             <b>Description:</b> <span id="prod_description_` + TotalProductsShow + `"></span>
+
                                         </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-12">&nbsp;</div>
+                                    <div class="col-12">
+                                    &nbsp;
+                                    </div>
+                                </div>
+                                <div class="row alert alert-danger" style="display:none;" id="prod_alert_` + TotalProductsShow + `">
+                                    <div class="col-12 text-center">
+                                        Not enough stock
+                                    </div>
                                 </div>
                             </div>
                             <div id="productHtmlDelete_` + TotalProductsShow + `" style="display: none;">
@@ -408,7 +442,8 @@ $db->show_header();
                                 $linesJsData .= ",productStock:'" . $line['prd_current_stock'] . "'";
                                 $linesJsData .= ",productDescription:'" . $line['prd_description'] . "'";
                                 $linesJsData .= "};
-                                    fillProduct(linesData);";
+                                    fillProduct(linesData);
+                                    checkStock(TotalProductsShow);";
                                 echo $linesJsData;
                             }
                         }
@@ -436,6 +471,9 @@ $db->show_header();
                                     $('#prod_number_' + num).html(ui.item.value);
                                     $('#prod_stock_' + num).html(ui.item.current_stock);
                                     $('#prod_description_' + num).html(ui.item.description);
+
+                                    checkStock(num);
+
                                     return false;
                                 }
 
@@ -443,6 +481,47 @@ $db->show_header();
 
                         }
 
+                        function checkStock(workingLine){
+                            outOfStockFound = false;
+                            //first find the product ID of the line
+                            let productID = $('#productSelect-id_' + workingLine).text();
+
+                            let currentStock = $('#prod_stock_' + workingLine).text();
+                            //loop into all the lines
+                            let totalStockFound = 0;
+                            for (let i = 1; i <= TotalProductsShow; i++ ){
+                                //console.log('checking line ' + i);
+                                console.log($('#productSelect-id_' + i).text() + " == "+ productID)
+                                if ($('#productSelect-id_' + i).text() == productID) {
+                                    //also check if that line is removed
+                                    if ($('#productLine_' + i).val() > 0) {
+                                        console.log('Found' + $('#productSelect-id_' + i).val());
+
+                                        //this if will avoid marking also the previous lines
+                                        if (i <= workingLine) {
+                                            totalStockFound++;
+                                        }
+                                    }
+                                }
+                                $('#prod_alert_' + workingLine).hide();
+                            }
+                            if (totalStockFound > currentStock){
+                                //also check if the line has a product before creating the alert
+                                //console.log(productID);
+                                if (productID > 0) {
+                                    $('#prod_alert_' + workingLine).show();
+                                    //console.log('Marking line '+ workingLine);
+                                    outOfStockFound = true;
+                                }
+                            }
+
+                        }
+
+                        function checkStockAllLines(){
+                            for(let i=1; i <= TotalProductsShow; i++){
+                                checkStock(i);
+                            }
+                        }
                     </script>
 
 
@@ -459,9 +538,9 @@ $db->show_header();
                             <input type="button" value="Back" class="btn btn-secondary"
                                    onclick="window.location.assign('agreements.php')">
                             <?php if ($data["agr_status"] == 'Pending') { ?>
-                            <input type="submit" name="Submit" id="Submit"
-                                   value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Agreement"
-                                   class="btn btn-secondary" onclick="return submitForm()">
+                                <input type="submit" name="Submit" id="Submit"
+                                       value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Agreement"
+                                       class="btn btn-secondary" onclick="return submitForm()">
                             <?php } ?>
                         </div>
                     </div>
@@ -471,22 +550,30 @@ $db->show_header();
         </div>
     </div>
     <script>
+
         function submitForm() {
-            //extra validations
-            for (let i=1; i<= TotalProductsShow; i++){
-                if ($('#productSelectId_' + i).val() == ''){
+            //extra validations in lines
+            for (let i = 1; i <= TotalProductsShow; i++) {
+                if ($('#productSelectId_' + i).val() == '') {
                     //if no actual product is selected then empty the product text field
                     $('#productSelect_' + i).val('');
                 }
 
                 //console.log($('#colorPerCopyCost' + i).val());
-                if (1==2) {
+                if (1 == 2) {
                     $('#colorPerCopyCost' + i).attr('Required', true);
                     $('#colorPerCopyCost' + i).val(' ');
                     $('#colorPerCopyCost' + i).val('');
                 }
 
 
+            }
+
+            //check if out of stock found
+            if (outOfStockFound === true){
+                if (confirm('Stock is not enough for this agreement. Save anyway? \n You cannot lock this agreement until stock issue is fixed.')){
+                    outOfStockFound = false;
+                }
             }
 
             //console.log('Submit');
@@ -497,9 +584,11 @@ $db->show_header();
             }
             else {
                 //console.log('Valid Form');
-                document.getElementById('Submit').disabled = true
-                return true;
-                //return false;
+                if (proceedSubmit == true) {
+                    document.getElementById('Submit').disabled = true
+                    return true;
+                    //return false;
+                }
             }
         }
 
@@ -532,4 +621,13 @@ $db->show_header();
     </script>
 <?php
 $db->show_footer();
+
+function disable()
+{
+    global $data;
+    if ($data["agr_status"] != 'Pending') {
+        echo "disabled";
+    }
+}
+
 ?>

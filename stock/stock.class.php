@@ -20,6 +20,8 @@ class Stock {
     public $currentMonth = 0;
     public $currentYear = 0;
 
+    public $disableCommit = false;
+
     /**
      * Stock constructor.
      * @param int $productID
@@ -81,7 +83,9 @@ class Stock {
         $stock['date_time'] = date('Y-m-d G:i:s');
         $stock['month'] = date('m');
         $stock['year'] = date('Y');
-        $db->start_transaction();
+        if ($this->disableCommit == false) {
+            $db->start_transaction();
+        }
         $this->newStockRowID = $db->db_tool_insert_row('stock', $stock, '', 1, 'stk_');
 
         //update product
@@ -89,8 +93,9 @@ class Stock {
         $product['stock_last_update'] = date('Y-m-d G:i:s');
         $db->working_section = 'Update product@addRemoveStock';
         $db->db_tool_update_row('products', $product, 'prd_product_ID = ' . $this->productID, $this->productID, '', 'execute', 'prd_');
-
-        $db->commit_transaction();
+        if ($this->disableCommit == false) {
+            $db->commit_transaction();
+        }
     }
 
     public function checkForErrors(){
@@ -170,7 +175,9 @@ class Stock {
 
         $newStockData['add_minus'] = $newAddMinus;
         $newStockData['amount'] = $amount;
-        $db->start_transaction();
+        if ($this->disableCommit == false) {
+            $db->start_transaction();
+        }
         $db->db_tool_update_row('stock',$newStockData,'stk_stock_ID = '.$transactionID, $transactionID,''
         ,'execute','stk_');
 
@@ -178,7 +185,9 @@ class Stock {
         $newProductData['current_stock'] = $this->productData['prd_current_stock'] + $difference;
         $db->db_tool_update_row('products',$newProductData,'prd_product_ID = '.$this->productID,
             $this->productID,'','execute','prd_');
-        $db->commit_transaction();
+        if ($this->disableCommit == false) {
+            $db->commit_transaction();
+        }
         return true;
 
     }
@@ -202,7 +211,9 @@ class Stock {
             return 'Can only delete pending stock transactions';
         }
 
-        $db->start_transaction();
+        if ($this->disableCommit == false) {
+            $db->start_transaction();
+        }
         //delete the transaction
         $db->db_tool_delete_row('stock', $transactionID, 'stk_stock_ID = '.$transactionID);
 
@@ -210,14 +221,18 @@ class Stock {
         $newProductData['current_stock'] = $this->productData['prd_current_stock'] - ($previousData['stk_amount'] * $previousData['stk_add_minus']);
         $db->db_tool_update_row('products',$newProductData,'prd_product_ID = '.$this->productID,
             $this->productID,'','execute','prd_');
-        $db->commit_transaction();
+        if ($this->disableCommit == false) {
+            $db->commit_transaction();
+        }
         return true;
 
     }
 
     public function closePeriod() {
         global $db;
-        $db->start_transaction();
+        if ($this->disableCommit == false) {
+            $db->start_transaction();
+        }
         $messages = '';
         //first check if the active period is the same with the current period
         if ($this->currentYear == Date('Y') && $this->currentMonth == Date('m')){
@@ -256,8 +271,9 @@ class Stock {
 
             //update closed period setting
             $db->update_setting('stk_active_month',($prevTransPeriod + 1));
-
-            $db->commit_transaction();
+            if ($this->disableCommit == false) {
+                $db->commit_transaction();
+            }
         }
 
 

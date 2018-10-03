@@ -6,13 +6,19 @@
  * Time: 10:42 ΠΜ
  */
 
+include ("../stock/stock.class.php");
+
 class Agreements {
 
     public $agreementID;
+    public $copyAgreementID;
     public $agreementData;
+    public $copyAgreementData;
     public $status;
     public $totalItems;
     public $itemsData;
+    public $itemsStock;
+    public $disableCommit = false;
 
     public $errorCode;
     public $errorDescription;
@@ -29,27 +35,57 @@ class Agreements {
         $this->status = $this->agreementData['agr_status'];
 
         //items
-        $sql = "SELECT * FROM agreement_items WHERE agri_agreement_ID = ".$agreementID." ORDER BY agri_line_number ASC";
+        $sql = "SELECT * FROM 
+                agreement_items 
+                JOIN products ON prd_product_ID = agri_product_ID
+                WHERE agri_agreement_ID = ".$agreementID." ORDER BY agri_line_number ASC";
         $result = $db->query($sql);
         $this->totalItems = 0;
         while ($row = $db->fetch_assoc($result)) {
             $this->totalItems++;
             $this->itemsData[] = $row;
+            $this->itemsStock[$row["agri_product_ID"]]['currentStock'] = $row['prd_current_stock'];
+            $this->itemsStock[$row["agri_product_ID"]]['totalFound']++;
         }
 
     }
 
     public function lockAgreement(){
         global $db;
-        $db->start_transaction();
+        if ($this->disableCommit == false){
+            $db->start_transaction();
+        }
+
         if ($this->status == 'Pending'){
             //check if has any items
             if ($this->totalItems > 0){
+
+                //check if there is enough stock to lock this agreement
+                for($i=0; $i < $this->totalItems; $i++){
+                    print_r($this->itemsStock);
+                    if ($this->itemsStock[$i]['totalFound'] > $this->itemsStock[$i]['currentStock']){
+                        $this->errorCode = 'LockNotEnoughStock';
+                        $this->errorDescription = 'Cannot lock because not enough stock exists.';
+                        return false;
+                    }
+                }
+                exit();
+
                 $data['status'] = 'Locked';
                 $db->db_tool_update_row('agreements', $data,
                     'agr_agreement_ID = '.$this->agreementID, $this->agreementID, '',
                     'execute','agr_');
-                $db->commit_transaction();
+
+                //update the stock
+                for($i=0; $i < $this->totalItems; $i++){
+                    $stock = new Stock($this->itemsData[$i]['agri_product_ID']);
+                    $stock->disableCommit = true;
+                    $stock->addRemoveStock(-1, 'Agreement Lock '.$this->agreementData['agr_agreement_number']);
+                }
+
+                if ($this->disableCommit == false) {
+                    $db->commit_transaction();
+                }
                 return true;
             }else {
                 $this->errorCode = 'LockNoItems';
@@ -66,14 +102,26 @@ class Agreements {
 
     public function unLockAgreement(){
         global $db;
-        $db->start_transaction();
+        if ($this->disableCommit == false) {
+            $db->start_transaction();
+        }
         if ($this->status == 'Locked'){
             //check if has any items
                 $data['status'] = 'Pending';
                 $db->db_tool_update_row('agreements', $data,
                     'agr_agreement_ID = '.$this->agreementID, $this->agreementID, '',
                     'execute','agr_');
+
+
+            //update the stock
+            for($i=0; $i < $this->totalItems; $i++){
+                $stock = new Stock($this->itemsData[$i]['agri_product_ID']);
+                $stock->disableCommit = true;
+                $stock->addRemoveStock(1, 'Agreement UnLock '.$this->agreementData['agr_agreement_number']);
+            }
+            if ($this->disableCommit == false) {
                 $db->commit_transaction();
+            }
                 return true;
         }
         else {
@@ -85,7 +133,9 @@ class Agreements {
 
     public function activateAgreement(){
         global $db;
-        $db->start_transaction();
+        if ($this->disableCommit == false) {
+            $db->start_transaction();
+        }
         if ($this->status == 'Locked'){
             if ($this->totalItems > 0){
                 $data['status'] = 'Active';
@@ -96,7 +146,9 @@ class Agreements {
                 $db->db_tool_update_row('agreements', $data,
                     'agr_agreement_ID = '.$this->agreementID, $this->agreementID, '',
                     'execute','agr_');
-                $db->commit_transaction();
+                if ($this->disableCommit == false) {
+                    $db->commit_transaction();
+                }
                 return true;
             }
             else {
@@ -119,14 +171,18 @@ class Agreements {
 
     public function deleteAgreement(){
         global $db;
-        $db->start_transaction();
+        if ($this->disableCommit == false) {
+            $db->start_transaction();
+        }
         if ($this->status == 'Pending'){
             $data['status'] = 'Deleted';
 
             $db->db_tool_update_row('agreements', $data,
                 'agr_agreement_ID = '.$this->agreementID, $this->agreementID, '',
                 'execute','agr_');
-            $db->commit_transaction();
+            if ($this->disableCommit == false) {
+                $db->commit_transaction();
+            }
             return true;
         }
         else {
@@ -140,6 +196,51 @@ class Agreements {
         if ($this->status == 'Active'){
 
         }
+    }
+
+    public function makeAgreementCopy($processStatus, $startingDate, $expiryDate){
+        global $db;
+        //create the new data for the new record
+        $newData["customer_ID"] = $this->agreementData["agr_customer_ID"];
+        $newData["status"] = "Pending";
+        $newData["process_status"] = $processStatus;
+        $newData["starting_date"] = $startingDate;
+        $newData["expiry_date"] = $expiryDate;
+        $newData["agreement_number"] = $this->agreementData["agr_agreement_number"];
+        $newData["replacing_agreement_ID"] = $this->agreementData["agr_agreement_ID"];
+        $newData["replaced_by_agreement_ID"] = "";
+
+        if ($this->disableCommit == false){
+            $db->start_transaction();
+        }
+
+        $this->copyAgreementID = $db->db_tool_insert_row('agreements', $newData,'',1
+        ,'agr_');
+
+        //update the old policy
+        $oldData["replaced_by_agreement_ID"] = $this->copyAgreementID;
+        $db->db_tool_update_row('agreement', $oldData, 'agr_agreement_ID = '.$this->agreementID,
+            $this->agreementID,'', 'execute', 'agr_');
+
+        //insert lines
+
+
+        if ($this->disableCommit == false){
+            $db->commit_transaction();
+        }
+
+    }
+
+    public function switchFromCopy(){
+
+    }
+
+    public function issueRenewal(){
+
+    }
+
+    public function issueEndorsement(){
+
     }
 
 

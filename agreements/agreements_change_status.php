@@ -192,13 +192,13 @@ $db->show_header();
 
 <script>
     function lockAgreement(){
-        if (confirm('Are you sure you want to lock this agreement?')){
+        if (confirm('Are you sure you want to lock this agreement? \nThis action will update the stock.')){
             window.location.assign('?lid=<?php echo $_GET['lid'];?>&action=lock');
         }
     }
 
     function unLockAgreement() {
-        if (confirm('Are you sure you want to un-lock this agreement?')){
+        if (confirm('Are you sure you want to un-lock this agreement?\n This action will update the stock.')){
             window.location.assign('?lid=<?php echo $_GET['lid'];?>&action=unlock');
         }
     }

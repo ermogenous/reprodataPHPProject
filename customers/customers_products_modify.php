@@ -83,7 +83,7 @@ $db->show_empty_header();
                         <input type="button" value="Back" class="btn btn-secondary"
                                onclick="window.location.assign('customers.php')">
                         <input type="submit" name="Submit" id="Submit"
-                               value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Customer"
+                               value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Customer Product"
                                class="btn btn-secondary"
                                onclick="submitForm()">
                     </div>
@@ -106,7 +106,7 @@ $db->show_empty_header();
     }
 
     $('#productSelect').autocomplete({
-        source: 'customers_api.php?section=customers',
+        source: '../products/products_api.php?section=products_search_machines',
         delay: 500,
         minLength: 2,
         messages: {
@@ -124,9 +124,8 @@ $db->show_empty_header();
             $( '#productSelect-description' ).html(
                 '#:'
                 + ui.item.value
-                + '&nbsp;&nbsp;&nbsp; ID:' + ui.item.identity_card
-                + '&nbsp;&nbsp;&nbsp; Work Tel:' + ui.item.work_tel
-                + '&nbsp;&nbsp;&nbsp; Mobile Tel:' + ui.item.mobile
+                + '&nbsp;&nbsp;&nbsp; Description:' + ui.item.label
+                + '&nbsp;&nbsp;&nbsp; Stock:' + ui.item.current_stock
             );
             return false;
         }
