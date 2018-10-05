@@ -102,6 +102,9 @@
 .agrActiveColor{
     background-color: lightgreen;
 }
+.agrArchivedColor{
+    background-color: #ffde99;
+}
 .agrExpiredColor{
     background-color: darkgray;
 }

@@ -1495,6 +1495,22 @@ class Main
         return $return;
     }
 
+    function convertDateToNumber($date, $format){
+
+        $fixedDate = $this->convert_date_format($date,$format,'dd/mm/yyyy');
+        $parts = explode('/',$fixedDate);
+
+        $return = $parts[2];
+        if ($parts[1] < 10){
+            $return .= "0".$parts[1] * 1;
+        }
+        else {
+            $return .= $parts[1];
+        }
+        $return .= $parts[0];
+        return $return;
+    }
+
 //echos only if admin
     function admin_echo($echo)
     {

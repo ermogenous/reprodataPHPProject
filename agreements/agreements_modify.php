@@ -34,6 +34,8 @@ if ($_POST["action"] == "insert") {
     //first insert the agreement
     $agrData['customer_ID'] = $_POST['customerSelectId'];
     $agrData['agreement_number'] = $newAgreementNumber;
+    $agrData['replaced_by_agreement_ID'] = 0;
+    $agrData['replacing_agreement_ID'] = 0;
     $agrData['starting_date'] = $db->convert_date_format($_POST['fld_starting_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $agrData['expiry_date'] = $db->convert_date_format($_POST['fld_expiry_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     //$agrData['agr_agreement_number'] = $_POST[''];
@@ -164,7 +166,7 @@ $db->show_header();
                         </div>
                         <div class="col-lg-2 col-sm-3">Ag. Number</div>
                         <div class="col-lg-4 col-sm-3 text-left">
-                            RP12-000011
+                            <?php echo $data["agr_agreement_number"];?>
                         </div>
                     </div>
 

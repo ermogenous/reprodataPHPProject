@@ -28,7 +28,10 @@ class Agreements {
         global $db;
         $this->agreementID = $agreementID;
         $this->agreementData = $db->query_fetch('
-          SELECT * FROM 
+          SELECT 
+          * 
+          ,DATE_ADD(agr_expiry_date, INTERVAL 1 Day)as clo_review_starting_date
+          FROM 
           agreements
           JOIN customers ON cst_customer_ID = agr_customer_ID
           WHERE agr_agreement_ID = '.$agreementID);
@@ -62,14 +65,13 @@ class Agreements {
 
                 //check if there is enough stock to lock this agreement
                 for($i=0; $i < $this->totalItems; $i++){
-                    print_r($this->itemsStock);
+                    //print_r($this->itemsStock);
                     if ($this->itemsStock[$i]['totalFound'] > $this->itemsStock[$i]['currentStock']){
                         $this->errorCode = 'LockNotEnoughStock';
                         $this->errorDescription = 'Cannot lock because not enough stock exists.';
                         return false;
                     }
                 }
-                exit();
 
                 $data['status'] = 'Locked';
                 $db->db_tool_update_row('agreements', $data,
@@ -149,6 +151,17 @@ class Agreements {
                 if ($this->disableCommit == false) {
                     $db->commit_transaction();
                 }
+
+                //if agr_replacing_agreement_ID then we need to change the status of the previous
+                if ($this->agreementData['agr_replacing_agreement_ID'] > 0) {
+                    $prevData['status'] = 'Archived';
+                    $db->db_tool_update_row('agreements', $prevData,
+                        'agr_agreement_ID = '.$this->agreementData['agr_replacing_agreement_ID'],
+                        $this->agreementData['agr_replacing_agreement_ID'], '',
+                        'execute','agr_');
+                }
+
+
                 return true;
             }
             else {
@@ -180,6 +193,17 @@ class Agreements {
             $db->db_tool_update_row('agreements', $data,
                 'agr_agreement_ID = '.$this->agreementID, $this->agreementID, '',
                 'execute','agr_');
+
+            //if is replacing another policy needs to fix it
+            if ($this->agreementData['agr_replacing_agreement_ID'] > 0){
+                $fData['replaced_by_agreement_ID'] = 0;
+                $db->db_tool_update_row('agreements', $fData,
+                    'agr_agreement_ID = '.$this->agreementData['agr_replacing_agreement_ID'],
+                    $this->agreementData['agr_replacing_agreement_ID'],
+                    '',
+                    'execute','agr_');
+            }
+
             if ($this->disableCommit == false) {
                 $db->commit_transaction();
             }
@@ -198,8 +222,9 @@ class Agreements {
         }
     }
 
-    public function makeAgreementCopy($processStatus, $startingDate, $expiryDate){
+    private function makeAgreementCopy($processStatus, $startingDate, $expiryDate){
         global $db;
+        $db->working_section = 'Agreements Functions makeAgreementCopy';
         //create the new data for the new record
         $newData["customer_ID"] = $this->agreementData["agr_customer_ID"];
         $newData["status"] = "Pending";
@@ -219,15 +244,30 @@ class Agreements {
 
         //update the old policy
         $oldData["replaced_by_agreement_ID"] = $this->copyAgreementID;
-        $db->db_tool_update_row('agreement', $oldData, 'agr_agreement_ID = '.$this->agreementID,
+        $db->db_tool_update_row('agreements', $oldData, 'agr_agreement_ID = '.$this->agreementID,
             $this->agreementID,'', 'execute', 'agr_');
 
         //insert lines
+        //loop into them
+        for ($i=0; $i < $this->totalItems; $i++){
 
+            $lineNewData["agreement_ID"] = $this->copyAgreementID;
+            $lineNewData["product_ID"] = $this->itemsData[$i]["agri_product_ID"];
+            $lineNewData["line_number"] = $this->itemsData[$i]["agri_line_number"];
+            $lineNewData["agreement_type"] = $this->itemsData[$i]["agri_agreement_type"];
+            $lineNewData["per_copy_black_cost"] = $this->itemsData[$i]["agri_per_copy_black_cost"];
+            $lineNewData["per_copy_color_cost"] = $this->itemsData[$i]["agri_per_copy_color_cost"];
+            $lineNewData["rent_cost"] = $this->itemsData[$i]["agri_rent_cost"];
+
+            $db->db_tool_insert_row('agreement_items', $lineNewData,'',1
+                ,'agri_');
+
+        }
 
         if ($this->disableCommit == false){
             $db->commit_transaction();
         }
+        return $this->copyAgreementID;
 
     }
 
@@ -235,12 +275,61 @@ class Agreements {
 
     }
 
-    public function issueRenewal(){
+    public function reviewAgreement($expiryDate){
+        global $db;
+        if ($this->agreementData['agr_status'] != 'Active'){
+            $this->errorCode = "ReviewNotActive";
+            $this->errorDescription = "Only active agreements can be reviewed";
+            return 0;
+        }
+        if ($this->agreementData['agr_replaced_by_agreement_ID'] > 0){
+            $this->errorCode = "ReviewAlreadyReplaced";
+            $this->errorDescription = "This agreement seems to be already replaced. Cannot review";
+            return 0;
+        }
+        //check if expiry date is after starting date
+        $startingDate = $db->convertDateToNumber($this->agreementData["clo_review_starting_date"], 'yyyy-mm-dd');
+        $expiryDate = $db->convertDateToNumber($expiryDate, 'yyyy-mm-dd');
 
+        if ($expiryDate <= $startingDate){
+            $this->errorCode = "ReviewExpiryBeforeStarting";
+            $this->errorDescription = "Expiry Date is before starting date";
+            return 0;
+        }
+
+        return $this->makeAgreementCopy('Renewal', $this->agreementData['clo_review_starting_date'],$expiryDate);
     }
 
-    public function issueEndorsement(){
+    public function endorseAgreement($startingDate){
+        global $db;
+        if ($this->agreementData['agr_status'] != 'Active'){
+            $this->errorCode = "EndorseNotActive";
+            $this->errorDescription = "Only active agreements can be endorsed";
+            return 0;
+        }
+        if ($this->agreementData['agr_replaced_by_agreement_ID'] > 0){
+            $this->errorCode = "EndorseAlreadyReplaced";
+            $this->errorDescription = "This agreement seems to be already replaced. Cannot endorse";
+            return 0;
+        }
+        //check if expiry date is after starting date
+        $startingDateNum = $db->convertDateToNumber($startingDate, 'yyyy-mm-dd');
+        $expiryDateNum = $db->convertDateToNumber($this->agreementData['agr_expiry_date'], 'yyyy-mm-dd');
+        $currentStartingDateNum = $db->convertDateToNumber($this->agreementData['agr_starting_date'], 'yyyy-mm-dd');
 
+        if ($startingDateNum < $currentStartingDateNum){
+            $this->errorCode = "EndorseBeforeStartingDate";
+            $this->errorDescription = "Endorsement date cannot be before agreements starting date";
+            return 0;
+        }
+        if ($startingDateNum > $expiryDateNum){
+            $this->errorCode = "EndorseAfterExpiryDate";
+            $this->errorDescription = "Endorsement date cannot be after agreements expiry date";
+            return 0;
+        }
+
+
+        return $this->makeAgreementCopy('Endorsement', $startingDate, $this->agreementData['agr_expiry_date']);
     }
 
 

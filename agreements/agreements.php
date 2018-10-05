@@ -23,27 +23,26 @@ $table->extra_from_section = "JOIN customers ON cst_customer_ID = agr_customer_I
 
 if ($_POST['search'] == 'search') {
     $db->working_section = 'Agreements Search';
-    if ($_POST['search_field-id'] > 0){
+    if ($_POST['search_field-id'] > 0) {
         $table->extras = "agr_agreement_ID = " . $_POST['search_field-id'];
-    }
-    else {
-        $table->extras = "cst_identity_card LIKE '%".$_POST['search_field']."%'
+    } else {
+        $table->extras = "cst_identity_card LIKE '%" . $_POST['search_field'] . "%'
                             OR 
-                            cst_name LIKE '%".$_POST['search_field']."%'
+                            cst_name LIKE '%" . $_POST['search_field'] . "%'
                             OR
-                            cst_surname LIKE '%".$_POST['search_field']."%'
+                            cst_surname LIKE '%" . $_POST['search_field'] . "%'
                             OR
-                            cst_work_tel_1 LIKE '%".$_POST['search_field']."%'
+                            cst_work_tel_1 LIKE '%" . $_POST['search_field'] . "%'
                             OR
-                            cst_work_tel_2  LIKE '%".$_POST['search_field']."%'
+                            cst_work_tel_2  LIKE '%" . $_POST['search_field'] . "%'
                             OR 
-                            cst_fax  LIKE '%".$_POST['search_field']."%'
+                            cst_fax  LIKE '%" . $_POST['search_field'] . "%'
                             OR
-                            cst_mobile_1 LIKE '%".$_POST['search_field']."%'
+                            cst_mobile_1 LIKE '%" . $_POST['search_field'] . "%'
                             OR
-                            cst_mobile_2 LIKE '%".$_POST['search_field']."%'
+                            cst_mobile_2 LIKE '%" . $_POST['search_field'] . "%'
                             OR
-                            agr_agreement_number  LIKE '%".$_POST['search_field']."%'";
+                            agr_agreement_number  LIKE '%" . $_POST['search_field'] . "%'";
     }
 }
 $table->order_by = 'DESC';
@@ -90,6 +89,7 @@ $table->generate_data();
                         <th scope="col"><?php $table->display_order_links('Number', 'agr_agreement_number'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Customer', 'cst_name'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Status', 'agr_status'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Process Status', 'agr_process_status'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Starting Date', 'agr_starting_date'); ?></th>
                         <th scope="col">
                             <a href="agreements_modify.php">
@@ -108,27 +108,36 @@ $table->generate_data();
                             <td><?php echo $row["agr_agreement_number"]; ?></td>
                             <td><?php echo $row["cst_name"]; ?></td>
                             <td><?php echo $row["agr_status"]; ?></td>
-                            <td><?php echo $db->convert_date_format($row["agr_starting_date"],'yyyy-mm-dd','dd/mm/yyyy'); ?></td>
+                            <td><?php echo $row["agr_process_status"]; ?></td>
+                            <td><?php echo $db->convert_date_format($row["agr_starting_date"], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?></td>
                             <td>
 
                                 <?php if ($row['agr_status'] == 'Pending') { ?>
                                     <a href="agreements_modify.php?lid=<?php echo $row["agr_agreement_ID"]; ?>">
-                                        <i class="fas fa-edit"></i></a>&nbsp
+                                        <i class="fas fa-edit" title="Modify"></i></a>&nbsp
                                     <a href="agreements_delete.php?lid=<?php echo $row["agr_agreement_ID"]; ?>"
                                        onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this agreement?');">
-                                        <i class="fas fa-minus-circle"></i></a>&nbsp
+                                        <i class="fas fa-minus-circle" title="Delete"></i></a>&nbsp
                                     <a href="agreements_change_status.php?lid=<?php echo $row["agr_agreement_ID"]; ?>">
-                                        <i class="fas fa-lock"></i></a>
+                                        <i class="fas fa-lock" title="Change Status"></i></a>
                                 <?php } else if ($row['agr_status'] == 'Locked') { ?>
                                     <a href="agreements_modify.php?lid=<?php echo $row["agr_agreement_ID"]; ?>">
-                                        <i class="fas fa-eye"></i></a>&nbsp
+                                        <i class="fas fa-eye" title="View"></i></a>&nbsp
                                     <a href="agreements_change_status.php?lid=<?php echo $row["agr_agreement_ID"]; ?>">
-                                        <i class="fas fa-plug"></i></a>
+                                        <i class="fas fa-plug" title="Change Status"></i></a>
                                 <?php } else if ($row['agr_status'] == 'Active') { ?>
                                     <a href="agreements_modify.php?lid=<?php echo $row["agr_agreement_ID"]; ?>">
-                                        <i class="fas fa-eye"></i></a>&nbsp
+                                        <i class="fas fa-eye" title="View"></i></a>&nbsp
                                     <a href="agreements_change_status.php?lid=<?php echo $row["agr_agreement_ID"]; ?>">
-                                        <i class="fas fa-ban"></i></a>
+                                        <i class="fas fa-ban" title="Change Status"></i></a>
+                                    <?php if ($row["agr_replaced_by_agreement_ID"] == 0) { ?>
+                                        <a href="agreement_review.php?lid=<?php echo $row["agr_agreement_ID"]; ?>">
+                                            <i class="fas fa-retweet" title="Review"></i></a>
+                                        <a href="agreement_endorse.php?lid=<?php echo $row["agr_agreement_ID"]; ?>">
+                                            <i class="fas fa-pen-square" title="Endorse"></i></a>
+
+                                    <?php } ?>
+
                                 <?php } ?>
 
 
@@ -141,24 +150,28 @@ $table->generate_data();
                 </table>
             </div>
             <div class="row">
-                <div class="col-2 agrPendingColor text-center">
+                <div class="col-4 agrPendingColor text-center">
                     Pending
                 </div>
-                <div class="col-2 agrLockedColor text-center">
+                <div class="col-4 agrLockedColor text-center">
                     Locked
                 </div>
-                <div class="col-2 agrActiveColor text-center">
+                <div class="col-4 agrActiveColor text-center">
                     Active
                 </div>
-                <div class="col-2 agrExpiredColor text-center">
+                <div class="col-3 agrArchivedColor text-center">
+                    Archived
+                </div>
+                <div class="col-3 agrExpiredColor text-center">
                     Expired
                 </div>
-                <div class="col-2 agrDeletedColor text-center">
+                <div class="col-3 agrDeletedColor text-center">
                     Deleted
                 </div>
-                <div class="col-2 agrCancelledColor text-center">
+                <div class="col-3 agrCancelledColor text-center">
                     Cancelled
                 </div>
+
             </div>
         </div>
 

@@ -7,6 +7,7 @@
  */
 
 include("../include/main.php");
+include("agreements_functions.php");
 $db = new Main();
 $db->admin_title = "Agreements Modify";
 $db->check_restriction_area('insert');
@@ -20,21 +21,17 @@ if ($_GET['lid'] == '') {
 
 $data = $db->query_fetch("SELECT * FROM agreements WHERE agr_agreement_ID = ".$_GET['lid']);
 if ($data['agr_agreement_ID'] > 0){
-    echo "HERE<br>";
 
-    if ($data['agr_status'] == 'Pending'){
-        echo "HERE2<br>";
-        $newData['status'] = 'Deleted';
-        $db->start_transaction();
-        $db->db_tool_update_row('agreements', $newData, "agr_agreement_ID = ".$_GET['lid'],
-            $_GET['lid'], '', 'execute', 'agr_' );
-        $db->commit_transaction();
-        $db->generateSessionDismissSuccess("Agreement #".$_GET['lid']." Deleted Successfully");
+    $agr = new Agreements($_GET["lid"]);
+    $result = $agr->deleteAgreement();
+
+    if ($result == true){
+        $db->generateAlertSuccess('Agreement #'.$_GET['lid']." was deleted successfully");
         header("Location: agreements.php");
         exit();
     }
     else {
-        $db->generateSessionAlertError("Can only delete Pending Agreements");
+        $db->generateAlertError($agr->errorDescription);
         header("Location: agreements.php");
         exit();
     }
