@@ -42,7 +42,7 @@ if ($_POST["action"] == "insert") {
     $agreementNewID = $db->db_tool_insert_row('agreements', $agrData, '', 1, 'agr_');
 
     //get the data from the lines
-    for ($i = 1; $i <= 25; $i++) {
+    for ($i = 1; $i <= 100; $i++) {
 
         if ($_POST['productLine_' . $i] == 1) {
             $lines[$i]['agreement_ID'] = $agreementNewID;
@@ -52,13 +52,33 @@ if ($_POST["action"] == "insert") {
             $lines[$i]['per_copy_black_cost'] = $_POST['blackPerCopyCost' . $i];
             $lines[$i]['per_copy_color_cost'] = $_POST['colorPerCopyCost' . $i];
             $lines[$i]['rent_cost'] = $_POST['rentCost_' . $i];
+            $lines[$i]['status'] = 'Active';
+            $lines[$i]['process_status'] = 'New';
+            $lines[$i]['add_remove_stock'] = -1;
 
             $newSerial = $db->db_tool_insert_row('agreement_items', $lines[$i], '', 1, 'agri_');
+
+            //insert the unique serials
+            $uqs["product_ID"] = $_POST['productSelectId_' . $i];
+            $uqs["agreement_ID"] = $agreementNewID;
+            $uqs["line_number"] = $i;
+            $uqs["agreement_number"] = $newAgreementNumber;
+            $uqs["unique_serial"] = $_POST["unique_serial_" . $i];
+            $uqs["status"] = 'Active';
+            //check if the serial already exists
+            $uqsCheck = $db->query_fetch("SELECT * FROM unique_serials WHERE uqs_status = 'Active' AND uqs_unique_serial = " . $_POST["unique_serial_" . $i]);
+            if ($uqsCheck['uqs_unique_serial_ID'] > 0) {
+                $db->generateSessionAlertError('Serial Used is not unique');
+                $errorFound = true;
+            } else {
+                $db->db_tool_insert_row('unique_serials', $uqs, '', 0, 'uqs_');
+            }
+
         }
     }
 
-    if ($itemsFound == true) {
-        if ($db->get_setting('agr_agreement_status_on_insert') == 'Locked'){
+    if ($itemsFound == true && $errorFound != true) {
+        if ($db->get_setting('agr_agreement_status_on_insert') == 'Locked') {
             $agr = new Agreements($newSerial);
             $agr->disableCommit = true;
             if ($agr->lockAgreement() == false) {
@@ -68,9 +88,15 @@ if ($_POST["action"] == "insert") {
         }
     }
 
-    $db->commit_transaction();
-    header("Location: agreements.php");
-    exit();
+    if ($errorFound != true) {
+        $db->commit_transaction();
+        header("Location: agreements.php");
+        exit();
+    } else {
+        $db->rollback_transaction();
+        $data = $agrData;
+    }
+
 
 } else if ($_POST["action"] == "update") {
     $db->check_restriction_area('update');
@@ -96,34 +122,115 @@ if ($_POST["action"] == "insert") {
         $_POST["lid"], '', 'execute', 'agr_');
 
     //get the data from the lines
-    for ($i = 1; $i <= 25; $i++) {
+    for ($i = 1; $i <= 100; $i++) {
         //echo $i." -> ".$_POST['productLine_'.$i]."<br>";
 
         $lines[$i]['product_ID'] = $_POST['productSelectId_' . $i];
-        $lines[$i]['line_number'] = $i;
+        $lines[$i]['line_number'] = $_POST['lineNumber_' . $i];
         $lines[$i]['agreement_type'] = $_POST['agreementType_' . $i];
         $lines[$i]['per_copy_black_cost'] = $_POST['blackPerCopyCost' . $i];
         $lines[$i]['per_copy_color_cost'] = $_POST['colorPerCopyCost' . $i];
         $lines[$i]['rent_cost'] = $_POST['rentCost_' . $i];
 
+
         //insert new line
         if ($_POST['productLine_' . $i] == 1) {
             $lines[$i]['agreement_ID'] = $_POST["lid"];
+            $lines[$i]['status'] = 'Active';
+            $lines[$i]['process_status'] = 'New';
+            $lines[$i]['add_remove_stock'] = -1;
             $db->db_tool_insert_row('agreement_items', $lines[$i], '', 0, 'agri_');
+
+            //insert the unique serials
+            $uqs["product_ID"] = $_POST['productSelectId_' . $i];
+            $uqs["agreement_ID"] = $_POST["lid"];
+            $uqs["line_number"] = $_POST['lineNumber_' . $i];
+            $uqs["agreement_number"] = $_POST['agreementNumber'];
+            $uqs["unique_serial"] = $_POST["unique_serial_" . $i];
+            $uqs["status"] = 'Active';
+            //check if the serial already exists
+            $uqsCheck = $db->query_fetch("SELECT * FROM unique_serials WHERE uqs_status = 'Active' AND uqs_unique_serial = " . $_POST["unique_serial_" . $i]);
+            if ($uqsCheck['uqs_unique_serial_ID'] > 0) {
+                $db->generateAlertError('Serial Used in line ' . $i . ' is not unique');
+                $errorFound = true;
+            } else {
+                $db->db_tool_insert_row('unique_serials', $uqs, '', 0, 'uqs_');
+            }
+
         } //update existing line
         else if ($_POST['productLine_' . $i] == 2) {
             $db->db_tool_update_row('agreement_items', $lines[$i], "`agri_agreement_item_ID` = " . $_POST["agreementItemID_" . $i],
                 $_POST["agreementItemID_" . $i], '', 'execute', 'agri_');
+
+            //update unique serial
+            $uqs["unique_serial"] = $_POST["unique_serial_" . $i];
+
+            //find the record first
+            $uqsData = $db->query_fetch("SELECT * FROM unique_serials 
+              WHERE `uqs_agreement_number` = '" . $_POST['agreementNumber'] . "' 
+              AND `uqs_line_number` = " . $_POST['lineNumber_' . $i]);
+
+            $uqsCheck = $db->query_fetch("SELECT * FROM unique_serials 
+              WHERE uqs_unique_serial = '" . $_POST["unique_serial_" . $i] . "' 
+              AND uqs_status = 'Active'
+              AND uqs_unique_serial_ID != " . $uqsData['uqs_unique_serial_ID']);
+
+            if ($uqsCheck['uqs_unique_serial_ID'] > 0) {
+                $db->generateSessionAlertError('Serial Used is not unique');
+                $errorFound = true;
+            } else {
+                $db->db_tool_update_row('unique_serials', $uqs,
+                    "`uqs_unique_serial_ID` = " . $uqsData["uqs_unique_serial_ID"],
+                    $uqsData["uqs_unique_serial_ID"], '', 'execute', 'uqs_');
+            }
+
+
         } //delete existing line
         else if ($_POST['productLine_' . $i] == -2) {
-            $db->db_tool_delete_row('agreement_items', $_POST["agreementItemID_" . $i], "`agri_agreement_item_ID` = " . $_POST["agreementItemID_" . $i]);
+
+            if ($_POST['agreementProcessStatus'] == 'New' || $_POST['processStatusLine_' . $i] == 'New') {
+                $db->db_tool_delete_row('agreement_items', $_POST["agreementItemID_" . $i], "`agri_agreement_item_ID` = " . $_POST["agreementItemID_" . $i]);
+
+                //delete the unique serial
+                $uqsData = $db->query_fetch("SELECT * FROM unique_serials 
+              WHERE `uqs_agreement_number` = '" . $_POST['agreementNumber'] . "' 
+              AND `uqs_line_number` = " . $_POST['lineNumber_' . $i]);
+                $db->db_tool_delete_row('unique_serials', $uqsData["uqs_unique_serial_ID"], "`uqs_unique_serial_ID` = " . $uqsData["uqs_unique_serial_ID"]);
+            }
+            else {//renewals endorsements
+
+                if ($_POST['stockAddMinus_' . $i] == 1) {
+                    $agrUpdateData['add_remove_stock'] = 1;
+                }
+                $agrUpdateData['status'] = 'Deleted';
+                $db->db_tool_update_row('agreement_items', $agrUpdateData,
+                    "`agri_agreement_item_ID` = " . $_POST["agreementItemID_" . $i],
+                    $_POST["agreementItemID_" . $i], '', 'execute', 'agri_');
+                //set unique serial status to delete.
+                $uqsData = $db->query_fetch("SELECT * FROM unique_serials 
+              WHERE `uqs_agreement_number` = '" . $_POST['agreementNumber'] . "' 
+              AND `uqs_line_number` = " . $_POST['lineNumber_' . $i]);
+
+                $uqsDel['status'] = 'Deleted';
+                $db->db_tool_update_row('unique_serials', $uqsDel,
+                    "`uqs_unique_serial_ID` = " . $uqsData["uqs_unique_serial_ID"],
+                    $uqsData["uqs_unique_serial_ID"], '', 'execute', 'uqs_');
+
+
+            }
+
         }
     }
 
+    if ($errorFound != true) {
+        $db->commit_transaction();
+        //header("Location: agreements.php");
+        //exit();
+    } else {
+        //echo "ERROR FOUND";
+        $db->rollback_transaction();
+    }
 
-    $db->commit_transaction();
-    header("Location: agreements.php");
-    exit();
 
 }
 
@@ -142,19 +249,20 @@ if ($_GET["lid"] != "") {
 }
 
 $db->enable_jquery_ui();
+$db->enable_rxjs_lite();
 $db->show_header();
 ?>
-<script>
-    //global variables
-    let outOfStockFound = false;
-    let proceedSubmit = true;
-</script>
+    <script>
+        //global variables
+        let outOfStockFound = false;
+        let proceedSubmit = true;
+    </script>
     <div class="container">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12">
                 <form name="myForm" id="myForm" method="post" action="" onsubmit="">
                     <div class="alert alert-primary text-center">
-                        <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
+                        <b><?php if ($_GET["lid"] == "") echo "Insert"; else if ($data["agr_status"] == 'Pending')echo "Update"; ?>
                             &nbsp;Agreement</b>
                     </div>
 
@@ -163,10 +271,43 @@ $db->show_header();
                         <div class="col-lg-2 col-sm-3">Status</div>
                         <div class="col-lg-4 col-sm-3 text-left <?php echo getAgreementColor($data['agr_status']); ?>">
                             <?php echo $data["agr_status"]; ?>
+                            <input type="hidden" name="agreementStatus" id="agreementStatus" value="<?php echo $data["agr_status"]; ?>">
                         </div>
+                        <div class="col-lg-2 col-sm-2">Process Status</div>
+                        <div class="col-lg-2 col-sm-2 text-left">
+                            <?php echo $data["agr_process_status"]; ?>
+                            <input type="hidden" name="agreementProcessStatus" id="agreementProcessStatus" value="<?php echo $data["agr_process_status"]; ?>">
+                        </div>
+                        <div class="col-lg-2 col-sm-2">
+                            <?php
+
+                            if ($data['agr_replacing_agreement_ID'] > 0) {
+                                ?>
+                                <a href="agreements_modify.php?lid=<?php echo $data['agr_replacing_agreement_ID']; ?>">
+                                    <i class="fas fa-backward"></i>
+                                </a>
+                                <?php
+                            }
+
+                            if ($data['agr_replaced_by_agreement_ID'] > 0) {
+                                ?>
+                                <a href="agreements_modify.php?lid=<?php echo $data['agr_replaced_by_agreement_ID']; ?>">
+                                    <i class="fas fa-forward"></i>
+                                </a>
+                                <?php
+                            }
+
+                            ?>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group row">
                         <div class="col-lg-2 col-sm-3">Ag. Number</div>
                         <div class="col-lg-4 col-sm-3 text-left">
-                            <?php echo $data["agr_agreement_number"];?>
+                            <?php echo $data["agr_agreement_number"]; ?>
+                            <input type="hidden" id="agreementNumber" name="agreementNumber"
+                                   value="<?php echo $data["agr_agreement_number"]; ?>">
                         </div>
                     </div>
 
@@ -229,7 +370,7 @@ $db->show_header();
                                    class="form-control"
                                    value="<?php echo $data['cst_name'] . " " . $data['cst_surname']; ?>"
                                    required
-                                <?php disable();?>>
+                                <?php disable(); ?>>
                             <!--pattern="\d{13,16}"-->
 
                             <input name="customerSelectId" id="customerSelectId" type="hidden"
@@ -247,12 +388,12 @@ $db->show_header();
                         <div class="col-12"> &nbsp;</div>
                     </div>
                     <?php if ($data['agr_status'] == 'Pending') { ?>
-                    <div class="row">
-                        <div class="alert alert-primary col-12">
-                            <i class="fas fa-plus-circle" onclick="addNewProduct();" style="cursor: pointer;"></i>
-                            Insert Products
+                        <div class="row">
+                            <div class="alert alert-primary col-12">
+                                <i class="fas fa-plus-circle" onclick="addNewProduct();" style="cursor: pointer;"></i>
+                                Insert Products
+                            </div>
                         </div>
-                    </div>
                     <?php } ?>
 
 
@@ -267,11 +408,14 @@ $db->show_header();
                     <script>
 
                         var TotalProductsShow = 0;
+                        var LastNumberUsed = 0;
 
                         function fillProduct(objData) {
 
                             addNewProduct();
                             $('#agreementType_' + TotalProductsShow).val(objData.agreementType);
+                            $('#unique_serial_' + TotalProductsShow).val(objData.uniqueSerial);
+                            $('#unique_serial_ID_' + TotalProductsShow).val(objData.uniqueSerialID);
                             $('#rentCost_' + TotalProductsShow).val(objData.rentCost);
                             $('#blackPerCopyCost' + TotalProductsShow).val(objData.blackPerCopyCost);
                             $('#colorPerCopyCost' + TotalProductsShow).val(objData.colorPerCopyCost);
@@ -282,8 +426,43 @@ $db->show_header();
                             $('#prod_stock_' + TotalProductsShow).text(objData.productStock);
                             $('#prod_description_' + TotalProductsShow).text(objData.productDescription);
                             $('#agreementItemID_' + TotalProductsShow).val(objData.agreementItemID);
+                            $('#lineNumber_' + TotalProductsShow).val(objData.lineNumber);
                             $('#productLine_' + TotalProductsShow).val(2);
 
+                            //if line is deleted
+                            if(objData.lineStatus == 'Deleted'){
+                                $('#headerLine_' + TotalProductsShow).removeClass('alert-success');
+                                $('#headerLine_' + TotalProductsShow).addClass('alert-danger');
+                                $('#headerLine_' + TotalProductsShow).text(
+                                    $('#headerLine_' + TotalProductsShow).text()
+                                    + '(Deleted Line)'
+                                );
+                                $('#productHtmlHolder_' + TotalProductsShow).addClass('alert alert-danger');
+                                $('#removeIconLine_' + TotalProductsShow).hide();
+
+                                disableProduct(TotalProductsShow);
+                            }
+                            //console.log('Line ' + TotalProductsShow + ' line status - ' + objData.lineProcessStatus);
+                            if ('<?php echo $data['agr_process_status'];?>' != 'New' && objData.lineProcessStatus != 'New') {
+                                $('#productSelect_' + TotalProductsShow).prop('disabled', true);
+                            }
+
+                            //fill the process status
+                            $('#processStatusLine_' + TotalProductsShow).val(objData.lineProcessStatus);
+
+                            LastNumberUsed = objData.lineNumber;
+
+                        }
+
+                        function disableProduct(lineNum){
+                            console.log('Disabling' + lineNum);
+                            $('#agreementType_' + lineNum).prop('disabled', true);
+                            $('#unique_serial_' + lineNum).prop('disabled', true);
+                            $('#rentCost_' + lineNum).prop('disabled', true);
+                            $('#blackPerCopyCost' + lineNum).prop('disabled', true);
+                            $('#colorPerCopyCost' + lineNum).prop('disabled', true);
+                            $('#productSelect_' + lineNum).prop('disabled', true);
+                            //$('#').disable();
                         }
 
                         function addNewProduct() {
@@ -298,20 +477,53 @@ $db->show_header();
                         }
 
                         function removeProductLine(lineNum) {
+                            console.log('Line ' + lineNum + $('#processStatusLine_' + lineNum).val());
                             if (confirm("Are you sure you want to remove this line?")) {
-                                console.log('Removing line' + lineNum);
-                                $('#productHtmlHolder_' + lineNum).hide();
-                                $('#productHtmlDelete_' + lineNum).show();
-                                $('#productLine_' + lineNum).val(
-                                    $('#productLine_' + lineNum).val() * -1
-                                );
-                                checkStockAllLines();
+                                //console.log('Removing line' + lineNum);
+                                $('#stockIcon_' + lineNum).hide();
+                                $('#stockPlusIcon_' + lineNum).hide();
+                                $('#stockMinusIcon_' + lineNum).hide();
+                                //if new
+                                if ($('#agreementProcessStatus').val() == 'New' || $('#processStatusLine_' + lineNum).val() == 'New') {
+                                    $('#productHtmlHolder_' + lineNum).hide();
+                                    $('#productHtmlDelete_' + lineNum).show();
+                                    $('#productLine_' + lineNum).val(
+                                        $('#productLine_' + lineNum).val() * -1
+                                    );
+                                    checkStockAllLines();
+                                }
+                                else {//if renewal
+                                    let uniqueSerial = $('#unique_serial_' + lineNum).val();
+                                    if (confirm('Add this machine serial #' + uniqueSerial + ' back to the stock?')){
+                                        $('#stockAddMinus_' + lineNum).val('1');
+                                        $('#stockIcon_' + lineNum).show();
+                                        $('#stockPlusIcon_' + lineNum).show();
+
+                                        $('#productHtmlHolder_' + lineNum).hide();
+                                        $('#productHtmlDelete_' + lineNum).show();
+                                        $('#productLine_' + lineNum).val(
+                                            $('#productLine_' + lineNum).val() * -1
+                                        );
+                                        checkStockAllLines();
+                                    }
+                                    else {
+                                        $('#productHtmlHolder_' + lineNum).hide();
+                                        $('#productHtmlDelete_' + lineNum).show();
+                                        $('#productLine_' + lineNum).val(
+                                            $('#productLine_' + lineNum).val() * -1
+                                        );
+                                        checkStockAllLines();
+                                    }
+                                }
+
+
+
                             }
                         }
 
                         function reAppearProductLine(lineNum) {
-                            if (confirm('Are you sure you want to re-appear line '+ lineNum)){
-                                console.log('ReAppearing line' + lineNum);
+                            if (confirm('Are you sure you want to re-appear line ' + lineNum)) {
+                                //console.log('ReAppearing line' + lineNum);
                                 $('#productHtmlHolder_' + lineNum).show();
                                 $('#productHtmlDelete_' + lineNum).hide();
                                 $('#productLine_' + lineNum).val(
@@ -323,15 +535,19 @@ $db->show_header();
 
                         function addNewProductLine() {
                             TotalProductsShow++;
+                            LastNumberUsed++;
+                            //console.log(LastNumberUsed);
 
                             $('#productHolder_' + TotalProductsShow).html(`
                             <div id="productHtmlHolder_` + TotalProductsShow + `">
                                 <div class="row">
-                                    <div class="col-12 alert alert-success">
+                                    <div class="col-12 alert alert-success" id="headerLine_` + TotalProductsShow + `"
+                                        name="headerLine_` + TotalProductsShow + `">
                                         <div class="row">
                                          <div class="col-11">Product ` + TotalProductsShow + `</div>
                                          <?php if ($data['agr_status'] == 'Pending') { ?>
-                                         <div class="col-1"><i class="fas fa-minus-circle redColor" style="cursor: pointer" onclick="removeProductLine(` + TotalProductsShow + `)"></i></div>
+                                         <div class="col-1" id="removeIconLine_` + TotalProductsShow + `"
+                                         name="removeIconLine_` + TotalProductsShow + `"><i class="fas fa-minus-circle redColor" style="cursor: pointer" onclick="removeProductLine(` + TotalProductsShow + `)"></i></div>
                                          <?php } ?>
                                         </div>
                                     </div>
@@ -341,13 +557,19 @@ $db->show_header();
                                     <input type="hidden" id="agreementItemID_` + TotalProductsShow + `"
                                         name="agreementItemID_` + TotalProductsShow + `"
                                         value="">
+                                    <input type="hidden" id="stockAddMinus_` + TotalProductsShow + `"
+                                        name="stockAddMinus_` + TotalProductsShow + `"
+                                        value="0">
+                                    <input type="hidden" id="processStatusLine_` + TotalProductsShow +`"
+                                        name="processStatusLine_` + TotalProductsShow + `"
+                                        value="New">
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-2 col-sm-3">Agrrement Type</div>
                                     <div class="col-lg-4 col-sm-3">
                                         <select name="agreementType_` + TotalProductsShow + `" id="agreementType_` + TotalProductsShow + `"
                                             class="form-control"
-                                            required <?php disable();?>>
+                                            required <?php disable(); ?>>
                                             <option value=""></option>
                                             <option value="Rent">Rent +CPC</option>
                                             <option value="CPC">Charge Per Copy</option>
@@ -356,21 +578,33 @@ $db->show_header();
                                             <option value="No">No Agreement</option>
                                         </select>
                                     </div>
-                                    <div class="col-lg-2 col-sm-3">Rent Cost</div>
-                                    <div class="col-lg-4 col-sm-3">
-                                        <input name="rentCost_` + TotalProductsShow + `" type="text" id="rentCost_` + TotalProductsShow + `"
-                                                   class="form-control" value="" <?php disable();?>>
+                                    <div class="col-lg-2 col-sm-3">Unique Serial</div>
+                                    <div class="col-lg-3 col-sm-2">
+                                        <input name="unique_serial_` + TotalProductsShow + `" type="text" id="unique_serial_` + TotalProductsShow + `"
+                                                   class="form-control" value="" <?php disable();?> onChange="checkUniqueSerial(` + TotalProductsShow + `);">
+                                        <input name="unique_serial_ID_` + TotalProductsShow + `" id="unique_serial_ID_` + TotalProductsShow + `"
+                                                type="hidden" value="">
+                                    </div>
+                                    <div class="col-lg-1 col-sm-1">
+                                        <i class="fas fa-spinner" id="uqsSpinner_` + TotalProductsShow + `" name="uqsSpinner_` + TotalProductsShow + `" style="display:none"></i>
+                                        <i class="fas fa-exclamation-triangle redColor" id="uqsError_` + TotalProductsShow + `" name="uqsError_` + TotalProductsShow + `" style="display:none"></i>
+                                        <i class="fas fa-check greenColor" id="uqsOk_` + TotalProductsShow + `" name="uqsOk_` + TotalProductsShow + `" style="display:none"></i>
                                     </div>
                                 </div>
 
                                 <div class="row">
+                                    <div class="col-lg-2 col-sm-3">Rent Cost</div>
+                                    <div class="col-lg-2 col-sm-3">
+                                        <input name="rentCost_` + TotalProductsShow + `" type="text" id="rentCost_` + TotalProductsShow + `"
+                                                   class="form-control" value="" <?php disable();?>>
+                                    </div>
                                     <div class="col-lg-2 col-sm-3">Black Per Copy Cost</div>
-                                    <div class="col-lg-4 col-sm-3">
+                                    <div class="col-lg-2 col-sm-3">
                                         <input name="blackPerCopyCost` + TotalProductsShow + `" type="text" id="blackPerCopyCost` + TotalProductsShow + `"
                                                    class="form-control" value="" <?php disable();?>>
                                     </div>
                                     <div class="col-lg-2 col-sm-3">Color Per Copy Cost</div>
-                                    <div class="col-lg-4 col-sm-3">
+                                    <div class="col-lg-2 col-sm-3">
                                         <input name="colorPerCopyCost` + TotalProductsShow + `" type="text" id="colorPerCopyCost` + TotalProductsShow + `"
                                                    class="form-control" value="" <?php disable();?>>
                                     </div>
@@ -385,6 +619,9 @@ $db->show_header();
                                         <input name="productSelectId_` + TotalProductsShow + `"
                                                id="productSelectId_` + TotalProductsShow + `"
                                                type="hidden" value="" <?php disable();?>>
+                                        <input name="lineNumber_` + TotalProductsShow + `"
+                                               id="lineNumber_` + TotalProductsShow + `"
+                                               type="hidden" value="` + LastNumberUsed + `" <?php disable();?>>
                                         </div>
                                         <div class="col-6">
                                             <b>#</b><span id="productSelect-id_` + TotalProductsShow + `"></span>
@@ -409,7 +646,15 @@ $db->show_header();
                                 <div class="row">
                                     <div class="col-12 alert alert-success">
                                         <div class="row">
-                                         <div class="col-11 redColor">Product ` + TotalProductsShow + `</div>
+                                         <div class="col-11 redColor">
+                                            Product ` + TotalProductsShow + `
+                                            <i class="fas fa-layer-group greenColor" title="Stock"
+                                                 id="stockIcon_` + TotalProductsShow + `" style="display:none"></i>
+                                            <i class="fas fa-plus-circle greenColor" title="Add back to stock"
+                                                id="stockPlusIcon_` + TotalProductsShow + `" style="display:none"></i>
+                                            <i class="fas fa-minus-circle" title="Remove from stock"
+                                                name="stockMinusIcon_` + TotalProductsShow + `" style="display:none"></i>
+                                         </div>
                                          <div class="col-1"><i class="fas fa-eye redColor" style="cursor: pointer" onclick="reAppearProductLine(` + TotalProductsShow + `)"></i></div>
                                         </div>
                                     </div>
@@ -425,9 +670,12 @@ $db->show_header();
 
                         if ($_GET["lid"] > 0) {
                             //js data for the lines
-                            $sql = "SELECT * FROM agreement_items 
+                            $sql = "SELECT * FROM agreement_items
+                                        LEFT OUTER JOIN agreements ON agr_agreement_ID = agri_agreement_ID
                                         LEFT OUTER JOIN products ON agri_product_ID = prd_product_ID
+                                        LEFT OUTER JOIN unique_serials ON agr_agreement_number = uqs_agreement_number AND uqs_line_number = agri_line_number
                                         WHERE agri_agreement_ID = " . $_GET["lid"] . "
+                                        #AND uqs_status = 'Active'
                                         ORDER BY agri_line_number ASC";
                             $result = $db->query($sql);
 
@@ -443,6 +691,11 @@ $db->show_header();
                                 $linesJsData .= ",productNumber:'" . $line['prd_model'] . "'";
                                 $linesJsData .= ",productStock:'" . $line['prd_current_stock'] . "'";
                                 $linesJsData .= ",productDescription:'" . $line['prd_description'] . "'";
+                                $linesJsData .= ",lineNumber:'" . $line['agri_line_number'] . "'";
+                                $linesJsData .= ",uniqueSerial:'" . $line['uqs_unique_serial'] . "'";
+                                $linesJsData .= ",uniqueSerialID:'" . $line['uqs_unique_serial_ID'] . "'";
+                                $linesJsData .= ",lineStatus:'" . $line['agri_status'] . "'";
+                                $linesJsData .= ",lineProcessStatus:'" . $line['agri_process_status'] . "'";
                                 $linesJsData .= "};
                                     fillProduct(linesData);
                                     checkStock(TotalProductsShow);";
@@ -483,7 +736,7 @@ $db->show_header();
 
                         }
 
-                        function checkStock(workingLine){
+                        function checkStock(workingLine) {
                             outOfStockFound = false;
                             //first find the product ID of the line
                             let productID = $('#productSelect-id_' + workingLine).text();
@@ -491,13 +744,13 @@ $db->show_header();
                             let currentStock = $('#prod_stock_' + workingLine).text();
                             //loop into all the lines
                             let totalStockFound = 0;
-                            for (let i = 1; i <= TotalProductsShow; i++ ){
+                            for (let i = 1; i <= TotalProductsShow; i++) {
                                 //console.log('checking line ' + i);
-                                console.log($('#productSelect-id_' + i).text() + " == "+ productID)
+                                //console.log($('#productSelect-id_' + i).text() + " == " + productID)
                                 if ($('#productSelect-id_' + i).text() == productID) {
                                     //also check if that line is removed
                                     if ($('#productLine_' + i).val() > 0) {
-                                        console.log('Found' + $('#productSelect-id_' + i).val());
+                                        //console.log('Found' + $('#productSelect-id_' + i).val());
 
                                         //this if will avoid marking also the previous lines
                                         if (i <= workingLine) {
@@ -507,7 +760,7 @@ $db->show_header();
                                 }
                                 $('#prod_alert_' + workingLine).hide();
                             }
-                            if (totalStockFound > currentStock){
+                            if (totalStockFound > currentStock) {
                                 //also check if the line has a product before creating the alert
                                 //console.log(productID);
                                 if (productID > 0) {
@@ -519,8 +772,8 @@ $db->show_header();
 
                         }
 
-                        function checkStockAllLines(){
-                            for(let i=1; i <= TotalProductsShow; i++){
+                        function checkStockAllLines() {
+                            for (let i = 1; i <= TotalProductsShow; i++) {
                                 checkStock(i);
                             }
                         }
@@ -542,7 +795,7 @@ $db->show_header();
                             <?php if ($data["agr_status"] == 'Pending') { ?>
                                 <input type="submit" name="Submit" id="Submit"
                                        value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Agreement"
-                                       class="btn btn-secondary" onclick="return submitForm()">
+                                       class="btn btn-secondary" onclick="return submitForm();">
                             <?php } ?>
                         </div>
                     </div>
@@ -572,26 +825,63 @@ $db->show_header();
             }
 
             //check if out of stock found
-            if (outOfStockFound === true){
-                if (confirm('Stock is not enough for this agreement. Save anyway? \n You cannot lock this agreement until stock issue is fixed.')){
+            if (outOfStockFound === true) {
+                if (confirm('Stock is not enough for this agreement. Save anyway? \n You cannot lock this agreement until stock issue is fixed.')) {
                     outOfStockFound = false;
                 }
             }
 
-            //console.log('Submit');
             let frm = document.getElementById('myForm');
+
             if (frm.checkValidity() === false) {
-                //console.log('Invalid Form');
+                console.log('Invalid Form');
                 return false;
             }
             else {
-                //console.log('Valid Form');
+                console.log(proceedSubmit);
                 if (proceedSubmit == true) {
                     document.getElementById('Submit').disabled = true
                     return true;
-                    //return false;
                 }
             }
+            return false;
+
+        }
+
+        function checkUniqueSerial(lineNum) {
+            //get the serial
+            let serial = $('#unique_serial_' + lineNum).val();
+            let excludeSerialID = $('#unique_serial_ID_' + lineNum).val();
+            $('#uqsSpinner_' + lineNum).show();
+            $('#uqsOk_' + lineNum).hide();
+            $('#uqsError_' + lineNum).hide();
+            //console.log(serial + " -> Exclude ID:" + excludeSerialID);
+            //stop form from submiting before the observable
+            proceedSubmit = false;
+            Rx.Observable.fromPromise(
+                $.get("../unique_serials/unique_serials_api.php?section=check_if_exists&term=" + serial + "&excludeSerial=" + excludeSerialID)
+            )
+                .subscribe((response) => {
+                        //console.log(response);
+                        data = response;
+                    },
+                    () => {
+                    },
+                    () => {
+                        $('#uqsSpinner_' + lineNum).hide();
+                        if (data == null) {
+                            console.log('None found. OK!');
+                            $('#uqsOk_' + lineNum).show();
+                            proceedSubmit = true;
+                        }
+                        else {
+                            console.log('Found Serial. Error!!');
+                            $('#uqsError_' + lineNum).show();
+                            proceedSubmit = false;
+                        }
+                    });
+
+
         }
 
         $('#customerSelect').autocomplete({

@@ -1426,6 +1426,7 @@ class Main
 		`lgf_old_values` = \"" . addslashes($old_values) . "\" ,
 		`lgf_description` = \"" . addslashes($description) . "\" ";
         $this->query($sql);
+        $sql = '';
 
     }//
 

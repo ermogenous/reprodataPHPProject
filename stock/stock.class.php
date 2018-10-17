@@ -93,6 +93,10 @@ class Stock {
         $product['stock_last_update'] = date('Y-m-d G:i:s');
         $db->working_section = 'Update product@addRemoveStock';
         $db->db_tool_update_row('products', $product, 'prd_product_ID = ' . $this->productID, $this->productID, '', 'execute', 'prd_');
+
+        //fix the unique serial
+
+
         if ($this->disableCommit == false) {
             $db->commit_transaction();
         }

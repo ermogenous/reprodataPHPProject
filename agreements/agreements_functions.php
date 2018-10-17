@@ -80,9 +80,20 @@ class Agreements {
 
                 //update the stock
                 for($i=0; $i < $this->totalItems; $i++){
+                    //print_r($this->itemsData);
                     $stock = new Stock($this->itemsData[$i]['agri_product_ID']);
                     $stock->disableCommit = true;
-                    $stock->addRemoveStock(-1, 'Agreement Lock '.$this->agreementData['agr_agreement_number']);
+                    //if new policy always add/remove stock
+                    if($this->agreementData['agr_process_status'] == 'New'){
+                        $stock->addRemoveStock(-1, 'Agreement Lock '.$this->agreementData['agr_agreement_number']);
+                    }
+                    else {
+                        //check in the agri_add_remove_stock
+                        if ($this->itemsData[$i]['agri_add_remove_stock'] != 0){
+                            $stock->addRemoveStock($this->itemsData[$i]['agri_add_remove_stock'],
+                                'Agreement Lock '.$this->agreementData['agr_agreement_number']);
+                        }
+                    }
                 }
 
                 if ($this->disableCommit == false) {
@@ -119,7 +130,15 @@ class Agreements {
             for($i=0; $i < $this->totalItems; $i++){
                 $stock = new Stock($this->itemsData[$i]['agri_product_ID']);
                 $stock->disableCommit = true;
-                $stock->addRemoveStock(1, 'Agreement UnLock '.$this->agreementData['agr_agreement_number']);
+                if($this->agreementData['agr_process_status'] == 'New'){
+                    $stock->addRemoveStock(1, 'Agreement UnLock '.$this->agreementData['agr_agreement_number']);
+                }
+                else {
+                    if ($this->itemsData[$i]['agri_add_remove_stock'] != 0){
+                        $stock->addRemoveStock($this->itemsData[$i]['agri_add_remove_stock'] * -1,
+                            'Agreement UnLock '.$this->agreementData['agr_agreement_number']);
+                    }
+                }
             }
             if ($this->disableCommit == false) {
                 $db->commit_transaction();
@@ -258,9 +277,16 @@ class Agreements {
             $lineNewData["per_copy_black_cost"] = $this->itemsData[$i]["agri_per_copy_black_cost"];
             $lineNewData["per_copy_color_cost"] = $this->itemsData[$i]["agri_per_copy_color_cost"];
             $lineNewData["rent_cost"] = $this->itemsData[$i]["agri_rent_cost"];
+            $lineNewData["status"] = 'Active';
+            $lineNewData["process_status"] = $processStatus;
 
-            $db->db_tool_insert_row('agreement_items', $lineNewData,'',1
-                ,'agri_');
+            //do not insert if the line is deleted
+            if ($this->itemsData[$i]['agri_status'] == 'Active'){
+                $db->db_tool_insert_row('agreement_items', $lineNewData,'',1
+                    ,'agri_');
+            }
+
+
 
         }
 
