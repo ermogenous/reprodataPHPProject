@@ -14,14 +14,13 @@ $db->admin_title = "Customers Products";
 
 $db->show_empty_header();
 
-$table = new draw_table('customer_products', 'cspr_customer_product_ID', 'ASC');
-$table->extra_from_section = "JOIN products ON prd_product_ID = cspr_product_ID 
-JOIN customers ON cst_customer_ID = cspr_customer_ID";
-$table->extras = 'cspr_customer_ID = '.$_GET["cid"];
+$table = new draw_table('agreements', 'agr_agreement_ID', 'DESC');
+$table->extra_from_section = "JOIN agreement_items ON agri_agreement_ID = agr_agreement_ID
+                              JOIN products ON prd_product_ID = agri_product_ID";
+$table->extras = 'agr_customer_ID = '.$_GET["cid"]. " AND agr_status = 'Active' AND agri_status = 'Active'";
 
 $table->generate_data();
 ?>
-
 
 <div class="container">
     <div class="row">
@@ -32,9 +31,9 @@ $table->generate_data();
                 <table class="table table-hover">
                     <thead>
                     <tr>
-                        <th scope="col"><?php $table->display_order_links('ID', 'cspr_customer_product_ID'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('ID', 'prd_product_ID'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Machine', 'prd_model'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Name', 'cst_name'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Agreement', 'agr_agreement_number'); ?></th>
                         <th scope="col">
                             <a href="customers_products_modify.php?lid=<?php echo $_GET['lid']; ?>">
                                 <i class="fas fa-plus-circle"></i>
@@ -46,16 +45,13 @@ $table->generate_data();
                     <?php
                     while ($row = $table->fetch_data()) {
                         ?>
-                        <tr onclick="editLine(<?php echo $row["cspr_customer_product_ID"]; ?>);">
-                            <th scope="row"><?php echo $row["cspr_customer_product_ID"]; ?></th>
+                        <tr onclick="editLine(<?php echo $row["agr_agreement_ID"]; ?>);">
+                            <th scope="row"><?php echo $row["prd_product_ID"]; ?></th>
                             <td><?php echo $row["prd_model"]; ?></td>
-                            <td><?php echo $row["cst_name"]; ?></td>
+                            <td><?php echo $row["agr_agreement_number"]; ?></td>
                             <td>
-                                <a href="customers_products_modify.php?lid=<?php echo $row["cspr_customer_product_ID"]; ?>">
+                                <a href="../agreements/agreements_modify.php?lid=<?php echo $row["agr_agreement_ID"]; ?>" target="_parent">
                                     <i class="fas fa-edit"></i></a>&nbsp
-                                <a href="customers_products_delete.php?lid=<?php echo $row["cspr_customer_product_ID"];?>"
-                                   onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this product?');">
-                                    <i class="fas fa-minus-circle"></i></a>
                             </td>
                         </tr>
                         <?php
@@ -73,7 +69,7 @@ $table->generate_data();
 
     function editLine(id) {
         if (ignoreEdit === false) {
-            window.location.assign('customers_products_modify.php?lid=' + id );
+            parent.location.assign('../agreements/agreements_modify.php?lid=' + id );
         }
     }
 </script>
