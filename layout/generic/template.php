@@ -16,12 +16,13 @@ function template_header()
         <link rel="stylesheet" href="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/css/bootstrap.min.css"
               rel="stylesheet">
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
-              integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU" crossorigin="anonymous">
+              integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
+              crossorigin="anonymous">
 
         <script language="JavaScript" type="text/javascript"
                 src="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/js/jquery-3.3.1.min.js"></script>
 
-        <?php echo $db->admin_more_head;?>
+        <?php echo $db->admin_more_head; ?>
 
     </head>
     <body>
@@ -119,6 +120,24 @@ function template_header()
                                         class="fas fa-eye"></i> View Stock Transactions</a>
                         </div>
                     </li>
+
+                    <!-- Tickets -->
+
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-tags"></i> Tickets
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/tickets/tickets.php">
+                                <i class="fas fa-eye"></i> View Tickets</a>
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/tickets/ticket_modify.php">
+                                <i class="fas fa-plus-circle"></i> Insert New Ticket</a>
+                        </div>
+                    </li>
+
                     <!-- USERS -->
                     <?php if ($db->user_data["usr_user_rights"] == 0) { ?>
                         <li class="nav-item dropdown">
@@ -155,25 +174,24 @@ function template_header()
                             </div>
                         </li>
                     <?php } ?>
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-cogs"></i>
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/codes/codes.php">
-                                    <i class="fab fa-linode"></i> Codes</a>
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/send_auto_emails/send_auto_emails.php">
-                                    <i class="fas fa-envelope"></i> Auto Emails</a>
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/settings/settings_update.php">
-                                    <i class="fas fa-screwdriver"></i> System Settings</a>
-                            </div>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-cogs"></i>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/codes/codes.php">
+                                <i class="fab fa-linode"></i> Codes</a>
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/send_auto_emails/send_auto_emails.php">
+                                <i class="fas fa-envelope"></i> Auto Emails</a>
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/settings/settings_update.php">
+                                <i class="fas fa-screwdriver"></i> System Settings</a>
+                        </div>
 
-                        </li>
-
+                    </li>
 
 
                 <?php } ?>
@@ -209,110 +227,109 @@ function template_header()
         <?php
     }
 
-         if ($db->dismissWarning != '') { ?>
-            <div class="row">
-                <div class="col-3"></div>
-                <div class="col-6">
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        <strong>Warning! </strong> <?php echo $db->dismissWarning; ?>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
+    if ($db->dismissWarning != '') { ?>
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>Warning! </strong> <?php echo $db->dismissWarning; ?>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="col-3"></div>
             </div>
-        <?php }
-if ($db->dismissError != '') { ?>
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col-6">
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                <strong>Error! </strong> <?php echo $db->dismissError; ?>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
+            <div class="col-3"></div>
         </div>
-        <div class="col-3"></div>
-    </div>
-<?php }
-if ($db->dismissSuccess != '') { ?>
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col-6">
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <strong>Success! </strong> <?php echo $db->dismissSuccess; ?>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+    <?php }
+    if ($db->dismissError != '') { ?>
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Error! </strong> <?php echo $db->dismissError; ?>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
             </div>
+            <div class="col-3"></div>
         </div>
-        <div class="col-3"></div>
-    </div>
-<?php }
-if ($db->dismissInfo != '') { ?>
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col-6">
-            <div class="alert alert-info alert-dismissible fade show" role="alert">
-                <strong>Info! </strong> <?php echo $db->dismissInfo; ?>
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+    <?php }
+    if ($db->dismissSuccess != '') { ?>
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>Success! </strong> <?php echo $db->dismissSuccess; ?>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
             </div>
+            <div class="col-3"></div>
         </div>
-        <div class="col-3"></div>
-    </div>
-<?php }
-if ($db->alertWarning != '') { ?>
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col-6">
-            <div class="alert alert-warning" role="alert">
-                <strong>Warning! </strong> <?php echo $db->alertWarning; ?>
+    <?php }
+    if ($db->dismissInfo != '') { ?>
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <strong>Info! </strong> <?php echo $db->dismissInfo; ?>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
             </div>
+            <div class="col-3"></div>
         </div>
-        <div class="col-3"></div>
-    </div>
-<?php }
-if ($db->alertError != '') { ?>
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col-6">
-            <div class="alert alert-danger" role="alert">
-                <strong>Error! </strong> <?php echo $db->alertError; ?>
+    <?php }
+    if ($db->alertWarning != '') { ?>
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="alert alert-warning" role="alert">
+                    <strong>Warning! </strong> <?php echo $db->alertWarning; ?>
+                </div>
             </div>
+            <div class="col-3"></div>
         </div>
-        <div class="col-3"></div>
-    </div>
-<?php }
-if ($db->alertSuccess != '') { ?>
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col-6">
-            <div class="alert alert-success" role="alert">
-                <strong>Success! </strong> <?php echo $db->alertSuccess; ?>
+    <?php }
+    if ($db->alertError != '') { ?>
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="alert alert-danger" role="alert">
+                    <strong>Error! </strong> <?php echo $db->alertError; ?>
+                </div>
             </div>
+            <div class="col-3"></div>
         </div>
-        <div class="col-3"></div>
-    </div>
-<?php }
-if ($db->alertInfo != '') { ?>
-    <div class="row">
-        <div class="col-3"></div>
-        <div class="col-6">
-            <div class="alert alert-info" role="alert">
-                <strong>Info! </strong> <?php echo $db->alertInfo; ?>
+    <?php }
+    if ($db->alertSuccess != '') { ?>
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="alert alert-success" role="alert">
+                    <strong>Success! </strong> <?php echo $db->alertSuccess; ?>
+                </div>
             </div>
+            <div class="col-3"></div>
         </div>
-        <div class="col-3"></div>
-    </div>
-<?php }
+    <?php }
+    if ($db->alertInfo != '') { ?>
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="alert alert-info" role="alert">
+                    <strong>Info! </strong> <?php echo $db->alertInfo; ?>
+                </div>
+            </div>
+            <div class="col-3"></div>
+        </div>
+    <?php }
 
 
-
-        }//printer layout
+}//printer layout
 }//template_header
 function template_footer()
 {

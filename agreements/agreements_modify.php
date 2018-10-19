@@ -52,6 +52,7 @@ if ($_POST["action"] == "insert") {
             $lines[$i]['per_copy_black_cost'] = $_POST['blackPerCopyCost' . $i];
             $lines[$i]['per_copy_color_cost'] = $_POST['colorPerCopyCost' . $i];
             $lines[$i]['rent_cost'] = $_POST['rentCost_' . $i];
+            $lines[$i]['location'] = $_POST['location' . $i];
             $lines[$i]['status'] = 'Active';
             $lines[$i]['process_status'] = 'New';
             $lines[$i]['add_remove_stock'] = -1;
@@ -131,6 +132,7 @@ if ($_POST["action"] == "insert") {
         $lines[$i]['per_copy_black_cost'] = $_POST['blackPerCopyCost' . $i];
         $lines[$i]['per_copy_color_cost'] = $_POST['colorPerCopyCost' . $i];
         $lines[$i]['rent_cost'] = $_POST['rentCost_' . $i];
+        $lines[$i]['location'] = $_POST['location' . $i];
 
 
         //insert new line
@@ -410,6 +412,43 @@ $db->show_header();
                         var TotalProductsShow = 0;
                         var LastNumberUsed = 0;
 
+                        function agreementTypeOnChange(lineNum){
+
+                            let option = $('#agreementType_' + lineNum).val();
+
+                            $('#agreementType_' + lineNum).prop('disabled', false);
+                            $('#unique_serial_' + lineNum).prop('disabled', false);
+                            $('#rentCost_' + lineNum).prop('disabled', false);
+                            $('#blackPerCopyCost' + lineNum).prop('disabled', false);
+                            $('#colorPerCopyCost' + lineNum).prop('disabled', false);
+                            $('#productSelect_' + lineNum).prop('disabled', false);
+                            $('#location' + lineNum).prop('disabled', false);
+
+                            if (option == 'Rent'){
+
+                                //all enabled
+
+                            }
+                            else if (option == 'CPC'){
+                                $('#rentCost_' + lineNum).prop('disabled', true);
+                            }
+                            else if (option == 'Min'){
+                                $('#rentCost_' + lineNum).prop('disabled', true);
+                            }
+                            else if (option == 'Labour'){
+                                $('#rentCost_' + lineNum).prop('disabled', true);
+                                $('#blackPerCopyCost' + lineNum).prop('disabled', true);
+                                $('#colorPerCopyCost' + lineNum).prop('disabled', true);
+                            }
+                            else if (option == 'No'){
+                                $('#rentCost_' + lineNum).prop('disabled', true);
+                                $('#blackPerCopyCost' + lineNum).prop('disabled', true);
+                                $('#colorPerCopyCost' + lineNum).prop('disabled', true);
+                            }
+
+
+                        }
+
                         function fillProduct(objData) {
 
                             addNewProduct();
@@ -427,6 +466,7 @@ $db->show_header();
                             $('#prod_description_' + TotalProductsShow).text(objData.productDescription);
                             $('#agreementItemID_' + TotalProductsShow).val(objData.agreementItemID);
                             $('#lineNumber_' + TotalProductsShow).val(objData.lineNumber);
+                            $('#location' + TotalProductsShow).val(objData.location);
                             $('#productLine_' + TotalProductsShow).val(2);
 
                             //if line is deleted
@@ -451,6 +491,7 @@ $db->show_header();
                             $('#processStatusLine_' + TotalProductsShow).val(objData.lineProcessStatus);
 
                             LastNumberUsed = objData.lineNumber;
+                            agreementTypeOnChange(TotalProductsShow);
 
                         }
 
@@ -462,6 +503,7 @@ $db->show_header();
                             $('#blackPerCopyCost' + lineNum).prop('disabled', true);
                             $('#colorPerCopyCost' + lineNum).prop('disabled', true);
                             $('#productSelect_' + lineNum).prop('disabled', true);
+                            $('#location' + lineNum).prop('disabled', true);
                             //$('#').disable();
                         }
 
@@ -568,7 +610,7 @@ $db->show_header();
                                     <div class="col-lg-2 col-sm-3">Agrrement Type</div>
                                     <div class="col-lg-4 col-sm-3">
                                         <select name="agreementType_` + TotalProductsShow + `" id="agreementType_` + TotalProductsShow + `"
-                                            class="form-control"
+                                            class="form-control" onChange="agreementTypeOnChange(` + TotalProductsShow + `)"
                                             required <?php disable(); ?>>
                                             <option value=""></option>
                                             <option value="Rent">Rent +CPC</option>
@@ -594,18 +636,27 @@ $db->show_header();
 
                                 <div class="row">
                                     <div class="col-lg-2 col-sm-3">Rent Cost</div>
-                                    <div class="col-lg-2 col-sm-3">
+                                    <div class="col-lg-4 col-sm-3">
                                         <input name="rentCost_` + TotalProductsShow + `" type="text" id="rentCost_` + TotalProductsShow + `"
                                                    class="form-control" value="" <?php disable();?>>
                                     </div>
                                     <div class="col-lg-2 col-sm-3">Black Per Copy Cost</div>
-                                    <div class="col-lg-2 col-sm-3">
+                                    <div class="col-lg-4 col-sm-3">
                                         <input name="blackPerCopyCost` + TotalProductsShow + `" type="text" id="blackPerCopyCost` + TotalProductsShow + `"
                                                    class="form-control" value="" <?php disable();?>>
                                     </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
                                     <div class="col-lg-2 col-sm-3">Color Per Copy Cost</div>
-                                    <div class="col-lg-2 col-sm-3">
+                                    <div class="col-lg-4 col-sm-3">
                                         <input name="colorPerCopyCost` + TotalProductsShow + `" type="text" id="colorPerCopyCost` + TotalProductsShow + `"
+                                                   class="form-control" value="" <?php disable();?>>
+                                    </div>
+                                    <div class="col-lg-2 col-sm-3">Location</div>
+                                    <div class="col-lg-4 col-sm-3">
+                                        <input name="location` + TotalProductsShow + `" type="text" id="location` + TotalProductsShow + `"
                                                    class="form-control" value="" <?php disable();?>>
                                     </div>
                                 </div>
@@ -696,6 +747,7 @@ $db->show_header();
                                 $linesJsData .= ",uniqueSerialID:'" . $line['uqs_unique_serial_ID'] . "'";
                                 $linesJsData .= ",lineStatus:'" . $line['agri_status'] . "'";
                                 $linesJsData .= ",lineProcessStatus:'" . $line['agri_process_status'] . "'";
+                                $linesJsData .= ",location:'" . $line['agri_location'] . "'";
                                 $linesJsData .= "};
                                     fillProduct(linesData);
                                     checkStock(TotalProductsShow);";
@@ -805,6 +857,8 @@ $db->show_header();
         </div>
     </div>
     <script>
+
+
 
         function submitForm() {
             //extra validations in lines

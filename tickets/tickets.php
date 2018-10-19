@@ -1,23 +1,24 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Mike
- * Date: 09-Aug-18
- * Time: 6:32 PM
+ * User: micac
+ * Date: 19/10/2018
+ * Time: 3:22 ΜΜ
  */
 
 include("../include/main.php");
 include("../include/tables.php");
 
 $db = new Main(1, 'UTF-8');
-$db->admin_title = "Products";
+$db->admin_title = "Tickets";
 
 $db->show_header();
 
-$table = new draw_table('products', 'prd_product_ID', 'ASC');
+$table = new draw_table('tickets', 'tck_ticket_ID', 'ASC');
+$table->extra_from_section = 'JOIN customers ON cst_customer_ID = tck_customer_ID';
 
 $table->generate_data();
-
+//echo $table->sql;
 ?>
 
 
@@ -27,7 +28,7 @@ $table->generate_data();
         <div class="col-lg-8">
             <div class="row alert alert-success text-center">
                 <div class="col-12">
-                    Products
+                    Tickets
                 </div>
             </div>
             <div class="text-center"><?php $table->show_pages_links(); ?></div>
@@ -35,13 +36,11 @@ $table->generate_data();
                 <table class="table table-hover">
                     <thead>
                     <tr class="alert alert-success">
-                        <th scope="col"><?php $table->display_order_links('ID', 'prd_product_ID'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Type', 'prd_type'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Model', 'prd_model'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Name', 'prd_name'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Current Stock', 'prd_current_stock'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('ID', 'tck_ticket_ID'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Number', 'tck_ticket_number'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Customer', 'cst_name'); ?></th>
                         <th scope="col">
-                            <a href="products_modify.php">
+                            <a href="ticket_modify.php">
                                 <i class="fas fa-plus-circle"></i>
                             </a>
                         </th>
@@ -51,17 +50,15 @@ $table->generate_data();
                     <?php
                     while ($row = $table->fetch_data()) {
                     ?>
-                    <tr onclick="editLine(<?php echo $row["prd_product_ID"];?>);">
-                        <th scope="row"><?php echo $row["prd_product_ID"]; ?></th>
-                        <td><?php echo $row["prd_type"]; ?></td>
-                        <td><?php echo $row["prd_model"]; ?></td>
-                        <td><?php echo $row["prd_name"]; ?></td>
-                        <td><?php echo $row["prd_current_stock"]; ?></td>
+                    <tr onclick="editLine(<?php echo $row["tck_ticket_ID"];?>);">
+                        <th scope="row"><?php echo $row["tck_ticket_ID"]; ?></th>
+                        <td><?php echo $row["tck_ticket_number"]; ?></td>
+                        <td><?php echo $row["cst_name"]; ?></td>
                         <td>
-                            <a href="products_modify.php?lid=<?php echo $row["prd_product_ID"]; ?>"><i
+                            <a href="ticket_modify.php?lid=<?php echo $row["tck_ticket_ID"]; ?>"><i
                                         class="fas fa-edit"></i></a>&nbsp
-                            <a href="products_delete.php?lid=<?php echo $row["prd_product_ID"]; ?>"
-                               onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this product?');"><i
+                            <a href="ticket_delete.php?lid=<?php echo $row["tck_ticket_ID"]; ?>"
+                               onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this ticket?');"><i
                                         class="fas fa-minus-circle"></i></a>
                         </td>
                     </tr>
@@ -80,7 +77,7 @@ $table->generate_data();
 
     function editLine(id) {
         if (ignoreEdit === false) {
-            window.location.assign('products_modify.php?lid=' + id);
+            window.location.assign('ticket_modify.php?lid=' + id);
         }
     }
 </script>
