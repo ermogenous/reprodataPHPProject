@@ -413,7 +413,7 @@ $db->show_header();
                         var LastNumberUsed = 0;
 
                         function agreementTypeOnChange(lineNum){
-
+                            console.log('agreementTypeOnChange On :' + lineNum);
                             let option = $('#agreementType_' + lineNum).val();
 
                             $('#agreementType_' + lineNum).prop('disabled', false);
@@ -491,7 +491,10 @@ $db->show_header();
                             $('#processStatusLine_' + TotalProductsShow).val(objData.lineProcessStatus);
 
                             LastNumberUsed = objData.lineNumber;
-                            agreementTypeOnChange(TotalProductsShow);
+                            if(objData.lineStatus != 'Deleted' && '<?php echo $data['agr_status'];?>' == 'Pending'){
+                                agreementTypeOnChange(TotalProductsShow);
+                            }
+
 
                         }
 
@@ -519,7 +522,7 @@ $db->show_header();
                         }
 
                         function removeProductLine(lineNum) {
-                            console.log('Line ' + lineNum + $('#processStatusLine_' + lineNum).val());
+                            //console.log('Line ' + lineNum + $('#processStatusLine_' + lineNum).val());
                             if (confirm("Are you sure you want to remove this line?")) {
                                 //console.log('Removing line' + lineNum);
                                 $('#stockIcon_' + lineNum).hide();
@@ -645,8 +648,8 @@ $db->show_header();
                                         <input name="blackPerCopyCost` + TotalProductsShow + `" type="text" id="blackPerCopyCost` + TotalProductsShow + `"
                                                    class="form-control" value="" <?php disable();?>>
                                     </div>
-                                    </div>
                                 </div>
+
 
                                 <div class="row">
                                     <div class="col-lg-2 col-sm-3">Color Per Copy Cost</div>

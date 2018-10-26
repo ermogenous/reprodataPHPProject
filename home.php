@@ -12,17 +12,17 @@ $db->show_header();
         <div class="col-3"></div>
         <div class="col-2 text-center">
             <a href="products/products.php">
-                <i class="fas fa-box-open fa-10x"></i>
+                <i class="fas fa-box-open fa-10x" title="Products"></i>
             </a>
         </div>
         <div class="col-2 text-center">
             <a href="agreements/agreements.php">
-                <i class="far fa-handshake fa-10x"></i>
+                <i class="far fa-handshake fa-10x" title="Agreements"></i>
             </a>
         </div>
         <div class="col-2 text-center">
             <a href="customers/customers.php">
-                <i class="fas fa-users fa-10x"></i>
+                <i class="fas fa-users fa-10x" title="Customers"></i>
             </a>
         </div>
         <div class="col-3"></div>
@@ -34,12 +34,12 @@ $db->show_header();
         <div class="col-3"></div>
 
         <div class="col-2 text-center">
-            <a href="products/products.php">
-                <i class="fas fa-bars fa-10x"></i>
+            <a href="stock/stock_transaction.php">
+                <i class="fas fa-bars fa-10x" title="Stock"></i>
             </a>
         </div>
         <div class="col-2 text-center">
-            <i class="fas fa-phone-volume fa-10x"></i>
+            <i class="fas fa-phone-volume fa-10x" title=""></i>
         </div>
         <div class="col-2 text-center">
 
