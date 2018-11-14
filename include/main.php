@@ -1415,7 +1415,7 @@ class Main
     {
 
         $sql = "INSERT INTO `log_file`
-	SET 
+	    SET 
 		`lgf_user_ID` = '" . $this->user_data["usr_users_ID"] . "' ,
 		`lgf_ip` = '" . $_SERVER['REMOTE_ADDR'] . "',
 		`lgf_date_time` = '" . date('Y-m-d H:i:s') . "' ,
@@ -1427,6 +1427,7 @@ class Main
 		`lgf_description` = \"" . addslashes($description) . "\" ";
         $this->query($sql);
         $sql = '';
+        unset($sql);
 
     }//
 

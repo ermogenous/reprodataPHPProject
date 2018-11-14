@@ -151,13 +151,17 @@ if ($_POST["action"] == "insert") {
             $uqs["unique_serial"] = $_POST["unique_serial_" . $i];
             $uqs["status"] = 'Active';
             //check if the serial already exists
-            $uqsCheck = $db->query_fetch("SELECT * FROM unique_serials WHERE uqs_status = 'Active' AND uqs_unique_serial = " . $_POST["unique_serial_" . $i]);
-            if ($uqsCheck['uqs_unique_serial_ID'] > 0) {
-                $db->generateAlertError('Serial Used in line ' . $i . ' is not unique');
-                $errorFound = true;
-            } else {
-                $db->db_tool_insert_row('unique_serials', $uqs, '', 0, 'uqs_');
+            if ($_POST["unique_serial_" . $i] > 0) {
+                $uqsCheck = $db->query_fetch("SELECT * FROM unique_serials WHERE uqs_status = 'Active' 
+                            AND uqs_unique_serial = " . $_POST["unique_serial_" . $i]);
+                if ($uqsCheck['uqs_unique_serial_ID'] > 0) {
+                    $db->generateAlertError('Serial Used in line ' . $i . ' is not unique');
+                    $errorFound = true;
+                } else {
+                    $db->db_tool_insert_row('unique_serials', $uqs, '', 0, 'uqs_');
+                }
             }
+
 
         } //update existing line
         else if ($_POST['productLine_' . $i] == 2) {
@@ -167,23 +171,46 @@ if ($_POST["action"] == "insert") {
             //update unique serial
             $uqs["unique_serial"] = $_POST["unique_serial_" . $i];
 
-            //find the record first
-            $uqsData = $db->query_fetch("SELECT * FROM unique_serials 
+            if ($_POST["unique_serial_" . $i] > 0) {
+                //find the record first
+                $uqsData = $db->query_fetch("SELECT * FROM unique_serials 
               WHERE `uqs_agreement_number` = '" . $_POST['agreementNumber'] . "' 
               AND `uqs_line_number` = " . $_POST['lineNumber_' . $i]);
 
-            $uqsCheck = $db->query_fetch("SELECT * FROM unique_serials 
+                //if the record was created for the first time
+                if ($uqsData['uqs_unique_serial_ID'] == ''){
+                    $uqsData['uqs_unique_serial_ID'] = 0;
+                }
+
+                $uqsCheck = $db->query_fetch("SELECT * FROM unique_serials 
               WHERE uqs_unique_serial = '" . $_POST["unique_serial_" . $i] . "' 
               AND uqs_status = 'Active'
               AND uqs_unique_serial_ID != " . $uqsData['uqs_unique_serial_ID']);
 
-            if ($uqsCheck['uqs_unique_serial_ID'] > 0) {
-                $db->generateSessionAlertError('Serial Used is not unique');
-                $errorFound = true;
-            } else {
-                $db->db_tool_update_row('unique_serials', $uqs,
-                    "`uqs_unique_serial_ID` = " . $uqsData["uqs_unique_serial_ID"],
-                    $uqsData["uqs_unique_serial_ID"], '', 'execute', 'uqs_');
+                print_r($uqsCheck);
+
+                if ($uqsCheck['uqs_unique_serial_ID'] > 0) {
+                    $db->generateSessionAlertError('Serial Used is not unique');
+                    $errorFound = true;
+                } else {
+                    //insert
+                    if ($uqsData['uqs_unique_serial_ID'] == 0){
+                        //insert the unique serials
+                        $uqs["product_ID"] = $_POST['productSelectId_' . $i];
+                        $uqs["agreement_ID"] = $_POST["lid"];
+                        $uqs["line_number"] = $_POST['lineNumber_' . $i];
+                        $uqs["agreement_number"] = $_POST['agreementNumber'];
+                        $uqs["unique_serial"] = $_POST["unique_serial_" . $i];
+                        $uqs["status"] = 'Active';
+                        $db->db_tool_insert_row('unique_serials', $uqs, '', 0, 'uqs_');
+                    }
+                    else {//update
+                        $db->db_tool_update_row('unique_serials', $uqs,
+                            "`uqs_unique_serial_ID` = " . $uqsData["uqs_unique_serial_ID"],
+                            $uqsData["uqs_unique_serial_ID"], '', 'execute', 'uqs_');
+                    }
+
+                }
             }
 
 
@@ -198,8 +225,7 @@ if ($_POST["action"] == "insert") {
               WHERE `uqs_agreement_number` = '" . $_POST['agreementNumber'] . "' 
               AND `uqs_line_number` = " . $_POST['lineNumber_' . $i]);
                 $db->db_tool_delete_row('unique_serials', $uqsData["uqs_unique_serial_ID"], "`uqs_unique_serial_ID` = " . $uqsData["uqs_unique_serial_ID"]);
-            }
-            else {//renewals endorsements
+            } else {//renewals endorsements
 
                 if ($_POST['stockAddMinus_' . $i] == 1) {
                     $agrUpdateData['add_remove_stock'] = 1;
@@ -259,28 +285,31 @@ $db->show_header();
         let outOfStockFound = false;
         let proceedSubmit = true;
     </script>
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12">
+            <div class="col-lg-2"></div>
+            <div class="col-lg-8">
                 <form name="myForm" id="myForm" method="post" action="" onsubmit="">
                     <div class="alert alert-primary text-center">
-                        <b><?php if ($_GET["lid"] == "") echo "Insert"; else if ($data["agr_status"] == 'Pending')echo "Update"; ?>
+                        <b><?php if ($_GET["lid"] == "") echo "Insert"; else if ($data["agr_status"] == 'Pending') echo "Update"; ?>
                             &nbsp;Agreement</b>
                     </div>
 
 
                     <div class="form-group row">
                         <div class="col-lg-2 col-sm-3">Status</div>
-                        <div class="col-lg-4 col-sm-3 text-left <?php echo getAgreementColor($data['agr_status']); ?>">
+                        <div class="col-lg-4 col-sm-9 text-left <?php echo getAgreementColor($data['agr_status']); ?>">
                             <?php echo $data["agr_status"]; ?>
-                            <input type="hidden" name="agreementStatus" id="agreementStatus" value="<?php echo $data["agr_status"]; ?>">
+                            <input type="hidden" name="agreementStatus" id="agreementStatus"
+                                   value="<?php echo $data["agr_status"]; ?>">
                         </div>
-                        <div class="col-lg-2 col-sm-2">Process Status</div>
-                        <div class="col-lg-2 col-sm-2 text-left">
+                        <div class="col-lg-2 col-sm-3">Process Status</div>
+                        <div class="col-lg-2 col-sm-6 text-left">
                             <?php echo $data["agr_process_status"]; ?>
-                            <input type="hidden" name="agreementProcessStatus" id="agreementProcessStatus" value="<?php echo $data["agr_process_status"]; ?>">
+                            <input type="hidden" name="agreementProcessStatus" id="agreementProcessStatus"
+                                   value="<?php echo $data["agr_process_status"]; ?>">
                         </div>
-                        <div class="col-lg-2 col-sm-2">
+                        <div class="col-lg-2 col-sm-3">
                             <?php
 
                             if ($data['agr_replacing_agreement_ID'] > 0) {
@@ -306,7 +335,7 @@ $db->show_header();
 
                     <div class="form-group row">
                         <div class="col-lg-2 col-sm-3">Ag. Number</div>
-                        <div class="col-lg-4 col-sm-3 text-left">
+                        <div class="col-lg-4 col-sm-9 text-left">
                             <?php echo $data["agr_agreement_number"]; ?>
                             <input type="hidden" id="agreementNumber" name="agreementNumber"
                                    value="<?php echo $data["agr_agreement_number"]; ?>">
@@ -315,7 +344,7 @@ $db->show_header();
 
                     <div class="form-group row">
                         <label for="fld_starting_date" class="col-lg-2 col-sm-3 col-form-label">Starting Date</label>
-                        <div class="col-lg-4 col-sm-3">
+                        <div class="col-lg-4 col-sm-9">
                             <input name="fld_starting_date" type="text" id="fld_starting_date"
                                    class="form-control" onchange="setAutoExpiryDate()"
                                    required
@@ -326,7 +355,7 @@ $db->show_header();
                             Expiry Date
                             <i class="fas fa-sync" onclick="setAutoExpiryDate(true);" style="cursor: pointer;"></i>
                         </label>
-                        <div class="col-lg-4 col-sm-3">
+                        <div class="col-lg-4 col-sm-9">
                             <input name="fld_expiry_date" type="text" id="fld_expiry_date"
                                    class="form-control"
                                    required
@@ -412,7 +441,7 @@ $db->show_header();
                         var TotalProductsShow = 0;
                         var LastNumberUsed = 0;
 
-                        function agreementTypeOnChange(lineNum){
+                        function agreementTypeOnChange(lineNum) {
                             console.log('agreementTypeOnChange On :' + lineNum);
                             let option = $('#agreementType_' + lineNum).val();
 
@@ -424,23 +453,23 @@ $db->show_header();
                             $('#productSelect_' + lineNum).prop('disabled', false);
                             $('#location' + lineNum).prop('disabled', false);
 
-                            if (option == 'Rent'){
+                            if (option == 'Rent') {
 
                                 //all enabled
 
                             }
-                            else if (option == 'CPC'){
+                            else if (option == 'CPC') {
                                 $('#rentCost_' + lineNum).prop('disabled', true);
                             }
-                            else if (option == 'Min'){
+                            else if (option == 'Min') {
                                 $('#rentCost_' + lineNum).prop('disabled', true);
                             }
-                            else if (option == 'Labour'){
+                            else if (option == 'Labour') {
                                 $('#rentCost_' + lineNum).prop('disabled', true);
                                 $('#blackPerCopyCost' + lineNum).prop('disabled', true);
                                 $('#colorPerCopyCost' + lineNum).prop('disabled', true);
                             }
-                            else if (option == 'No'){
+                            else if (option == 'No') {
                                 $('#rentCost_' + lineNum).prop('disabled', true);
                                 $('#blackPerCopyCost' + lineNum).prop('disabled', true);
                                 $('#colorPerCopyCost' + lineNum).prop('disabled', true);
@@ -470,7 +499,7 @@ $db->show_header();
                             $('#productLine_' + TotalProductsShow).val(2);
 
                             //if line is deleted
-                            if(objData.lineStatus == 'Deleted'){
+                            if (objData.lineStatus == 'Deleted') {
                                 $('#headerLine_' + TotalProductsShow).removeClass('alert-success');
                                 $('#headerLine_' + TotalProductsShow).addClass('alert-danger');
                                 $('#headerLine_' + TotalProductsShow).text(
@@ -491,14 +520,14 @@ $db->show_header();
                             $('#processStatusLine_' + TotalProductsShow).val(objData.lineProcessStatus);
 
                             LastNumberUsed = objData.lineNumber;
-                            if(objData.lineStatus != 'Deleted' && '<?php echo $data['agr_status'];?>' == 'Pending'){
+                            if (objData.lineStatus != 'Deleted' && '<?php echo $data['agr_status'];?>' == 'Pending') {
                                 agreementTypeOnChange(TotalProductsShow);
                             }
 
 
                         }
 
-                        function disableProduct(lineNum){
+                        function disableProduct(lineNum) {
                             console.log('Disabling' + lineNum);
                             $('#agreementType_' + lineNum).prop('disabled', true);
                             $('#unique_serial_' + lineNum).prop('disabled', true);
@@ -539,7 +568,7 @@ $db->show_header();
                                 }
                                 else {//if renewal
                                     let uniqueSerial = $('#unique_serial_' + lineNum).val();
-                                    if (confirm('Add this machine serial #' + uniqueSerial + ' back to the stock?')){
+                                    if (confirm('Add this machine serial #' + uniqueSerial + ' back to the stock?')) {
                                         $('#stockAddMinus_' + lineNum).val('1');
                                         $('#stockIcon_' + lineNum).show();
                                         $('#stockPlusIcon_' + lineNum).show();
@@ -560,7 +589,6 @@ $db->show_header();
                                         checkStockAllLines();
                                     }
                                 }
-
 
 
                             }
@@ -605,13 +633,13 @@ $db->show_header();
                                     <input type="hidden" id="stockAddMinus_` + TotalProductsShow + `"
                                         name="stockAddMinus_` + TotalProductsShow + `"
                                         value="0">
-                                    <input type="hidden" id="processStatusLine_` + TotalProductsShow +`"
+                                    <input type="hidden" id="processStatusLine_` + TotalProductsShow + `"
                                         name="processStatusLine_` + TotalProductsShow + `"
                                         value="New">
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-2 col-sm-3">Agrrement Type</div>
-                                    <div class="col-lg-4 col-sm-3">
+                                    <div class="col-lg-4 col-sm-9">
                                         <select name="agreementType_` + TotalProductsShow + `" id="agreementType_` + TotalProductsShow + `"
                                             class="form-control" onChange="agreementTypeOnChange(` + TotalProductsShow + `)"
                                             required <?php disable(); ?>>
@@ -639,12 +667,12 @@ $db->show_header();
 
                                 <div class="row">
                                     <div class="col-lg-2 col-sm-3">Rent Cost</div>
-                                    <div class="col-lg-4 col-sm-3">
+                                    <div class="col-lg-4 col-sm-9">
                                         <input name="rentCost_` + TotalProductsShow + `" type="text" id="rentCost_` + TotalProductsShow + `"
                                                    class="form-control" value="" <?php disable();?>>
                                     </div>
                                     <div class="col-lg-2 col-sm-3">Black Per Copy Cost</div>
-                                    <div class="col-lg-4 col-sm-3">
+                                    <div class="col-lg-4 col-sm-9">
                                         <input name="blackPerCopyCost` + TotalProductsShow + `" type="text" id="blackPerCopyCost` + TotalProductsShow + `"
                                                    class="form-control" value="" <?php disable();?>>
                                     </div>
@@ -653,12 +681,12 @@ $db->show_header();
 
                                 <div class="row">
                                     <div class="col-lg-2 col-sm-3">Color Per Copy Cost</div>
-                                    <div class="col-lg-4 col-sm-3">
+                                    <div class="col-lg-4 col-sm-9">
                                         <input name="colorPerCopyCost` + TotalProductsShow + `" type="text" id="colorPerCopyCost` + TotalProductsShow + `"
                                                    class="form-control" value="" <?php disable();?>>
                                     </div>
                                     <div class="col-lg-2 col-sm-3">Location</div>
-                                    <div class="col-lg-4 col-sm-3">
+                                    <div class="col-lg-4 col-sm-9">
                                         <input name="location` + TotalProductsShow + `" type="text" id="location` + TotalProductsShow + `"
                                                    class="form-control" value="" <?php disable();?>>
                                     </div>
@@ -860,7 +888,6 @@ $db->show_header();
         </div>
     </div>
     <script>
-
 
 
         function submitForm() {

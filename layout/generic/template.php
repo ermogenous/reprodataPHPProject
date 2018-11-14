@@ -345,7 +345,21 @@ if ($db->admin_layout_printer != 'yes')
         <div class="row">&nbsp</div>
         <div class="row glyphicon-copyright-mark navbar-custom">&nbsp</div>
     </div>
+    <?php
+    $showStatsFooter = $db->get_setting('layout_show_footer_stats');
+    if ($showStatsFooter == 'Yes') {
+    ?>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                Time Spend: <?php echo $db->get_script_time(); ?> Seconds. &nbsp;&nbsp;&nbsp;
+                Memory Used: <?php echo memory_get_usage(); ?> Bytes. &nbsp;&nbsp;
+                Memory Peak: <?php echo memory_get_peak_usage(); ?> Bytes.
+            </div>
+        </div>
+    </div>
 <?php
+}
 }//printer layout
 ?>
 

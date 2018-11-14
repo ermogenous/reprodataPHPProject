@@ -71,7 +71,19 @@ class Agreements {
                         $this->errorDescription = 'Cannot lock because not enough stock exists.';
                         return false;
                     }
+
+                    //check if the unique serial is defined
+                    $uqsData = $db->query_fetch("SELECT * FROM unique_serials 
+                    WHERE `uqs_agreement_number` = '" . $this->agreementData['agr_agreement_number'] . "' 
+                    AND `uqs_line_number` = " . $this->itemsData[$i]['agri_line_number']);
+                    if ($uqsData['uqs_unique_serial_ID'] == ''){
+                        $this->errorCode = 'LockLine'.$i.'UniqueSerialNotDefined';
+                        $this->errorDescription = 'Cannot lock because unique serial is not defined for line '.$this->itemsData[$i]['agri_line_number'].'.';
+                        return false;
+                    }
                 }
+
+
 
                 $data['status'] = 'Locked';
                 $db->db_tool_update_row('agreements', $data,

@@ -25,17 +25,16 @@ if ($_POST["action"] == "update") {
     $db->working_section = 'Settings Update';
 
     //loop into all the fld`s
-    foreach($_POST as $name=>$value){
+    foreach ($_POST as $name => $value) {
 
-        if (substr($name,0,4) == 'fld_'){
+        if (substr($name, 0, 4) == 'fld_') {
 
             //check if the settings exists
-            $check = $db->query_fetch("SELECT stg_settings_ID FROM settings WHERE stg_section = '".substr($name,4)."'");
-            if ($check['stg_settings_ID'] > 0){
-                $db->update_setting(substr($name,4), $value);
-            }
-            else {
-                $setData['section'] = substr($name,4);
+            $check = $db->query_fetch("SELECT stg_settings_ID FROM settings WHERE stg_section = '" . substr($name, 4) . "'");
+            if ($check['stg_settings_ID'] > 0) {
+                $db->update_setting(substr($name, 4), $value);
+            } else {
+                $setData['section'] = substr($name, 4);
                 $setData['value'] = $value;
                 $db->db_tool_insert_row('settings', $setData, '', 0, 'stg_');
             }
@@ -81,13 +80,31 @@ $db->show_header();
                         <!-- GENERAL -->
 
 
-                        <div class="form-group row">
-                            <div class="col-sm-4"></div>
-                            <div class="col-sm-8">
-
+                        <div class="row alert alert-primary">
+                            <div class="col-12">
+                                Layout
                             </div>
                         </div>
 
+                        <?php
+                        $footerShowStats = $db->get_setting('layout_show_footer_stats');
+                        ?>
+                        <div class="form-group row">
+                            <label for="fld_layout_show_footer_stats" class="col-sm-4 col-form-label">Footer
+                                Stats</label>
+                            <div class="col-sm-8">
+                                <select name="fld_layout_show_footer_stats" id="fld_layout_show_footer_stats"
+                                        class="form-control"
+                                        required>
+                                    <option value="Yes" <?php if ($footerShowStats == 'Yes') echo 'selected'; ?>>Show
+                                        stats on footer
+                                    </option>
+                                    <option value="No" <?php if ($footerShowStats == 'No') echo 'selected'; ?>>Hide
+                                        stats on footer
+                                    </option>
+                                </select>
+                            </div>
+                        </div>
 
 
                     </div>
@@ -104,14 +121,14 @@ $db->show_header();
                         <div class="form-group row">
                             <div class="col-sm-4">Stock Active Year</div>
                             <div class="col-sm-8">
-                                <?php echo $db->get_setting('stk_active_year');?>
+                                <?php echo $db->get_setting('stk_active_year'); ?>
                             </div>
                         </div>
 
                         <div class="form-group row">
                             <div class="col-sm-4">Stock Active Period</div>
                             <div class="col-sm-8">
-                                <?php echo $db->get_setting('stk_active_month');?>
+                                <?php echo $db->get_setting('stk_active_month'); ?>
                             </div>
                         </div>
 
@@ -125,9 +142,11 @@ $db->show_header();
                         $numberPrefix = $db->get_setting('agr_agreement_number_prefix');
                         ?>
                         <div class="form-group row">
-                            <label for="fld_agr_agreement_number_prefix" class="col-sm-4 col-form-label">Number Prefix</label>
+                            <label for="fld_agr_agreement_number_prefix" class="col-sm-4 col-form-label">Number
+                                Prefix</label>
                             <div class="col-sm-8">
-                                <input name="fld_agr_agreement_number_prefix" type="text" id="fld_agr_agreement_number_prefix"
+                                <input name="fld_agr_agreement_number_prefix" type="text"
+                                       id="fld_agr_agreement_number_prefix"
                                        class="form-control"
                                        value="<?php echo $numberPrefix; ?>">
                             </div>
@@ -136,9 +155,11 @@ $db->show_header();
                         $numberLeadingZeros = $db->get_setting('agr_agreement_number_leading_zeros');
                         ?>
                         <div class="form-group row">
-                            <label for="fld_agr_agreement_number_leading_zeros" class="col-sm-4 col-form-label">Leading Zeros</label>
+                            <label for="fld_agr_agreement_number_leading_zeros" class="col-sm-4 col-form-label">Leading
+                                Zeros</label>
                             <div class="col-sm-8">
-                                <input name="fld_agr_agreement_number_leading_zeros" type="text" id="fld_agr_agreement_number_leading_zeros"
+                                <input name="fld_agr_agreement_number_leading_zeros" type="text"
+                                       id="fld_agr_agreement_number_leading_zeros"
                                        class="form-control"
                                        value="<?php echo $numberLeadingZeros; ?>">
                             </div>
@@ -147,9 +168,11 @@ $db->show_header();
                         $numberLastUsed = $db->get_setting('agr_agreement_number_last_used');
                         ?>
                         <div class="form-group row">
-                            <label for="fld_agr_agreement_number_last_used" class="col-sm-4 col-form-label">Last Number Used</label>
+                            <label for="fld_agr_agreement_number_last_used" class="col-sm-4 col-form-label">Last Number
+                                Used</label>
                             <div class="col-sm-4">
-                                <input name="fld_agr_agreement_number_last_used" type="text" id="fld_agr_agreement_number_last_used"
+                                <input name="fld_agr_agreement_number_last_used" type="text"
+                                       id="fld_agr_agreement_number_last_used"
                                        class="form-control"
                                        value="<?php echo $numberLastUsed; ?>">
                             </div>
@@ -159,9 +182,11 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_agr_agreement_status_on_insert" class="col-sm-4 col-form-label">Status On Insert</label>
+                            <label for="fld_agr_agreement_status_on_insert" class="col-sm-4 col-form-label">Status On
+                                Insert</label>
                             <div class="col-sm-8">
-                                <select name="fld_agr_agreement_status_on_insert" id="fld_agr_agreement_status_on_insert"
+                                <select name="fld_agr_agreement_status_on_insert"
+                                        id="fld_agr_agreement_status_on_insert"
                                         class="form-control"
                                         required>
                                     <option value="Pending">Pending</option>
@@ -169,7 +194,6 @@ $db->show_header();
                                 </select>
                             </div>
                         </div>
-
 
 
                     </div>

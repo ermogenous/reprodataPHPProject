@@ -13,6 +13,7 @@ $db->admin_title = "Tickets Modify";
 
 if ($_POST["action"] == "insert") {
     $db->check_restriction_area('insert');
+    $db->working_section = 'Ticket Insert';
 
     $db->db_tool_insert_row('tickets', $_POST, 'fld_', 0, 'tck_');
     header("Location: tickets.php");
@@ -20,6 +21,7 @@ if ($_POST["action"] == "insert") {
 
 } else if ($_POST["action"] == "update") {
     $db->check_restriction_area('update');
+    $db->working_section = 'Ticket Update';
 
     $db->db_tool_update_row('tickets', $_POST, "`tck_ticket_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'tck_');
@@ -149,11 +151,46 @@ $db->show_header();
                     </div>
                 </div>
 
+                <ul class="nav nav-tabs" id="myTab" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" id="events-tab" data-toggle="tab"
+                           href="#events" role="tab" aria-controls="events" aria-selected="true">
+                            Events
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="spareParts-tab" data-toggle="tab"
+                           href="#spareParts" role="tab" aria-controls="spareParts" aria-selected="false">
+                            Spare Parts
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="consumables-tab" data-toggle="tab"
+                           href="#consumables" role="tab" aria-controls="consumables" aria-selected="false">
+                            Consumables
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" id="other-tab" data-toggle="tab"
+                           href="#other" role="tab" aria-controls="other" aria-selected="false">
+                            Other
+                        </a>
+                    </li>
+                </ul>
 
-                <div class="row">
-                    <div class="alert alert-primary col-12">
-                        <i class="fas fa-plus-circle" onclick="addNewEvent();" style="cursor: pointer;"></i>
-                        Insert Events
+
+                <div class="tab-content" id="myTabContent">
+                    <div class="tab-pane fade show active" id="events" role="tabpanel" aria-labelledby="events-tab">
+                        <iframe src="ticket_events.php?<?php echo $_GET['lid'];?>" width="100%" height="300" frameborder="0"></iframe>
+                    </div>
+                    <div class="tab-pane fade" id="spareParts" role="tabpanel" aria-labelledby="spareParts-tab">
+                        Spare Parts
+                    </div>
+                    <div class="tab-pane fade" id="consumables" role="tabpanel" aria-labelledby="consumables-tab">
+                        Consumables
+                    </div>
+                    <div class="tab-pane fade" id="other" role="tabpanel" aria-labelledby="other-tab">
+                        Other
                     </div>
                 </div>
 
@@ -202,29 +239,6 @@ $db->show_header();
 
 
 <script>
-
-    let totalEvents = 0;
-    let lastEventNumUsed = 0;
-
-    function addNewEvent(){
-        if ($('#eventHolder_' + (totalEvents * 1 + 1)).length) {
-            //console.log("Inserting New Product" + (TotalProductsShow + 1));
-            addNewEventLine();
-        }
-        else {
-            //console.log("Cannot insert more lines");
-            alert('Reached Max amount of event lines. Ask admin to add more');
-        }
-    }
-
-    function addNewEventLine(){
-        totalEvents++;
-        $('#productHolder_' + TotalProductsShow).html(`
-
-
-        `);
-    }
-
 
     function submitForm() {
         frm = document.getElementById('myForm');
