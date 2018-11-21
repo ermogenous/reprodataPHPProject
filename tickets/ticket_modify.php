@@ -7,6 +7,7 @@
  */
 
 include("../include/main.php");
+include("tickets_functions.php");
 $db = new Main();
 $db->admin_title = "Tickets Modify";
 
@@ -14,10 +15,21 @@ $db->admin_title = "Tickets Modify";
 if ($_POST["action"] == "insert") {
     $db->check_restriction_area('insert');
     $db->working_section = 'Ticket Insert';
+    $db->start_transaction();
 
-    $db->db_tool_insert_row('tickets', $_POST, 'fld_', 0, 'tck_');
-    header("Location: tickets.php");
-    exit();
+    $_POST['fld_ticket_number'] = issueTicketNumber();
+    $_POST['fld_incident_date'] = $db->convert_date_format($_POST['fld_incident_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
+    $_POST['fld_customer_ID'] = $_POST['customerSelectId'];
+
+    $newID = $db->db_tool_insert_row('tickets', $_POST, 'fld_', 1, 'tck_');
+    $db->commit_transaction();
+    if ($_POST['subAction'] == 'exit') {
+        header("Location: tickets.php");
+        exit();
+    }else {
+        header("Location: ticket_modify.php?lid=".$newID);
+        exit();
+    }
 
 } else if ($_POST["action"] == "update") {
     $db->check_restriction_area('update');
@@ -25,8 +37,13 @@ if ($_POST["action"] == "insert") {
 
     $db->db_tool_update_row('tickets', $_POST, "`tck_ticket_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'tck_');
-    header("Location: tickets.php");
-    exit();
+    if ($_POST['subAction'] == 'exit') {
+        header("Location: tickets.php");
+        exit();
+    }else {
+        header("Location: ticket_modify.php?lid=".$_POST["lid"]);
+        exit();
+    }
 
 
 }
@@ -52,31 +69,25 @@ $db->show_header();
 
 
                 <div class="form-group row">
-                    <label for="fld_business_type_code_ID"
-                           class="col-2 col-form-label">Ticket Type</label>
-                    <div class="col-4">
-                        <select name="fld_business_type_code_ID" id="fld_business_type_code_ID"
-                                class="form-control"
-                                required>
-                            <option value=""></option>
-                            <option value="">Problem</option>
-                            <option value="">Service</option>
-                        </select>
-                    </div>
-
                     <label for="fld_incident_date"
                            class="col-2 col-form-label">Incident Date</label>
                     <div class="col-4">
                         <input name="fld_incident_date" type="text" id="fld_incident_date"
                                class="form-control"/>
                     </div>
+
+                    <label for="fld_business_type_code_ID"
+                           class="col-2 col-form-label">Ticket Number</label>
+                    <div class="col-4">
+                        <?php echo $data['tck_ticket_number']; ?>
+                    </div>
                 </div>
 
                 <script>
                     let incidentDate = <?php if ($_GET['lid'] == '') {
-                        echo "'".date('d/m/Y')."'";
-                    }else {
-                        echo "'".$db->convert_date_format($data["tck_incident_date"], 'yyyy-mm-dd', 'dd/mm/yyyy')."'";
+                        echo "'" . date('d/m/Y') . "'";
+                    } else {
+                        echo "'" . $db->convert_date_format($data["tck_incident_date"], 'yyyy-mm-dd', 'dd/mm/yyyy') . "'";
                     }?>;
 
                     $(function () {
@@ -181,41 +192,54 @@ $db->show_header();
 
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="events" role="tabpanel" aria-labelledby="events-tab">
-                        <iframe src="ticket_events.php?<?php echo $_GET['lid'];?>" width="100%" height="300" frameborder="0"></iframe>
+                        <?php if ($_GET['lid'] > 0) { ?>
+                            <iframe src="ticket_events.php?lid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
+                                    frameborder="0" id="frmTabEvents" name="frmTabEvents"></iframe>
+                        <?php } else { ?>
+                            <div class="row">
+                                <div class="col-12 text-center alert alert-danger">
+                                    First create the Ticket.
+                                </div>
+                            </div>
+                        <?php } ?>
                     </div>
                     <div class="tab-pane fade" id="spareParts" role="tabpanel" aria-labelledby="spareParts-tab">
-                        Spare Parts
+                        <?php if ($_GET['lid'] > 0) { ?>
+                            <iframe src="product_events.php?lid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
+                                    frameborder="0" id="frmTabEvents" name="frmTabEvents"></iframe>
+                        <?php } else { ?>
+                            <div class="row">
+                                <div class="col-12 text-center alert alert-danger">
+                                    First create the Ticket.
+                                </div>
+                            </div>
+                        <?php } ?>
                     </div>
                     <div class="tab-pane fade" id="consumables" role="tabpanel" aria-labelledby="consumables-tab">
-                        Consumables
+                        <?php if ($_GET['lid'] > 0) { ?>
+                            <iframe src="product_events.php?lid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
+                                    frameborder="0" id="frmTabEvents" name="frmTabEvents"></iframe>
+                        <?php } else { ?>
+                            <div class="row">
+                                <div class="col-12 text-center alert alert-danger">
+                                    First create the Ticket.
+                                </div>
+                            </div>
+                        <?php } ?>
                     </div>
                     <div class="tab-pane fade" id="other" role="tabpanel" aria-labelledby="other-tab">
-                        Other
+                        <?php if ($_GET['lid'] > 0) { ?>
+                            <iframe src="product_events.php?lid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
+                                    frameborder="0" id="frmTabEvents" name="frmTabEvents"></iframe>
+                        <?php } else { ?>
+                            <div class="row">
+                                <div class="col-12 text-center alert alert-danger">
+                                    First create the Ticket.
+                                </div>
+                            </div>
+                        <?php } ?>
                     </div>
                 </div>
-
-                <?php
-
-                for ($i = 1; $i <= 25; $i++) {
-                    echo '
-                            <div id="eventHolder_' . $i . '"></div>';
-                }
-                ?>
-
-
-                <div class="row">
-                    <div class="col-2">Event Type</div>
-                    <div class="col-4">
-                        <select name="eventType" id="eventType"
-                                class="form-control"
-                                required>
-                            <option value=""></option>
-                            <option value="">Problem</option>
-                            <option value="">Service</option>
-                        </select>
-                    </div>
-                </div>
-
 
                 <div class="form-group row">
                     <label for="name" class="col-sm-4 col-form-label"></label>
@@ -226,9 +250,14 @@ $db->show_header();
                         <input type="button" value="Back" class="btn btn-secondary"
                                onclick="window.location.assign('tickets.php')">
                         <input type="submit" name="Submit" id="Submit"
-                               value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Ticket"
+                               value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> & Exit"
                                class="btn btn-secondary"
-                               onclick="submitForm()">
+                               onclick="submitForm('exit')">
+                        <input type="submit" name="Submit" id="Submit"
+                               value="<?php if ($_GET["lid"] == "") echo "Create"; else echo "Save"; ?> Ticket"
+                               class="btn btn-secondary"
+                               onclick="submitForm('save')">
+                        <input name="subAction" id="subAction" type="hidden" value="">
                     </div>
                 </div>
 
@@ -240,7 +269,7 @@ $db->show_header();
 
 <script>
 
-    function submitForm() {
+    function submitForm(action) {
         frm = document.getElementById('myForm');
         if (frm.checkValidity() === false) {
 
@@ -248,6 +277,7 @@ $db->show_header();
         else {
             document.getElementById('Submit').disabled = true
         }
+        $('#subAction').val(action);
     }
 </script>
 <?php
