@@ -34,9 +34,14 @@ if ($_POST["action"] == "insert") {
 } else if ($_POST["action"] == "update") {
     $db->check_restriction_area('update');
     $db->working_section = 'Ticket Update';
+    $db->start_transaction();
 
+    $_POST['fld_incident_date'] = $db->convert_date_format($_POST['fld_incident_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
+    $_POST['fld_customer_ID'] = $_POST['customerSelectId'];
     $db->db_tool_update_row('tickets', $_POST, "`tck_ticket_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'tck_');
+
+    $db->commit_transaction();
     if ($_POST['subAction'] == 'exit') {
         header("Location: tickets.php");
         exit();
@@ -52,6 +57,11 @@ if ($_POST["action"] == "insert") {
 if ($_GET["lid"] != "") {
     $sql = "SELECT * FROM `tickets` WHERE `tck_ticket_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
+
+    if ($data['tck_customer_ID'] > 0) {
+        $sql = "SELECT * FROM `customers` WHERE cst_customer_ID = " . $data['tck_customer_ID'];
+        $customerData = $db->query_fetch($sql);
+    }
 }
 
 $db->enable_jquery_ui();
@@ -109,17 +119,17 @@ $db->show_header();
                     <div class="col-4">
                         <input name="customerSelect" type="text" id="customerSelect"
                                class="form-control"
-                               value="<?php echo $data['cst_name'] . " " . $data['cst_surname']; ?>"
+                               value="<?php echo $customerData['cst_name'] . " " . $customerData['cst_surname']; ?>"
                                required>
                         <input name="customerSelectId" id="customerSelectId" type="hidden"
-                               value="<?php echo $data['cst_customer_ID']; ?>">
+                               value="<?php echo $customerData['cst_customer_ID']; ?>">
                     </div>
 
                     <div class="col-6">
-                        <b>#</b><span id="cus_number"><?php echo $data['cst_customer_ID']; ?></span>
-                        <b>ID:</b> <span id="cus_id"><?php echo $data['cst_identity_card']; ?></span>
-                        <b>Tel:</b> <span id="cus_work_tel"><?php echo $data['cst_work_tel_1']; ?></span>
-                        <b>Mobile:</b> <span id="cus_mobile"><?php echo $data['cst_mobile_1']; ?></span>
+                        <b>#</b><span id="cus_number"><?php echo $customerData['cst_customer_ID']; ?></span>
+                        <b>ID:</b> <span id="cus_id"><?php echo $customerData['cst_identity_card']; ?></span>
+                        <b>Tel:</b> <span id="cus_work_tel"><?php echo $customerData['cst_work_tel_1']; ?></span>
+                        <b>Mobile:</b> <span id="cus_mobile"><?php echo $customerData['cst_mobile_1']; ?></span>
                     </div>
 
                 </div>
@@ -193,7 +203,7 @@ $db->show_header();
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="events" role="tabpanel" aria-labelledby="events-tab">
                         <?php if ($_GET['lid'] > 0) { ?>
-                            <iframe src="ticket_events.php?lid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
+                            <iframe src="ticket_events.php?tid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
                                     frameborder="0" id="frmTabEvents" name="frmTabEvents"></iframe>
                         <?php } else { ?>
                             <div class="row">

@@ -18,7 +18,6 @@ $table = new draw_table('agreements', 'agr_agreement_ID', 'DESC');
 $table->extra_from_section = "JOIN agreement_items ON agri_agreement_ID = agr_agreement_ID
                               JOIN products ON prd_product_ID = agri_product_ID";
 $table->extras = 'agr_customer_ID = '.$_GET["cid"]. " AND agr_status = 'Active' AND agri_status = 'Active'";
-
 $table->generate_data();
 ?>
 
