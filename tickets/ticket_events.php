@@ -38,7 +38,7 @@ $db->show_empty_header();
                             <th scope="col"><?php $table->display_order_links('Number', 'tck_ticket_number'); ?></th>
                             <th scope="col"><?php $table->display_order_links('Customer', 'cst_name'); ?></th>
                             <th scope="col">
-                                <a href="ticket_events_modify.php?lid=<?php echo $_GET['lid'];?>">
+                                <a href="ticket_events_modify.php?tid=<?php echo $_GET['tid'];?>">
                                     <i class="fas fa-plus-circle"></i>
                                 </a>
                             </th>
@@ -53,7 +53,7 @@ $db->show_empty_header();
                                 <td><?php echo $row["tck_ticket_number"]; ?></td>
                                 <td><?php echo $row["cst_name"]; ?></td>
                                 <td>
-                                    <a href="ticket_events_modify.php?lid=<?php echo $row["tck_ticket_ID"]; ?>"><i
+                                    <a href="ticket_events_modify.php?tid=<?php echo $_GET["tid"];?>&lid=<?php echo $row["tck_ticket_ID"]; ?>"><i
                                                 class="fas fa-edit"></i></a>&nbsp
                                     <a href="ticket_events_delete.php?lid=<?php echo $row["tck_ticket_ID"]; ?>"
                                        onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this event?');"><i

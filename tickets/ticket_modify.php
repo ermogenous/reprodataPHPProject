@@ -193,7 +193,7 @@ $db->show_header();
                 <div class="tab-content" id="myTabContent">
                     <div class="tab-pane fade show active" id="events" role="tabpanel" aria-labelledby="events-tab">
                         <?php if ($_GET['lid'] > 0) { ?>
-                            <iframe src="ticket_events.php?lid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
+                            <iframe src="ticket_events.php?tid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
                                     frameborder="0" id="frmTabEvents" name="frmTabEvents"></iframe>
                         <?php } else { ?>
                             <div class="row">

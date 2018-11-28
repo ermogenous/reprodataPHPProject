@@ -36,7 +36,7 @@ $table->generate_data();
                     <?php
                     while ($row = $table->fetch_data()) {
                         ?>
-                        <tr>
+                        <tr onclick="editLine(<?php echo $row["prm_permissions_ID"];?>);">
                             <th scope="row"><?php echo $row["prm_permissions_ID"];?></th>
                             <td><?php echo $row["prm_name"];?></td>
                             <td><?php echo $row["prm_filename"];?></td>
@@ -57,7 +57,15 @@ $table->generate_data();
     </div>
 </div>
 
+<script>
+    var ignoreEdit = false;
 
+    function editLine(id) {
+        if (ignoreEdit === false) {
+            window.location.assign('permissions_modify.php?lid=' + id);
+        }
+    }
+</script>
 <?php
 $db->show_footer();
 ?>
