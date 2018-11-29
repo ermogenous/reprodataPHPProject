@@ -53,7 +53,7 @@ $db->enable_jquery_ui();
 $db->enable_rxjs_lite();
 $db->show_empty_header();
 
-echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"]."<br>";
+//echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"]."<br>";
 //print_r($data);
 ?>
 
@@ -61,7 +61,7 @@ echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"]."<br>";
     <div class="row">
         <div class="col-12">
             <form name="myForm" id="myForm" method="post" action="" onsubmit="">
-                <div class="alert alert-dark text-center">
+                <div class="alert alert-success text-center">
                     <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
                         &nbsp;Ticket Event</b>
                 </div>
@@ -119,24 +119,37 @@ echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"]."<br>";
                 <div class="row">
                     <div class="col-lg-2 col-sm-3">Machine</div>
                     <div class="col-lg-4 col-sm-3">
-                        <select name="fld_type" id="fld_type"
+                        <select name="fld_unique_serial_ID" id="fld_unique_serial_ID"
                                 class="form-control">
                             <option value=""></option>
                             <?php
+                            if ($_GET['lid'] > 0 && $data['tke_unique_serial_ID'] > 0){
+                                $sql = "SELECT * FROM unique_serials 
+                                        JOIN products ON prd_product_ID = uqs_product_ID
+                                        WHERE uqs_unique_serial_ID = ".$data['tke_unique_serial_ID'];
+                                $prod = $db->query_fetch($sql);
+                                echo '<option value="'.$prod['uqs_unique_serial_ID'].'" selected>'.$prod['prd_model'].' - '.$prod['prd_description'].'</option>';
+                                echo '<option value="" disabled>-----</option>';
+                            }
                                 $productsSql = "SELECT * FROM unique_serials 
                                                 JOIN agreements ON agr_agreement_ID = uqs_agreement_ID
                                                 JOIN customers ON cst_customer_ID = agr_customer_ID
                                                 JOIN products ON prd_product_ID = uqs_product_ID
+                                                WHERE uqs_status = 'Active'
+                                                AND agr_status = 'Active'
                                                 ";
                                 $productResult = $db->query($productsSql);
                                 while($prod = $db->fetch_assoc($productResult)){
-                                    echo '<option value="'.$prod[''].'"></option>';
+                                    echo '<option value="'.$prod['uqs_unique_serial_ID'].'">'.$prod['prd_model'].' - '.$prod['prd_description'].'</option>';
                                 }
                             ?>
 
                         </select>
                     </div>
-                    <div class="col-6">
+                    <div class="col-2">
+                        Assign to user.......
+                    </div>
+                    <div class="col-4">
 
                     </div>
                 </div>
@@ -166,7 +179,7 @@ echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"]."<br>";
 <script>
 
     function submitForm(action) {
-        frm = document.getElementById('myForm');
+        let frm = document.getElementById('myForm');
         if (frm.checkValidity() === false) {
 
         }

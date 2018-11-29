@@ -19,6 +19,7 @@ if ($_POST["action"] == "insert") {
 
     $_POST['fld_ticket_number'] = issueTicketNumber();
     $_POST['fld_incident_date'] = $db->convert_date_format($_POST['fld_incident_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
+    $_POST['fld_appointment_date'] = $db->convert_date_format($_POST['fld_appointment_date'], 'dd/mm/yyyy', 'yyyy-mm-dd', 1);
     $_POST['fld_customer_ID'] = $_POST['customerSelectId'];
 
     $newID = $db->db_tool_insert_row('tickets', $_POST, 'fld_', 1, 'tck_');
@@ -37,6 +38,7 @@ if ($_POST["action"] == "insert") {
     $db->start_transaction();
 
     $_POST['fld_incident_date'] = $db->convert_date_format($_POST['fld_incident_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
+    $_POST['fld_appointment_date'] = $db->convert_date_format($_POST['fld_appointment_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $_POST['fld_customer_ID'] = $_POST['customerSelectId'];
     $db->db_tool_update_row('tickets', $_POST, "`tck_ticket_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'tck_');
@@ -72,7 +74,7 @@ $db->show_header();
     <div class="row">
         <div class="col-12">
             <form name="myForm" id="myForm" method="post" action="" onsubmit="">
-                <div class="alert alert-dark text-center">
+                <div class="alert alert-success text-center">
                     <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
                         &nbsp;Ticket</b>
                 </div>
@@ -107,6 +109,34 @@ $db->show_header();
 
                     });
                 </script>
+
+                <div class="form-group row">
+                    <label for="fld_appointment_date"
+                           class="col-2 col-form-label">Appointment Date</label>
+                    <div class="col-4">
+                        <input name="fld_appointment_date" type="text" id="fld_appointment_date"
+                               class="form-control"/>
+                    </div>
+
+                    <div class="col-2"></div>
+                    <div class="col-4"></div>
+
+                    <script>
+                        let appointmentDate = <?php if ($_GET['lid'] == '') {
+                            echo "'" . date('d/m/Y') . "'";
+                        } else {
+                            echo "'" . $db->convert_date_format($data["tck_appointment_date"], 'yyyy-mm-dd', 'dd/mm/yyyy', 1) . "'";
+                        }?>;
+
+                        $(function () {
+                            $("#fld_appointment_date").datepicker();
+                            $("#fld_appointment_date").datepicker("option", "dateFormat", "dd/mm/yy");
+                            $("#fld_appointment_date").val(appointmentDate);
+
+                        });
+                    </script>
+                </div>
+
 
                 <div class="form-group row">
                     <div class="col-12" style="height: 10px">
@@ -176,25 +206,25 @@ $db->show_header();
                     <li class="nav-item">
                         <a class="nav-link active" id="events-tab" data-toggle="tab"
                            href="#events" role="tab" aria-controls="events" aria-selected="true">
-                            Events
+                            <b>Events</b>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="spareParts-tab" data-toggle="tab"
                            href="#spareParts" role="tab" aria-controls="spareParts" aria-selected="false">
-                            Spare Parts
+                            <b>Spare Parts</b>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="consumables-tab" data-toggle="tab"
                            href="#consumables" role="tab" aria-controls="consumables" aria-selected="false">
-                            Consumables
+                            <b>Consumables</b>
                         </a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" id="other-tab" data-toggle="tab"
                            href="#other" role="tab" aria-controls="other" aria-selected="false">
-                            Other
+                            <b>Other</b>
                         </a>
                     </li>
                 </ul>
@@ -215,8 +245,8 @@ $db->show_header();
                     </div>
                     <div class="tab-pane fade" id="spareParts" role="tabpanel" aria-labelledby="spareParts-tab">
                         <?php if ($_GET['lid'] > 0) { ?>
-                            <iframe src="product_events.php?lid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
-                                    frameborder="0" id="frmTabEvents" name="frmTabEvents"></iframe>
+                            <iframe src="ticket_products.php?type=SP&tid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
+                                    frameborder="0" id="frmTabSpareParts" name="frmTabSpareParts"></iframe>
                         <?php } else { ?>
                             <div class="row">
                                 <div class="col-12 text-center alert alert-danger">
@@ -227,8 +257,8 @@ $db->show_header();
                     </div>
                     <div class="tab-pane fade" id="consumables" role="tabpanel" aria-labelledby="consumables-tab">
                         <?php if ($_GET['lid'] > 0) { ?>
-                            <iframe src="product_events.php?lid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
-                                    frameborder="0" id="frmTabEvents" name="frmTabEvents"></iframe>
+                            <iframe src="ticket_products.php?type=CM&tid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
+                                    frameborder="0" id="frmTabConsumables" name="frmTabConsumables"></iframe>
                         <?php } else { ?>
                             <div class="row">
                                 <div class="col-12 text-center alert alert-danger">
@@ -239,8 +269,8 @@ $db->show_header();
                     </div>
                     <div class="tab-pane fade" id="other" role="tabpanel" aria-labelledby="other-tab">
                         <?php if ($_GET['lid'] > 0) { ?>
-                            <iframe src="product_events.php?lid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
-                                    frameborder="0" id="frmTabEvents" name="frmTabEvents"></iframe>
+                            <iframe src="ticket_products.php?type=OT&tid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
+                                    frameborder="0" id="frmTabOther" name="frmTabOther"></iframe>
                         <?php } else { ?>
                             <div class="row">
                                 <div class="col-12 text-center alert alert-danger">
