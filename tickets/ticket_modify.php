@@ -245,7 +245,7 @@ $db->show_header();
                     </div>
                     <div class="tab-pane fade" id="spareParts" role="tabpanel" aria-labelledby="spareParts-tab">
                         <?php if ($_GET['lid'] > 0) { ?>
-                            <iframe src="ticket_products.php?type=SP&tid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
+                            <iframe src="ticket_products.php?type=SparePart&tid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
                                     frameborder="0" id="frmTabSpareParts" name="frmTabSpareParts"></iframe>
                         <?php } else { ?>
                             <div class="row">
@@ -257,7 +257,7 @@ $db->show_header();
                     </div>
                     <div class="tab-pane fade" id="consumables" role="tabpanel" aria-labelledby="consumables-tab">
                         <?php if ($_GET['lid'] > 0) { ?>
-                            <iframe src="ticket_products.php?type=CM&tid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
+                            <iframe src="ticket_products.php?type=Consumable&tid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
                                     frameborder="0" id="frmTabConsumables" name="frmTabConsumables"></iframe>
                         <?php } else { ?>
                             <div class="row">
@@ -269,7 +269,7 @@ $db->show_header();
                     </div>
                     <div class="tab-pane fade" id="other" role="tabpanel" aria-labelledby="other-tab">
                         <?php if ($_GET['lid'] > 0) { ?>
-                            <iframe src="ticket_products.php?type=OT&tid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
+                            <iframe src="ticket_products.php?type=Other&tid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
                                     frameborder="0" id="frmTabOther" name="frmTabOther"></iframe>
                         <?php } else { ?>
                             <div class="row">

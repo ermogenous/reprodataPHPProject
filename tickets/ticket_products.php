@@ -12,18 +12,23 @@ include("../include/tables.php");
 $db = new Main();
 $db->admin_title = "Tickets products";
 
-if ($_GET['type'] == 'SP'){
+if ($_GET['type'] == 'SparePart'){
     $frameName = 'frmTabSpareParts';
-    $frameTitle = 'Spare Parts';
+    $frameTitle = 'Spare Part';
 }
-else if ($_GET['type'] == 'CM'){
+else if ($_GET['type'] == 'Consumable'){
     $frameName = 'frmTabConsumables';
-    $frameTitle = 'Consumables';
+    $frameTitle = 'Consumable';
 }
-else if ($_GET['type'] == 'OT'){
+else if ($_GET['type'] == 'Other'){
     $frameName = 'frmTabOther';
     $frameTitle = 'Other';
 }
+else if ($_GET['type'] == 'Machine'){
+    $frameName = 'frmTabMachine';
+    $frameTitle = 'Machine';
+}
+
 else {
     exit();
 }

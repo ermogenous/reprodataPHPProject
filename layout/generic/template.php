@@ -21,7 +21,7 @@ function template_header()
 
         <script language="JavaScript" type="text/javascript"
                 src="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/js/jquery-3.3.1.min.js"></script>
-
+        <!-- More Head -->
         <?php echo $db->admin_more_head; ?>
 
     </head>
