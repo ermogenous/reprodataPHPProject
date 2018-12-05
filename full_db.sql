@@ -13,6 +13,7 @@
 
 
 -- Dumping database structure for reprodata
+DROP DATABASE IF EXISTS `reprodata`;
 CREATE DATABASE IF NOT EXISTS `reprodata` /*!40100 DEFAULT CHARACTER SET utf8 COLLATE utf8_bin */;
 USE `reprodata`;
 
@@ -231,7 +232,7 @@ CREATE TABLE IF NOT EXISTS `ip_locations` (
   PRIMARY KEY (`ipl_ip_location_serial`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- Dumping data for table reprodata.ip_locations: ~1 rows (approximately)
+-- Dumping data for table reprodata.ip_locations: ~0 rows (approximately)
 /*!40000 ALTER TABLE `ip_locations` DISABLE KEYS */;
 INSERT INTO `ip_locations` (`ipl_ip_location_serial`, `ipl_ip`, `ipl_hostname`, `ipl_city`, `ipl_region`, `ipl_country`, `ipl_location`, `ipl_provider`, `ipl_last_check`) VALUES
 	(1, '::1', '', '', '', '', '', '', '2018-11-27 16:01:43');
@@ -252,7 +253,7 @@ CREATE TABLE IF NOT EXISTS `log_file` (
   `lgf_description` text COLLATE utf8_bin,
   PRIMARY KEY (`lgf_log_file_ID`),
   KEY `lgf_user_ID` (`lgf_user_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=1500 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1520 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- Dumping data for table reprodata.log_file: ~1,310 rows (approximately)
 /*!40000 ALTER TABLE `log_file` DISABLE KEYS */;
@@ -1677,7 +1678,27 @@ INSERT INTO `log_file` (`lgf_log_file_ID`, `lgf_user_ID`, `lgf_ip`, `lgf_date_ti
 	(1496, 1, '::1', '2018-11-29 22:50:59', 'CUSTOM', '0', 'Products API:productsSearchForEvent GET:Array\n(\n    [section] => productsSearchForEvent\n    [eventID] => 2\n    [type] => SparePart\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT\r\n            prd_product_ID as value,\r\n            prd_name as label,\r\n            prd_model as model,\r\n            prd_description as description\r\n            FROM \r\n            product_relations\r\n            JOIN products ON prdr_product_child_ID = prd_product_ID\r\n            WHERE\r\n            prdr_product_parent_ID = \'1\'\r\n            AND prdr_child_type = \'SparePart\''),
 	(1497, 1, '::1', '2018-11-29 22:51:01', 'CUSTOM', '0', 'Products API:productsSearchForEvent GET:Array\n(\n    [section] => productsSearchForEvent\n    [eventID] => 3\n    [type] => SparePart\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT\r\n            prd_product_ID as value,\r\n            prd_name as label,\r\n            prd_model as model,\r\n            prd_description as description\r\n            FROM \r\n            product_relations\r\n            JOIN products ON prdr_product_child_ID = prd_product_ID\r\n            WHERE\r\n            prdr_product_parent_ID = \'3\'\r\n            AND prdr_child_type = \'SparePart\''),
 	(1498, 1, '::1', '2018-11-29 22:52:10', 'CUSTOM', '0', 'Products API:productsSearchForEvent GET:Array\n(\n    [section] => productsSearchForEvent\n    [eventID] => 1\n    [type] => SparePart\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT\r\n            prd_product_ID as value,\r\n            prd_name as label,\r\n            prd_model as model,\r\n            prd_description as description\r\n            FROM \r\n            product_relations\r\n            JOIN products ON prdr_product_child_ID = prd_product_ID\r\n            WHERE\r\n            prdr_product_parent_ID = \'1\'\r\n            AND prdr_child_type = \'SparePart\''),
-	(1499, 1, '::1', '2018-11-29 22:52:14', 'CUSTOM', '0', 'Products API:productsSearchForEvent GET:Array\n(\n    [section] => productsSearchForEvent\n    [eventID] => 3\n    [type] => SparePart\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT\r\n            prd_product_ID as value,\r\n            prd_name as label,\r\n            prd_model as model,\r\n            prd_description as description\r\n            FROM \r\n            product_relations\r\n            JOIN products ON prdr_product_child_ID = prd_product_ID\r\n            WHERE\r\n            prdr_product_parent_ID = \'3\'\r\n            AND prdr_child_type = \'SparePart\'');
+	(1499, 1, '::1', '2018-11-29 22:52:14', 'CUSTOM', '0', 'Products API:productsSearchForEvent GET:Array\n(\n    [section] => productsSearchForEvent\n    [eventID] => 3\n    [type] => SparePart\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT\r\n            prd_product_ID as value,\r\n            prd_name as label,\r\n            prd_model as model,\r\n            prd_description as description\r\n            FROM \r\n            product_relations\r\n            JOIN products ON prdr_product_child_ID = prd_product_ID\r\n            WHERE\r\n            prdr_product_parent_ID = \'3\'\r\n            AND prdr_child_type = \'SparePart\''),
+	(1500, 1, '::1', '2018-11-30 11:51:33', 'CUSTOM', '0', 'Products API:productsSearchForEvent GET:Array\n(\n    [section] => productsSearchForEvent\n    [eventID] => 2\n    [type] => SparePart\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT\r\n            prd_product_ID as value,\r\n            prd_name as label,\r\n            prd_model as model,\r\n            prd_description as description\r\n            FROM \r\n            product_relations\r\n            JOIN products ON prdr_product_child_ID = prd_product_ID\r\n            WHERE\r\n            prdr_product_parent_ID = \'1\'\r\n            AND prdr_child_type = \'SparePart\''),
+	(1501, 1, '::1', '2018-11-30 14:53:18', 'CUSTOM', '0', 'Products API:productsSearchForEvent GET:Array\n(\n    [section] => productsSearchForEvent\n    [eventID] => 1\n    [type] => SparePart\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT\r\n            prd_product_ID as value,\r\n            prd_name as label,\r\n            prd_model as model,\r\n            prd_description as description\r\n            FROM \r\n            product_relations\r\n            JOIN products ON prdr_product_child_ID = prd_product_ID\r\n            WHERE\r\n            prdr_product_parent_ID = \'1\'\r\n            AND prdr_child_type = \'SparePart\''),
+	(1502, 1, '::1', '2018-11-30 14:53:22', 'CUSTOM', '0', 'Products API:productsSearchForEvent GET:Array\n(\n    [section] => productsSearchForEvent\n    [eventID] => 2\n    [type] => SparePart\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT\r\n            prd_product_ID as value,\r\n            prd_name as label,\r\n            prd_model as model,\r\n            prd_description as description\r\n            FROM \r\n            product_relations\r\n            JOIN products ON prdr_product_child_ID = prd_product_ID\r\n            WHERE\r\n            prdr_product_parent_ID = \'1\'\r\n            AND prdr_child_type = \'SparePart\''),
+	(1503, 1, '::1', '2018-11-30 14:57:04', 'ticket_products', '3', 'INSERT RECORD', 'tkp_ticket_event_ID = 2 \r\ntkp_product_ID = 8 \r\ntkp_amount = 1 \r\ntkp_ticket_ID = 1 \r\ntkp_type = SparePart \r\n', '', 'INSERT INTO `ticket_products` SET \n`tkp_ticket_event_ID` = \'2\' \n , `tkp_product_ID` = \'8\' \n , `tkp_amount` = \'1\' \n , `tkp_ticket_ID` = \'1\' \n , `tkp_type` = \'SparePart\' \n'),
+	(1504, 1, '::1', '2018-11-30 14:58:35', 'CUSTOM', '0', 'Products API:productsSearchForEvent GET:Array\n(\n    [section] => productsSearchForEvent\n    [eventID] => 3\n    [type] => SparePart\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT\r\n            prd_product_ID as value,\r\n            prd_name as label,\r\n            prd_model as model,\r\n            prd_description as description\r\n            FROM \r\n            product_relations\r\n            JOIN products ON prdr_product_child_ID = prd_product_ID\r\n            WHERE\r\n            prdr_product_parent_ID = \'3\'\r\n            AND prdr_child_type = \'SparePart\''),
+	(1505, 1, '::1', '2018-11-30 14:58:38', 'ticket_products', '4', 'INSERT RECORD', 'tkp_ticket_event_ID = 3 \r\ntkp_product_ID = 2 \r\ntkp_amount = 5 \r\ntkp_ticket_ID = 1 \r\ntkp_type = SparePart \r\n', '', 'INSERT INTO `ticket_products` SET \n`tkp_ticket_event_ID` = \'3\' \n , `tkp_product_ID` = \'2\' \n , `tkp_amount` = \'5\' \n , `tkp_ticket_ID` = \'1\' \n , `tkp_type` = \'SparePart\' \n'),
+	(1506, 1, '::1', '2018-12-04 12:33:30', 'CUSTOM', '0', 'Products API:productsSearchForEvent GET:Array\n(\n    [section] => productsSearchForEvent\n    [eventID] => 2\n    [type] => SparePart\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT\r\n            prd_product_ID as value,\r\n            prd_name as label,\r\n            prd_model as model,\r\n            prd_description as description\r\n            FROM \r\n            product_relations\r\n            JOIN products ON prdr_product_child_ID = prd_product_ID\r\n            WHERE\r\n            prdr_product_parent_ID = \'1\'\r\n            AND prdr_child_type = \'SparePart\''),
+	(1507, 1, '::1', '2018-12-04 12:37:48', 'CUSTOM', '0', 'Products API:productsSearchForEvent GET:Array\n(\n    [section] => productsSearchForEvent\n    [eventID] => 1\n    [type] => SparePart\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT\r\n            prd_product_ID as value,\r\n            prd_name as label,\r\n            prd_model as model,\r\n            prd_description as description\r\n            FROM \r\n            product_relations\r\n            JOIN products ON prdr_product_child_ID = prd_product_ID\r\n            WHERE\r\n            prdr_product_parent_ID = \'1\'\r\n            AND prdr_child_type = \'SparePart\''),
+	(1508, 1, '::1', '2018-12-04 12:37:50', 'CUSTOM', '0', 'Products API:productsSearchForEvent GET:Array\n(\n    [section] => productsSearchForEvent\n    [eventID] => 3\n    [type] => SparePart\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT\r\n            prd_product_ID as value,\r\n            prd_name as label,\r\n            prd_model as model,\r\n            prd_description as description\r\n            FROM \r\n            product_relations\r\n            JOIN products ON prdr_product_child_ID = prd_product_ID\r\n            WHERE\r\n            prdr_product_parent_ID = \'3\'\r\n            AND prdr_child_type = \'SparePart\''),
+	(1509, 1, '::1', '2018-12-04 12:37:51', 'CUSTOM', '0', 'Products API:productsSearchForEvent GET:Array\n(\n    [section] => productsSearchForEvent\n    [eventID] => 2\n    [type] => SparePart\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT\r\n            prd_product_ID as value,\r\n            prd_name as label,\r\n            prd_model as model,\r\n            prd_description as description\r\n            FROM \r\n            product_relations\r\n            JOIN products ON prdr_product_child_ID = prd_product_ID\r\n            WHERE\r\n            prdr_product_parent_ID = \'1\'\r\n            AND prdr_child_type = \'SparePart\''),
+	(1510, 1, '::1', '2018-12-04 12:38:13', 'ticket_products', '5', 'INSERT RECORD', 'tkp_ticket_event_ID = 2 \r\ntkp_product_ID = 8 \r\ntkp_amount = 2 \r\ntkp_ticket_ID = 1 \r\ntkp_type = SparePart \r\n', '', 'INSERT INTO `ticket_products` SET \n`tkp_ticket_event_ID` = \'2\' \n , `tkp_product_ID` = \'8\' \n , `tkp_amount` = \'2\' \n , `tkp_ticket_ID` = \'1\' \n , `tkp_type` = \'SparePart\' \n'),
+	(1511, 1, '::1', '2018-12-04 12:54:11', 'Error', '0', 'Tickets products Section:Ticket Products draw table', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n    [type] => SparePart\n    [tid] => 1\n)\n\\n$_POST->Array\n(\n)\n', 'SELECT *  FROM ticket_products LEFT OUTER JOIN products ON tck_product_ID = prd_product_ID WHERE tkp_ticket_ID = 1 AND tkp_type = \'SparePart\' ORDER BY tkp_ticket_product_ID ASC <hr>Unknown column \'tck_product_ID\' in \'on clause\''),
+	(1512, 1, '::1', '2018-12-04 12:54:11', 'Error', '0', 'Tickets products Section:Ticket Products draw table', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n    [type] => Consumable\n    [tid] => 1\n)\n\\n$_POST->Array\n(\n)\n', 'SELECT *  FROM ticket_products LEFT OUTER JOIN products ON tck_product_ID = prd_product_ID WHERE tkp_ticket_ID = 1 AND tkp_type = \'Consumable\' ORDER BY tkp_ticket_product_ID ASC <hr>Unknown column \'tck_product_ID\' in \'on clause\''),
+	(1513, 1, '::1', '2018-12-04 12:54:11', 'Error', '0', 'Tickets products Section:Ticket Products draw table', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n    [type] => Other\n    [tid] => 1\n)\n\\n$_POST->Array\n(\n)\n', 'SELECT *  FROM ticket_products LEFT OUTER JOIN products ON tck_product_ID = prd_product_ID WHERE tkp_ticket_ID = 1 AND tkp_type = \'Other\' ORDER BY tkp_ticket_product_ID ASC <hr>Unknown column \'tck_product_ID\' in \'on clause\''),
+	(1514, 1, '::1', '2018-12-04 12:55:51', 'Error', '0', 'Tickets products Section:Ticket Products draw table', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n    [type] => SparePart\n    [tid] => 1\n)\n\\n$_POST->Array\n(\n)\n', 'SELECT *  FROM ticket_products LEFT OUTER JOIN ticket_events ON tkp_product_event_ID = tke_ticket_event_ID WHERE tkp_ticket_ID = 1 AND tkp_type = \'SparePart\' ORDER BY tkp_ticket_product_ID ASC <hr>Unknown column \'tkp_product_event_ID\' in \'on clause\''),
+	(1515, 1, '::1', '2018-12-04 12:55:52', 'Error', '0', 'Tickets products Section:Ticket Products draw table', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n    [type] => Consumable\n    [tid] => 1\n)\n\\n$_POST->Array\n(\n)\n', 'SELECT *  FROM ticket_products LEFT OUTER JOIN ticket_events ON tkp_product_event_ID = tke_ticket_event_ID WHERE tkp_ticket_ID = 1 AND tkp_type = \'Consumable\' ORDER BY tkp_ticket_product_ID ASC <hr>Unknown column \'tkp_product_event_ID\' in \'on clause\''),
+	(1516, 1, '::1', '2018-12-04 12:55:52', 'Error', '0', 'Tickets products Section:Ticket Products draw table', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n    [type] => Other\n    [tid] => 1\n)\n\\n$_POST->Array\n(\n)\n', 'SELECT *  FROM ticket_products LEFT OUTER JOIN ticket_events ON tkp_product_event_ID = tke_ticket_event_ID WHERE tkp_ticket_ID = 1 AND tkp_type = \'Other\' ORDER BY tkp_ticket_product_ID ASC <hr>Unknown column \'tkp_product_event_ID\' in \'on clause\''),
+	(1517, 1, '::1', '2018-12-04 13:05:01', 'CUSTOM', '0', 'Products API:productsSearchForEvent GET:Array\n(\n    [section] => productsSearchForEvent\n    [eventID] => 1\n    [type] => SparePart\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT\r\n            prd_product_ID as value,\r\n            prd_name as label,\r\n            prd_model as model,\r\n            prd_description as description\r\n            FROM \r\n            product_relations\r\n            JOIN products ON prdr_product_child_ID = prd_product_ID\r\n            WHERE\r\n            prdr_product_parent_ID = \'1\'\r\n            AND prdr_child_type = \'SparePart\''),
+	(1518, 1, '::1', '2018-12-04 13:05:11', 'CUSTOM', '0', 'Products API:productsSearchForEvent GET:Array\n(\n    [section] => productsSearchForEvent\n    [eventID] => 2\n    [type] => SparePart\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT\r\n            prd_product_ID as value,\r\n            prd_name as label,\r\n            prd_model as model,\r\n            prd_description as description\r\n            FROM \r\n            product_relations\r\n            JOIN products ON prdr_product_child_ID = prd_product_ID\r\n            WHERE\r\n            prdr_product_parent_ID = \'1\'\r\n            AND prdr_child_type = \'SparePart\''),
+	(1519, 1, '::1', '2018-12-04 13:05:13', 'CUSTOM', '0', 'Products API:productsSearchForEvent GET:Array\n(\n    [section] => productsSearchForEvent\n    [eventID] => 3\n    [type] => SparePart\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT\r\n            prd_product_ID as value,\r\n            prd_name as label,\r\n            prd_model as model,\r\n            prd_description as description\r\n            FROM \r\n            product_relations\r\n            JOIN products ON prdr_product_child_ID = prd_product_ID\r\n            WHERE\r\n            prdr_product_parent_ID = \'3\'\r\n            AND prdr_child_type = \'SparePart\'');
 /*!40000 ALTER TABLE `log_file` ENABLE KEYS */;
 
 -- Dumping structure for table reprodata.manufacturers
@@ -1698,7 +1719,7 @@ CREATE TABLE IF NOT EXISTS `manufacturers` (
   PRIMARY KEY (`mnf_manufacturer_ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin COMMENT='Manufacturers';
 
--- Dumping data for table reprodata.manufacturers: ~1 rows (approximately)
+-- Dumping data for table reprodata.manufacturers: ~0 rows (approximately)
 /*!40000 ALTER TABLE `manufacturers` DISABLE KEYS */;
 INSERT INTO `manufacturers` (`mnf_manufacturer_ID`, `mnf_code`, `mnf_active`, `mnf_name`, `mnf_description`, `mnf_country_code_ID`, `mnf_tel`, `mnf_contact_person`, `mnf_created_date_time`, `mnf_created_by`, `mnf_last_update_date_time`, `mnf_last_update_by`) VALUES
 	(1, 'UTAX', 1, 'Utax Ltd', 'blah blah', 23, NULL, NULL, '2018-08-09 16:58:58', 1, '2018-09-19 20:17:12', 1);
@@ -2055,7 +2076,7 @@ CREATE TABLE IF NOT EXISTS `tickets` (
   PRIMARY KEY (`tck_ticket_ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- Dumping data for table reprodata.tickets: ~1 rows (approximately)
+-- Dumping data for table reprodata.tickets: ~0 rows (approximately)
 /*!40000 ALTER TABLE `tickets` DISABLE KEYS */;
 INSERT INTO `tickets` (`tck_ticket_ID`, `tck_ticket_number`, `tck_customer_ID`, `tck_incident_date`, `tck_appointment_date`, `tck_created_date_time`, `tck_created_by`, `tck_last_update_date_time`, `tck_last_update_by`) VALUES
 	(1, 'TCK-000003', 1, '2018-11-24', '2018-12-04 00:00:00', '2018-11-29 14:37:59', 1, '2018-11-29 14:37:59', 1);
@@ -2089,14 +2110,18 @@ CREATE TABLE IF NOT EXISTS `ticket_products` (
   `tkp_product_ID` int(8) DEFAULT NULL,
   `tkp_ticket_event_ID` int(8) DEFAULT NULL,
   `tkp_type` varchar(25) COLLATE utf8_bin DEFAULT NULL,
+  `tkp_amount` int(8) DEFAULT NULL,
   PRIMARY KEY (`tkp_ticket_product_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- Dumping data for table reprodata.ticket_products: ~0 rows (approximately)
+-- Dumping data for table reprodata.ticket_products: ~4 rows (approximately)
 /*!40000 ALTER TABLE `ticket_products` DISABLE KEYS */;
-INSERT INTO `ticket_products` (`tkp_ticket_product_ID`, `tkp_ticket_ID`, `tkp_product_ID`, `tkp_ticket_event_ID`, `tkp_type`) VALUES
-	(1, 1, NULL, 1, NULL),
-	(2, 1, NULL, 2, 'SP');
+INSERT INTO `ticket_products` (`tkp_ticket_product_ID`, `tkp_ticket_ID`, `tkp_product_ID`, `tkp_ticket_event_ID`, `tkp_type`, `tkp_amount`) VALUES
+	(1, 1, NULL, 1, NULL, NULL),
+	(2, 1, NULL, 2, 'SP', NULL),
+	(3, 1, 8, 2, 'SparePart', 1),
+	(4, 1, 2, 3, 'SparePart', 5),
+	(5, 1, 8, 2, 'SparePart', 2);
 /*!40000 ALTER TABLE `ticket_products` ENABLE KEYS */;
 
 -- Dumping structure for table reprodata.unique_serials

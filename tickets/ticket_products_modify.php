@@ -22,8 +22,8 @@ if ($_POST["action"] == "insert") {
     $newID = $db->db_tool_insert_row('ticket_products', $_POST, 'fld_', 1, 'tkp_');
     $db->commit_transaction();
 
-    //header("Location: ticket_products.php?tid=".$_POST['tid']);
-    //exit();
+    header("Location: ticket_products.php?tid=".$_POST['tid']."&type=".$_POST['type']);
+    exit();
 
 } else if ($_POST["action"] == "update") {
     $db->check_restriction_area('update');
@@ -34,29 +34,24 @@ if ($_POST["action"] == "insert") {
         $_POST["lid"], 'fld_', 'execute', 'tkp_');
 
     $db->commit_transaction();
-    header("Location: ticket_products.php?tid=".$_POST['tid']);
+    header("Location: ticket_products.php?tid=" . $_POST['tid']);
     exit();
 
 }
 
-if ($_GET['type'] == 'SparePart'){
+if ($_GET['type'] == 'SparePart') {
     $frameName = 'frmTabSpareParts';
     $frameTitle = 'Spare Part';
-}
-else if ($_GET['type'] == 'Consumable'){
+} else if ($_GET['type'] == 'Consumable') {
     $frameName = 'frmTabConsumables';
     $frameTitle = 'Consumable';
-}
-else if ($_GET['type'] == 'Other'){
+} else if ($_GET['type'] == 'Other') {
     $frameName = 'frmTabOther';
     $frameTitle = 'Other';
-}
-else if ($_GET['type'] == 'Machine'){
+} else if ($_GET['type'] == 'Machine') {
     $frameName = 'frmTabMachine';
     $frameTitle = 'Machine';
-}
-
-else {
+} else {
     exit();
 }
 
@@ -70,7 +65,7 @@ $db->enable_jquery_ui();
 $db->enable_rxjs_lite();
 $db->show_empty_header();
 
-echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"]." - ".$_GET['type']."<br>";
+echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"] . " - " . $_GET['type'] . "<br>";
 //print_r($data);
 ?>
 
@@ -80,7 +75,7 @@ echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"]." - ".$_GET['type']."<br>"
             <form name="myForm" id="myForm" method="post" action="" onsubmit="">
                 <div class="alert alert-success text-center">
                     <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
-                        &nbsp;Ticket <?php echo $frameTitle;?></b>
+                        &nbsp;Ticket <?php echo $frameTitle; ?></b>
                 </div>
 
                 <div class="form-group row">
@@ -92,31 +87,35 @@ echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"]." - ".$_GET['type']."<br>"
                                 required onchange="loadProductsFromEvent()">
                             <option value=""></option>
                             <?php
-                                $sql = "SELECT * FROM ticket_events
+                            $sql = "SELECT * FROM ticket_events
                                         JOIN unique_serials ON uqs_unique_serial_ID = tke_unique_serial_ID
                                         JOIN products ON prd_product_ID = uqs_product_ID
-                                        WHERE tke_ticket_ID = ".$_GET["tid"];
-                                $ticketsResult = $db->query($sql);
-                                while ($ticket = $db->fetch_assoc($ticketsResult)){
-                                    echo '<option value="'.$ticket['tke_ticket_event_ID'].'">
-                                    '.$ticket['tke_ticket_event_ID'].' - '.$ticket['tke_type'].' - '.$ticket['prd_model'].'
+                                        WHERE tke_ticket_ID = " . $_GET["tid"];
+                            $ticketsResult = $db->query($sql);
+                            while ($ticket = $db->fetch_assoc($ticketsResult)) {
+                                echo '<option value="' . $ticket['tke_ticket_event_ID'] . '">
+                                    ' . $ticket['tke_ticket_event_ID'] . ' - ' . $ticket['tke_type'] . ' - ' . $ticket['prd_model'] . '
                                     </option>';
-                                }
+                            }
                             ?>
                         </select>
                         <?php //echo $sql; ?>
                     </div>
-                    <div class="col-2">Consumable</div>
+
+                    <div class="col-2"><?php echo $frameTitle; ?></div>
                     <div class="col-4">
                         <select name="fld_product_ID" id="fld_product_ID"
                                 class="form-control"
                                 required>
                         </select>
+                        <i class="fas fa-spinner" id="productsSpin" style="display: none"></i>
                     </div>
 
                     <script>
-                        function loadProductsFromEvent(){
-                            console.log('start');
+                        function loadProductsFromEvent() {
+                            //show spinner
+                            $('#fld_product_ID').hide();
+                            $('#productsSpin').show();
 
                             let eventID = $('#fld_ticket_event_ID').val();
 
@@ -125,12 +124,17 @@ echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"]." - ".$_GET['type']."<br>"
                             )
                                 .subscribe(
                                     (response) => {
+                                $('#fld_product_ID').show();
+                                $('#productsSpin').hide();
                                 data = response;
                         },
-                            (error)=> {
+                            (error) =>
+                            {
                                 console.log(error);
-                            },
-                            ()=> {
+                            }
+                        ,
+                            () =>
+                            {
 
                                 //first clear the select
                                 $("#fld_product_ID option").each(function () {
@@ -140,16 +144,16 @@ echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"]." - ".$_GET['type']."<br>"
                                 //add an empty option
                                 $('#fld_product_ID').append($('<option>', {
                                     value: '',
-                                    text : ''
+                                    text: ''
                                 }));
 
                                 $.each(
                                     data,
-                                    function(index, value){
+                                    function (index, value) {
 
                                         $('#fld_product_ID').append($('<option>', {
                                             value: value['value'],
-                                            text : value['model'] + ' ' + value['label']
+                                            text: value['model'] + ' ' + value['label']
                                         }));
 
                                     }
@@ -160,8 +164,20 @@ echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"]." - ".$_GET['type']."<br>"
                     </script>
 
                 </div>
+                <div class="form-group row">
+                    <div class="col-2">Amount</div>
+                    <div class="col-4">
+                        <input name="fld_amount" type="text" id="fld_amount"
+                               class="form-control"
+                               value="<?php echo $data['tkp_amount']; ?>"
+                               required>
 
-                <div class="row">
+
+                    </div>
+                </div>
+
+
+                <div class="form-group row">
                     <div class="col-lg-2 col-sm-3"></div>
                     <div class="col-lg-4 col-sm-3">
 
@@ -183,7 +199,7 @@ echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"]." - ".$_GET['type']."<br>"
                         <input type="button" value="Back" class="btn btn-secondary"
                                onclick="goBack();">
                         <input type="submit" name="Submit" id="Submit"
-                               value="<?php if ($_GET["lid"] == "") echo "Insert ".$frameTitle; else echo "Update ".$frameTitle; ?> "
+                               value="<?php if ($_GET["lid"] == "") echo "Insert " . $frameTitle; else echo "Update " . $frameTitle; ?> "
                                class="btn btn-secondary"
                                onclick="submitForm('')">
                         <input name="subAction" id="subAction" type="hidden" value="">
@@ -210,7 +226,7 @@ echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"]." - ".$_GET['type']."<br>"
         $('#subAction').val(action);
     }
 
-    function goBack(){
+    function goBack() {
         location.href = 'ticket_events.php?tid=<?php echo $_GET['tid'];?>';
     }
 </script>
