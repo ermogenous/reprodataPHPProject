@@ -114,7 +114,7 @@ $db->show_empty_header();
                 <div class="row">
                     <div class="col-lg-2 col-sm-3"></div>
                     <div class="col-lg-4 col-sm-3">
-                        
+
                     </div>
                     <div class="col-6">
 
