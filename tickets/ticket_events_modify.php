@@ -131,17 +131,17 @@ $db->show_empty_header();
                                 echo '<option value="'.$prod['uqs_unique_serial_ID'].'" selected>'.$prod['prd_model'].' - '.$prod['prd_description'].'</option>';
                                 echo '<option value="" disabled>-----</option>';
                             }
-                                $productsSql = "SELECT * FROM unique_serials 
+                            $productsSql = "SELECT * FROM unique_serials 
                                                 JOIN agreements ON agr_agreement_ID = uqs_agreement_ID
                                                 JOIN customers ON cst_customer_ID = agr_customer_ID
                                                 JOIN products ON prd_product_ID = uqs_product_ID
                                                 WHERE uqs_status = 'Active'
                                                 AND agr_status = 'Active'
                                                 ";
-                                $productResult = $db->query($productsSql);
-                                while($prod = $db->fetch_assoc($productResult)){
-                                    echo '<option value="'.$prod['uqs_unique_serial_ID'].'">'.$prod['prd_model'].' - '.$prod['prd_description'].'</option>';
-                                }
+                            $productResult = $db->query($productsSql);
+                            while($prod = $db->fetch_assoc($productResult)){
+                                echo '<option value="'.$prod['uqs_unique_serial_ID'].'">'.$prod['prd_model'].' - '.$prod['prd_description'].'</option>';
+                            }
                             ?>
 
                         </select>

@@ -125,7 +125,7 @@ $table->generate_data();
                     <?php
                     while ($row = $table->fetch_data()) {
                         ?>
-                        <tr <?php if($row["usr_active"] == 0) echo 'class="alert alert-danger"';?>>
+                        <tr <?php if($row["usr_active"] == 0) echo 'class="alert alert-danger"';?> onclick="editLine(<?php echo $row["usr_users_ID"];?>);">
                             <th scope="row"><?php echo $row["usr_users_ID"]; ?></th>
                             <td><?php echo $row["usr_name"]; ?></td>
                             <td><?php echo $row["usr_user_rights"]; ?></td>
@@ -145,7 +145,15 @@ $table->generate_data();
         <div class="col-lg-2"></div>
     </div>
 </div>
+<script>
+    var ignoreEdit = false;
 
+    function editLine(id) {
+        if (ignoreEdit === false) {
+            window.location.assign('users_modify.php?lid=' + id);
+        }
+    }
+</script>
 <?php
 $db->show_footer();
 ?>

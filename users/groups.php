@@ -39,7 +39,7 @@ $table->generate_data();
                         $sql = "SELECT COUNT(*)as clo_total_users FROM users WHERE usr_users_groups_ID = ".$row["usg_users_groups_ID"];
                         $used_by_users = $db->query_fetch($sql);
                         ?>
-                        <tr>
+                        <tr onclick="editLine(<?php echo $row["usg_users_groups_ID"];?>);">
                             <th scope="row"><?php echo $row["usg_users_groups_ID"];?></th>
                             <td><?php echo $row["usg_group_name"];?></td>
                             <td><?php echo $used_by_users["clo_total_users"];?></td>
@@ -57,7 +57,15 @@ $table->generate_data();
         <div class="col-lg-2"></div>
     </div>
 </div>
+<script>
+    var ignoreEdit = false;
 
+    function editLine(id) {
+        if (ignoreEdit === false) {
+            window.location.assign('groups_modify.php?lid=' + id);
+        }
+    }
+</script>
 <?php
 $db->show_footer();
 ?>
