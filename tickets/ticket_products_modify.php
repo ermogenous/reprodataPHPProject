@@ -227,7 +227,7 @@ echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"] . " - " . $_GET['type'] . 
     }
 
     function goBack() {
-        location.href = 'ticket_events.php?tid=<?php echo $_GET['tid'];?>';
+        location.href = 'ticket_products.php?tid=<?php echo $_GET['tid'];?>&type=<?php echo $_GET['type'];?>';
     }
 </script>
 

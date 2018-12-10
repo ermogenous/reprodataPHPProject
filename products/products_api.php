@@ -64,6 +64,19 @@ else if ($_GET['section'] == 'productsSearchForEvent'){
             prdr_product_parent_ID = '".$productID."'
             AND prdr_child_type = '".$forType."'";
 
+    //if other ignore the above sql
+    if ($forType == 'Other'){
+        $sql = "SELECT
+            prd_product_ID as value,
+            prd_name as label,
+            prd_model as model,
+            prd_description as description
+            FROM 
+            products
+            WHERE
+            prd_type = '".$forType."'";
+    }
+
     $result = $db->query($sql);
     while ($row = $db->fetch_assoc($result)) {
         $data[] = $row;

@@ -166,6 +166,7 @@ $db->show_header();
             $machinesTotal = 0;
             $consumablesTotal = 0;
             $sparePartsTotal = 0;
+            $otherTotal = 0;
             while ($code = $db->fetch_assoc($res)){
                 if ($code['cde_option_value'] == 'Machine'){
                     $machines .= "'".$code['cde_value']."',";
@@ -179,17 +180,24 @@ $db->show_header();
                     $spareParts .= "'".$code['cde_value']."',";
                     $sparePartsTotal++;
                 }
+                if ($code['cde_option_value'] == 'Other'){
+                    $other .= "'".$code['cde_value']."',";
+                    $otherTotal++;
+                }
             }
             $machines = $db->remove_last_char($machines);
             $consumables = $db->remove_last_char($consumables);
             $spareParts = $db->remove_last_char($spareParts);
+            $other = $db->remove_last_char($other);
 
             echo "var machines = new Array('',".$machines.");\n";
             echo "var consumables = new Array('',".$consumables.");\n";
-            echo "var spareParts = new Array('',".$spareParts.");";
-            echo "var machinesTotal = ".$machinesTotal.";";
-            echo "var consumablesTotal = ".$consumablesTotal.";";
-            echo "var sparePartsTotal = ".$sparePartsTotal.";";
+            echo "var spareParts = new Array('',".$spareParts.");\n";
+            echo "var other = new Array('',".$other.");\n";
+            echo "var machinesTotal = ".$machinesTotal.";\n";
+            echo "var consumablesTotal = ".$consumablesTotal.";\n";
+            echo "var sparePartsTotal = ".$sparePartsTotal.";\n";
+            echo "var otherTotal = ".$otherTotal.";\n";
 
         ?>
         var type = $('#fld_type').val();
@@ -205,15 +213,22 @@ $db->show_header();
             var values = spareParts;
             var total = sparePartsTotal;
         }
+        else if(type == 'Other'){
+            var values = other;
+            var total = otherTotal;
+        }
 
         var listItems = '';
 
         $.each(values, function(key, value){
+
+            console.log(currentValue + ' - ' + value + ' - ' + total);
+
             if (currentValue == value || total == 1) {
-                listItems += '<option value=' + value + ' selected>' + value + '</option>';
+                listItems += "<option value='" + value + "' selected>" + value + "</option>";
             }
             else {
-                listItems += '<option value=' + value + '>' + value + '</option>';
+                listItems += "<option value='" + value + "'>" + value + "</option>";
             }
 
         });

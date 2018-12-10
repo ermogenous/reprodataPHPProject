@@ -133,10 +133,10 @@ $db->show_header();
 
                     <div class="form-group row">
 
-                        <label for="fld_option_values" class="col-sm-4 col-form-label">Options Values</label>
+                        <label for="fld_option_value" class="col-sm-4 col-form-label">Options Values</label>
                         <div class="col-sm-8">
 
-                            <input name="fld_option_values" type="text" id="fld_option_values"
+                            <input name="fld_option_value" type="text" id="fld_option_value"
                                    class="form-control"
                                    value="<?php echo $data["cde_option_value"]; ?>">
                             Separate by #
