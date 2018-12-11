@@ -118,8 +118,12 @@ $db->show_header();
                                class="form-control"/>
                     </div>
 
-                    <div class="col-2"></div>
-                    <div class="col-4"></div>
+                    <div class="col-2">Assigned to User</div>
+                    <div class="col-4"><select name="fld_assigned_user_ID" id="fld_assigned_user_ID"
+                                               class="form-control"
+                                               required>
+                            
+                        </select></div>
 
                     <script>
                         let appointmentDate = <?php if ($_GET['lid'] == '') {
