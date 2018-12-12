@@ -109,7 +109,7 @@ $db->show_empty_header();
 
         function editLine(id,tid) {
             if (ignoreEdit === false) {
-                window.location.assign('ticket_events_modify.php?tid=' + tid + '&lid=' + id);
+                window.location.assign('ticket_products_modify.php?tid=' + tid + '&lid=' + id + '&type=<?php echo $_GET['type'];?>');
             }
         }
 

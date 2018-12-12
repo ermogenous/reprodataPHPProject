@@ -6,6 +6,26 @@
  * Time: 4:10 ΜΜ
  */
 
+class Tickets {
+    public $ticketID;
+    public $ticketData;
+    public $currentStatus;
+
+    function __construct($ticketID)
+    {
+        global $db;
+        $this->ticketID = $ticketID;
+        $sql = "SELECT * FROM tickets WHERE tck_ticket_ID = ".$ticketID;
+        $this->ticketData = $db->query_fetch($sql);
+        $this->currentStatus = $this->ticketData['tck_status'];
+    }
+
+    function makePending(){
+        //
+    }
+}
+
+
 function issueTicketNumber(){
 
     global $db;

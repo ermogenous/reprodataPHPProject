@@ -30,11 +30,11 @@ if ($_POST["action"] == "insert") {
     $db->working_section = 'Ticket Products Update';
     $db->start_transaction();
 
-    $db->db_tool_update_row('ticket_products', $_POST, "`tkp_ticket_event_ID` = " . $_POST["lid"],
+    $db->db_tool_update_row('ticket_products', $_POST, "`tkp_ticket_product_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'tkp_');
 
     $db->commit_transaction();
-    header("Location: ticket_products.php?tid=" . $_POST['tid']);
+    header("Location: ticket_products.php?tid=" . $_POST['tid']."&type=".$_POST['type']);
     exit();
 
 }
@@ -56,8 +56,10 @@ if ($_GET['type'] == 'SparePart') {
 }
 
 if ($_GET["lid"] != "") {
-    $sql = "SELECT * FROM `ticket_products` JOIN `tickets` ON tkp_ticket_ID = tck_ticket_ID 
-            WHERE `tkp_ticket_event_ID` = " . $_GET["lid"];
+    $sql = "SELECT * FROM `ticket_products` 
+            JOIN `tickets` ON tkp_ticket_ID = tck_ticket_ID
+            LEFT OUTER JOIN `products` ON tkp_product_ID = prd_product_ID 
+            WHERE `tkp_ticket_product_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
 }
 
@@ -65,7 +67,7 @@ $db->enable_jquery_ui();
 $db->enable_rxjs_lite();
 $db->show_empty_header();
 
-echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"] . " - " . $_GET['type'] . "<br>";
+echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"] . " - Type: " . $_GET['type'] . "<br>";
 //print_r($data);
 ?>
 
@@ -93,7 +95,13 @@ echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"] . " - " . $_GET['type'] . 
                                         WHERE tke_ticket_ID = " . $_GET["tid"];
                             $ticketsResult = $db->query($sql);
                             while ($ticket = $db->fetch_assoc($ticketsResult)) {
-                                echo '<option value="' . $ticket['tke_ticket_event_ID'] . '">
+                                echo '<option value="' . $ticket['tke_ticket_event_ID'] . '"';
+
+                                if ($data['tkp_ticket_event_ID'] == $ticket['tke_ticket_event_ID']) {
+                                    echo 'selected';
+                                }
+
+                                echo '>
                                     ' . $ticket['tke_ticket_event_ID'] . ' - ' . $ticket['tke_type'] . ' - ' . $ticket['prd_model'] . '
                                     </option>';
                             }
@@ -108,11 +116,12 @@ echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"] . " - " . $_GET['type'] . 
                                 class="form-control"
                                 required>
                         </select>
+
                         <i class="fas fa-spinner" id="productsSpin" style="display: none"></i>
                     </div>
 
                     <script>
-                        function loadProductsFromEvent() {
+                        function loadProductsFromEvent(selectedProduct = 0) {
                             //show spinner
                             $('#fld_product_ID').hide();
                             $('#productsSpin').show();
@@ -158,9 +167,22 @@ echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"] . " - " . $_GET['type'] . 
 
                                     }
                                 );
+
+                                //if modify select the selected option
+                                <?php
+                                    if ($_GET['lid'] != ''){
+                                        echo "$('#fld_product_ID').val(".$data['tkp_product_ID'].");";
+                                    }
+                                ?>
                             }
                         )
                         };
+                        //if modify find the selected product by executing the above function
+                        <?php
+                        if ($_GET['lid'] != ''){
+                            echo 'loadProductsFromEvent('.$data['tkp_product_ID'].')';
+                        }
+                        ?>
                     </script>
 
                 </div>
