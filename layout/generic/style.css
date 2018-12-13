@@ -114,3 +114,17 @@
 .agrCancelledColor{
     background-color: #ffa7a3;
 }
+
+/* Tickets Status */
+.tckOutstandingColor{
+    background-color: #fffec1;
+}
+.tckPendingColor{
+    background-color: lightblue;
+}
+.tckCompletedColor{
+    background-color: lightgreen;
+}
+.tckDeletedColor{
+    background-color: #ffc6c3;
+}

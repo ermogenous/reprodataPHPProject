@@ -116,7 +116,7 @@ $db->show_header();
                         <div class="col-3 alert <?php echo getAgreementColor($data['agr_status']);?>"><?php echo $data['agr_status']; ?></div>
                     </div>
                     <div class="row">
-                        <div class="col-3 alert alert-info">Starting Data</div>
+                        <div class="col-3 alert alert-info">Starting Date</div>
                         <div class="col-3 alert"><?php echo $db->convert_date_format($data['agr_starting_date'], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?></div>
                         <div class="col-3 alert alert-info">Expiry</div>
                         <div class="col-3 alert"><?php echo $db->convert_date_format($data['agr_expiry_date'], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?></div>

@@ -24,8 +24,7 @@ $table->generate_data();
 
 <div class="container">
     <div class="row">
-        <div class="col-lg-2"></div>
-        <div class="col-lg-8">
+        <div class="col-lg-12">
             <div class="row alert alert-success text-center">
                 <div class="col-12">
                     Tickets
@@ -39,6 +38,7 @@ $table->generate_data();
                         <th scope="col"><?php $table->display_order_links('ID', 'tck_ticket_ID'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Number', 'tck_ticket_number'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Customer', 'cst_name'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Status', 'tck_status'); ?></th>
                         <th scope="col">
                             <a href="ticket_modify.php">
                                 <i class="fas fa-plus-circle"></i>
@@ -50,16 +50,27 @@ $table->generate_data();
                     <?php
                     while ($row = $table->fetch_data()) {
                     ?>
-                    <tr onclick="editLine(<?php echo $row["tck_ticket_ID"];?>);">
+                    <tr onclick="editLine(<?php echo $row["tck_ticket_ID"];?>);" class="tck<?php echo $row['tck_status'];?>Color">
                         <th scope="row"><?php echo $row["tck_ticket_ID"]; ?></th>
                         <td><?php echo $row["tck_ticket_number"]; ?></td>
                         <td><?php echo $row["cst_name"]; ?></td>
+                        <td><?php echo $row["tck_status"]; ?></td>
                         <td>
-                            <a href="ticket_modify.php?lid=<?php echo $row["tck_ticket_ID"]; ?>"><i
-                                        class="fas fa-edit"></i></a>&nbsp
-                            <a href="ticket_delete.php?lid=<?php echo $row["tck_ticket_ID"]; ?>"
-                               onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this ticket?');"><i
-                                        class="fas fa-minus-circle"></i></a>
+                            <?php if ($row['tck_status'] == 'Outstanding') { ?>
+                                <a href="ticket_modify.php?lid=<?php echo $row["tck_ticket_ID"]; ?>"><i
+                                            class="fas fa-edit"></i></a>&nbsp
+                                <a href="ticket_delete.php?lid=<?php echo $row["tck_ticket_ID"]; ?>"
+                                   onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this ticket?');"><i
+                                            class="fas fa-minus-circle"></i></a>&nbsp
+                                <a href="ticket_status_change.php?lid=<?php echo $row["tck_ticket_ID"]; ?>">
+                                    <i class="fas fa-lock" title="Change Status"></i></a>
+                            <?php } else if ($row['tck_status'] == 'Pending') {?>
+
+                            <?php } else if ($row['tck_status'] == 'Completed') {?>
+
+                            <?php } else if ($row['tck_status'] == 'Deleted') {?>
+
+                            <?php } ?>
                         </td>
                     </tr>
                     <?php
@@ -70,6 +81,12 @@ $table->generate_data();
             </div>
         </div>
         <div class="col-lg-2"></div>
+    </div>
+    <div class="row">
+        <div class="col-3 text-center tckOutstandingColor">Outstanding</div>
+        <div class="col-3 text-center tckPendingColor">Pending</div>
+        <div class="col-3 text-center tckCompletedColor">Completed</div>
+        <div class="col-3 text-center tckDeletedColor">Deleted</div>
     </div>
 </div>
 <script>

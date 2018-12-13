@@ -147,11 +147,15 @@ $db->show_empty_header();
                         </select>
                     </div>
                     <div class="col-2">
-                        Assign to user.......
+
                     </div>
                     <div class="col-4">
 
                     </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12" style="height: 25px;"> </div>
                 </div>
 
                 <div class="form-group row">

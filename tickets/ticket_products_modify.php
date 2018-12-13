@@ -67,7 +67,7 @@ $db->enable_jquery_ui();
 $db->enable_rxjs_lite();
 $db->show_empty_header();
 
-echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"] . " - Type: " . $_GET['type'] . "<br>";
+//echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"] . " - Type: " . $_GET['type'] . "<br>";
 //print_r($data);
 ?>
 
@@ -161,8 +161,8 @@ echo "Tid:" . $_GET["tid"] . " - Lid:" . $_GET["lid"] . " - Type: " . $_GET['typ
                                     function (index, value) {
 
                                         $('#fld_product_ID').append($('<option>', {
-                                            value: value['value'],
-                                            text: value['model'] + ' ' + value['label']
+                                            value: value['value'] ,
+                                            text: value['description'] + ' [Stock:' + value['current_stock'] + ']'
                                         }));
 
                                     }

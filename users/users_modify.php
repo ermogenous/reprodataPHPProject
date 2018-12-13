@@ -13,6 +13,8 @@ if ($_POST["action"] == "insert") {
     $db->check_restriction_area('insert');
     $_POST["fld_usr_is_agent"] = $db->get_check_value($_POST["fld_usr_is_agent"]);
     $_POST["fld_usr_active"] = $db->get_check_value($_POST["fld_usr_active"]);
+    $_POST["fld_usr_is_service"] = $db->get_check_value($_POST["fld_usr_is_service"]);
+    $_POST["fld_usr_is_delivery"] = $db->get_check_value($_POST["fld_usr_is_delivery"]);
 
     $db->db_tool_insert_row('users', $_POST, 'fld_');
     header("Location: users.php");
@@ -22,6 +24,8 @@ if ($_POST["action"] == "insert") {
     $db->check_restriction_area('update');
     $_POST["fld_usr_is_agent"] = $db->get_check_value($_POST["fld_usr_is_agent"]);
     $_POST["fld_usr_active"] = $db->get_check_value($_POST["fld_usr_active"]);
+    $_POST["fld_usr_is_service"] = $db->get_check_value($_POST["fld_usr_is_service"]);
+    $_POST["fld_usr_is_delivery"] = $db->get_check_value($_POST["fld_usr_is_delivery"]);
 
     $db->db_tool_update_row('users', $_POST, "`usr_users_ID` = " . $_POST["lid"], $_POST["lid"], 'fld_');
     header("Location: users.php");
@@ -177,32 +181,24 @@ $db->show_header();
                 <div class="form-group row">
                     <div class="col"></div>
                     <div class="col">
-                        <input name="fld_usr_is_agent" type="checkbox" id="fld_usr_is_agent"
+                        <input name="fld_usr_is_service" type="checkbox" id="fld_usr_is_service"
                                class="form-check-input"
-                               value="1" <?php if ($data["usr_is_agent"] == 1) echo "checked=\"checked\""; ?> />
-                        <label for="fld_usr_is_agent" class="form-check-label">Is Agent</label>
+                               value="1" <?php if ($data["usr_is_service"] == 1) echo "checked=\"checked\""; ?> />
+                        <label for="fld_usr_is_service" class="form-check-label">Is Service</label>
                     </div>
                 </div>
 
                 <div class="form-group row">
-                    <label for="fld_usr_agent_level" class="col-sm-4 col-form-label">Agent Level</label>
-                    <div class="col-sm-8">
-                        <select name="fld_usr_agent_level" id="fld_usr_agent_level" class="form-control">
-                            <?php for ($i = 1; $i <= 10; $i++) { ?>
-                                <option value="<?php echo $i; ?>" <?php if ($data["usr_agent_level"] == $i) echo "selected=\"selected\""; ?>><?php echo $i; ?></option>
-                            <?php } ?>
-                        </select>
+                    <div class="col"></div>
+                    <div class="col">
+                        <input name="fld_usr_is_delivery" type="checkbox" id="fld_usr_is_delivery"
+                               class="form-check-input"
+                               value="1" <?php if ($data["usr_is_delivery"] == 1) echo "checked=\"checked\""; ?> />
+                        <label for="fld_usr_is_delivery" class="form-check-label">Is Delivery</label>
                     </div>
                 </div>
 
-                <div class="form-group row">
-                    <label for="fld_usr_agent_code" class="col-sm-4 col-form-label">Agent Code</label>
-                    <div class="col-sm-8">
-                        <input name="fld_usr_agent_code" type="text" id="fld_usr_agent_code"
-                               class="form-control"
-                               value="<?php echo $data["usr_agent_code"]; ?>"/>
-                    </div>
-                </div>
+
                 <!--
                 <div class="form-group row">
                     <label for="fld_usr_sub_agent_code" class="col-sm-4 col-form-label">Sub Agent Code</label>

@@ -21,7 +21,7 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_incident_date'] = $db->convert_date_format($_POST['fld_incident_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $_POST['fld_appointment_date'] = $db->convert_date_format($_POST['fld_appointment_date'], 'dd/mm/yyyy', 'yyyy-mm-dd', 1);
     $_POST['fld_customer_ID'] = $_POST['customerSelectId'];
-    $_POST['fld_status'] = 'O';
+    $_POST['fld_status'] = 'Outstanding';
 
     $newID = $db->db_tool_insert_row('tickets', $_POST, 'fld_', 1, 'tck_');
     $db->commit_transaction();
@@ -123,7 +123,18 @@ $db->show_header();
                     <div class="col-4"><select name="fld_assigned_user_ID" id="fld_assigned_user_ID"
                                                class="form-control"
                                                required>
-
+                            <option value="-1">Assign Later</option>
+                            <?php
+                            $sql = "SELECT * FROM users WHERE usr_is_service = 1 OR usr_is_delivery = 1";
+                            $result = $db->query($sql);
+                            while ($row = $db->fetch_assoc($result)){
+                                echo '<option value="'.$row['usr_users_ID'].'"';
+                                if ($data['tck_assigned_user_ID'] == $row['usr_users_ID']){
+                                    echo 'selected';
+                                }
+                                echo '>'.$row['usr_name'].'</option>';
+                            }
+                            ?>
                             
                         </select></div>
 

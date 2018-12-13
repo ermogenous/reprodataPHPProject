@@ -56,6 +56,7 @@ else if ($_GET['section'] == 'productsSearchForEvent'){
             prd_product_ID as value,
             prd_name as label,
             prd_model as model,
+            prd_current_stock as current_stock,
             prd_description as description
             FROM 
             product_relations
@@ -70,6 +71,7 @@ else if ($_GET['section'] == 'productsSearchForEvent'){
             prd_product_ID as value,
             prd_name as label,
             prd_model as model,
+            prd_current_stock as current_stock,
             prd_description as description
             FROM 
             products
