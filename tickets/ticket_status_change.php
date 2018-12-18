@@ -73,44 +73,39 @@ $db->show_header();
                             Back
                         </button>
                         <?php
-                        if ($data['agr_status'] == 'Pending') {
+                        if ($data['tck_status'] == 'Outstanding') {
                             ?>
-                            <button type="button" value="Lock" style="width: 140px;" class="btn agrLockedColor" onclick="lockAgreement();">
-                                Lock
+                            <button type="button" value="Lock" style="width: 140px;" class="btn tckPendingColor" onclick="MakePending();">
+                                Make Pending
                             </button>
-                            <?php
-                        }
-                        if ($data['agr_status'] == 'Locked') {
-                            ?>
-                            <button type="button" value="UnLock" style="width: 140px;" class="btn agrPendingColor" onclick="unLockAgreement();">
-                                Un-Lock
-                            </button>
-                            <?php
-                        }
-                        if ($data['agr_status'] == 'Locked') {
-                            ?>
-                            <button type="button" value="Activate" style="width: 140px;" class="btn agrActiveColor" onclick="activateAgreement();">
-                                Activate
-                            </button>
-                            <?php
-                        }
-                        if ($data['agr_status'] == 'Pending') {
-                            ?>
-                            <button type="button" value="Delete" style="width: 140px;" class="btn agrDeletedColor" onclick="deleteAgreement();">
+                            <button type="button" value="Lock" style="width: 140px;" class="btn tckDeletedColor" onclick="MakeDelete();">
                                 Delete
                             </button>
                             <?php
                         }
-                        if ($data['agr_status'] == 'Active') {
+                        if ($data['tck_status'] == 'Pending') {
                             ?>
-                            <button type="button" value="Cancel" style="width: 150px;" class="btn agrCancelledColor" onclick="cancelAgreement();">
-                                Cancellation
+                            <button type="button" value="UnLock" style="width: 140px;" class="btn tckOutstandingColor" onclick="MakeOutstanding();">
+                                Make Outstanding
+                            </button>
+                            <button type="button" value="UnLock" style="width: 140px;" class="btn tckCompletedColor" onclick="MakeCompleted();">
+                                Make Completed
                             </button>
                             <?php
                         }
+                        if ($data['tck_status'] == 'Completed') {
+                            ?>
+
+                            <?php
+                        }
+                        if ($data['tck_status'] == 'Deleted') {
+                            ?>
+
+                            <?php
+                        }
                         ?>
-                        <button type="button" value="Modify" style="width: 150px;" class="btn btn-success" onclick="modifyAgreement();">
-                            <?php if ($data['agr_status'] == 'Pending') echo 'Modify'; else echo 'View'; ?>
+                        <button type="button" value="Modify" style="width: 150px;" class="btn btn-success" onclick="viewTicket();">
+                            <?php if ($data['tck_status'] == 'Outstanding') echo 'Modify'; else echo 'View'; ?>
                         </button>
                     </p>
                 </div>
@@ -147,8 +142,8 @@ $db->show_header();
         }
     }
 
-    function modifyTicket() {
-        window.location.assign('agreements_modify.php?lid=<?php echo $_GET['lid'];?>');
+    function viewTicket() {
+        window.location.assign('ticket_modify.php?lid=<?php echo $_GET['lid'];?>');
     }
 
     function goBack() {
