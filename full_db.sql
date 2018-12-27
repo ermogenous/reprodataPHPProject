@@ -22,7 +22,7 @@ DROP TABLE IF EXISTS `agreements`;
 CREATE TABLE `agreements` (
   `agr_agreement_ID` int(8) NOT NULL AUTO_INCREMENT,
   `agr_customer_ID` int(8) DEFAULT NULL,
-  `agr_status` varchar(15) CHARACTER SET utf8 DEFAULT NULL COMMENT 'P - Pending \r\nL - Locked \r\nA - Active \r\nE - Expired \r\nD - Deleted \r\nC - Cancelled \r\nR - Archived',
+  `agr_status` varchar(15) CHARACTER SET utf8 DEFAULT NULL COMMENT 'P - Open \r\nL - Locked \r\nA - Active \r\nE - Expired \r\nD - Deleted \r\nC - Cancelled \r\nR - Archived',
   `agr_process_status` varchar(12) COLLATE utf8_bin DEFAULT NULL COMMENT 'New\r\nRenewal\r\nEndorsement',
   `agr_starting_date` date DEFAULT NULL,
   `agr_expiry_date` date DEFAULT NULL,
@@ -49,7 +49,7 @@ INSERT INTO `agreements` VALUES ('14', '1', 'Active', 'Endorsement', '2019-10-17
 INSERT INTO `agreements` VALUES ('15', '1', 'Archived', 'New', '2018-10-19', '2019-10-18', 'AGR-000075', '8', '2018', '1', '0', '16', '2018-10-19 12:54:09', '1', '2018-11-05 13:17:46', '1');
 INSERT INTO `agreements` VALUES ('16', '1', 'Active', 'Endorsement', '2018-11-05', '2019-10-18', 'AGR-000075', '8', '2018', '1', '15', '0', '2018-11-05 13:15:09', '1', '2018-11-05 13:17:46', '1');
 INSERT INTO `agreements` VALUES ('17', '1', 'Active', 'New', '2018-11-29', '2019-11-28', 'AGR-000076', '8', '2018', '1', '0', '0', '2018-11-29 22:35:29', '1', '2018-11-29 22:35:40', '1');
-INSERT INTO `agreements` VALUES ('18', '1', 'Pending', 'New', '2018-12-12', '2019-12-11', 'AGR-000077', null, null, null, '0', '0', '2018-12-12 16:06:19', '1', null, null);
+INSERT INTO `agreements` VALUES ('18', '1', 'Open', 'New', '2018-12-12', '2019-12-11', 'AGR-000077', null, null, null, '0', '0', '2018-12-12 16:06:19', '1', null, null);
 
 -- ----------------------------
 -- Table structure for agreement_items
@@ -2186,7 +2186,7 @@ INSERT INTO `settings` VALUES ('9', 'stk_active_year', '2018', null);
 INSERT INTO `settings` VALUES ('10', 'agr_agreement_number_prefix', 'AGR-', '2018-09-20 11:21:49');
 INSERT INTO `settings` VALUES ('11', 'agr_agreement_number_last_used', '77', '2018-12-12 16:06:19');
 INSERT INTO `settings` VALUES ('12', 'agr_agreement_number_leading_zeros', '6', '2018-09-21 18:05:59');
-INSERT INTO `settings` VALUES ('13', 'agr_agreement_status_on_insert', 'Pending', '2018-11-14 15:00:00');
+INSERT INTO `settings` VALUES ('13', 'agr_agreement_status_on_insert', 'Open', '2018-11-14 15:00:00');
 INSERT INTO `settings` VALUES ('14', 'layout_show_footer_stats', 'Yes', '2018-11-14 15:01:29');
 INSERT INTO `settings` VALUES ('15', 'tck_ticket_number_prefix', 'TCK-', null);
 INSERT INTO `settings` VALUES ('16', 'tck_ticket_number_leading_zeros', '6', null);
@@ -2218,10 +2218,10 @@ CREATE TABLE `stock` (
 -- ----------------------------
 -- Records of stock
 -- ----------------------------
-INSERT INTO `stock` VALUES ('21', '1', 'Transaction', 'Initial', 'Pending', '1', '5', '2018-10-02 10:42:27', '10', '2018', '2018-10-02 10:42:27', '1', null, null);
-INSERT INTO `stock` VALUES ('22', '3', 'Transaction', 'Initial', 'Pending', '1', '4', '2018-10-02 10:42:49', '10', '2018', '2018-10-02 10:42:49', '1', null, null);
-INSERT INTO `stock` VALUES ('37', '1', 'Transaction', 'Agreement AGR-000064', 'Pending', '-1', '1', '2018-10-02 11:25:35', '10', '2018', '2018-10-02 11:25:35', '1', null, null);
-INSERT INTO `stock` VALUES ('38', '3', 'Transaction', 'Agreement AGR-000064', 'Pending', '-1', '1', '2018-10-02 11:25:35', '10', '2018', '2018-10-02 11:25:35', '1', null, null);
+INSERT INTO `stock` VALUES ('21', '1', 'Transaction', 'Initial', 'Open', '1', '5', '2018-10-02 10:42:27', '10', '2018', '2018-10-02 10:42:27', '1', null, null);
+INSERT INTO `stock` VALUES ('22', '3', 'Transaction', 'Initial', 'Open', '1', '4', '2018-10-02 10:42:49', '10', '2018', '2018-10-02 10:42:49', '1', null, null);
+INSERT INTO `stock` VALUES ('37', '1', 'Transaction', 'Agreement AGR-000064', 'Open', '-1', '1', '2018-10-02 11:25:35', '10', '2018', '2018-10-02 11:25:35', '1', null, null);
+INSERT INTO `stock` VALUES ('38', '3', 'Transaction', 'Agreement AGR-000064', 'Open', '-1', '1', '2018-10-02 11:25:35', '10', '2018', '2018-10-02 11:25:35', '1', null, null);
 INSERT INTO `stock` VALUES ('39', '1', 'Transaction', 'Agreement UnLockAGR-000064', 'Pending', '1', '1', '2018-10-02 11:27:24', '10', '2018', '2018-10-02 11:27:24', '1', null, null);
 INSERT INTO `stock` VALUES ('40', '3', 'Transaction', 'Agreement UnLockAGR-000064', 'Pending', '1', '1', '2018-10-02 11:27:24', '10', '2018', '2018-10-02 11:27:24', '1', null, null);
 INSERT INTO `stock` VALUES ('41', '1', 'Transaction', 'Agreement Lock AGR-000064', 'Pending', '-1', '1', '2018-10-02 11:28:08', '10', '2018', '2018-10-02 11:28:08', '1', null, null);
@@ -2326,7 +2326,7 @@ CREATE TABLE `tickets` (
 -- Records of tickets
 -- ----------------------------
 INSERT INTO `tickets` VALUES ('1', 'TCK-000003', '1', '-1', 'Pending', '2018-11-24', '2018-12-19 20:19:50', '2018-12-19 20:19:50', '1', '2018-12-19 20:19:50', '1');
-INSERT INTO `tickets` VALUES ('2', 'TCK-000004', '1', '-1', 'Completed', '2018-12-05', '2018-12-19 20:10:58', '2018-12-19 20:10:58', '1', '2018-12-19 20:10:58', '1');
+INSERT INTO `tickets` VALUES ('2', 'TCK-000004', '1', '-1', 'Closed', '2018-12-05', '2018-12-19 20:10:58', '2018-12-19 20:10:58', '1', '2018-12-19 20:10:58', '1');
 INSERT INTO `tickets` VALUES ('3', 'TCK-000005', '1', '-1', 'Outstanding', '2018-12-20', '2018-12-20 00:00:00', '2018-12-20 12:32:27', '1', null, null);
 
 -- ----------------------------

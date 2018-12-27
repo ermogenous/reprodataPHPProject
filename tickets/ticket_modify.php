@@ -84,9 +84,13 @@ $db->show_header();
                 <div class="form-group row">
                     <label for="fld_incident_date"
                            class="col-2 col-form-label">Incident Date</label>
-                    <div class="col-4">
+                    <div class="col-2">
                         <input name="fld_incident_date" type="text" id="fld_incident_date"
                                class="form-control" <?php checkDisable(); ?>/>
+                    </div>
+
+                    <div class="col-2 tck<?php echo $data['tck_status'];?>Color">
+                        <b><?php echo $data['tck_status'];?></b>
                     </div>
 
                     <label for="fld_business_type_code_ID"
@@ -311,7 +315,7 @@ $db->show_header();
                         <input type="button" value="Back" class="btn btn-secondary"
                                onclick="window.location.assign('tickets.php')">
                         <input name="subAction" id="subAction" type="hidden" value="">
-                        <?php if ($data['tck_status'] == 'Pending' || $_GET['lid'] == '') { ?>
+                        <?php if ($data['tck_status'] == 'Outstanding' || $_GET['lid'] == '') { ?>
                             <input type="submit" name="Submit" id="Submit"
                                    value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> & Exit"
                                    class="btn btn-secondary"
@@ -350,7 +354,7 @@ $db->show_header();
 function checkDisable()
 {
     global $data;
-    if ($data['tck_status'] != 'Pending' && $_GET['lid'] != '') {
+    if ($data['tck_status'] != 'Outstanding' && $_GET['lid'] != '') {
         echo 'disabled';
     }
 }

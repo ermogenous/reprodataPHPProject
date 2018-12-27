@@ -59,18 +59,18 @@ $table->generate_data();
                             <?php if ($row['tck_status'] == 'Outstanding') { ?>
                                 <a href="ticket_modify.php?lid=<?php echo $row["tck_ticket_ID"]; ?>"><i
                                             class="fas fa-edit"></i></a>&nbsp
-                                <a href="ticket_delete.php?lid=<?php echo $row["tck_ticket_ID"]; ?>"
+                                <a href="ticket_status_change.php?lid=<?php echo $row["tck_ticket_ID"]; ?>&action=delete"
                                    onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this ticket?');"><i
                                             class="fas fa-minus-circle"></i></a>&nbsp
                                 <a href="ticket_status_change.php?lid=<?php echo $row["tck_ticket_ID"]; ?>">
                                     <i class="fas fa-lock" title="Change Status"></i></a>
-                            <?php } else if ($row['tck_status'] == 'Pending') {?>
+                            <?php } else if ($row['tck_status'] == 'Open') {?>
                                 <a href="ticket_modify.php?lid=<?php echo $row["tck_ticket_ID"]; ?>"><i
                                             class="fas fa-eye"></i></a>&nbsp
                                 <a href="ticket_status_change.php?lid=<?php echo $row["tck_ticket_ID"]; ?>">
                                     <i class="fas fa-lock" title="Change Status"></i></a>
 
-                            <?php } else if ($row['tck_status'] == 'Completed') {?>
+                            <?php } else if ($row['tck_status'] == 'Closed') {?>
                                 <a href="ticket_modify.php?lid=<?php echo $row["tck_ticket_ID"]; ?>"><i
                                             class="fas fa-eye"></i></a>&nbsp
                             <?php } else if ($row['tck_status'] == 'Deleted') {?>
@@ -89,8 +89,8 @@ $table->generate_data();
     </div>
     <div class="row">
         <div class="col-3 text-center tckOutstandingColor">Outstanding</div>
-        <div class="col-3 text-center tckPendingColor">Pending</div>
-        <div class="col-3 text-center tckCompletedColor">Completed</div>
+        <div class="col-3 text-center tckOpenColor">Open</div>
+        <div class="col-3 text-center tckClosedColor">Closed</div>
         <div class="col-3 text-center tckDeletedColor">Deleted</div>
     </div>
 </div>

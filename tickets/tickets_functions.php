@@ -25,20 +25,20 @@ class Tickets
         $this->currentStatus = $this->ticketData['tck_status'];
     }
 
-    function makePending()
+    function makeOpen()
     {
         global $db;
         if ($this->currentStatus != 'Outstanding') {
             $this->errorFound = true;
-            $this->errorDescription[] = 'Ticket must be outstanding to set as pending';
+            $this->errorDescription[] = 'Ticket must be outstanding to Open';
             return false;
         } //check if enough stock exists
         else if ($this->checkStock() == false) {
             return false;
         } else {
             $db->start_transaction();
-            $newData['status'] = 'Pending';
-            $this->updateStock(1,'Ticket:'.$this->ticketID.' Make Pending');
+            $newData['status'] = 'Open';
+            $this->updateStock(1,'Ticket:'.$this->ticketID.' Open Ticket');
             $db->db_tool_update_row('tickets', $newData, 'tck_ticket_ID = ' . $this->ticketID,
                 $this->ticketID, '', 'execute', 'tck_');
             $db->commit_transaction();
@@ -103,9 +103,9 @@ class Tickets
     function makeOutstanding()
     {
         global $db;
-        if ($this->currentStatus != 'Pending') {
+        if ($this->currentStatus != 'Open') {
             $this->errorFound = true;
-            $this->errorDescription[] = 'Ticket must be Pending to turn back to Outstanding';
+            $this->errorDescription[] = 'Ticket must be Open to turn back to Outstanding';
             return false;
         } else {
             $db->start_transaction();
@@ -118,16 +118,33 @@ class Tickets
         }
     }
 
-    function makeCompleted()
+    function makeClosed()
     {
         global $db;
-        if ($this->currentStatus != 'Pending') {
+        if ($this->currentStatus != 'Open') {
             $this->errorFound = true;
-            $this->errorDescription[] = 'Ticket must be Pending to make Completed';
+            $this->errorDescription[] = 'Ticket must be Open to make Closed';
             return false;
         } else {
             $db->start_transaction();
-            $newData['status'] = 'Completed';
+            $newData['status'] = 'Closed';
+            $db->db_tool_update_row('tickets', $newData, 'tck_ticket_ID = ' . $this->ticketID,
+                $this->ticketID, '', 'execute', 'tck_');
+            $db->commit_transaction();
+            return true;
+        }
+    }
+
+    function makeDelete(){
+        global $db;
+        if ($this->currentStatus != 'Outstanding'){
+            $this->errorFound = true;
+            $this->errorDescription[] = 'Ticket must be Outstanding to delete';
+            return false;
+        }
+        else {
+            $db->start_transaction();
+            $newData['status'] = 'Deleted';
             $db->db_tool_update_row('tickets', $newData, 'tck_ticket_ID = ' . $this->ticketID,
                 $this->ticketID, '', 'execute', 'tck_');
             $db->commit_transaction();

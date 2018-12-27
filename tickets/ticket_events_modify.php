@@ -10,7 +10,7 @@ include("../include/main.php");
 
 $db = new Main();
 $db->admin_title = "Tickets events Modify";
-
+$frameName = 'frmTabEvents';
 
 if ($_POST["action"] == "insert") {
     $db->check_restriction_area('insert');
@@ -168,7 +168,7 @@ $db->show_empty_header();
                         <input name="subAction" id="subAction" type="hidden" value="">
                         <input type="button" value="Back" class="btn btn-secondary"
                                onclick="goBack();">
-                        <?php if ($data['tck_status'] == 'Pending' || $_GET['lid'] == '') { ?>
+                        <?php if ($data['tck_status'] == 'Outstanding' || $_GET['lid'] == '') { ?>
                         <input type="submit" name="Submit" id="Submit"
                                value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Event"
                                class="btn btn-secondary"
@@ -184,6 +184,9 @@ $db->show_empty_header();
 </div>
 
 <script>
+    $( document ).ready(function() {
+        $('#<?php echo $frameName; ?>', window.parent.document).height('300px');
+    });
 
     function submitForm(action) {
         let frm = document.getElementById('myForm');
@@ -205,7 +208,7 @@ $db->show_empty_header();
 function checkDisable()
 {
     global $data;
-    if ($data['tck_status'] != 'Pending' && $_GET['lid'] != '') {
+    if ($data['tck_status'] != 'Outstanding' && $_GET['lid'] != '') {
         echo 'disabled';
     }
 }

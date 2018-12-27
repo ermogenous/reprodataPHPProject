@@ -221,7 +221,7 @@ $db->show_empty_header();
                         <input name="subAction" id="subAction" type="hidden" value="">
                         <input type="button" value="Back" class="btn btn-secondary"
                                onclick="goBack();">
-                        <?php if ($data['tck_status'] == 'Pending' || $_GET['lid'] == '') { ?>
+                        <?php if ($data['tck_status'] == 'Outstanding' || $_GET['lid'] == '') { ?>
                         <input type="submit" name="Submit" id="Submit"
                                value="<?php if ($_GET["lid"] == "") echo "Insert " . $frameTitle; else echo "Update " . $frameTitle; ?> "
                                class="btn btn-secondary"
@@ -238,7 +238,9 @@ $db->show_empty_header();
 
 <script>
 
-    $('#<?php echo $frameName;?>', window.parent.document).height('400px');
+    $( document ).ready(function() {
+        $('#<?php echo $frameName;?>', window.parent.document).height('300px');
+    });
 
     function submitForm(action) {
         let frm = document.getElementById('myForm');
@@ -260,7 +262,7 @@ $db->show_empty_header();
 function checkDisable()
 {
     global $data;
-    if ($data['tck_status'] != 'Pending'  && $_GET['lid'] != '') {
+    if ($data['tck_status'] != 'Outstanding'  && $_GET['lid'] != '') {
         echo 'disabled';
     }
 }

@@ -93,7 +93,7 @@
     color:purple;
 }
 
-.agrPendingColor{
+.agrOpenColor{
     background-color: #fffec1;
 }
 .agrLockedColor{
@@ -119,10 +119,10 @@
 .tckOutstandingColor{
     background-color: #fffec1;
 }
-.tckPendingColor{
+.tckOpenColor{
     background-color: lightblue;
 }
-.tckCompletedColor{
+.tckClosedColor{
     background-color: lightgreen;
 }
 .tckDeletedColor{

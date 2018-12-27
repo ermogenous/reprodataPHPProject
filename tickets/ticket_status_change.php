@@ -28,10 +28,10 @@ if ($_GET['action'] == 'outstanding'){
         $db->generateAlertError('<br>'.$ticket->getErrorDescription());
     }
 }
-else if ($_GET['action'] == 'pending'){
+else if ($_GET['action'] == 'Open'){
     $ticket = new Tickets($_GET['lid']);
-    if ($ticket->makePending() == true) {
-        $db->generateSessionAlertSuccess('Ticket Pending Successfully');
+    if ($ticket->makeOpen() == true) {
+        $db->generateSessionAlertSuccess('Ticket Opened Successfully');
         header("Location: ticket_status_change.php?lid=".$_GET['lid']);
         exit();
     }else {
@@ -39,10 +39,10 @@ else if ($_GET['action'] == 'pending'){
     }
 
 }
-else if ($_GET['action'] == 'completed'){
+else if ($_GET['action'] == 'Closed'){
     $ticket = new Tickets($_GET['lid']);
-    if ($ticket->makeCompleted() == true) {
-        $db->generateSessionAlertSuccess('Ticket Completed Successfully');
+    if ($ticket->makeClosed() == true) {
+        $db->generateSessionAlertSuccess('Ticket Closed Successfully');
         header("Location: ticket_status_change.php?lid=".$_GET['lid']);
         exit();
     }else {
@@ -50,7 +50,14 @@ else if ($_GET['action'] == 'completed'){
     }
 }
 else if ($_GET['action'] == 'delete'){
-
+    $ticket = new Tickets($_GET['lid']);
+    if ($ticket->makeDelete() == true) {
+        $db->generateSessionAlertSuccess('Ticket Deleted Successfully');
+        header("Location: ticket_status_change.php?lid=".$_GET['lid']);
+        exit();
+    }else {
+        $db->generateAlertError('<br>'.$ticket->getErrorDescription());
+    }
 }
 
 
@@ -112,25 +119,25 @@ $db->show_header();
                         <?php
                         if ($data['tck_status'] == 'Outstanding') {
                             ?>
-                            <button type="button" value="Lock" style="width: 140px;" class="btn tckPendingColor" onclick="MakePending();">
-                                Make Pending
+                            <button type="button" value="Lock" style="width: 140px;" class="btn tckOpenColor" onclick="MakeOpen();">
+                                Open Ticket
                             </button>
                             <button type="button" value="Lock" style="width: 140px;" class="btn tckDeletedColor" onclick="MakeDelete();">
                                 Delete
                             </button>
                             <?php
                         }
-                        if ($data['tck_status'] == 'Pending') {
+                        if ($data['tck_status'] == 'Open') {
                             ?>
                             <button type="button" value="UnLock" style="width: 160px;" class="btn tckOutstandingColor" onclick="MakeOutstanding();">
                                 Make Outstanding
                             </button>
-                            <button type="button" value="UnLock" style="width: 160px;" class="btn tckCompletedColor" onclick="MakeCompleted();">
-                                Make Completed
+                            <button type="button" value="UnLock" style="width: 160px;" class="btn tckClosedColor" onclick="MakeClosed();">
+                                Close Ticket
                             </button>
                             <?php
                         }
-                        if ($data['tck_status'] == 'Completed') {
+                        if ($data['tck_status'] == 'Closed') {
                             ?>
 
                             <?php
@@ -162,14 +169,14 @@ $db->show_header();
             window.location.assign('?lid=<?php echo $_GET['lid'];?>&action=outstanding');
         }
     }
-    function MakePending(){
-        if (confirm('Are you sure you want to make Pending? \nThis action will update the stock.')){
-            window.location.assign('?lid=<?php echo $_GET['lid'];?>&action=pending');
+    function MakeOpen(){
+        if (confirm('Are you sure you want to make Open? \nThis action will update the stock.')){
+            window.location.assign('?lid=<?php echo $_GET['lid'];?>&action=Open');
         }
     }
-    function MakeCompleted() {
+    function MakeClosed() {
         if (confirm('Are you sure you want to complete this ticket?')){
-            window.location.assign('?lid=<?php echo $_GET['lid'];?>&action=completed');
+            window.location.assign('?lid=<?php echo $_GET['lid'];?>&action=Closed');
         }
     }
 

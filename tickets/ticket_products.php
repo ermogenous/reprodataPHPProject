@@ -67,7 +67,7 @@ $db->show_empty_header();
                             <th scope="col" class="text-center"><?php $table->display_order_links('Model', 'tke_incident_date'); ?></th>
                             <th scope="col" class="text-center"><?php $table->display_order_links('Amount', 'tkp_amount'); ?></th>
                             <th scope="col" class="text-center">
-                                <?php if ($data['tck_status'] == 'Pending') { ?>
+                                <?php if ($data['tck_status'] == 'Open') { ?>
                                 <a href="ticket_products_modify.php?tid=<?php echo $_GET["tid"];?>&type=<?php echo $_GET['type'];?>">
                                     <i class="fas fa-plus-circle"></i>
                                 </a>
@@ -87,7 +87,7 @@ $db->show_empty_header();
                                 <td class="text-center"><?php echo $row["prd_model"]; ?></td>
                                 <td class="text-center"><?php echo $row["tkp_amount"]; ?></td>
                                 <td class="text-center">
-                                    <?php if ($data['tck_status'] == 'Pending') { ?>
+                                    <?php if ($data['tck_status'] == 'Open') { ?>
                                     <a href="ticket_products_modify.php?tid=<?php echo $_GET["tid"];?>&lid=<?php echo $row["tkp_ticket_product_ID"]; echo '&type='.$_GET['type']; ?>"><i
                                                 class="fas fa-edit"></i></a>&nbsp
                                     <a href="ticket_products_delete.php?tid=<?php echo $_GET["tid"];?>&lid=<?php echo $row["tkp_ticket_product_ID"]; echo '&type='.$_GET['type']; ?>"
@@ -110,7 +110,10 @@ $db->show_empty_header();
     </div>
 
     <script>
-        $('#<?php echo $frameName;?>', window.parent.document).height('500px');
+        $( document ).ready(function() {
+            $('#<?php echo $frameName;?>', window.parent.document).height('500px');
+        });
+
 
         var ignoreEdit = false;
 
