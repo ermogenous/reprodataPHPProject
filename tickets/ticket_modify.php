@@ -28,8 +28,8 @@ if ($_POST["action"] == "insert") {
     if ($_POST['subAction'] == 'exit') {
         header("Location: tickets.php");
         exit();
-    }else {
-        header("Location: ticket_modify.php?lid=".$newID);
+    } else {
+        header("Location: ticket_modify.php?lid=" . $newID);
         exit();
     }
 
@@ -48,8 +48,8 @@ if ($_POST["action"] == "insert") {
     if ($_POST['subAction'] == 'exit') {
         header("Location: tickets.php");
         exit();
-    }else {
-        header("Location: ticket_modify.php?lid=".$_POST["lid"]);
+    } else {
+        header("Location: ticket_modify.php?lid=" . $_POST["lid"]);
         exit();
     }
 
@@ -86,7 +86,7 @@ $db->show_header();
                            class="col-2 col-form-label">Incident Date</label>
                     <div class="col-4">
                         <input name="fld_incident_date" type="text" id="fld_incident_date"
-                               class="form-control"/>
+                               class="form-control" <?php checkDisable(); ?>/>
                     </div>
 
                     <label for="fld_business_type_code_ID"
@@ -116,26 +116,26 @@ $db->show_header();
                            class="col-2 col-form-label">Appointment Date</label>
                     <div class="col-4">
                         <input name="fld_appointment_date" type="text" id="fld_appointment_date"
-                               class="form-control"/>
+                               class="form-control" <?php checkDisable(); ?>/>
                     </div>
 
                     <div class="col-2">Assigned to User</div>
                     <div class="col-4"><select name="fld_assigned_user_ID" id="fld_assigned_user_ID"
                                                class="form-control"
-                                               required>
+                                               required <?php checkDisable(); ?>>
                             <option value="-1">Assign Later</option>
                             <?php
                             $sql = "SELECT * FROM users WHERE usr_is_service = 1 OR usr_is_delivery = 1";
                             $result = $db->query($sql);
-                            while ($row = $db->fetch_assoc($result)){
-                                echo '<option value="'.$row['usr_users_ID'].'"';
-                                if ($data['tck_assigned_user_ID'] == $row['usr_users_ID']){
+                            while ($row = $db->fetch_assoc($result)) {
+                                echo '<option value="' . $row['usr_users_ID'] . '"';
+                                if ($data['tck_assigned_user_ID'] == $row['usr_users_ID']) {
                                     echo 'selected';
                                 }
-                                echo '>'.$row['usr_name'].'</option>';
+                                echo '>' . $row['usr_name'] . '</option>';
                             }
                             ?>
-                            
+
                         </select></div>
 
                     <script>
@@ -167,7 +167,7 @@ $db->show_header();
                         <input name="customerSelect" type="text" id="customerSelect"
                                class="form-control"
                                value="<?php echo $customerData['cst_name'] . " " . $customerData['cst_surname']; ?>"
-                               required>
+                               required <?php checkDisable(); ?>>
                         <input name="customerSelectId" id="customerSelectId" type="hidden"
                                value="<?php echo $customerData['cst_customer_ID']; ?>">
                     </div>
@@ -262,7 +262,8 @@ $db->show_header();
                     </div>
                     <div class="tab-pane fade" id="spareParts" role="tabpanel" aria-labelledby="spareParts-tab">
                         <?php if ($_GET['lid'] > 0) { ?>
-                            <iframe src="ticket_products.php?type=SparePart&tid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
+                            <iframe src="ticket_products.php?type=SparePart&tid=<?php echo $_GET['lid']; ?>"
+                                    width="100%" height="100"
                                     frameborder="0" id="frmTabSpareParts" name="frmTabSpareParts"></iframe>
                         <?php } else { ?>
                             <div class="row">
@@ -274,7 +275,8 @@ $db->show_header();
                     </div>
                     <div class="tab-pane fade" id="consumables" role="tabpanel" aria-labelledby="consumables-tab">
                         <?php if ($_GET['lid'] > 0) { ?>
-                            <iframe src="ticket_products.php?type=Consumable&tid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
+                            <iframe src="ticket_products.php?type=Consumable&tid=<?php echo $_GET['lid']; ?>"
+                                    width="100%" height="100"
                                     frameborder="0" id="frmTabConsumables" name="frmTabConsumables"></iframe>
                         <?php } else { ?>
                             <div class="row">
@@ -286,7 +288,8 @@ $db->show_header();
                     </div>
                     <div class="tab-pane fade" id="other" role="tabpanel" aria-labelledby="other-tab">
                         <?php if ($_GET['lid'] > 0) { ?>
-                            <iframe src="ticket_products.php?type=Other&tid=<?php echo $_GET['lid']; ?>" width="100%" height="100"
+                            <iframe src="ticket_products.php?type=Other&tid=<?php echo $_GET['lid']; ?>" width="100%"
+                                    height="100"
                                     frameborder="0" id="frmTabOther" name="frmTabOther"></iframe>
                         <?php } else { ?>
                             <div class="row">
@@ -301,20 +304,23 @@ $db->show_header();
                 <div class="form-group row">
                     <label for="name" class="col-sm-4 col-form-label"></label>
                     <div class="col-sm-8">
+
                         <input name="action" type="hidden" id="action"
                                value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
                         <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
                         <input type="button" value="Back" class="btn btn-secondary"
                                onclick="window.location.assign('tickets.php')">
-                        <input type="submit" name="Submit" id="Submit"
-                               value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> & Exit"
-                               class="btn btn-secondary"
-                               onclick="submitForm('exit')">
-                        <input type="submit" name="Submit" id="Submit"
-                               value="<?php if ($_GET["lid"] == "") echo "Create"; else echo "Save"; ?> Ticket"
-                               class="btn btn-secondary"
-                               onclick="submitForm('save')">
                         <input name="subAction" id="subAction" type="hidden" value="">
+                        <?php if ($data['tck_status'] == 'Pending' || $_GET['lid'] == '') { ?>
+                            <input type="submit" name="Submit" id="Submit"
+                                   value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> & Exit"
+                                   class="btn btn-secondary"
+                                   onclick="submitForm('exit')">
+                            <input type="submit" name="Submit" id="Submit"
+                                   value="<?php if ($_GET["lid"] == "") echo "Create"; else echo "Save"; ?> Ticket"
+                                   class="btn btn-secondary"
+                                   onclick="submitForm('save')">
+                        <?php } ?>
                     </div>
                 </div>
 
@@ -336,7 +342,18 @@ $db->show_header();
         }
         $('#subAction').val(action);
     }
+
+
 </script>
 <?php
+
+function checkDisable()
+{
+    global $data;
+    if ($data['tck_status'] != 'Pending' && $_GET['lid'] != '') {
+        echo 'disabled';
+    }
+}
+
 $db->show_footer();
 ?>

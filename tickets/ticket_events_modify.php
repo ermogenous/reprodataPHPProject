@@ -72,7 +72,7 @@ $db->show_empty_header();
                     <div class="col-4">
                         <select name="fld_type" id="fld_type"
                                 class="form-control"
-                                required>
+                                required <?php checkDisable();?>>
                             <option value=""></option>
                             <option value="MachineError" <?php if ($data['tke_type'] == 'MachineError') echo 'selected'; ?>>
                                 Machine Error
@@ -95,7 +95,7 @@ $db->show_empty_header();
                            class="col-2 col-form-label">Incident Date</label>
                     <div class="col-4">
                         <input name="fld_incident_date" type="text" id="fld_incident_date"
-                               class="form-control"/>
+                               class="form-control"  <?php checkDisable();?>/>
                     </div>
 
                     <script>
@@ -120,7 +120,7 @@ $db->show_empty_header();
                     <div class="col-lg-2 col-sm-3">Machine</div>
                     <div class="col-lg-4 col-sm-3">
                         <select name="fld_unique_serial_ID" id="fld_unique_serial_ID"
-                                class="form-control">
+                                class="form-control"  <?php checkDisable();?>>
                             <option value=""></option>
                             <?php
                             if ($_GET['lid'] > 0 && $data['tke_unique_serial_ID'] > 0){
@@ -165,13 +165,16 @@ $db->show_empty_header();
                                value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
                         <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
                         <input name="tid" type="hidden" id="tid" value="<?php echo $_GET["tid"]; ?>">
+                        <input name="subAction" id="subAction" type="hidden" value="">
                         <input type="button" value="Back" class="btn btn-secondary"
                                onclick="goBack();">
+                        <?php if ($data['tck_status'] == 'Pending' || $_GET['lid'] == '') { ?>
                         <input type="submit" name="Submit" id="Submit"
                                value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Event"
                                class="btn btn-secondary"
                                onclick="submitForm('')">
-                        <input name="subAction" id="subAction" type="hidden" value="">
+                        <?php } ?>
+
                     </div>
                 </div>
 
@@ -199,5 +202,13 @@ $db->show_empty_header();
 </script>
 
 <?php
+function checkDisable()
+{
+    global $data;
+    if ($data['tck_status'] != 'Pending' && $_GET['lid'] != '') {
+        echo 'disabled';
+    }
+}
+
 $db->show_empty_footer();
 ?>

@@ -86,7 +86,7 @@ $db->show_empty_header();
                     <div class="col-4">
                         <select name="fld_ticket_event_ID" id="fld_ticket_event_ID"
                                 class="form-control"
-                                required onchange="loadProductsFromEvent()">
+                                required onchange="loadProductsFromEvent()" <?php checkDisable();?>>
                             <option value=""></option>
                             <?php
                             $sql = "SELECT * FROM ticket_events
@@ -114,7 +114,7 @@ $db->show_empty_header();
                     <div class="col-4">
                         <select name="fld_product_ID" id="fld_product_ID"
                                 class="form-control"
-                                required>
+                                required <?php checkDisable();?>>
                         </select>
 
                         <i class="fas fa-spinner" id="productsSpin" style="display: none"></i>
@@ -192,7 +192,7 @@ $db->show_empty_header();
                         <input name="fld_amount" type="text" id="fld_amount"
                                class="form-control"
                                value="<?php echo $data['tkp_amount']; ?>"
-                               required>
+                               required <?php checkDisable();?>>
 
 
                     </div>
@@ -218,13 +218,16 @@ $db->show_empty_header();
                         <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
                         <input name="tid" type="hidden" id="tid" value="<?php echo $_GET["tid"]; ?>">
                         <input name="type" type="hidden" id="tid" value="<?php echo $_GET["type"]; ?>">
+                        <input name="subAction" id="subAction" type="hidden" value="">
                         <input type="button" value="Back" class="btn btn-secondary"
                                onclick="goBack();">
+                        <?php if ($data['tck_status'] == 'Pending' || $_GET['lid'] == '') { ?>
                         <input type="submit" name="Submit" id="Submit"
                                value="<?php if ($_GET["lid"] == "") echo "Insert " . $frameTitle; else echo "Update " . $frameTitle; ?> "
                                class="btn btn-secondary"
                                onclick="submitForm('')">
-                        <input name="subAction" id="subAction" type="hidden" value="">
+                        <?php } ?>
+
                     </div>
                 </div>
 
@@ -254,5 +257,13 @@ $db->show_empty_header();
 </script>
 
 <?php
+function checkDisable()
+{
+    global $data;
+    if ($data['tck_status'] != 'Pending'  && $_GET['lid'] != '') {
+        echo 'disabled';
+    }
+}
+
 $db->show_empty_footer();
 ?>

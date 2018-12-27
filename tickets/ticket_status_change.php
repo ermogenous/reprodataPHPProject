@@ -17,6 +17,43 @@ $db->working_section = 'Agreements Change Status';
 
 include('tickets_functions.php');
 
+
+if ($_GET['action'] == 'outstanding'){
+    $ticket = new Tickets($_GET['lid']);
+    if ($ticket->makeOutstanding() == true) {
+        $db->generateSessionAlertSuccess('Ticket Outstanding Successfully');
+        header("Location: ticket_status_change.php?lid=".$_GET['lid']);
+        exit();
+    }else {
+        $db->generateAlertError('<br>'.$ticket->getErrorDescription());
+    }
+}
+else if ($_GET['action'] == 'pending'){
+    $ticket = new Tickets($_GET['lid']);
+    if ($ticket->makePending() == true) {
+        $db->generateSessionAlertSuccess('Ticket Pending Successfully');
+        header("Location: ticket_status_change.php?lid=".$_GET['lid']);
+        exit();
+    }else {
+        $db->generateAlertError('<br>'.$ticket->getErrorDescription());
+    }
+
+}
+else if ($_GET['action'] == 'completed'){
+    $ticket = new Tickets($_GET['lid']);
+    if ($ticket->makeCompleted() == true) {
+        $db->generateSessionAlertSuccess('Ticket Completed Successfully');
+        header("Location: ticket_status_change.php?lid=".$_GET['lid']);
+        exit();
+    }else {
+        $db->generateAlertError('<br>'.$ticket->getErrorDescription());
+    }
+}
+else if ($_GET['action'] == 'delete'){
+
+}
+
+
 if ($_GET['lid'] > 0) {
     $data = $db->query_fetch('
   SELECT * FROM 
@@ -85,10 +122,10 @@ $db->show_header();
                         }
                         if ($data['tck_status'] == 'Pending') {
                             ?>
-                            <button type="button" value="UnLock" style="width: 140px;" class="btn tckOutstandingColor" onclick="MakeOutstanding();">
+                            <button type="button" value="UnLock" style="width: 160px;" class="btn tckOutstandingColor" onclick="MakeOutstanding();">
                                 Make Outstanding
                             </button>
-                            <button type="button" value="UnLock" style="width: 140px;" class="btn tckCompletedColor" onclick="MakeCompleted();">
+                            <button type="button" value="UnLock" style="width: 160px;" class="btn tckCompletedColor" onclick="MakeCompleted();">
                                 Make Completed
                             </button>
                             <?php
@@ -122,22 +159,22 @@ $db->show_header();
 
     function MakeOutstanding() {
         if (confirm('Are you sure you want to go back to ounstanding?\n This action will update the stock.')){
-            window.location.assign('?lid=<?php echo $_GET['lid'];?>&action=unlock');
+            window.location.assign('?lid=<?php echo $_GET['lid'];?>&action=outstanding');
         }
     }
     function MakePending(){
         if (confirm('Are you sure you want to make Pending? \nThis action will update the stock.')){
-            window.location.assign('?lid=<?php echo $_GET['lid'];?>&action=lock');
+            window.location.assign('?lid=<?php echo $_GET['lid'];?>&action=pending');
         }
     }
     function MakeCompleted() {
-        if (confirm('Are you sure you want to activate this agreement?')){
-            window.location.assign('?lid=<?php echo $_GET['lid'];?>&action=activate');
+        if (confirm('Are you sure you want to complete this ticket?')){
+            window.location.assign('?lid=<?php echo $_GET['lid'];?>&action=completed');
         }
     }
 
     function MakeDelete() {
-        if (confirm('Are you sure you want to delete this agreement?')){
+        if (confirm('Are you sure you want to delete this ticket?')){
             window.location.assign('?lid=<?php echo $_GET['lid'];?>&action=delete');
         }
     }

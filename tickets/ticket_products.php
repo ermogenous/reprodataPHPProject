@@ -41,7 +41,7 @@ $table->extras = 'tkp_ticket_ID = '.$_GET["tid"];
 $table->extras .= " AND tkp_type = '".$_GET['type']."'";
 
 $table->generate_data();
-//echo $table->sql;
+//echo $table->total_rows;
 
 $db->show_empty_header();
 
@@ -67,9 +67,11 @@ $db->show_empty_header();
                             <th scope="col" class="text-center"><?php $table->display_order_links('Model', 'tke_incident_date'); ?></th>
                             <th scope="col" class="text-center"><?php $table->display_order_links('Amount', 'tkp_amount'); ?></th>
                             <th scope="col" class="text-center">
+                                <?php if ($data['tck_status'] == 'Pending') { ?>
                                 <a href="ticket_products_modify.php?tid=<?php echo $_GET["tid"];?>&type=<?php echo $_GET['type'];?>">
                                     <i class="fas fa-plus-circle"></i>
                                 </a>
+                                <?php } ?>
                             </th>
                         </tr>
                         </thead>
@@ -85,11 +87,16 @@ $db->show_empty_header();
                                 <td class="text-center"><?php echo $row["prd_model"]; ?></td>
                                 <td class="text-center"><?php echo $row["tkp_amount"]; ?></td>
                                 <td class="text-center">
+                                    <?php if ($data['tck_status'] == 'Pending') { ?>
                                     <a href="ticket_products_modify.php?tid=<?php echo $_GET["tid"];?>&lid=<?php echo $row["tkp_ticket_product_ID"]; echo '&type='.$_GET['type']; ?>"><i
                                                 class="fas fa-edit"></i></a>&nbsp
                                     <a href="ticket_products_delete.php?tid=<?php echo $_GET["tid"];?>&lid=<?php echo $row["tkp_ticket_product_ID"]; echo '&type='.$_GET['type']; ?>"
                                        onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this ticket <?php echo $frameTitle;?>?');"><i
                                                 class="fas fa-minus-circle"></i></a>
+                                    <?php } else {?>
+                                        <a href="ticket_products_modify.php?tid=<?php echo $_GET["tid"];?>&lid=<?php echo $row["tkp_ticket_product_ID"]; echo '&type='.$_GET['type']; ?>"><i
+                                                    class="fas fa-eye"></i></a>
+                                    <?php } ?>
                                 </td>
                             </tr>
                             <?php

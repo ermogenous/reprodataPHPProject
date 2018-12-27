@@ -54,9 +54,11 @@ $db->show_empty_header();
                             <th scope="col"><?php $table->display_order_links('Type', 'tke_type'); ?></th>
                             <th scope="col"><?php $table->display_order_links('Date', 'tke_incident_date'); ?></th>
                             <th scope="col">
+                                <?php if ($data['tck_status'] == 'Pending') { ?>
                                 <a href="ticket_events_modify.php?tid=<?php echo $_GET["tid"];?>">
                                     <i class="fas fa-plus-circle"></i>
                                 </a>
+                                <?php } ?>
                             </th>
                         </tr>
                         </thead>
@@ -69,11 +71,16 @@ $db->show_empty_header();
                                 <td><?php echo $row["tke_type"]; ?></td>
                                 <td><?php echo $row["tke_incident_date"]; ?></td>
                                 <td>
+                                    <?php if ($data['tck_status'] == 'Pending') { ?>
                                     <a href="ticket_events_modify.php?tid=<?php echo $_GET["tid"];?>&lid=<?php echo $row["tke_ticket_event_ID"]; ?>"><i
                                                 class="fas fa-edit"></i></a>&nbsp
                                     <a href="ticket_events_delete.php?tid=<?php echo $_GET["tid"];?>&lid=<?php echo $row["tke_ticket_event_ID"]; ?>"
                                        onclick="ignoreEdit = true; return deleteEvent(<?php echo $row['clo_total_products'];?>)"><i
                                                 class="fas fa-minus-circle"></i></a>
+                                    <?php } else {?>
+                                        <a href="ticket_events_modify.php?tid=<?php echo $_GET["tid"];?>&lid=<?php echo $row["tke_ticket_event_ID"]; ?>"><i
+                                                    class="fas fa-eye"></i></a>
+                                    <?php } ?>
                                 </td>
                             </tr>
                             <?php

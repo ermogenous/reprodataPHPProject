@@ -65,9 +65,14 @@ $table->generate_data();
                                 <a href="ticket_status_change.php?lid=<?php echo $row["tck_ticket_ID"]; ?>">
                                     <i class="fas fa-lock" title="Change Status"></i></a>
                             <?php } else if ($row['tck_status'] == 'Pending') {?>
+                                <a href="ticket_modify.php?lid=<?php echo $row["tck_ticket_ID"]; ?>"><i
+                                            class="fas fa-eye"></i></a>&nbsp
+                                <a href="ticket_status_change.php?lid=<?php echo $row["tck_ticket_ID"]; ?>">
+                                    <i class="fas fa-lock" title="Change Status"></i></a>
 
                             <?php } else if ($row['tck_status'] == 'Completed') {?>
-
+                                <a href="ticket_modify.php?lid=<?php echo $row["tck_ticket_ID"]; ?>"><i
+                                            class="fas fa-eye"></i></a>&nbsp
                             <?php } else if ($row['tck_status'] == 'Deleted') {?>
 
                             <?php } ?>

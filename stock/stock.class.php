@@ -44,6 +44,10 @@ class Stock {
 
     }
 
+    public function disableCommit(){
+        $this->disableCommit = false;
+    }
+
     public function getProductData() {
         global $db;
 
