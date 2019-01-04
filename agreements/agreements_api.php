@@ -45,10 +45,10 @@ if ($_GET['section'] == 'agreements') {
         $data[] = $row;
     }
 
-    $db->update_log_file_custom($sql, 'Transaction API:none GET:'.print_r($_GET,true));
+    $db->update_log_file_custom($sql, 'Agreements API:none GET:'.print_r($_GET,true));
 }
 else {
-    $db->update_log_file_custom('NONE', 'Transaction API:none GET:'.print_r($_GET,true));
+    $db->update_log_file_custom('NONE', 'Agreements API:none GET:'.print_r($_GET,true));
 }
 
 

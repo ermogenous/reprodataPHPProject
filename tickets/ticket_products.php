@@ -43,6 +43,9 @@ $table->extras .= " AND tkp_type = '".$_GET['type']."'";
 $table->generate_data();
 //echo $table->total_rows;
 
+//ticket data
+$ticketData = $db->query_fetch('SELECT * FROM tickets WHERE tck_ticket_ID = '.$_GET['tid']);
+
 $db->show_empty_header();
 
 
@@ -67,7 +70,7 @@ $db->show_empty_header();
                             <th scope="col" class="text-center"><?php $table->display_order_links('Model', 'tke_incident_date'); ?></th>
                             <th scope="col" class="text-center"><?php $table->display_order_links('Amount', 'tkp_amount'); ?></th>
                             <th scope="col" class="text-center">
-                                <?php if ($data['tck_status'] == 'Open') { ?>
+                                <?php if ($ticketData['tck_status'] == 'Outstanding') { ?>
                                 <a href="ticket_products_modify.php?tid=<?php echo $_GET["tid"];?>&type=<?php echo $_GET['type'];?>">
                                     <i class="fas fa-plus-circle"></i>
                                 </a>

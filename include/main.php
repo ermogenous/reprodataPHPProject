@@ -15,6 +15,7 @@
 //- 21/10/2015 Change from Mysql functions to Mysqli - Class can receive custom $main settings without being affected
 //- 29/9/2016 username/password session has been added the $main["environment"]
 //- 09/8/2018 add insert/update automatically fields insert_date_time, last_update_date_time and by
+//- 04/01/2019 db_tool_delete_row check if the record exists before deleting
 //usefull information
 //
 //mysqli_query("SET NAMES 'utf8'");
@@ -1394,21 +1395,24 @@ class Main
     function db_tool_delete_row($table, $row_serial, $where_clause)
     {
 
-//get the previous values
+        //get the previous values
         $previous = $this->query_fetch("SELECT * FROM `" . $table . "` WHERE " . $where_clause);
+        $log_old_values = '';
 
-        foreach ($previous as $data_names => $data_values) {
+        //continue only if the row exists
+        if (isset($previous)){
+            foreach ($previous as $data_names => $data_values) {
 
-            $log_old_values .= $data_names . " = " . $data_values . "
+                $log_old_values .= $data_names . " = " . $data_values . "
 		";
 
+            }
+            $sql = "DELETE FROM `" . $table . "` WHERE " . $where_clause . " LIMIT 1";
+            $this->query($sql);
+
+            //update the log file
+            $this->update_log_file($table, $row_serial, 'DELETE RECORD', '', $log_old_values);
         }
-        $sql = "DELETE FROM `" . $table . "` WHERE " . $where_clause . " LIMIT 1";
-        $this->query($sql);
-
-        //update the log file
-        $this->update_log_file($table, $row_serial, 'DELETE RECORD', '', $log_old_values);
-
     }
 
     function update_log_file($table_name, $row_serial, $action, $new_values = '', $old_values = '', $description = '')

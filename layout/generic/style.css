@@ -128,3 +128,17 @@
 .tckDeletedColor{
     background-color: #ffc6c3;
 }
+
+/* Schedules Status */
+.schOutstandingColor{
+    background-color: #fffec1;
+}
+.schOpenColor{
+    background-color: lightblue;
+}
+.schClosedColor{
+    background-color: lightgreen;
+}
+.schDeletedColor{
+    background-color: #ffc6c3;
+}

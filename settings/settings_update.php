@@ -245,6 +245,53 @@ $db->show_header();
                             </div>
                         </div>
 
+                        <div class="row alert alert-primary">
+                            <div class="col-12">
+                                Schedules
+                            </div>
+                        </div>
+                        <?php
+                        $numberPrefix = $db->get_setting('sch_schedule_number_prefix');
+                        ?>
+                        <div class="form-group row">
+                            <label for="fld_sch_schedule_number_prefix" class="col-sm-4 col-form-label">Number
+                                Prefix</label>
+                            <div class="col-sm-8">
+                                <input name="fld_sch_schedule_number_prefix" type="text"
+                                       id="fld_sch_schedule_number_prefix"
+                                       class="form-control"
+                                       value="<?php echo $numberPrefix; ?>">
+                            </div>
+                        </div>
+                        <?php
+                        $numberLeadingZeros = $db->get_setting('sch_schedule_number_leading_zeros');
+                        ?>
+                        <div class="form-group row">
+                            <label for="fld_sch_schedule_number_leading_zeros" class="col-sm-4 col-form-label">Leading
+                                Zeros</label>
+                            <div class="col-sm-8">
+                                <input name="fld_sch_schedule_number_leading_zeros" type="text"
+                                       id="fld_sch_schedule_number_leading_zeros"
+                                       class="form-control"
+                                       value="<?php echo $numberLeadingZeros; ?>">
+                            </div>
+                        </div>
+                        <?php
+                        $numberLastUsed = $db->get_setting('sch_schedule_number_last_used');
+                        ?>
+                        <div class="form-group row">
+                            <label for="fld_sch_schedule_number_last_used" class="col-sm-4 col-form-label">Last Number
+                                Used</label>
+                            <div class="col-sm-4">
+                                <input name="fld_sch_schedule_number_last_used" type="text"
+                                       id="fld_sch_schedule_number_last_used"
+                                       class="form-control"
+                                       value="<?php echo $numberLastUsed; ?>">
+                            </div>
+                            <div class="col-sm-4">
+                                <?php echo $db->buildNumber($numberPrefix, $numberLeadingZeros, $numberLastUsed); ?>
+                            </div>
+                        </div>
 
                     </div>
                 </div>

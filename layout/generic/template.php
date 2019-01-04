@@ -135,6 +135,13 @@ function template_header()
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/tickets/ticket_modify.php">
                                 <i class="fas fa-plus-circle"></i> Insert New Ticket</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/schedules/schedules.php">
+                                <i class="fas fa-eye"></i> View Schedules</a>
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/schedules/schedule_modify.php">
+                                <i class="fas fa-plus-circle"></i> Insert New Schedule</a>
                         </div>
                     </li>
 

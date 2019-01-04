@@ -1,21 +1,20 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: micac
- * Date: 19/10/2018
- * Time: 3:22 ΜΜ
+ * User: Mike
+ * Date: 02-Jan-19
+ * Time: 5:33 PM
  */
 
 include("../include/main.php");
 include("../include/tables.php");
 
 $db = new Main(1, 'UTF-8');
-$db->admin_title = "Tickets";
+$db->admin_title = "Schedules";
 $db->enable_jquery_ui();
 $db->show_header();
 
-$table = new draw_table('tickets', 'tck_ticket_ID', 'ASC');
-$table->extra_from_section = 'JOIN customers ON cst_customer_ID = tck_customer_ID';
+$table = new draw_table('schedules', 'sch_schedule_ID', 'ASC');
 $table->extras = '1=1 ';
 //filter status
 $filterStatus[0] = 'Outstanding';
@@ -41,7 +40,7 @@ foreach($filterStatus as $value){
     $filterFound++;
     $selectedStatus[$value] = 'checked';
     if ($filterFound == 1){
-        $table->extras .= " AND tck_status IN ('".$value."'";
+        $table->extras .= " AND sch_status IN ('".$value."'";
     }
     else {
         $table->extras .= ",'".$value."'";
@@ -154,10 +153,11 @@ $table->generate_data();
                 <table class="table table-hover">
                     <thead>
                     <tr class="alert alert-success">
-                        <th scope="col"><?php $table->display_order_links('ID', 'tck_ticket_ID'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Number', 'tck_ticket_number'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Customer', 'cst_name'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Status', 'tck_status'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('ID', 'sch_schedule_ID'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Number', 'sch_schedule_number'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('User', 'sch_user_ID'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Date', 'sch_schedule_date'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Status', 'sch_status'); ?></th>
                         <th scope="col">
                             <a href="ticket_modify.php">
                                 <i class="fas fa-plus-circle"></i>
@@ -169,30 +169,31 @@ $table->generate_data();
                     <?php
                     while ($row = $table->fetch_data()) {
                     ?>
-                    <tr onclick="editLine(<?php echo $row["tck_ticket_ID"];?>);" class="tck<?php echo $row['tck_status'];?>Color">
-                        <th scope="row"><?php echo $row["tck_ticket_ID"]; ?></th>
-                        <td><?php echo $row["tck_ticket_number"]; ?></td>
-                        <td><?php echo $row["cst_name"]; ?></td>
-                        <td><?php echo $row["tck_status"]; ?></td>
+                    <tr onclick="editLine(<?php echo $row["sch_schedule_ID"];?>);" class="sch<?php echo $row['sch_status'];?>Color">
+                        <th scope="row"><?php echo $row["sch_schedule_ID"]; ?></th>
+                        <td><?php echo $row["sch_schedule_number"]; ?></td>
+                        <td><?php echo $row["sch_user_ID"]; ?></td>
+                        <td><?php echo $db->convert_date_format($row["sch_schedule_date"],'yyyy-mm-dd','dd/mm/yyyy'); ?></td>
+                        <td><?php echo $row["sch_status"]; ?></td>
                         <td>
-                            <?php if ($row['tck_status'] == 'Outstanding') { ?>
-                                <a href="ticket_modify.php?lid=<?php echo $row["tck_ticket_ID"]; ?>"><i
+                            <?php if ($row['sch_status'] == 'Outstanding') { ?>
+                                <a href="schedule_modify.php?lid=<?php echo $row["sch_schedule_ID"]; ?>"><i
                                             class="fas fa-edit"></i></a>&nbsp
-                                <a href="ticket_status_change.php?lid=<?php echo $row["tck_ticket_ID"]; ?>&action=delete"
+                                <a href="ticket_status_change.php?lid=<?php echo $row["sch_schedule_ID"]; ?>&action=delete"
                                    onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this ticket?');"><i
                                             class="fas fa-minus-circle"></i></a>&nbsp
-                                <a href="ticket_status_change.php?lid=<?php echo $row["tck_ticket_ID"]; ?>">
+                                <a href="ticket_status_change.php?lid=<?php echo $row["sch_schedule_ID"]; ?>">
                                     <i class="fas fa-lock" title="Change Status"></i></a>
-                            <?php } else if ($row['tck_status'] == 'Open') {?>
-                                <a href="ticket_modify.php?lid=<?php echo $row["tck_ticket_ID"]; ?>"><i
+                            <?php } else if ($row['sch_status'] == 'Open') {?>
+                                <a href="schedule_modify.php?lid=<?php echo $row["sch_schedule_ID"]; ?>"><i
                                             class="fas fa-eye"></i></a>&nbsp
-                                <a href="ticket_status_change.php?lid=<?php echo $row["tck_ticket_ID"]; ?>">
+                                <a href="ticket_status_change.php?lid=<?php echo $row["sch_schedule_ID"]; ?>">
                                     <i class="fas fa-lock" title="Change Status"></i></a>
 
-                            <?php } else if ($row['tck_status'] == 'Closed') {?>
-                                <a href="ticket_modify.php?lid=<?php echo $row["tck_ticket_ID"]; ?>"><i
+                            <?php } else if ($row['sch_status'] == 'Closed') {?>
+                                <a href="schedule_modify.php?lid=<?php echo $row["sch_schedule_ID"]; ?>"><i
                                             class="fas fa-eye"></i></a>&nbsp
-                            <?php } else if ($row['tck_status'] == 'Deleted') {?>
+                            <?php } else if ($row['sch_status'] == 'Deleted') {?>
 
                             <?php } ?>
                         </td>
@@ -207,10 +208,10 @@ $table->generate_data();
         <div class="col-lg-2"></div>
     </div>
     <div class="row">
-        <div class="col-3 text-center tckOutstandingColor">Outstanding</div>
-        <div class="col-3 text-center tckOpenColor">Open</div>
-        <div class="col-3 text-center tckClosedColor">Closed</div>
-        <div class="col-3 text-center tckDeletedColor">Deleted</div>
+        <div class="col-3 text-center schOutstandingColor">Outstanding</div>
+        <div class="col-3 text-center schOpenColor">Open</div>
+        <div class="col-3 text-center schClosedColor">Closed</div>
+        <div class="col-3 text-center schDeletedColor">Deleted</div>
     </div>
 </div>
 <script>
@@ -218,13 +219,13 @@ $table->generate_data();
 
     function editLine(id) {
         if (ignoreEdit === false) {
-            window.location.assign('ticket_modify.php?lid=' + id);
+            window.location.assign('schedule_modify.php?lid=' + id);
         }
     }
 </script>
 <?php
 $table->autoCompleteFieldName = 'search_field';
-$table->autoCompleteSourceAPI = "tickets_api.php?section=tickets";
+$table->autoCompleteSourceAPI = "schedules_api.php?section=schedulesSearch";
 $table->autoJsCodeHideFocus = true;
 $table->autoJsCodeAddedSelectSection = "$('#myForm').submit();";
 $table->showAutoCompleteJsCode();

@@ -35,6 +35,9 @@ $table->extra_select_section = ',(SELECT COUNT(*) FROM ticket_products WHERE tkp
 $table->generate_data();
 //echo $table->sql;
 
+//ticket data
+$ticketData = $db->query_fetch('SELECT * FROM tickets WHERE tck_ticket_ID = '.$_GET['tid']);
+
 $db->show_empty_header();
 ?>
     <div class="container-fluid">
@@ -53,8 +56,8 @@ $db->show_empty_header();
                             <th scope="col"><?php $table->display_order_links('ID', 'tke_ticket_event_ID'); ?></th>
                             <th scope="col"><?php $table->display_order_links('Type', 'tke_type'); ?></th>
                             <th scope="col"><?php $table->display_order_links('Date', 'tke_incident_date'); ?></th>
-                            <th scope="col">
-                                <?php if ($data['tck_status'] == 'Open') { ?>
+                            <th scope="col" class="text-center">
+                                <?php if ($ticketData['tck_status'] == 'Outstanding') { ?>
                                 <a href="ticket_events_modify.php?tid=<?php echo $_GET["tid"];?>">
                                     <i class="fas fa-plus-circle"></i>
                                 </a>

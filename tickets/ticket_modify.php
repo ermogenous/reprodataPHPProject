@@ -93,7 +93,7 @@ $db->show_header();
                         <b><?php echo $data['tck_status'];?></b>
                     </div>
 
-                    <label for="fld_business_type_code_ID"
+                    <label for="fld_ticket_number"
                            class="col-2 col-form-label">Ticket Number</label>
                     <div class="col-4">
                         <?php echo $data['tck_ticket_number']; ?>
