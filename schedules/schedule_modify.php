@@ -27,6 +27,7 @@ if ($_POST["action"] == "insert") {
 
             $data['fld_schedule_ID'] = $newID;
             $data['fld_ticket_ID'] = $value;
+            $data['fld_time'] = $_POST['lineTime-'.$value];
             $db->db_tool_insert_row('schedule_ticket', $data, 'fld_', 1, 'scht_');
         }
     }
@@ -58,13 +59,18 @@ if ($_POST["action"] == "insert") {
 
             $sql = "SELECT * FROM schedule_ticket WHERE scht_schedule_ID = ".$_POST['lid']." AND scht_ticket_ID = ".$value;
             $checkRes = $db->query_fetch($sql);
+            //echo "Checking ".$checkRes['scht_schedule_ticket_ID'];
             if ($checkRes['scht_schedule_ticket_ID'] > 0){
-                //the record already exists
-                //no need to do anything
+                //the record already exists then update
+                $data['fld_time'] = $_POST['lineTime-'.$value];
+                $db->db_tool_update_row('schedule_ticket', $data, "`scht_schedule_ticket_ID` = " . $checkRes['scht_schedule_ticket_ID'],
+                    $checkRes['scht_schedule_ticket_ID'], 'fld_', 'execute', 'scht_');
+                //echo "Updating ".$checkRes['scht_schedule_ticket_ID']."->".$_POST['lineTime-'.$value];
             }
             else {
                 $data['fld_schedule_ID'] = $_POST['lid'];
                 $data['fld_ticket_ID'] = $value;
+                $data['fld_time'] = $_POST['lineTime-'.$value];
                 $db->db_tool_insert_row('schedule_ticket', $data, 'fld_', 1, 'scht_');
             }
 
@@ -111,7 +117,7 @@ $db->show_header();
                     <div class="form-group row">
                         <label for="fld_schedule_date"
                                class="col-2 col-form-label">Schedule Date</label>
-                        <div class="col-4">
+                        <div class="col-2">
                             <input name="fld_schedule_date" type="text" id="fld_schedule_date"
                                    class="form-control" <?php checkDisable(); ?>/>
                         </div>
@@ -130,6 +136,7 @@ $db->show_header();
 
                             });
                         </script>
+                        <div class="col-2"></div>
 
                         <label for="fld_schedule_number"
                                class="col-2 col-form-label">Schedule Number</label>
@@ -174,6 +181,7 @@ $db->show_header();
                                 #
                                 <i class="fas fa-sync" onclick="getTicketsFromApi();"></i>
                             </th>
+                            <th scope="col" width="50">Time</th>
                             <th scope="col" onclick="clearTable();">Ticket Num/Events</th>
                             <th scope="col">Customer/Products</th>
                             <th scope="col">City</th>
@@ -185,12 +193,15 @@ $db->show_header();
                             <th scope="row"></th>
                             <td></td>
                             <td></td>
+                            <td></td>
+                            <td></td>
                         </tr>
                         </tbody>
 
                     </table>
                     <script>
                         var selectedTickets = [];
+                        var selectedTicketsVal = [];
 
                         function fillTable(data) {
                             //console.log('Filling');
@@ -224,14 +235,19 @@ $db->show_header();
                             }
                             //console.log(data);
                             $('#ticketTable tr:last').after(`
-                                <tr id="tableLine-` + data['tck_ticket_ID'] +`" onclick="clickLine(` + data['tck_ticket_ID'] + `);" class="` + classLine + `">
-                                <td scope="row" class="text-center">` + data['tck_ticket_ID'] + `
+                                <tr id="tableLine-` + data['tck_ticket_ID'] +`" class="` + classLine + `">
+                                <td scope="row" class="text-center" onclick="clickLine(` + data['tck_ticket_ID'] + `);">` + data['tck_ticket_ID'] + `
                                     <i class="far fa-square" id="tableSquare-` + data['tck_ticket_ID'] + `" style="display:` + squareShow + `"></i>
                                     <i class="far fa-check-square" id="tableCheckSquare-` + data['tck_ticket_ID'] + `" style="display:` + checkSquareShow + `"></i>
                                 </td>
-                                <td>` + data['tck_ticket_number'] + `<br>` + data['events_description'] + `</td>
-                                <td>` + data['cst_name'] + ' ' + data['cst_surname'] + `<br>` + data['products_description'] + `</td>
-                                <td>` + data['cde_value'] + `
+                                <td>
+                                    <input type="time" id="lineTime-` + data['tck_ticket_ID'] + `"
+                                        name="lineTime-` + data['tck_ticket_ID'] + `" onclick=""
+                                        value="` + selectedTicketsVal[data['tck_ticket_ID']] + `" class="form-control">
+                                </td>
+                                <td onclick="clickLine(` + data['tck_ticket_ID'] + `);">` + data['tck_ticket_number'] + `<br>` + data['events_description'] + `</td>
+                                <td onclick="clickLine(` + data['tck_ticket_ID'] + `);">` + data['cst_name'] + ' ' + data['cst_surname'] + `<br>` + data['products_description'] + `</td>
+                                <td onclick="clickLine(` + data['tck_ticket_ID'] + `);">` + data['cde_value'] + `
                                     <input type="hidden"
                                         id="ticketRow-` + data['tck_ticket_ID'] + `"
                                         name="ticketRow-` + data['tck_ticket_ID'] + `"
@@ -300,6 +316,8 @@ $db->show_header();
 
                             while($row = $db->fetch_assoc($schTicketsResult)){
                                 echo "selectedTickets['".$row["scht_ticket_ID"]."'] = true;\n";
+                                //set the time from db
+                                echo "selectedTicketsVal[".$row['scht_ticket_ID']."] = '".$row['scht_time']."';\n";
                             }
 
                             echo "getTicketsFromApi();";

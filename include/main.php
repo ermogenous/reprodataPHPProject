@@ -839,9 +839,9 @@ class Main
         $this->admin_more_head .= "<script language=\"JavaScript\" type=\"text/javascript\" src=\"" . $file_location . "\"></script>\n";
     }
 
-    public function include_css_file($file_location)
+    public function include_css_file($file_location, $extraHtml = '')
     {
-        $this->admin_more_head .= "<link href=\"" . $file_location . "\" rel=\"stylesheet\" type=\"text/css\"/>\n";
+        $this->admin_more_head .= "<link href=\"" . $file_location . "\" rel=\"stylesheet\" type=\"text/css\" ".$extraHtml."/>\n";
     }
 
     public function enable_jquery()

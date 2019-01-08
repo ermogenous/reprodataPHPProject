@@ -38,7 +38,7 @@ function template_header()
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
                     <a class="nav-link" href="<?php echo $main["site_url"]; ?>/home.php"><i class="fas fa-home"></i>
-                        Home <span class="sr-only">(current)</span></a>
+                        <span class="sr-only">(current)</span></a>
                 </li>
                 <?php
                 if ($_SESSION[$main["environment"] . "_admin_username"] == "") {
@@ -52,7 +52,7 @@ function template_header()
                     ?>
                     <li class="nav-item">
                         <a class="nav-link" href="<?php echo $main["site_url"]; ?>/login.php?action=logout"><i
-                                    class="fas fa-sign-out-alt"></i> Logout</a>
+                                    class="fas fa-sign-out-alt"></i> </a>
                     </li>
                     <!-- CUSTOMERS -->
                     <li class="nav-item dropdown">
@@ -135,7 +135,22 @@ function template_header()
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/tickets/ticket_modify.php">
                                 <i class="fas fa-plus-circle"></i> Insert New Ticket</a>
-                            <div class="dropdown-divider"></div>
+                        </div>
+                    </li>
+
+                    <!-- Schedules -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-clipboard-list"></i> Schedules
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/schedules/my_schedule_day.php">
+                                <i class="far fa-calendar-alt"></i> My Day</a>
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/schedules/my_schedule_diary.php">
+                                <i class="far fa-calendar-alt"></i> My Calendar</a>
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/schedules/schedules.php">
                                 <i class="fas fa-eye"></i> View Schedules</a>
@@ -150,7 +165,7 @@ function template_header()
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-users"></i> Users
+                                <i class="fas fa-users"></i>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="<?php echo $main["site_url"]; ?>/users/users.php"><i

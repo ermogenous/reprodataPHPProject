@@ -15,6 +15,7 @@ $db->enable_jquery_ui();
 $db->show_header();
 
 $table = new draw_table('schedules', 'sch_schedule_ID', 'ASC');
+$table->extra_from_section = 'LEFT OUTER JOIN users ON sch_user_ID = usr_users_ID';
 $table->extras = '1=1 ';
 //filter status
 $filterStatus[0] = 'Outstanding';
@@ -54,25 +55,24 @@ if ($filterFound > 0){
 if ($_POST['search'] == 'search') {
     $db->working_section = 'Agreements Search';
     if ($_POST['search_field-id'] > 0) {
-        $table->extras .= " AND tck_ticket_ID = " . $_POST['search_field-id'];
+        $table->extras .= " AND sch_schedule_ID = " . $_POST['search_field-id'];
     } else {
-        $table->extras .= " AND (cst_identity_card LIKE '%" . $_POST['search_field'] . "%'
+        $table->extras .= " AND (
+                            usr_name LIKE '%" . $_POST['search_field'] . "%'
                             OR 
-                            cst_name LIKE '%" . $_POST['search_field'] . "%'
+                            usr_username LIKE '%" . $_POST['search_field'] . "%'
                             OR
-                            cst_surname LIKE '%" . $_POST['search_field'] . "%'
+                            usr_description LIKE '%" . $_POST['search_field'] . "%'
                             OR
-                            cst_work_tel_1 LIKE '%" . $_POST['search_field'] . "%'
+                            usr_signature_gr LIKE '%" . $_POST['search_field'] . "%'
                             OR
-                            cst_work_tel_2  LIKE '%" . $_POST['search_field'] . "%'
+                            usr_signature_en  LIKE '%" . $_POST['search_field'] . "%'
                             OR 
-                            cst_fax  LIKE '%" . $_POST['search_field'] . "%'
+                            usr_name_gr  LIKE '%" . $_POST['search_field'] . "%'
                             OR
-                            cst_mobile_1 LIKE '%" . $_POST['search_field'] . "%'
+                            usr_name_en LIKE '%" . $_POST['search_field'] . "%'
                             OR
-                            cst_mobile_2 LIKE '%" . $_POST['search_field'] . "%'
-                            OR
-                            tck_ticket_number  LIKE '%" . $_POST['search_field'] . "%')";
+                            sch_schedule_number  LIKE '%" . $_POST['search_field'] . "%')";
     }
 }
 
@@ -88,7 +88,7 @@ $table->generate_data();
         <div class="col-lg-12">
             <div class="row alert alert-success text-center">
                 <div class="col-12">
-                    Tickets
+                    Schedules
                 </div>
             </div>
 
@@ -225,7 +225,7 @@ $table->generate_data();
 </script>
 <?php
 $table->autoCompleteFieldName = 'search_field';
-$table->autoCompleteSourceAPI = "schedules_api.php?section=schedulesSearch";
+$table->autoCompleteSourceAPI = "schedule_api.php?section=schedulesSearch";
 $table->autoJsCodeHideFocus = true;
 $table->autoJsCodeAddedSelectSection = "$('#myForm').submit();";
 $table->showAutoCompleteJsCode();
