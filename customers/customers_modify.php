@@ -54,6 +54,12 @@ $db->show_header();
                            aria-controls="pills-products" aria-selected="true">Products</a>
                     </li>
 
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-groups-tab" data-toggle="pill" href="#pills-groups"
+                           role="tab"
+                           aria-controls="pills-groups" aria-selected="true">Groups</a>
+                    </li>
+
                 </ul>
 
                 <div class="tab-content" id="pills-tabContent">
@@ -268,6 +274,15 @@ $db->show_header();
                          aria-labelledby="pills-products-tab">
 
                         <iframe src="customers_products.php?cid=<?php echo $_GET["lid"]; ?>"
+                                frameborder="0"
+                                scrolling="0" width="100%" height="400"></iframe>
+
+                    </div>
+<!-- Customer Groups -->
+                    <div class="tab-pane fade show" id="pills-groups" role="tabpanel"
+                         aria-labelledby="pills-groups-tab">
+
+                        <iframe src="customers_groups_list.php?cid=<?php echo $_GET["lid"]; ?>"
                                 frameborder="0"
                                 scrolling="0" width="100%" height="400"></iframe>
 

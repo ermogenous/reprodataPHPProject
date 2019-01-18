@@ -159,6 +159,7 @@ INSERT INTO `codes` (`cde_code_ID`, `cde_type`, `cde_table_field`, `cde_table_fi
 DROP TABLE IF EXISTS `customers`;
 CREATE TABLE IF NOT EXISTS `customers` (
   `cst_customer_ID` int(8) NOT NULL AUTO_INCREMENT,
+  `cst_for_user_group_ID` int(8) DEFAULT NULL,
   `cst_identity_card` varchar(20) CHARACTER SET utf8 DEFAULT NULL,
   `cst_name` varchar(100) CHARACTER SET utf8 DEFAULT NULL,
   `cst_surname` varchar(150) CHARACTER SET utf8 DEFAULT NULL,
@@ -186,11 +187,48 @@ CREATE TABLE IF NOT EXISTS `customers` (
 
 -- Dumping data for table reprodata.customers: ~3 rows (approximately)
 /*!40000 ALTER TABLE `customers` DISABLE KEYS */;
-INSERT INTO `customers` (`cst_customer_ID`, `cst_identity_card`, `cst_name`, `cst_surname`, `cst_address_line_1`, `cst_address_line_2`, `cst_city_code_ID`, `cst_contact_person`, `cst_contact_person_title_code_ID`, `cst_work_tel_1`, `cst_work_tel_2`, `cst_fax`, `cst_mobile_1`, `cst_mobile_2`, `cst_email`, `cst_email_newsletter`, `cst_business_type_code_ID`, `cst_created_date_time`, `cst_created_by`, `cst_last_update_date_time`, `cst_last_update_by`) VALUES
-	(1, '786613', 'Michael', 'Ermogenous', 'add1', 'add2', '8', NULL, '18', '24123456', '24654321', '24010101', '99420544', '99123456', 'ermogenousm@gmail.com', 'ermogenousm@gmail.com', 5, NULL, NULL, '2018-08-31 06:46:35', 1),
-	(2, '123456', 'Giorgos', 'Georgiou', '', '', '8', '', '18', '24123456', '', '', '99123456', '', '', '', 12, '2018-08-24 00:51:42', 1, '2018-10-02 11:53:34', 1),
-	(3, '99887766', 'Andreas', 'Andreou', '', '', '7', 'Andreas', '16', '24123654', '', '', '99123654', '', '', '', 5, '2018-10-02 10:16:06', 1, NULL, NULL);
+INSERT INTO `customers` (`cst_customer_ID`, `cst_for_user_group_ID`, `cst_identity_card`, `cst_name`, `cst_surname`, `cst_address_line_1`, `cst_address_line_2`, `cst_city_code_ID`, `cst_contact_person`, `cst_contact_person_title_code_ID`, `cst_work_tel_1`, `cst_work_tel_2`, `cst_fax`, `cst_mobile_1`, `cst_mobile_2`, `cst_email`, `cst_email_newsletter`, `cst_business_type_code_ID`, `cst_created_date_time`, `cst_created_by`, `cst_last_update_date_time`, `cst_last_update_by`) VALUES
+	(1, NULL, '786613', 'Michael', 'Ermogenous', 'add1', 'add2', '8', NULL, '18', '24123456', '24654321', '24010101', '99420544', '99123456', 'ermogenousm@gmail.com', 'ermogenousm@gmail.com', 5, NULL, NULL, '2018-08-31 06:46:35', 1),
+	(2, NULL, '123456', 'Giorgos', 'Georgiou', '', '', '8', '', '18', '24123456', '', '', '99123456', '', '', '', 12, '2018-08-24 00:51:42', 1, '2018-10-02 11:53:34', 1),
+	(3, NULL, '99887766', 'Andreas', 'Andreou', '', '', '7', 'Andreas', '16', '24123654', '', '', '99123654', '', '', '', 5, '2018-10-02 10:16:06', 1, NULL, NULL);
 /*!40000 ALTER TABLE `customers` ENABLE KEYS */;
+
+-- Dumping structure for table reprodata.customer_groups
+DROP TABLE IF EXISTS `customer_groups`;
+CREATE TABLE IF NOT EXISTS `customer_groups` (
+  `csg_customer_group_ID` int(8) NOT NULL AUTO_INCREMENT,
+  `csg_for_user_group_ID` int(8) NOT NULL DEFAULT '0',
+  `csg_active` int(1) NOT NULL DEFAULT '0',
+  `csg_code` varchar(30) COLLATE utf8_bin NOT NULL DEFAULT '0',
+  `csg_description` varchar(80) COLLATE utf8_bin NOT NULL DEFAULT '0',
+  PRIMARY KEY (`csg_customer_group_ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- Dumping data for table reprodata.customer_groups: ~2 rows (approximately)
+/*!40000 ALTER TABLE `customer_groups` DISABLE KEYS */;
+INSERT INTO `customer_groups` (`csg_customer_group_ID`, `csg_for_user_group_ID`, `csg_active`, `csg_code`, `csg_description`) VALUES
+	(1, 0, 1, 'testGroup', 'A test customer Groups'),
+	(2, 0, 1, 'test2', 'Test2');
+/*!40000 ALTER TABLE `customer_groups` ENABLE KEYS */;
+
+-- Dumping structure for table reprodata.customer_group_relation
+DROP TABLE IF EXISTS `customer_group_relation`;
+CREATE TABLE IF NOT EXISTS `customer_group_relation` (
+  `cstg_customer_group_ID` int(8) NOT NULL AUTO_INCREMENT,
+  `cstg_customer_ID` int(8) NOT NULL DEFAULT '0',
+  `cstg_customer_groups_ID` int(8) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`cstg_customer_group_ID`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- Dumping data for table reprodata.customer_group_relation: ~4 rows (approximately)
+/*!40000 ALTER TABLE `customer_group_relation` DISABLE KEYS */;
+INSERT INTO `customer_group_relation` (`cstg_customer_group_ID`, `cstg_customer_ID`, `cstg_customer_groups_ID`) VALUES
+	(1, 1, 2),
+	(2, 1, 1),
+	(3, 2, 1),
+	(4, 3, 1),
+	(5, 3, 2);
+/*!40000 ALTER TABLE `customer_group_relation` ENABLE KEYS */;
 
 -- Dumping structure for table reprodata.customer_products
 DROP TABLE IF EXISTS `customer_products`;
@@ -215,6 +253,24 @@ CREATE TABLE IF NOT EXISTS `customer_products` (
 /*!40000 ALTER TABLE `customer_products` DISABLE KEYS */;
 /*!40000 ALTER TABLE `customer_products` ENABLE KEYS */;
 
+-- Dumping structure for table reprodata.ina_insurance_companies
+DROP TABLE IF EXISTS `ina_insurance_companies`;
+CREATE TABLE IF NOT EXISTS `ina_insurance_companies` (
+  `inainc_insurance_company_ID` int(8) NOT NULL AUTO_INCREMENT,
+  `inainc_code` varchar(20) COLLATE utf8_bin NOT NULL DEFAULT '0',
+  `inainc_name` varchar(50) COLLATE utf8_bin NOT NULL DEFAULT '0',
+  `inainc_country_code_ID` int(8) NOT NULL DEFAULT '0',
+  `inainc_created_date_time` datetime DEFAULT NULL,
+  `inainc_created_by` int(8) NOT NULL DEFAULT '0',
+  `inainc_last_update_date_time` datetime DEFAULT NULL,
+  `inainc_last_update_by` int(8) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`inainc_insurance_company_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- Dumping data for table reprodata.ina_insurance_companies: ~0 rows (approximately)
+/*!40000 ALTER TABLE `ina_insurance_companies` DISABLE KEYS */;
+/*!40000 ALTER TABLE `ina_insurance_companies` ENABLE KEYS */;
+
 -- Dumping structure for table reprodata.ip_locations
 DROP TABLE IF EXISTS `ip_locations`;
 CREATE TABLE IF NOT EXISTS `ip_locations` (
@@ -228,12 +284,13 @@ CREATE TABLE IF NOT EXISTS `ip_locations` (
   `ipl_provider` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
   `ipl_last_check` datetime DEFAULT NULL,
   PRIMARY KEY (`ipl_ip_location_serial`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 -- Dumping data for table reprodata.ip_locations: ~0 rows (approximately)
 /*!40000 ALTER TABLE `ip_locations` DISABLE KEYS */;
 INSERT INTO `ip_locations` (`ipl_ip_location_serial`, `ipl_ip`, `ipl_hostname`, `ipl_city`, `ipl_region`, `ipl_country`, `ipl_location`, `ipl_provider`, `ipl_last_check`) VALUES
-	(1, '::1', '', '', '', '', '', '', '2018-12-27 16:33:37');
+	(1, '::1', '', '', '', '', '', '', '2019-01-14 16:37:04'),
+	(2, '127.0.0.1', '', '', '', '', '', '', '2019-01-10 12:17:41');
 /*!40000 ALTER TABLE `ip_locations` ENABLE KEYS */;
 
 -- Dumping structure for table reprodata.log_file
@@ -251,9 +308,9 @@ CREATE TABLE IF NOT EXISTS `log_file` (
   `lgf_description` text COLLATE utf8_bin,
   PRIMARY KEY (`lgf_log_file_ID`),
   KEY `lgf_user_ID` (`lgf_user_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2221 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=2310 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- Dumping data for table reprodata.log_file: ~1,795 rows (approximately)
+-- Dumping data for table reprodata.log_file: ~1,768 rows (approximately)
 /*!40000 ALTER TABLE `log_file` DISABLE KEYS */;
 INSERT INTO `log_file` (`lgf_log_file_ID`, `lgf_user_ID`, `lgf_ip`, `lgf_date_time`, `lgf_table_name`, `lgf_row_serial`, `lgf_action`, `lgf_new_values`, `lgf_old_values`, `lgf_description`) VALUES
 	(1, 0, '::1', '2018-07-21 10:21:02', 'ip_locations', '1', 'UPDATE RECORD', 'ipl_last_check = \'2018-07-21 10:21:02\'\r\n', 'ipl_last_check = \'2018-07-05 12:15:49\'\r\n', 'UPDATE `ip_locations` SET \n`ipl_last_check` = \'2018-07-21 10:21:02\' \nWHERE ipl_ip_location_serial = 1'),
@@ -2396,7 +2453,96 @@ INSERT INTO `log_file` (`lgf_log_file_ID`, `lgf_user_ID`, `lgf_ip`, `lgf_date_ti
 	(2217, 1, '::1', '2019-01-08 13:35:42', 'CUSTOM', '0', 'Ticket API:OpenTickets GET:Array\n(\n    [section] => opentickets\n    [user] => 1\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT \r\n    *,\r\n    ( \r\n        SELECT\r\n        GROUP_CONCAT(tke_type, \' \' ,prd_model, \'<br>\')\r\n        FROM\r\n        ticket_events\r\n        JOIN unique_serials ON tke_unique_serial_ID = uqs_unique_serial_ID\r\n        JOIN products ON prd_product_ID = uqs_product_ID\r\n        WHERE\r\n        tke_ticket_ID = tck_ticket_ID\r\n    )as events_description,\r\n    (\r\n    SELECT\r\n        GROUP_CONCAT(\' \',prd_model)as value\r\n        FROM\r\n        ticket_products\r\n        JOIN products ON prd_product_ID = tkp_product_ID\r\n        WHERE\r\n        tkp_ticket_ID = tck_ticket_ID\r\n    )as products_description\r\n    FROM\r\n    tickets\r\n    JOIN customers ON cst_customer_ID = tck_customer_ID\r\n    JOIN codes ON cst_city_code_ID = cde_code_ID\r\n    WHERE\r\n    tck_status = \'Open\' AND (tck_assigned_user_ID = \'1\' OR tck_assigned_user_ID = -1)'),
 	(2218, 1, '::1', '2019-01-08 13:41:11', 'Error', '0', 'My Schedule Diary Section:', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n    [currentday] => 2019-01-08\n    [changeday] => yesterday\n)\n\\n$_POST->Array\n(\n)\n', 'SELECT * FROM \r\n                                ticket_products \r\n                                JOIN products ON prd_product_ID = tkp_product_ID\r\n                                WHERE tkp_ticket_ID = 4 \r\n                                AND tkp_ticket_event_ID = \r\n                                AND tkp_type = \'SparePart\'<hr>You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near \'AND tkp_type = \'SparePart\'\' at line 6'),
 	(2219, 1, '::1', '2019-01-08 13:41:42', 'Error', '0', 'My Schedule Diary Section:', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n    [currentday] => 2019-01-08\n    [changeday] => yesterday\n)\n\\n$_POST->Array\n(\n)\n', 'SELECT * FROM \r\n                                ticket_products \r\n                                JOIN products ON prd_product_ID = tkp_product_ID\r\n                                WHERE tkp_ticket_ID = 4 \r\n                                AND tkp_ticket_event_ID = \r\n                                AND tkp_type = \'SparePart\'<hr>You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near \'AND tkp_type = \'SparePart\'\' at line 6'),
-	(2220, 1, '::1', '2019-01-08 14:17:18', 'CUSTOM', '0', 'Ticket API:OpenTickets GET:Array\n(\n    [section] => opentickets\n    [user] => 1\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT \r\n    *,\r\n    ( \r\n        SELECT\r\n        GROUP_CONCAT(tke_type, \' \' ,prd_model, \'<br>\')\r\n        FROM\r\n        ticket_events\r\n        JOIN unique_serials ON tke_unique_serial_ID = uqs_unique_serial_ID\r\n        JOIN products ON prd_product_ID = uqs_product_ID\r\n        WHERE\r\n        tke_ticket_ID = tck_ticket_ID\r\n    )as events_description,\r\n    (\r\n    SELECT\r\n        GROUP_CONCAT(\' \',prd_model)as value\r\n        FROM\r\n        ticket_products\r\n        JOIN products ON prd_product_ID = tkp_product_ID\r\n        WHERE\r\n        tkp_ticket_ID = tck_ticket_ID\r\n    )as products_description\r\n    FROM\r\n    tickets\r\n    JOIN customers ON cst_customer_ID = tck_customer_ID\r\n    JOIN codes ON cst_city_code_ID = cde_code_ID\r\n    WHERE\r\n    tck_status = \'Open\' AND (tck_assigned_user_ID = \'1\' OR tck_assigned_user_ID = -1)');
+	(2220, 1, '::1', '2019-01-08 14:17:18', 'CUSTOM', '0', 'Ticket API:OpenTickets GET:Array\n(\n    [section] => opentickets\n    [user] => 1\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT \r\n    *,\r\n    ( \r\n        SELECT\r\n        GROUP_CONCAT(tke_type, \' \' ,prd_model, \'<br>\')\r\n        FROM\r\n        ticket_events\r\n        JOIN unique_serials ON tke_unique_serial_ID = uqs_unique_serial_ID\r\n        JOIN products ON prd_product_ID = uqs_product_ID\r\n        WHERE\r\n        tke_ticket_ID = tck_ticket_ID\r\n    )as events_description,\r\n    (\r\n    SELECT\r\n        GROUP_CONCAT(\' \',prd_model)as value\r\n        FROM\r\n        ticket_products\r\n        JOIN products ON prd_product_ID = tkp_product_ID\r\n        WHERE\r\n        tkp_ticket_ID = tck_ticket_ID\r\n    )as products_description\r\n    FROM\r\n    tickets\r\n    JOIN customers ON cst_customer_ID = tck_customer_ID\r\n    JOIN codes ON cst_city_code_ID = cde_code_ID\r\n    WHERE\r\n    tck_status = \'Open\' AND (tck_assigned_user_ID = \'1\' OR tck_assigned_user_ID = -1)'),
+	(2221, 0, '127.0.0.1', '2019-01-10 12:17:41', 'ip_locations', '2', 'INSERT RECORD', 'ipl_ip = 127.0.0.1 \r\nipl_hostname =  \r\nipl_city =  \r\nipl_region =  \r\nipl_country =  \r\nipl_location =  \r\nipl_provider =  \r\nipl_last_check = 2019-01-10 12:17:41 \r\n', '', 'INSERT INTO `ip_locations` SET \n`ipl_ip` = \'127.0.0.1\' \n , `ipl_hostname` = \'\' \n , `ipl_city` = \'\' \n , `ipl_region` = \'\' \n , `ipl_country` = \'\' \n , `ipl_location` = \'\' \n , `ipl_provider` = \'\' \n , `ipl_last_check` = \'2019-01-10 12:17:41\' \n'),
+	(2222, 1, '127.0.0.1', '2019-01-10 12:18:06', 'Error', '0', 'Customers Products Section:', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n    [cid] => \n)\n\\n$_POST->Array\n(\n)\n', 'SELECT *  FROM agreements JOIN agreement_items ON agri_agreement_ID = agr_agreement_ID\r\n                              JOIN products ON prd_product_ID = agri_product_ID WHERE agr_customer_ID =  AND agr_status = \'Active\' AND agri_status = \'Active\' ORDER BY agr_agreement_ID DESC <hr>You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near \'AND agr_status = \'Active\' AND agri_status = \'Active\' ORDER BY agr_agreement_ID D\' at line 2'),
+	(2223, 1, '127.0.0.1', '2019-01-10 12:18:18', 'customers', '4', 'INSERT RECORD', 'cst_business_type_code_ID = 12 \r\ncst_identity_card = 11 \r\ncst_name = 11 \r\ncst_surname = 11 \r\ncst_address_line_1 =  \r\ncst_address_line_2 =  \r\ncst_city_code_ID = 10 \r\ncst_contact_person =  \r\ncst_contact_person_title_code_ID = 18 \r\ncst_work_tel_1 =  \r\ncst_work_tel_2 =  \r\ncst_fax =  \r\ncst_mobile_1 =  \r\ncst_mobile_2 =  \r\ncst_email =  \r\ncst_email_newsletter =  \r\n`cst_created_date_time` = \'2019-01-10 12:18:18\'\n`cst_created_by` = \'1\'\n', '', 'INSERT INTO `customers` SET \n`cst_business_type_code_ID` = \'12\' \n , `cst_identity_card` = \'11\' \n , `cst_name` = \'11\' \n , `cst_surname` = \'11\' \n , `cst_address_line_1` = \'\' \n , `cst_address_line_2` = \'\' \n , `cst_city_code_ID` = \'10\' \n , `cst_contact_person` = \'\' \n , `cst_contact_person_title_code_ID` = \'18\' \n , `cst_work_tel_1` = \'\' \n , `cst_work_tel_2` = \'\' \n , `cst_fax` = \'\' \n , `cst_mobile_1` = \'\' \n , `cst_mobile_2` = \'\' \n , `cst_email` = \'\' \n , `cst_email_newsletter` = \'\' \n , `cst_created_date_time` = \'2019-01-10 12:18:18\' \n , `cst_created_by` = \'1\' \n'),
+	(2224, 1, '127.0.0.1', '2019-01-10 12:19:39', 'CUSTOM', '0', 'Ticket API:OpenTickets GET:Array\n(\n    [section] => opentickets\n    [user] => 1\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT \r\n    *,\r\n    ( \r\n        SELECT\r\n        GROUP_CONCAT(tke_type, \' \' ,prd_model, \'<br>\')\r\n        FROM\r\n        ticket_events\r\n        JOIN unique_serials ON tke_unique_serial_ID = uqs_unique_serial_ID\r\n        JOIN products ON prd_product_ID = uqs_product_ID\r\n        WHERE\r\n        tke_ticket_ID = tck_ticket_ID\r\n    )as events_description,\r\n    (\r\n    SELECT\r\n        GROUP_CONCAT(\' \',prd_model)as value\r\n        FROM\r\n        ticket_products\r\n        JOIN products ON prd_product_ID = tkp_product_ID\r\n        WHERE\r\n        tkp_ticket_ID = tck_ticket_ID\r\n    )as products_description\r\n    FROM\r\n    tickets\r\n    JOIN customers ON cst_customer_ID = tck_customer_ID\r\n    JOIN codes ON cst_city_code_ID = cde_code_ID\r\n    WHERE\r\n    tck_status = \'Open\' AND (tck_assigned_user_ID = \'1\' OR tck_assigned_user_ID = -1)'),
+	(2225, 1, '127.0.0.1', '2019-01-10 12:25:17', 'customers', '4', 'DELETE RECORD', '', 'cst_customer_ID = 4\r\n		cst_identity_card = 11\r\n		cst_name = 11\r\n		cst_surname = 11\r\n		cst_address_line_1 = \r\n		cst_address_line_2 = \r\n		cst_city_code_ID = 10\r\n		cst_contact_person = \r\n		cst_contact_person_title_code_ID = 18\r\n		cst_work_tel_1 = \r\n		cst_work_tel_2 = \r\n		cst_fax = \r\n		cst_mobile_1 = \r\n		cst_mobile_2 = \r\n		cst_email = \r\n		cst_email_newsletter = \r\n		cst_business_type_code_ID = 12\r\n		cst_created_date_time = 2019-01-10 12:18:18\r\n		cst_created_by = 1\r\n		cst_last_update_date_time = \r\n		cst_last_update_by = \r\n		', ''),
+	(2226, 0, '::1', '2019-01-14 16:37:04', 'ip_locations', '1', 'UPDATE RECORD', 'ipl_last_check = \'2019-01-14 16:37:04\'\r\n', 'ipl_last_check = \'2018-12-27 16:33:37\'\r\n', 'UPDATE `ip_locations` SET \n`ipl_last_check` = \'2019-01-14 16:37:04\' \nWHERE ipl_ip_location_serial = 1'),
+	(2227, 1, '::1', '2019-01-14 17:03:28', 'settings', '21', 'INSERT RECORD', 'stg_section = stk_stock_enable \r\nstg_value = 1 \r\n', '', 'INSERT INTO `settings` SET \n`stg_section` = \'stk_stock_enable\' \n , `stg_value` = \'1\' \n'),
+	(2228, 1, '::1', '2019-01-14 17:18:00', 'Error', '0', 'Customers Products Section:', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n    [cid] => \n)\n\\n$_POST->Array\n(\n)\n', 'SELECT *  FROM agreements JOIN agreement_items ON agri_agreement_ID = agr_agreement_ID\r\n                              JOIN products ON prd_product_ID = agri_product_ID WHERE agr_customer_ID =  AND agr_status = \'Active\' AND agri_status = \'Active\' ORDER BY agr_agreement_ID DESC <hr>You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near \'AND agr_status = \'Active\' AND agri_status = \'Active\' ORDER BY agr_agreement_ID D\' at line 2'),
+	(2229, 1, '::1', '2019-01-14 17:22:30', 'customer_groups', '1', 'INSERT RECORD', 'csg_active = 0 \r\ncsg_code = testGroup \r\ncsg_description = A test customer Group \r\n', '', 'INSERT INTO `customer_groups` SET \n`csg_active` = \'0\' \n , `csg_code` = \'testGroup\' \n , `csg_description` = \'A test customer Group\' \n'),
+	(2230, 1, '::1', '2019-01-14 17:26:29', 'Error', '0', 'Reprodata Development Section:Customer Groups API', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n    [section] => customers_groups_search\n    [term] => tes\n)\n\\n$_POST->Array\n(\n)\n', 'SELECT \r\n              csg_customer_group_ID as value, \r\n              CONCAT(csg_code, \' \', csg_description) as label,\r\n              csg_active as clo_active\r\n               FROM customer_groups WHERE \r\n              (\r\n            CONCAT(csg_code, \' \', csg_description) LIKE \'%tes%\'\r\n	LIMIT 0,25<hr>You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near \'LIMIT 0,25\' at line 8'),
+	(2231, 1, '::1', '2019-01-14 17:28:08', 'CUSTOM', '0', 'Customer Groups API:none GET:Array\n(\n    [section] => customers_groups_search\n    [term] => tes\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT \r\n              csg_customer_group_ID as value, \r\n              CONCAT(csg_code, \' \', csg_description) as label,\r\n              csg_active as clo_active\r\n              FROM customer_groups WHERE \r\n                CONCAT(csg_code, \' \', csg_description) LIKE \'%tes%\'\r\n	          LIMIT 0,25'),
+	(2232, 1, '::1', '2019-01-14 17:29:14', 'CUSTOM', '0', 'Customer Groups API:none GET:Array\n(\n    [section] => customers_groups_search\n    [term] => test\n)\n', 'CUSTOM', 'CUSTOM', 'SELECT \r\n              csg_customer_group_ID as value, \r\n              CONCAT(csg_code, \' \', csg_description) as label,\r\n              csg_active as clo_active\r\n              FROM customer_groups WHERE \r\n                CONCAT(csg_code, \' \', csg_description) LIKE \'%test%\'\r\n	          LIMIT 0,25'),
+	(2233, 1, '::1', '2019-01-14 17:29:27', 'customer_groups', '1', 'UPDATE RECORD', 'csg_description = \'A test customer Groups\'\r\n', 'csg_description = \'A test customer Group\'\r\n', 'UPDATE `customer_groups` SET \n`csg_description` = \'A test customer Groups\' \nWHERE `csg_customer_group_ID` = 1'),
+	(2234, 1, '::1', '2019-01-14 18:51:50', 'Error', '0', 'Customers Groups List Section:', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n    [cid] => 1\n)\n\\n$_POST->Array\n(\n)\n', 'SELECT *  FROM customer_group_relation JOIN customer_groups ON cstg_customer_groups_ID = csg_customer_group_ID WHERE  csg_status = \'Active\' AND cstg_customer_ID = 1 ORDER BY cstg_customer_group_ID ASC <hr>Unknown column \'csg_status\' in \'where clause\''),
+	(2235, 1, '::1', '2019-01-14 19:01:48', 'customer_groups', '1', 'UPDATE RECORD', 'csg_active = \'1\'\r\n', 'csg_active = \'0\'\r\n', 'UPDATE `customer_groups` SET \n`csg_active` = \'1\' \nWHERE `csg_customer_group_ID` = 1'),
+	(2236, 1, '::1', '2019-01-14 19:08:59', 'customer_group_relation', '1', 'INSERT RECORD', 'cstg_customer_groups_ID = 1 \r\ncstg_customer_ID = 1 \r\n', '', 'INSERT INTO `customer_group_relation` SET \n`cstg_customer_groups_ID` = \'1\' \n , `cstg_customer_ID` = \'1\' \n'),
+	(2237, 1, '::1', '2019-01-14 19:13:41', 'customer_groups', '2', 'INSERT RECORD', 'csg_active = 1 \r\ncsg_code = test2 \r\ncsg_description = Test2 \r\n', '', 'INSERT INTO `customer_groups` SET \n`csg_active` = \'1\' \n , `csg_code` = \'test2\' \n , `csg_description` = \'Test2\' \n'),
+	(2238, 1, '::1', '2019-01-14 19:15:52', 'Error', '0', 'Customers Groups List Section:', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n    [cid] => \n)\n\\n$_POST->Array\n(\n)\n', 'SELECT *  FROM customer_group_relation JOIN customer_groups ON cstg_customer_groups_ID = csg_customer_group_ID WHERE  csg_active = 1 AND cstg_customer_ID =  ORDER BY cstg_customer_group_ID ASC <hr>You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near \'ORDER BY cstg_customer_group_ID ASC\' at line 1'),
+	(2239, 1, '::1', '2019-01-14 19:16:04', 'Error', '0', 'Customers Groups List Section:', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n    [cid] => \n)\n\\n$_POST->Array\n(\n)\n', 'SELECT *  FROM customer_group_relation JOIN customer_groups ON cstg_customer_groups_ID = csg_customer_group_ID WHERE  csg_active = 1 AND cstg_customer_ID =  ORDER BY cstg_customer_group_ID ASC <hr>You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near \'ORDER BY cstg_customer_group_ID ASC\' at line 1'),
+	(2240, 1, '::1', '2019-01-14 19:21:55', 'Error', '0', 'Customer Products Modify Section:', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n    [cid] => 1\n    [lid] => 1\n)\n\\n$_POST->Array\n(\n)\n', 'SELECT * FROM customer_groups WHERE csg_customer_group_ID = <hr>You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near \'\' at line 1'),
+	(2241, 1, '::1', '2019-01-14 19:24:20', 'customer_group_relation', '1', 'UPDATE RECORD', 'cstg_customer_groups_ID = \'2\'\r\n', 'cstg_customer_groups_ID = \'1\'\r\n', 'UPDATE `customer_group_relation` SET \n`cstg_customer_groups_ID` = \'2\' \nWHERE `cstg_customer_group_ID` = 1'),
+	(2242, 1, '::1', '2019-01-14 19:24:33', 'customer_group_relation', '2', 'INSERT RECORD', 'cstg_customer_groups_ID = 1 \r\ncstg_customer_ID = 1 \r\n', '', 'INSERT INTO `customer_group_relation` SET \n`cstg_customer_groups_ID` = \'1\' \n , `cstg_customer_ID` = \'1\' \n'),
+	(2243, 1, '::1', '2019-01-14 19:30:24', 'customer_group_relation', '3', 'INSERT RECORD', 'cstg_customer_groups_ID = 1 \r\ncstg_customer_ID = 2 \r\n', '', 'INSERT INTO `customer_group_relation` SET \n`cstg_customer_groups_ID` = \'1\' \n , `cstg_customer_ID` = \'2\' \n'),
+	(2244, 1, '::1', '2019-01-14 19:30:37', 'customer_group_relation', '4', 'INSERT RECORD', 'cstg_customer_groups_ID = 1 \r\ncstg_customer_ID = 3 \r\n', '', 'INSERT INTO `customer_group_relation` SET \n`cstg_customer_groups_ID` = \'1\' \n , `cstg_customer_ID` = \'3\' \n'),
+	(2245, 1, '::1', '2019-01-14 19:30:41', 'customer_group_relation', '5', 'INSERT RECORD', 'cstg_customer_groups_ID = 2 \r\ncstg_customer_ID = 3 \r\n', '', 'INSERT INTO `customer_group_relation` SET \n`cstg_customer_groups_ID` = \'2\' \n , `cstg_customer_ID` = \'3\' \n'),
+	(2246, 1, '::1', '2019-01-14 21:35:38', 'settings', '22', 'INSERT RECORD', 'stg_section = cst_customer_per_user \r\nstg_value = forAll \r\n', '', 'INSERT INTO `settings` SET \n`stg_section` = \'cst_customer_per_user\' \n , `stg_value` = \'forAll\' \n'),
+	(2247, 1, '::1', '2019-01-14 21:36:10', 'settings', '', 'UPDATE RECORD', 'stg_value = \'perUser\'\r\n', 'stg_value = \'forAll\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'perUser\' \nWHERE stg_section = \'cst_customer_per_user\''),
+	(2248, 1, '::1', '2019-01-14 21:45:38', 'Error', '0', 'Customers Section:', 'User[ID]:Michael Ermogenous[1]', '$_GET->Array\n(\n)\n\\n$_POST->Array\n(\n)\n', 'SELECT *  FROM customers  WHERE cst_for_user_ID = 1 ORDER BY cst_customer_ID ASC <hr>Unknown column \'cst_for_user_ID\' in \'where clause\''),
+	(2249, 1, '::1', '2019-01-14 21:56:01', 'settings', '', 'UPDATE RECORD', 'stg_fetch_on_startup = \'0\'\r\n', 'stg_fetch_on_startup = \'1\'\r\n', 'UPDATE `settings` SET \n`stg_fetch_on_startup` = \'0\' \nWHERE stg_section = \'cst_customer_per_user\''),
+	(2250, 1, '::1', '2019-01-14 21:58:47', 'settings', '', 'UPDATE RECORD', 'stg_fetch_on_startup = \'1\'\r\n', 'stg_fetch_on_startup = \'0\'\r\n', 'UPDATE `settings` SET \n`stg_fetch_on_startup` = \'1\' \nWHERE stg_section = \'layout_show_footer_stats\''),
+	(2251, 1, '::1', '2019-01-14 21:59:21', 'settings', '', 'UPDATE RECORD', 'stg_fetch_on_startup = \'0\'\r\n', 'stg_fetch_on_startup = \'1\'\r\n', 'UPDATE `settings` SET \n`stg_fetch_on_startup` = \'0\' \nWHERE stg_section = \'layout_show_footer_stats\''),
+	(2252, 1, '::1', '2019-01-14 22:00:19', 'settings', '', 'UPDATE RECORD', 'stg_fetch_on_startup = \'1\'\r\n', 'stg_fetch_on_startup = \'0\'\r\n', 'UPDATE `settings` SET \n`stg_fetch_on_startup` = \'1\' \nWHERE stg_section = \'stk_stock_enable\''),
+	(2253, 1, '::1', '2019-01-14 22:00:30', 'settings', '', 'UPDATE RECORD', 'stg_fetch_on_startup = \'1\'\r\n', 'stg_fetch_on_startup = \'0\'\r\n', 'UPDATE `settings` SET \n`stg_fetch_on_startup` = \'1\' \nWHERE stg_section = \'layout_show_footer_stats\''),
+	(2254, 1, '::1', '2019-01-14 22:01:57', 'settings', '', 'UPDATE RECORD', 'stg_fetch_on_startup = \'1\'\r\n', 'stg_fetch_on_startup = \'0\'\r\n', 'UPDATE `settings` SET \n`stg_fetch_on_startup` = \'1\' \nWHERE stg_section = \'agr_agreement_number_prefix\''),
+	(2255, 1, '::1', '2019-01-14 22:03:27', 'settings', '', 'UPDATE RECORD', 'stg_fetch_on_startup = \'1\'\r\n', 'stg_fetch_on_startup = \'0\'\r\n', 'UPDATE `settings` SET \n`stg_fetch_on_startup` = \'1\' \nWHERE stg_section = \'cst_customer_per_user\''),
+	(2256, 1, '::1', '2019-01-14 22:08:52', 'settings', '23', 'INSERT RECORD', 'stg_section = cst_admin_customers \r\nstg_value = viewAll \r\n', '', 'INSERT INTO `settings` SET \n`stg_section` = \'cst_admin_customers\' \n , `stg_value` = \'viewAll\' \n'),
+	(2257, 1, '::1', '2019-01-14 22:10:25', 'settings', '', 'UPDATE RECORD', 'stg_fetch_on_startup = \'1\'\r\n', 'stg_fetch_on_startup = \'0\'\r\n', 'UPDATE `settings` SET \n`stg_fetch_on_startup` = \'1\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2258, 1, '::1', '2019-01-14 22:10:33', 'settings', '', 'UPDATE RECORD', 'stg_fetch_on_startup = \'0\'\r\n', 'stg_fetch_on_startup = \'1\'\r\n', 'UPDATE `settings` SET \n`stg_fetch_on_startup` = \'0\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2259, 1, '::1', '2019-01-14 22:10:36', 'settings', '', 'UPDATE RECORD', 'stg_fetch_on_startup = \'1\'\r\n', 'stg_fetch_on_startup = \'0\'\r\n', 'UPDATE `settings` SET \n`stg_fetch_on_startup` = \'1\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2260, 1, '::1', '2019-01-14 22:12:02', 'settings', '', 'UPDATE RECORD', 'stg_value = \'own\'\r\n', 'stg_value = \'viewAll\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'own\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2261, 1, '::1', '2019-01-14 22:13:18', 'settings', '', 'UPDATE RECORD', 'stg_value = \'viewAll\'\r\n', 'stg_value = \'own\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'viewAll\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2262, 1, '::1', '2019-01-14 22:27:40', 'settings', '24', 'INSERT RECORD', 'stg_section = admin_imitate_user \r\nstg_value = No \r\nstg_fetch_on_startup = 1 \r\n', '', 'INSERT INTO `settings` SET \n`stg_section` = \'admin_imitate_user\' \n , `stg_value` = \'No\' \n , `stg_fetch_on_startup` = \'1\' \n'),
+	(2263, 1, '::1', '2019-01-14 22:27:40', 'settings', '', 'UPDATE RECORD', 'stg_value = \'own\'\r\n', 'stg_value = \'viewAll\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'own\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2264, 1, '::1', '2019-01-14 22:27:54', 'settings', '', 'UPDATE RECORD', 'stg_value = \'4\'\r\n', 'stg_value = \'No\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'4\' \nWHERE stg_section = \'admin_imitate_user\''),
+	(2265, 1, '::1', '2019-01-14 22:27:54', 'settings', '', 'UPDATE RECORD', 'stg_value = \'viewAll\'\r\n', 'stg_value = \'own\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'viewAll\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2266, 4, '::1', '2019-01-14 22:39:07', 'settings', '', 'UPDATE RECORD', 'stg_value = \'No\'\r\n', 'stg_value = \'4\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'No\' \nWHERE stg_section = \'admin_imitate_user\''),
+	(2267, 4, '::1', '2019-01-14 22:39:07', 'settings', '', 'UPDATE RECORD', 'stg_value = \'own\'\r\n', 'stg_value = \'viewAll\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'own\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2268, 1, '::1', '2019-01-14 22:39:52', 'settings', '', 'UPDATE RECORD', 'stg_value = \'No\'\r\n', 'stg_value = \'Yes\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'No\' \nWHERE stg_section = \'layout_show_footer_stats\''),
+	(2269, 1, '::1', '2019-01-14 22:39:52', 'settings', '', 'UPDATE RECORD', 'stg_value = \'viewAll\'\r\n', 'stg_value = \'own\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'viewAll\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2270, 1, '::1', '2019-01-14 22:40:13', 'settings', '', 'UPDATE RECORD', 'stg_value = \'Yes\'\r\n', 'stg_value = \'No\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'Yes\' \nWHERE stg_section = \'layout_show_footer_stats\''),
+	(2271, 1, '::1', '2019-01-14 22:40:13', 'settings', '', 'UPDATE RECORD', 'stg_value = \'own\'\r\n', 'stg_value = \'viewAll\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'own\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2272, 1, '::1', '2019-01-14 22:40:17', 'settings', '', 'UPDATE RECORD', 'stg_value = \'2\'\r\n', 'stg_value = \'No\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'2\' \nWHERE stg_section = \'admin_imitate_user\''),
+	(2273, 1, '::1', '2019-01-14 22:40:17', 'settings', '', 'UPDATE RECORD', 'stg_value = \'viewAll\'\r\n', 'stg_value = \'own\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'viewAll\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2274, 2, '::1', '2019-01-14 22:41:49', 'settings', '', 'UPDATE RECORD', 'stg_value = \'own\'\r\n', 'stg_value = \'viewAll\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'own\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2275, 2, '::1', '2019-01-14 22:44:41', 'settings', '', 'UPDATE RECORD', 'stg_value = \'No\'\r\n', 'stg_value = \'2\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'No\' \nWHERE stg_section = \'admin_imitate_user\''),
+	(2276, 2, '::1', '2019-01-14 22:44:41', 'settings', '', 'UPDATE RECORD', 'stg_value = \'viewAll\'\r\n', 'stg_value = \'own\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'viewAll\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2277, 1, '::1', '2019-01-14 22:47:07', 'settings', '', 'UPDATE RECORD', 'stg_value = \'3\'\r\n', 'stg_value = \'No\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'3\' \nWHERE stg_section = \'admin_imitate_user\''),
+	(2278, 1, '::1', '2019-01-14 22:47:07', 'settings', '', 'UPDATE RECORD', 'stg_value = \'own\'\r\n', 'stg_value = \'viewAll\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'own\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2279, 3, '::1', '2019-01-16 14:45:04', 'settings', '', 'UPDATE RECORD', 'stg_value = \'No\'\r\n', 'stg_value = \'3\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'No\' \nWHERE stg_section = \'admin_imitate_user\''),
+	(2280, 3, '::1', '2019-01-16 14:45:04', 'settings', '', 'UPDATE RECORD', 'stg_value = \'viewAll\'\r\n', 'stg_value = \'own\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'viewAll\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2281, 1, '::1', '2019-01-16 14:54:17', 'settings', '', 'UPDATE RECORD', 'stg_value = \'own\'\r\n', 'stg_value = \'viewAll\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'own\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2282, 1, '::1', '2019-01-16 14:54:17', 'settings', '25', 'INSERT RECORD', 'stg_section = ina_enable_agent_insurance \r\nstg_value = 1 \r\nstg_fetch_on_startup = 1 \r\n', '', 'INSERT INTO `settings` SET \n`stg_section` = \'ina_enable_agent_insurance\' \n , `stg_value` = \'1\' \n , `stg_fetch_on_startup` = \'1\' \n'),
+	(2283, 1, '::1', '2019-01-16 14:56:15', 'settings', '', 'UPDATE RECORD', 'stg_value = \'viewAll\'\r\n', 'stg_value = \'own\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'viewAll\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2284, 1, '::1', '2019-01-16 15:07:46', 'settings', '', 'UPDATE RECORD', 'stg_value = \'own\'\r\n', 'stg_value = \'viewAll\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'own\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2285, 1, '::1', '2019-01-16 15:07:53', 'settings', '', 'UPDATE RECORD', 'stg_value = \'viewAll\'\r\n', 'stg_value = \'own\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'viewAll\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2286, 1, '::1', '2019-01-16 15:08:27', 'settings', '', 'UPDATE RECORD', 'stg_value = \'own\'\r\n', 'stg_value = \'viewAll\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'own\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2287, 1, '::1', '2019-01-16 15:08:39', 'settings', '', 'UPDATE RECORD', 'stg_value = \'viewAll\'\r\n', 'stg_value = \'own\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'viewAll\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2288, 1, '::1', '2019-01-16 15:09:20', 'settings', '', 'UPDATE RECORD', 'stg_value = \'own\'\r\n', 'stg_value = \'viewAll\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'own\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2289, 1, '::1', '2019-01-16 15:09:31', 'settings', '', 'UPDATE RECORD', 'stg_value = \'viewAll\'\r\n', 'stg_value = \'own\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'viewAll\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2290, 1, '::1', '2019-01-16 15:09:47', 'settings', '', 'UPDATE RECORD', 'stg_value = \'own\'\r\n', 'stg_value = \'viewAll\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'own\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2291, 1, '::1', '2019-01-16 15:12:18', 'settings', '', 'UPDATE RECORD', 'stg_value = \'viewAll\'\r\n', 'stg_value = \'own\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'viewAll\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2292, 1, '::1', '2019-01-16 15:12:18', 'settings', '', 'UPDATE RECORD', 'stg_value = \'0\'\r\n', 'stg_value = \'1\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'0\' \nWHERE stg_section = \'ina_enable_agent_insurance\''),
+	(2293, 1, '::1', '2019-01-16 15:12:25', 'settings', '', 'UPDATE RECORD', 'stg_value = \'own\'\r\n', 'stg_value = \'viewAll\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'own\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2294, 1, '::1', '2019-01-16 15:12:25', 'settings', '', 'UPDATE RECORD', 'stg_value = \'1\'\r\n', 'stg_value = \'0\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'1\' \nWHERE stg_section = \'ina_enable_agent_insurance\''),
+	(2295, 1, '::1', '2019-01-16 15:18:37', 'settings', '', 'UPDATE RECORD', 'stg_value = \'viewAll\'\r\n', 'stg_value = \'own\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'viewAll\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2296, 1, '::1', '2019-01-16 15:18:43', 'settings', '', 'UPDATE RECORD', 'stg_value = \'own\'\r\n', 'stg_value = \'viewAll\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'own\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2297, 1, '::1', '2019-01-16 15:18:43', 'settings', '', 'UPDATE RECORD', 'stg_value = \'0\'\r\n', 'stg_value = \'1\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'0\' \nWHERE stg_section = \'ina_enable_agent_insurance\''),
+	(2298, 1, '::1', '2019-01-16 15:22:06', 'settings', '', 'UPDATE RECORD', 'stg_value = \'0\'\r\n', 'stg_value = \'1\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'0\' \nWHERE stg_section = \'stk_stock_enable\''),
+	(2299, 1, '::1', '2019-01-16 15:22:06', 'settings', '', 'UPDATE RECORD', 'stg_value = \'viewAll\'\r\n', 'stg_value = \'own\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'viewAll\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2300, 1, '::1', '2019-01-16 15:22:14', 'settings', '', 'UPDATE RECORD', 'stg_value = \'1\'\r\n', 'stg_value = \'0\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'1\' \nWHERE stg_section = \'stk_stock_enable\''),
+	(2301, 1, '::1', '2019-01-16 15:22:14', 'settings', '', 'UPDATE RECORD', 'stg_value = \'own\'\r\n', 'stg_value = \'viewAll\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'own\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2302, 1, '::1', '2019-01-16 15:22:14', 'settings', '', 'UPDATE RECORD', 'stg_value = \'1\'\r\n', 'stg_value = \'0\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'1\' \nWHERE stg_section = \'ina_enable_agent_insurance\''),
+	(2303, 1, '::1', '2019-01-16 15:22:41', 'settings', '', 'UPDATE RECORD', 'stg_value = \'viewAll\'\r\n', 'stg_value = \'own\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'viewAll\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2304, 1, '::1', '2019-01-16 15:22:49', 'settings', '', 'UPDATE RECORD', 'stg_value = \'own\'\r\n', 'stg_value = \'viewAll\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'own\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2305, 1, '::1', '2019-01-16 15:22:49', 'settings', '', 'UPDATE RECORD', 'stg_value = \'0\'\r\n', 'stg_value = \'1\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'0\' \nWHERE stg_section = \'ina_enable_agent_insurance\''),
+	(2306, 1, '::1', '2019-01-16 15:22:52', 'settings', '', 'UPDATE RECORD', 'stg_value = \'viewAll\'\r\n', 'stg_value = \'own\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'viewAll\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2307, 1, '::1', '2019-01-16 15:23:06', 'settings', '', 'UPDATE RECORD', 'stg_value = \'own\'\r\n', 'stg_value = \'viewAll\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'own\' \nWHERE stg_section = \'cst_admin_customers\''),
+	(2308, 1, '::1', '2019-01-16 15:23:06', 'settings', '', 'UPDATE RECORD', 'stg_value = \'1\'\r\n', 'stg_value = \'0\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'1\' \nWHERE stg_section = \'ina_enable_agent_insurance\''),
+	(2309, 1, '::1', '2019-01-16 15:27:05', 'settings', '', 'UPDATE RECORD', 'stg_value = \'viewAll\'\r\n', 'stg_value = \'own\'\r\n', 'UPDATE `settings` SET \n`stg_value` = \'viewAll\' \nWHERE stg_section = \'cst_admin_customers\'');
 /*!40000 ALTER TABLE `log_file` ENABLE KEYS */;
 
 -- Dumping structure for table reprodata.manufacturers
@@ -2643,7 +2789,7 @@ CREATE TABLE IF NOT EXISTS `schedule_ticket` (
   PRIMARY KEY (`scht_schedule_ticket_ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- Dumping data for table reprodata.schedule_ticket: ~6 rows (approximately)
+-- Dumping data for table reprodata.schedule_ticket: ~5 rows (approximately)
 /*!40000 ALTER TABLE `schedule_ticket` DISABLE KEYS */;
 INSERT INTO `schedule_ticket` (`scht_schedule_ticket_ID`, `scht_schedule_ID`, `scht_ticket_ID`, `scht_time`) VALUES
 	(4, 2, 4, '14:00:00'),
@@ -2703,32 +2849,38 @@ CREATE TABLE IF NOT EXISTS `settings` (
   `stg_section` varchar(50) CHARACTER SET utf8 NOT NULL,
   `stg_value` varchar(250) CHARACTER SET utf8 NOT NULL,
   `stg_value_date` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `stg_fetch_on_startup` int(1) DEFAULT '0',
   PRIMARY KEY (`stg_settings_ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=21 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- Dumping data for table reprodata.settings: ~17 rows (approximately)
+-- Dumping data for table reprodata.settings: ~25 rows (approximately)
 /*!40000 ALTER TABLE `settings` DISABLE KEYS */;
-INSERT INTO `settings` (`stg_settings_ID`, `stg_section`, `stg_value`, `stg_value_date`) VALUES
-	(1, 'admin_default_layout', 'generic', NULL),
-	(2, 'user_levels_extra_1_name', 'Agents No Group Option', '2018-04-18 12:41:59'),
-	(3, 'user_levels_extra_2_name', 'User 2', '2018-04-12 12:55:31'),
-	(4, 'user_levels_extra_3_name', 'User 3', '2018-04-12 12:55:34'),
-	(5, 'user_levels_extra_4_name', 'User 4', '2018-04-12 12:55:36'),
-	(6, 'user_levels_extra_5_name', 'User 5', '2018-04-12 12:55:38'),
-	(7, 'user_levels_extra_6_name', 'User 6', '2018-04-12 12:55:41'),
-	(8, 'stk_active_month', '8', '2018-08-21 13:43:27'),
-	(9, 'stk_active_year', '2018', NULL),
-	(10, 'agr_agreement_number_prefix', 'AGR-', '2018-09-20 11:21:49'),
-	(11, 'agr_agreement_number_last_used', '77', '2018-12-12 16:06:19'),
-	(12, 'agr_agreement_number_leading_zeros', '6', '2018-09-21 18:05:59'),
-	(13, 'agr_agreement_status_on_insert', 'Pending', '2018-11-14 15:00:00'),
-	(14, 'layout_show_footer_stats', 'Yes', '2018-11-14 15:01:29'),
-	(15, 'tck_ticket_number_prefix', 'TCK-', NULL),
-	(16, 'tck_ticket_number_leading_zeros', '6', NULL),
-	(17, 'tck_ticket_number_last_used', '7', '2019-01-04 17:32:29'),
-	(18, 'sch_schedule_number_prefix', 'SCH-', NULL),
-	(19, 'sch_schedule_number_leading_zeros', '6', NULL),
-	(20, 'sch_schedule_number_last_used', '12', '2019-01-04 18:52:35');
+INSERT INTO `settings` (`stg_settings_ID`, `stg_section`, `stg_value`, `stg_value_date`, `stg_fetch_on_startup`) VALUES
+	(1, 'admin_default_layout', 'generic', NULL, 0),
+	(2, 'user_levels_extra_1_name', 'Agents No Group Option', '2018-04-18 12:41:59', 0),
+	(3, 'user_levels_extra_2_name', 'User 2', '2018-04-12 12:55:31', 0),
+	(4, 'user_levels_extra_3_name', 'User 3', '2018-04-12 12:55:34', 0),
+	(5, 'user_levels_extra_4_name', 'User 4', '2018-04-12 12:55:36', 0),
+	(6, 'user_levels_extra_5_name', 'User 5', '2018-04-12 12:55:38', 0),
+	(7, 'user_levels_extra_6_name', 'User 6', '2018-04-12 12:55:41', 0),
+	(8, 'stk_active_month', '8', '2018-08-21 13:43:27', 0),
+	(9, 'stk_active_year', '2018', NULL, 0),
+	(10, 'agr_agreement_number_prefix', 'AGR-', '2019-01-14 22:01:57', 1),
+	(11, 'agr_agreement_number_last_used', '77', '2018-12-12 16:06:19', 0),
+	(12, 'agr_agreement_number_leading_zeros', '6', '2018-09-21 18:05:59', 0),
+	(13, 'agr_agreement_status_on_insert', 'Pending', '2018-11-14 15:00:00', 0),
+	(14, 'layout_show_footer_stats', 'Yes', '2019-01-14 22:40:13', 1),
+	(15, 'tck_ticket_number_prefix', 'TCK-', NULL, 0),
+	(16, 'tck_ticket_number_leading_zeros', '6', NULL, 0),
+	(17, 'tck_ticket_number_last_used', '7', '2019-01-04 17:32:29', 0),
+	(18, 'sch_schedule_number_prefix', 'SCH-', NULL, 0),
+	(19, 'sch_schedule_number_leading_zeros', '6', NULL, 0),
+	(20, 'sch_schedule_number_last_used', '12', '2019-01-04 18:52:35', 0),
+	(21, 'stk_stock_enable', '1', '2019-01-16 15:22:14', 1),
+	(22, 'cst_customer_per_user', 'perUser', '2019-01-14 22:03:27', 1),
+	(23, 'cst_admin_customers', 'viewAll', '2019-01-16 15:27:05', 1),
+	(24, 'admin_imitate_user', 'No', '2019-01-16 14:45:04', 1),
+	(25, 'ina_enable_agent_insurance', '1', '2019-01-16 15:23:06', 1);
 /*!40000 ALTER TABLE `settings` ENABLE KEYS */;
 
 -- Dumping structure for table reprodata.stock
@@ -2752,7 +2904,7 @@ CREATE TABLE IF NOT EXISTS `stock` (
   KEY `yearPeriod` (`stk_month`,`stk_year`)
 ) ENGINE=InnoDB AUTO_INCREMENT=147 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- Dumping data for table reprodata.stock: ~84 rows (approximately)
+-- Dumping data for table reprodata.stock: ~105 rows (approximately)
 /*!40000 ALTER TABLE `stock` DISABLE KEYS */;
 INSERT INTO `stock` (`stk_stock_ID`, `stk_product_ID`, `stk_type`, `stk_description`, `stk_status`, `stk_add_minus`, `stk_amount`, `stk_date_time`, `stk_month`, `stk_year`, `stk_created_date_time`, `stk_created_by`, `stk_last_update_date_time`, `stk_last_update_by`) VALUES
 	(21, 1, 'Transaction', 'Initial', 'Pending', 1, 5, '2018-10-02 10:42:27', 10, 2018, '2018-10-02 10:42:27', 1, NULL, NULL),
@@ -2936,7 +3088,7 @@ CREATE TABLE IF NOT EXISTS `ticket_products` (
   PRIMARY KEY (`tkp_ticket_product_ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
--- Dumping data for table reprodata.ticket_products: ~8 rows (approximately)
+-- Dumping data for table reprodata.ticket_products: ~13 rows (approximately)
 /*!40000 ALTER TABLE `ticket_products` DISABLE KEYS */;
 INSERT INTO `ticket_products` (`tkp_ticket_product_ID`, `tkp_ticket_ID`, `tkp_product_ID`, `tkp_ticket_event_ID`, `tkp_type`, `tkp_amount`, `tkp_created_date_time`, `tkp_created_by`, `tkp_last_update_date_time`, `tkp_last_update_by`) VALUES
 	(13, 1, 2, 3, 'SparePart', 1, NULL, NULL, NULL, NULL),
@@ -3048,6 +3200,25 @@ INSERT INTO `users_groups` (`usg_users_groups_ID`, `usg_group_name`, `usg_permis
 	(3, 'Agents', '', '', NULL),
 	(4, 'Michael', '', '', '');
 /*!40000 ALTER TABLE `users_groups` ENABLE KEYS */;
+
+-- Dumping structure for table reprodata.user_settings
+DROP TABLE IF EXISTS `user_settings`;
+CREATE TABLE IF NOT EXISTS `user_settings` (
+  `usrst_user_settings_ID` int(8) NOT NULL AUTO_INCREMENT,
+  `usrst_for_user_ID` int(8) NOT NULL DEFAULT '0' COMMENT 'if -1 then default',
+  `usrst_section` varchar(20) COLLATE utf8_bin NOT NULL DEFAULT '0',
+  `usrst_value` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+  `usrst_value_date` date DEFAULT NULL,
+  `usrst_created_date_time` datetime DEFAULT NULL,
+  `usrst_created_by` int(8) DEFAULT NULL,
+  `usrst_last_update_date_time` datetime DEFAULT NULL,
+  `usrst_last_update_by` int(8) DEFAULT NULL,
+  PRIMARY KEY (`usrst_user_settings_ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
+
+-- Dumping data for table reprodata.user_settings: ~0 rows (approximately)
+/*!40000 ALTER TABLE `user_settings` DISABLE KEYS */;
+/*!40000 ALTER TABLE `user_settings` ENABLE KEYS */;
 
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IF(@OLD_FOREIGN_KEY_CHECKS IS NULL, 1, @OLD_FOREIGN_KEY_CHECKS) */;

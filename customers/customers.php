@@ -7,17 +7,16 @@ $db->admin_title = "Customers";
 //$db->enable_rxjs_lite();
 $db->enable_jquery_ui();
 
-
 $db->show_header();
 
 $table = new draw_table('customers', 'cst_customer_ID', 'ASC');
-
+$table->extras = $db->CustomersWhere();
 if ($_POST['search'] == 'search') {
     if ($_POST['search_field-id'] > 0){
-        $table->extras = "cst_customer_ID = ".$_POST['search_field-id'];
+        $table->extras .= " AND cst_customer_ID = ".$_POST['search_field-id'];
     }
     else {
-        $table->extras = "cst_identity_card LIKE '%".$_POST['search_field']."%'
+        $table->extras .= " AND (cst_identity_card LIKE '%".$_POST['search_field']."%'
         OR
         cst_name LIKE '%".$_POST['search_field']."%'
         OR
@@ -31,12 +30,13 @@ if ($_POST['search'] == 'search') {
         OR
         cst_mobile_1 LIKE '%".$_POST['search_field']."%'
         OR
-        cst_mobile_2 LIKE '%".$_POST['search_field']."%'";
+        cst_mobile_2 LIKE '%".$_POST['search_field']."%')";
     }
 }
 
 
 $table->generate_data();
+echo $table->sql;
 ?>
 
 

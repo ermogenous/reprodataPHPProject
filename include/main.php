@@ -22,8 +22,9 @@
 //ini_set("memory_limit","128M");
 //ini_set('max_execution_time', 300);
 /////////////////////////////////////////////////////////////////////
-
 include("common.php");
+require_once($main["local_url"].'\vendor\autoload.php');
+
 
 class Main
 {
@@ -38,6 +39,8 @@ class Main
     var $admin_layout_printer;
 
     var $user_data;
+    var $originalUserData;
+    var $imitationMode = false;
     var $admin_on_load;
     var $system_on_test = 'no'; //yes
     var $db_all_queries;
@@ -69,6 +72,9 @@ class Main
 
 //errors
     var $working_section;
+
+//dbSettings
+    public $dbSettings;
 
 //login 1 -> normal permissions.
 //login 0 does not login but all else works.
@@ -123,6 +129,8 @@ class Main
         $this->date_info["minute"] = substr($this->date_info["full"], 14, 2);
         $this->date_info["second"] = substr($this->date_info["full"], 17, 2);
         $this->date_info["full2"] = $this->date_info["year"] . "-" . $this->date_info["month"] . "-" . $this->date_info["day"] . " " . $this->date_info["hour"] . ":" . $this->date_info["minute"] . ":" . $this->date_info["second"];
+
+        $this->getAllStartUpSettings();
 
         $this->check_ip_location();
 
@@ -253,6 +261,13 @@ class Main
 
             //get the data of the user
             $this->user_data = $this->fetch_assoc($result);
+
+            //if imitate user keep the admin login into the originalUserData
+            if ($this->dbSettings['admin_imitate_user']['value'] != 'No' && $this->user_data['usr_user_rights'] == 0) {
+                $this-> imitationMode = true;
+                $this->originalUserData = $this->user_data;
+                $this->user_data = $this->query_fetch('SELECT * FROM users WHERE usr_users_ID = '.$this->dbSettings['admin_imitate_user']['value']);
+            }
 
             //verify the users ip
             if ($this->get_setting("admin_check_users_ip") == 1) {
@@ -389,6 +404,7 @@ class Main
 					AND `prm_type` = 'folder' 
 					AND us.usr_users_ID = " . $this->user_data["usr_users_ID"];
             $folder_result = $this->query_fetch($sql);
+
 //echo $sql;
 
             if ($menu_result["view"] == 0) {
@@ -409,6 +425,15 @@ class Main
 
         }//else
 
+    }
+
+    private function getAllStartUpSettings(){
+        $result = $this->query('SELECT * FROM settings WHERE stg_fetch_on_startup = 1');
+        while ($row = $this->fetch_assoc($result)){
+            $this->dbSettings[$row['stg_section']]['value'] = $row['stg_value'];
+            $this->dbSettings[$row['stg_section']]['date'] = $row['stg_value_date'];
+            $this->dbSettings[$row['stg_section']]['fetch_on_startup'] = $row['stg_fetch_on_startup'];
+        }
     }
 
 //area can be view , update , insert , delete , extra_1 , extra_2 , extra_3 , extra_4 , extra_5
@@ -707,15 +732,16 @@ class Main
             return $row["stg_value"];
         } else if ($field == 'value_date') {
             return $row["stg_value_date"];
-        } else if ($field == 'serial') {
-            return $row["stg_settings_ID"];
+        } else if ($field == 'startup') {
+            return $row["stg_fetch_on_startup"];
         }
     }
 
-    public function update_setting($section, $newValue = '')
+    public function update_setting($section, $newValue = '',$startup = 0)
     {
         $newData['value'] = $newValue;
         $newData['section'] = $section;
+        $newData['fetch_on_startup'] = $this->get_check_value($startup);
         $this->db_tool_update_row('settings', $newData, "stg_section = '" . $section . "'", ''
             , '', 'execute', 'stg_');
         //$this->db_tool_insert_update_row('settings', $newData, "stg_section = '" . $section . "'", '', '', 'stg_');
@@ -1798,6 +1824,23 @@ class Main
             $out .= $number;
         }
         return $out;
+    }
+
+    public function CustomersWhere(){
+
+        if ($this->user_data['usr_user_rights'] == 0){
+            if ($this->dbSettings['cst_admin_customers']['value'] == 'viewAll'){
+                return '';
+            }
+            else {
+                return 'cst_for_user_group_ID = '.$this->user_data['usr_users_ID'];
+            }
+
+        }
+        else {
+            return 'cst_for_user_group_ID = '.$this->user_data['usr_users_ID'];
+        }
+
     }
 
 }//main class

@@ -67,6 +67,13 @@ function template_header()
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/customers/customers_modify.php"><i
                                         class="fas fa-plus-circle"></i> New Customer</a>
+                            <div class="dropdown-divider"></div>
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/customers/customer_groups.php"><i
+                                        class="fas fa-eye"></i> View Customer Groups</a>
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/customers/customer_groups_modify.php"><i
+                                        class="fas fa-plus-circle"></i> New Customer Group</a>
                         </div>
                     </li>
 
@@ -160,6 +167,31 @@ function template_header()
                         </div>
                     </li>
 
+                    <?php if ($db->dbSettings['ina_enable_agent_insurance']['value'] == 1) { ?>
+                        <!-- Agent Insurance -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-clipboard-list"></i> Agent Insurance
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/schedules/my_schedule_day.php">
+                                    <i class="far fa-calendar-alt"></i> View Policies</a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/schedules/my_schedule_diary.php">
+                                    <i class="far fa-calendar-alt"></i> New Policy</a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/schedules/schedules.php">
+                                    <i class="fas fa-eye"></i> View Insurance Companies</a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/schedules/schedule_modify.php">
+                                    <i class="fas fa-plus-circle"></i> Insert New Insurance Company</a>
+                            </div>
+                        </li>
+                    <?php } ?>
+
                     <!-- USERS -->
                     <?php if ($db->user_data["usr_user_rights"] == 0) { ?>
                         <li class="nav-item dropdown">
@@ -196,6 +228,26 @@ function template_header()
                             </div>
                         </li>
                     <?php } ?>
+                    <!-- Insurance Agents Settings -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            IA<i class="fas fa-cogs"></i>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/ainsurance/codes/insurance_companies.php">
+                                <i class="fab fa-linode"></i> Insurance Companies</a>
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/send_auto_emails/send_auto_emails.php">
+                                <i class="fas fa-envelope"></i> Auto Emails</a>
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/settings/settings_update.php">
+                                <i class="fas fa-screwdriver"></i> System Settings</a>
+                        </div>
+
+                    </li>
+                    <!-- Settings -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -365,11 +417,15 @@ if ($db->admin_layout_printer != 'yes')
 <br>
     <div class="container-fluid">
         <div class="row">&nbsp</div>
-        <div class="row glyphicon-copyright-mark navbar-custom">&nbsp</div>
+        <div class="row glyphicon-copyright-mark navbar-custom <?php if ($db->imitationMode === true) echo 'alert alert-danger'; ?>">
+            Welcome:
+            <?php if ($db->imitationMode === true) echo '<b> &nbsp;Imitating &nbsp;</b>'; ?>
+            <?php echo $db->user_data['usr_name']; ?>
+        </div>
     </div>
     <?php
     $showStatsFooter = $db->get_setting('layout_show_footer_stats');
-    if ($showStatsFooter == 'Yes') {
+if ($showStatsFooter == 'Yes') {
     ?>
     <div class="container-fluid">
         <div class="row">

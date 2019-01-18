@@ -76,6 +76,3 @@ $table->generate_data();
 <?php
 $db->show_empty_footer();
 ?>
-
-
-
