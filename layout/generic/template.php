@@ -176,18 +176,38 @@ function template_header()
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/schedules/my_schedule_day.php">
+                                   href="<?php echo $main["site_url"]; ?>/ainsurance/policies.php">
                                     <i class="far fa-calendar-alt"></i> View Policies</a>
                                 <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/schedules/my_schedule_diary.php">
+                                   href="<?php echo $main["site_url"]; ?>/ainsurance/policy_modify.php">
                                     <i class="far fa-calendar-alt"></i> New Policy</a>
-                                <div class="dropdown-divider"></div>
+                                <?php if ($db->user_data["usr_user_rights"] == 0) { ?>
+                                    <div class="dropdown-divider"></div>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/ainsurance/codes/insurance_companies.php">
+                                        <i class="fas fa-eye"></i> View Insurance Companies</a>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/ainsurance/codes/insurance_company_modify.php">
+                                        <i class="fas fa-plus-circle"></i> Insert New Insurance Company</a>
+                                <?php } ?>
+                            </div>
+                        </li>
+                    <?php } ?>
+
+                    <?php if ($db->dbSettings['ina_enable_agent_insurance']['value'] == 1) { ?>
+                        <!-- Accounts -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-clipboard-list"></i> Accounts
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/schedules/schedules.php">
-                                    <i class="fas fa-eye"></i> View Insurance Companies</a>
+                                   href="<?php echo $main["site_url"]; ?>/accounts/accounts/accounts.php">
+                                    <i class="far fa-calendar-alt"></i> View Accounts</a>
                                 <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/schedules/schedule_modify.php">
-                                    <i class="fas fa-plus-circle"></i> Insert New Insurance Company</a>
+                                   href="<?php echo $main["site_url"]; ?>/accounts/transactions/transactions.php">
+                                    <i class="far fa-calendar-alt"></i> View Transactions</a>
                             </div>
                         </li>
                     <?php } ?>
