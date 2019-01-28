@@ -129,7 +129,11 @@ function template_header()
                     </li>
 
                     <!-- Tickets -->
-
+                    <?php
+                    //get number of tickets not assigned
+                    $notAssignedTicketsNum = $db->query_fetch("SELECT COUNT(*) as clo_total FROM tickets WHERE tck_status = 'Open' AND tck_assigned_user_ID = '-1'");
+                    $notAssignedTicketsNum = $notAssignedTicketsNum['clo_total'];
+                    ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -142,6 +146,11 @@ function template_header()
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/tickets/ticket_modify.php">
                                 <i class="fas fa-plus-circle"></i> Insert New Ticket</a>
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/tickets/ticket_assignments.php">
+                                <i class="fas fa-map-marked-alt"></i> Ticket Placements
+                                <span class="badge badge-light"><?php echo $notAssignedTicketsNum;?></span>
+                            </a>
                         </div>
                     </li>
 
@@ -181,15 +190,6 @@ function template_header()
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/policy_modify.php">
                                     <i class="far fa-calendar-alt"></i> New Policy</a>
-                                <?php if ($db->user_data["usr_user_rights"] == 0) { ?>
-                                    <div class="dropdown-divider"></div>
-                                    <a class="dropdown-item"
-                                       href="<?php echo $main["site_url"]; ?>/ainsurance/codes/insurance_companies.php">
-                                        <i class="fas fa-eye"></i> View Insurance Companies</a>
-                                    <a class="dropdown-item"
-                                       href="<?php echo $main["site_url"]; ?>/ainsurance/codes/insurance_company_modify.php">
-                                        <i class="fas fa-plus-circle"></i> Insert New Insurance Company</a>
-                                <?php } ?>
                             </div>
                         </li>
                     <?php } ?>
