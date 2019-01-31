@@ -11,7 +11,6 @@ include("../include/tables.php");
 $db = new Main();
 $db->admin_title = "Customers Groups List";
 
-use NilPortugues\Sql\QueryBuilder\Builder\GenericBuilder;
 
 $db->show_empty_header();
 
@@ -68,11 +67,6 @@ $table->generate_data();
             </div>
             <div class="col-12">
                 <?php
-
-                $builder = new GenericBuilder();
-                $qury = $builder->select()
-                    ->setTable('customer_group_relation')
-                    ->
 
                 $sqlOtherMembers = 'SELECT * FROM customer_group_relation 
                             JOIN customers ON cst_customer_ID = cstg_customer_ID
