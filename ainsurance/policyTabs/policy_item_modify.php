@@ -17,6 +17,8 @@ if ($_POST["action"] == "insert") {
     $db->start_transaction();
 
     $db->working_section = 'AInsurance Policy Item Insert';
+    $_POST['fld_policy_ID'] = $_POST['pid'];
+    $_POST['fld_type'] = $_POST['type'];
     $db->db_tool_insert_row('ina_policy_items', $_POST, 'fld_', 0, 'inapit_');
 
     //update the policy
@@ -194,8 +196,74 @@ $db->show_empty_header();
                     <?php
 
                     }//IF VEHICLES
+                    else if ($_GET['type'] == 'Risk Locations'){
+                    $label = 'Risk Location';
 
                     ?>
+
+                        <div class="form-group row">
+                            <label for="fld_rl_address_1" class="col-sm-3 col-form-label">Address Line 1</label>
+                            <div class="col-sm-3">
+                                <input type="text" id="fld_rl_address_1" name="fld_rl_address_1"
+                                       class="form-control"
+                                       value="<?php echo $data["inapit_rl_address_1"]; ?>">
+                            </div>
+
+                            <label for="fld_rl_address_2" class="col-sm-3 col-form-label">Address Line 2</label>
+                            <div class="col-sm-3">
+                                <input type="text" name="fld_rl_address_2" id="fld_rl_address_2"
+                                       class="form-control"
+                                       value="<?php echo $data["inapit_rl_address_2"]; ?>">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="fld_rl_address_number" class="col-sm-3 col-form-label">Address Number</label>
+                            <div class="col-sm-3">
+                                <input type="text" id="fld_rl_address_number" name="fld_rl_address_number"
+                                       class="form-control"
+                                       value="<?php echo $data["inapit_rl_address_number"]; ?>">
+                            </div>
+
+                            <label for="fld_rl_postal_code" class="col-sm-3 col-form-label">Postal Code</label>
+                            <div class="col-sm-3">
+                                <input type="text" name="fld_rl_postal_code" id="fld_rl_postal_code"
+                                       class="form-control"
+                                       value="<?php echo $data["inapit_rl_postal_code"]; ?>">
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="fld_rl_city_code_ID" class="col-sm-3 col-form-label">City</label>
+                            <div class="col-sm-3">
+                                <select name="fld_rl_city_code_ID" id="fld_rl_city_code_ID"
+                                        class="form-control"
+                                        required>
+                                    <?php
+                                    $sql = "SELECT * FROM codes WHERE cde_type = 'Cities' ORDER BY cde_value ASC";
+                                    $result = $db->query($sql);
+                                    while ($city = $db->fetch_assoc($result)) {
+                                        ?>
+                                        <option value="<?php echo $city['cde_code_ID']; ?>"
+                                            <?php if ($data['inapit_rl_city_code_ID'] == $city['cde_code_ID']) echo 'selected'; ?>
+                                        ><?php echo $city['cde_value']; ?></option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+
+                            <label for="fld_rl_construction_type" class="col-sm-3 col-form-label">Construction Type</label>
+                            <div class="col-sm-3">
+                                <select name="fld_rl_construction_type" id="fld_rl_construction_type"
+                                        class="form-control"
+                                        required>
+                                        <option value="House" <?php if ($data['inapit_rl_construction_type'] == 'House') echo 'selected'; ?>>House</option>
+                                        <option value="Apartment" <?php if ($data['inapit_rl_construction_type'] == 'Apartment') echo 'selected'; ?>>Apartment</option>
+                                        <option value="Office" <?php if ($data['inapit_rl_construction_type'] == 'Office') echo 'selected'; ?>>Office</option>
+                                </select>
+                            </div>
+                        </div>
+
+                    <?php } ?>
 
                     <div class="form-group row">
                         <label for="fld_insured_amount" class="col-sm-3 col-form-label">Insured Amount</label>
@@ -222,12 +290,14 @@ $db->show_empty_header();
                                    value="<?php echo $data["inapit_premium"]; ?>">
                         </div>
 
+                        <?php if ($_GET['type'] == 'Vehicles'){ ?>
                         <label for="fld_mif" class="col-sm-3 col-form-label">MIF</label>
                         <div class="col-sm-3">
                             <input type="text" id="fld_mif" name="fld_mif"
                                    class="form-control"
                                    value="<?php echo $data["inapit_mif"]; ?>">
                         </div>
+                        <?php  } ?>
                     </div>
 
                     <!-- BUTTONS -->
@@ -269,6 +339,11 @@ $db->show_empty_header();
                 $('#myForm').submit();
             }
         }
+
+        //every time this page loads reload the premium tab
+        $( document ).ready(function() {
+            parent.window.frames['premiumTab'].location.reload(true);
+        });
     </script>
 <?php
 $db->show_empty_footer();

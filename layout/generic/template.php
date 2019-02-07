@@ -287,6 +287,19 @@ function template_header()
 
                     </li>
 
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-compress"></i>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/lcs_intro_extro_test/intro_extro_test_list.php">
+                                <i class="fab fa-linode"></i> Lcs Intro/Extrovert Test List</a>
+                        </div>
+
+                    </li>
+
 
                 <?php } ?>
 
@@ -302,6 +315,9 @@ function template_header()
 
     <br>
     <?php
+
+}//printer layout
+
     if ($_GET['alert-success'] != '') {
         ?>
 
@@ -423,7 +439,7 @@ function template_header()
     <?php }
 
 
-}//printer layout
+
 }//template_header
 function template_footer()
 {

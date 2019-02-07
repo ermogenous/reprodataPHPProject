@@ -7,6 +7,7 @@
  */
 
 include("../include/main.php");
+include("policy_class.php");
 $db = new Main();
 $db->admin_title = "AInsurance Policy Modify";
 
@@ -17,11 +18,16 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_for_user_group_ID'] = $db->user_data['usr_users_group_ID'];
     $_POST['fld_period_starting_date'] = $db->convert_date_format($_POST['fld_period_starting_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $_POST['fld_starting_date'] = $db->convert_date_format($_POST['fld_starting_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
+    $_POST['fld_expiry_date'] = $db->convert_date_format($_POST['fld_expiry_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
+    $_POST['fld_status'] = 'Outstanding';
 
     $db->working_section = 'AInsurance Policy Insert';
-    $db->db_tool_insert_row('ina_policies', $_POST, 'fld_', 0, 'inapol_');
+    $newID = $db->db_tool_insert_row('ina_policies', $_POST, 'fld_', 1, 'inapol_');
     if ($_POST['sub-action'] == 'exit') {
         header("Location: policies.php");
+        exit();
+    } else {
+        header("Location: policy_modify.php?lid=" . $newID);
         exit();
     }
 
@@ -29,8 +35,19 @@ if ($_POST["action"] == "insert") {
     $db->check_restriction_area('update');
     $db->working_section = 'AInsurance Policy Modify';
 
+    $policy = new Policy($_POST['lid']);
+    echo $_POST['fld_type_code_ID'];
+    if ($policy->checkInsuranceTypeChange($_POST['fld_type_code_ID']) == false) {
+
+        //remove the type change and generate error
+        unset($_POST['fld_type_code_ID']);
+        $db->generateAlertError('Clear all the items first before you can change the Policy Type');
+
+    }
+
     $_POST['fld_period_starting_date'] = $db->convert_date_format($_POST['fld_period_starting_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $_POST['fld_starting_date'] = $db->convert_date_format($_POST['fld_starting_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
+    $_POST['fld_expiry_date'] = $db->convert_date_format($_POST['fld_expiry_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
 
     $db->db_tool_update_row('ina_policies', $_POST, "`inapol_policy_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'inapol_');
@@ -165,12 +182,12 @@ $db->show_header();
                             <b>Mobile:</b> <span id="cus_mobile"><?php echo $data['cst_mobile_1']; ?></span>
                         </div>
 
-                        <label for="fld_period_starting_date" class="col-sm-3 col-form-label">Period Starting
-                            Date</label>
+                        <label for="fld_period_starting_date" class="col-sm-3 col-form-label">
+                            Period Starting Date</label>
                         <div class="col-sm-3">
                             <input name="fld_period_starting_date" type="text" id="fld_period_starting_date"
                                    class="form-control"
-                                   value="<?php echo $data["inapol_period_starting_date"]; ?>"
+                                   value=""
                                    required>
                             <script>
                                 $(function () {
@@ -185,15 +202,25 @@ $db->show_header();
 
                     <div class="form-group row">
                         <label for="fld_name" class="col-sm-2 col-form-label">Status</label>
-                        <div class="col-sm-4">
+                        <div class="col-sm-2">
                             <?php echo $data['inapol_status']; ?>
+
+                        </div>
+                        <div class="col-sm-2">
+                            <?php if ($data['inapol_status'] == 'Outstanding') { ?>
+                                <button id="changeStatus" name="changeStatus" class="form-control alert-success"
+                                        type="button"
+                                        onclick="window.location.assign('policy_change_status.php?lid=<?php echo $data['inapol_policy_ID']; ?>')">
+                                    Activate
+                                </button>
+                            <?php } ?>
                         </div>
 
                         <label for="fld_starting_date" class="col-sm-3 col-form-label">Starting Date</label>
                         <div class="col-sm-3">
                             <input name="fld_starting_date" type="text" id="fld_starting_date"
                                    class="form-control"
-                                   value="<?php echo $data["inapol_starting_date"]; ?>"
+                                   value=""
                                    required>
                             <script>
                                 $(function () {
@@ -206,33 +233,93 @@ $db->show_header();
                         </div>
                     </div>
 
+                    <div class="form-group row">
+                        <label for="fld_name" class="col-sm-2 col-form-label"></label>
+                        <div class="col-sm-4">
 
-                    <ul class="nav nav-tabs" id="myTab" role="tablist">
-                        <li class="nav-item">
-                            <a class="nav-link active" id="items-tab" data-toggle="tab" href="#items" role="tab"
-                               aria-controls="items" aria-selected="true">
-                                <?php echo $insuranceTypes[$data['inapol_type_code_ID']]; ?>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="premium-tab" data-toggle="tab" href="#premium" role="tab"
-                               aria-controls="premium" aria-selected="false">Premium</a>
-                        </li>
-                    </ul>
-                    <div class="tab-content" id="myTabContent">
-                        <div class="tab-pane fade show active" id="items" role="tabpanel" aria-labelledby="items-tab">
-                            <iframe src="policyTabs/policy_items.php?pid=<?php echo $_GET["lid"] . "&type=" . $insuranceTypes[$data['inapol_type_code_ID']]; ?>"
-                                    frameborder="0"
-                                    scrolling="0" width="100%" height="500"></iframe>
                         </div>
 
-                        <div class="tab-pane fade" id="premium" role="tabpanel" aria-labelledby="premium-tab">
-                            <iframe src="policyTabs/premium.php?pid=<?php echo $_GET["lid"] . "&type=" . $insuranceTypes[$data['inapol_type_code_ID']]; ?>"
-                                    frameborder="0"
-                                    scrolling="0" width="100%" height="500"></iframe>
+                        <label class="col-sm-3 col-form-label">
+                            Expiry Date <br>
+                            <span class="main_text_smaller">
+                                <span style="cursor: pointer" onclick="fillExpiryDate('year',1);">1Y</span>&nbsp
+                                <span style="cursor: pointer" onclick="fillExpiryDate('month',6);">6M</span>&nbsp
+                                <span style="cursor: pointer" onclick="fillExpiryDate('month',4);">4M</span>&nbsp
+                                <span style="cursor: pointer" onclick="fillExpiryDate('month',3);">3M</span>&nbsp
+                                <span style="cursor: pointer" onclick="fillExpiryDate('month',2);">2M</span>&nbsp
+                                <span style="cursor: pointer" onclick="fillExpiryDate('month',1);">1M</span>&nbsp
+                            </span>
+                        </label>
+                        <div class="col-sm-3">
+                            <input name="fld_expiry_date" type="text" id="fld_expiry_date"
+                                   class="form-control"
+                                   value=""
+                                   required>
+                            <script>
+                                $(function () {
+                                    $("#fld_expiry_date").datepicker();
+                                    $("#fld_expiry_date").datepicker("option", "dateFormat", "dd/mm/yy");
+                                    $("#fld_expiry_date").val('<?php echo $db->convert_date_format($data["inapol_expiry_date"], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?>');
+
+                                });
+                            </script>
                         </div>
                     </div>
 
+
+                    <!-- TABS -->
+                    <?php
+                    if ($_GET['lid'] > 0) {
+
+                        ?>
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="items-tab" data-toggle="tab" href="#items" role="tab"
+                                   aria-controls="items" aria-selected="true">
+                                    <?php echo $insuranceTypes[$data['inapol_type_code_ID']]; ?>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="premium-tab" data-toggle="tab" href="#premium" role="tab"
+                                   aria-controls="premium" aria-selected="false">Premium</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" id="installments-tab" data-toggle="tab" href="#installments" role="tab"
+                                   aria-controls="installments" aria-selected="false">Installments</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="items" role="tabpanel"
+                                 aria-labelledby="items-tab">
+                                <iframe src="policyTabs/policy_items.php?pid=<?php echo $_GET["lid"] . "&type=" . $insuranceTypes[$data['inapol_type_code_ID']]; ?>"
+                                        frameborder="0"
+                                        scrolling="0" width="100%" height="500"></iframe>
+                            </div>
+
+                            <div class="tab-pane fade" id="premium" role="tabpanel" aria-labelledby="premium-tab">
+                                <iframe src="policyTabs/premium.php?pid=<?php echo $_GET["lid"] . "&type=" . $insuranceTypes[$data['inapol_type_code_ID']]; ?>"
+                                        frameborder="0" id="premiumTab" name="premiumTab"
+                                        scrolling="0" width="100%" height="500"></iframe>
+                            </div>
+
+                            <div class="tab-pane fade" id="installments" role="tabpanel" aria-labelledby="installments-tab">
+                                <iframe src="policyTabs/installments.php?pid=<?php echo $_GET["lid"] . "&type=" . $insuranceTypes[$data['inapol_type_code_ID']]; ?>"
+                                        frameborder="0" id="installmentsTab" name="installmentsTab"
+                                        scrolling="0" width="100%" height="500"></iframe>
+                            </div>
+                        </div>
+                    <?php } else { ?>
+                        <div class="row">
+                            <div class="col-12 text-center alert alert-info">
+                                <b>Create the policy to be able to proceed.</b>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12" style="height: 20px;">
+                            </div>
+                        </div>
+                    <?php } ?>
 
                     <!-- BUTTONS -->
                     <div class="form-group row">
@@ -242,7 +329,7 @@ $db->show_header();
                                    value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
                             <input type="button" value="Back" class="btn btn-secondary"
-                                   onclick="window.location.assign('insurance_companies.php')">
+                                   onclick="window.location.assign('policies.php')">
                             <input type="button" name="Save" id="Save"
                                    value="Save Policy"
                                    class="btn btn-secondary" onclick="submitForm('save')">
@@ -259,6 +346,8 @@ $db->show_header();
         </div>
     </div>
     <script>
+
+
         function submitForm(action) {
             frm = document.getElementById('myForm');
             if (frm.checkValidity() === false) {
@@ -283,6 +372,39 @@ $db->show_header();
                 $('#fld_type_code_ID').val('<?php echo $data['inapol_type_code_ID'];?>');
             }
             <?php } ?>
+        }
+
+        function fillExpiryDate(lengthType, lengthAmount) {
+            //get period starting date
+            let psDateSplit = $('#fld_period_starting_date').val().split('/');
+            let newDate = new Date();
+            newDate.setFullYear(psDateSplit[2]);
+            newDate.setMonth((psDateSplit[1] *1) -1);
+            newDate.setDate(psDateSplit[0]);
+
+            if (lengthType == 'year'){
+                newDate.setFullYear(newDate.getFullYear() + lengthAmount);
+                newDate.setDate(newDate.getDate() - 1);
+            }
+            else if (lengthType == 'month'){
+                newDate.setMonth(newDate.getMonth() + lengthAmount);
+                newDate.setDate(newDate.getDate() - 1);
+            }
+
+            let day = newDate.getDate();
+            let month = newDate.getMonth() + 1;
+            let year = newDate.getFullYear();
+
+            if (day < 10){
+                day = '0' + day;
+            }
+            if (month < 10){
+                month = '0' + month;
+            }
+
+            let result = day + '/' + month + '/' + year;
+
+            $('#fld_expiry_date').val(result);
         }
     </script>
 <?php

@@ -142,3 +142,16 @@
 .schDeletedColor{
     background-color: #ffc6c3;
 }
+
+.inapolOutstandingColor{
+    background-color: #fffec1;
+}
+.inapolActiveColor{
+    background-color: lightblue;
+}
+.inapolCancelledColor{
+    background-color: #ffc6c3;
+}
+.inapolDeletedColor{
+    background-color: #bd2130;
+}
