@@ -7,21 +7,42 @@ $db->admin_title = "Customers Modify";
 if ($_POST["action"] == "insert") {
     $db->check_restriction_area('insert');
 
+    $db->start_transaction();
+
     $db->db_tool_insert_row('customers', $_POST, 'fld_', 0, 'cst_');
+
+    //check for basic accounts to create the customer account
+    if ($db->dbSettings['accounts']['value'] == 'basic'){
+        include('../basic_accounts/basic_accounts_class.php');
+        $bacc = new BasicAccounts();
+        $bacc->createAccountForAllCustomers();
+    }
+
+    $db->commit_transaction();
+
     header("Location: customers.php");
     exit();
 
 } else if ($_POST["action"] == "update") {
     $db->check_restriction_area('update');
 
+    $db->start_transaction();
+
     $db->db_tool_update_row('customers', $_POST, "`cst_customer_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'cst_');
+
+    if ($db->dbSettings['accounts']['value'] == 'basic'){
+        include('../basic_accounts/basic_accounts_class.php');
+        $bacc = new BasicAccounts();
+        $bacc->updateAccountDetailsFromCustomer($_POST['lid']);
+    }
+
+    $db->commit_transaction();
     header("Location: customers.php");
     exit();
 
 
 }
-
 
 if ($_GET["lid"] != "") {
     $sql = "SELECT * FROM `customers` WHERE `cst_customer_ID` = " . $_GET["lid"];

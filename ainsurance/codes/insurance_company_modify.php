@@ -55,13 +55,13 @@ $db->show_header();
                 </div>
 
                 <div class="form-group row">
-                    <label for="fld_active" class="col-sm-4 col-form-label">Active</label>
+                    <label for="fld_status" class="col-sm-4 col-form-label">Status</label>
                     <div class="col-sm-8">
-                        <select name="fld_active" id="fld_active"
+                        <select name="fld_status" id="fld_status"
                                 class="form-control"
                                 required>
-                            <option value="1" <?php if ($data['inainc_active'] == 1) echo 'selected';?>>Active</option>
-                            <option value="0" <?php if ($data['inainc_active'] == 0) echo 'selected';?>>In-active</option>
+                            <option value="Active" <?php if ($data['inainc_status'] == 'Active') echo 'selected';?>>Active</option>
+                            <option value="InActive" <?php if ($data['inainc_status'] == 'InActive') echo 'selected';?>>In-active</option>
                         </select>
                     </div>
                 </div>

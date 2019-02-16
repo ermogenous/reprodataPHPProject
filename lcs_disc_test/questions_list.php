@@ -90,7 +90,7 @@ $list[27]['B'] = 'Περιμένω από τους άλλους να συστη�
 $list[28]['A'] = 'Έχω την τάση να ανατρέπω υπάρχουσες πολιτικές και κανόνες';
 $list[28]['B'] = 'Έχω την τάση να ακολουθώ υπάρχουσες πολιτικές και κανόνες';
 
-function getIntorExtroResults($testData)
+function getDiSCResults($testData)
 {
 
     $highDominance = 0;

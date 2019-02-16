@@ -24,6 +24,8 @@ class Policy {
         $this->policyID = $policyID;
         $this->policyData = $db->query_fetch('SELECT * FROM ina_policies WHERE inapol_policy_ID = '.$policyID);
 
+        $this->totalPremium = $this->policyData['inapol_premium'] + $this->policyData['inapol_mif'] + $this->policyData['inapol_fees'];
+
     }
     //updates the policy premium by sum the policyItems premium/mif/commission
     public function updatePolicyPremium(){
@@ -108,6 +110,57 @@ class Policy {
 
     public function activatePolicy(){
         global $db;
+        if($this->policyData['inapol_status'] == 'Outstanding'){
+            //perform validations.
+            //1. Check if premium is equal to total premium of items
+            $premCheck = $db->query_fetch('SELECT 
+              SUM(inapit_premium)as clo_total_premium,
+              SUM(inapit_mif) as clo_total_mif 
+              FROM ina_policy_items WHERE inapit_policy_ID = '.$this->policyID);
+
+            if ($this->policyData['inapol_premium'] != $premCheck['clo_total_premium']){
+                $this->error = true;
+                $this->errorDescription = 'Policy Premium is not equal with total items premium';
+                return false;
+            }
+
+            if ($this->policyData['inapol_mif'] != $premCheck['clo_total_mif']){
+                $this->error = true;
+                $this->errorDescription = 'Policy MIF is not equal with total items MIF';
+                return false;
+            }
+
+            //2. Check if total installments premium/commission is correct
+            $instCheck = $db->query_fetch('SELECT
+                    SUM(ROUND(inapi_amount,2)) as clo_total_amount,
+                    SUM(ROUND(inapi_commission_amount,2)) as clo_total_commission_amount
+                    FROM ina_policy_installments
+                    WHERE
+                    inapi_policy_ID = '.$this->policyID);
+
+            if ($this->totalPremium != $instCheck['clo_total_amount']){
+                $this->error = true;
+                $this->errorDescription = 'Installments Premium is not equal with policy premium. Re-Calculate installments.';
+                return false;
+            }
+
+            if ($this->policyData['inapol_commission'] != $instCheck['clo_total_commission_amount']){
+                $this->error = true;
+                $this->errorDescription = 'Installments Commission is not equal with policy commission. Re-Calculate installments.';
+                return false;
+            }
+
+
+        }
+        else {
+            $this->error = true;
+            $this->errorDescription = 'Policy must be outstanding to activate.';
+            return false;
+        }
+
+
+
+
         $this->errorDescription = 'Some error. Activate function needs build';
         return false;
     }

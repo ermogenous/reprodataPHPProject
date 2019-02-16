@@ -36,7 +36,6 @@ if ($_POST["action"] == "insert") {
     $db->working_section = 'AInsurance Policy Modify';
 
     $policy = new Policy($_POST['lid']);
-    echo $_POST['fld_type_code_ID'];
     if ($policy->checkInsuranceTypeChange($_POST['fld_type_code_ID']) == false) {
 
         //remove the type change and generate error
@@ -87,21 +86,62 @@ $db->show_header();
                     </div>
 
                     <div class="form-group row">
+                        <label for="fld_agent_ID" class="col-sm-2 col-form-label">Agent</label>
+                        <div class="col-sm-4">
+                            <select name="fld_agent_ID" id="fld_agent_ID"
+                                    class="form-control"
+                                    required
+                                    onchange="loadInsuranceCompanies();">
+                                <option value=""></option>
+                                <?php
+                                $sql = "SELECT * FROM agents
+                                        JOIN users ON usr_users_ID = agnt_user_ID
+                                        JOIN users_groups ON usr_users_groups_ID = usg_users_groups_ID
+                                        WHERE usg_users_groups_ID = ".$db->user_data['usr_users_groups_ID']." AND agnt_status = 'Active' ORDER BY agnt_name ASC";
+                                $result = $db->query($sql);
+                                while ($agent = $db->fetch_assoc($result)) {
+                                    ?>
+                                    <option value="<?php echo $agent['agnt_agent_ID']; ?>"
+                                        <?php if ($data['inapol_agent_ID'] == $agent['agnt_agent_ID']) echo 'selected'; ?>
+                                    ><?php echo $agent['agnt_name']; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+
+                    </div>
+
+                    <div class="form-group row">
                         <label for="fld_insurance_company_ID" class="col-sm-2 col-form-label">Company</label>
                         <div class="col-sm-4">
                             <select name="fld_insurance_company_ID" id="fld_insurance_company_ID"
                                     class="form-control"
-                                    required>
-                                <?php
-                                $sql = "SELECT * FROM ina_insurance_companies WHERE inainc_active = 1 ORDER BY inainc_code ASC";
-                                $result = $db->query($sql);
-                                while ($inaic = $db->fetch_assoc($result)) {
-                                    ?>
-                                    <option value="<?php echo $inaic['inainc_insurance_company_ID']; ?>"
-                                        <?php if ($data['inapol_insurance_company_ID'] == $inaic['inainc_insurance_company_ID']) echo 'selected'; ?>
-                                    ><?php echo $inaic['inainc_name']; ?></option>
-                                <?php } ?>
+                                    required
+                                    onchange="loadPolicyTypes();">
+
                             </select>
+                            <script>
+
+                                function loadInsuranceCompanies(){
+
+                                    let agentSelected = $('#fld_agent_ID').val();
+
+                                    if (agentSelected > 0){
+                                        Rx.Observable.fromPromise($.get("../agents/agents_api.php?section=agent_commission_types_insurance_companies&agent=" + agentSelected))
+                                            .subscribe((response) =>
+                                                {
+                                                    data = response;
+                                                },
+                                                () => { }
+                                                ,
+                                                () => {
+                                                    clearDropDown('fld_insurance_company_ID');
+                                                    loadDropDown('fld_insurance_company_ID',data);
+                                                }
+                                            );
+                                    }
+                                }
+
+                            </script>
                         </div>
 
                         <label for="fld_type_code_ID" class="col-sm-2 col-form-label">Type</label>
@@ -110,19 +150,32 @@ $db->show_header();
                                     class="form-control"
                                     onchange="insuranceTypeChange()"
                                     required>
-                                <?php
-                                $sql = "SELECT * FROM ina_insurance_codes WHERE inaic_section = 'policy_type' ORDER BY inaic_order ASC";
-                                $result = $db->query($sql);
-                                while ($inaic = $db->fetch_assoc($result)) {
-                                    $insuranceTypes[$inaic['inaic_insurance_code_ID']] = $inaic['inaic_tab_name'];
-                                    ?>
-                                    <option value="<?php echo $inaic['inaic_insurance_code_ID']; ?>"
-                                        <?php if ($data['inapol_type_code_ID'] == $inaic['inaic_insurance_code_ID']) echo 'selected'; ?>
-                                    ><?php echo $inaic['inaic_description']; ?></option>
-                                <?php } ?>
                             </select>
                         </div>
+                        <script>
+                            function loadPolicyTypes(){
 
+                                let agentSelected = $('#fld_agent_ID').val();
+                                let insuranceCompanySelected = $('#fld_insurance_company_ID').val();
+
+                                if (agentSelected > 0 && insuranceCompanySelected > 0){
+                                    Rx.Observable.fromPromise($.get("../agents/agents_api.php?section=agent_commission_types_policy_types&agent="
+                                        + agentSelected + '&inscompany=' + insuranceCompanySelected))
+                                        .subscribe((response) =>
+                                            {
+                                                data = response;
+                                                console.log(data);
+                                            },
+                                            () => { }
+                                            ,
+                                            () => {
+                                                clearDropDown('fld_type_code_ID');
+                                                loadDropDown('fld_type_code_ID',data);
+                                            }
+                                        );
+                                }
+                            }
+                        </script>
 
                     </div>
 
@@ -271,12 +324,17 @@ $db->show_header();
                     <?php
                     if ($_GET['lid'] > 0) {
 
+                        $policyTypesResult = $db->query('SELECT * FROM ina_policy_types WHERE inapot_status = "Active"');
+                        while ($polType = $db->fetch_assoc($policyTypesResult)){
+                            $policyTypes[$polType['inapot_policy_type_ID']] = $polType['inapot_input_data_type'];
+                        }
+
                         ?>
                         <ul class="nav nav-tabs" id="myTab" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active" id="items-tab" data-toggle="tab" href="#items" role="tab"
                                    aria-controls="items" aria-selected="true">
-                                    <?php echo $insuranceTypes[$data['inapol_type_code_ID']]; ?>
+                                    <?php echo $policyTypes[$data['inapol_type_code_ID']]; ?>
                                 </a>
                             </li>
                             <li class="nav-item">
@@ -292,21 +350,21 @@ $db->show_header();
                         <div class="tab-content" id="myTabContent">
                             <div class="tab-pane fade show active" id="items" role="tabpanel"
                                  aria-labelledby="items-tab">
-                                <iframe src="policyTabs/policy_items.php?pid=<?php echo $_GET["lid"] . "&type=" . $insuranceTypes[$data['inapol_type_code_ID']]; ?>"
-                                        frameborder="0"
+                                <iframe src="policyTabs/policy_items.php?pid=<?php echo $_GET["lid"] . "&type=" . $policyTypes[$data['inapol_type_code_ID']]; ?>"
+                                        frameborder="0" id="policyItemsTab" name="policyItemsTab"
                                         scrolling="0" width="100%" height="500"></iframe>
                             </div>
 
                             <div class="tab-pane fade" id="premium" role="tabpanel" aria-labelledby="premium-tab">
-                                <iframe src="policyTabs/premium.php?pid=<?php echo $_GET["lid"] . "&type=" . $insuranceTypes[$data['inapol_type_code_ID']]; ?>"
+                                <iframe src="policyTabs/premium.php?pid=<?php echo $_GET["lid"] . "&type=" . $policyTypes[$data['inapol_type_code_ID']]; ?>"
                                         frameborder="0" id="premiumTab" name="premiumTab"
-                                        scrolling="0" width="100%" height="500"></iframe>
+                                        scrolling="0" width="100%" height="350"></iframe>
                             </div>
 
                             <div class="tab-pane fade" id="installments" role="tabpanel" aria-labelledby="installments-tab">
-                                <iframe src="policyTabs/installments.php?pid=<?php echo $_GET["lid"] . "&type=" . $insuranceTypes[$data['inapol_type_code_ID']]; ?>"
+                                <iframe src="policyTabs/installments.php?pid=<?php echo $_GET["lid"] . "&type=" . $policyTypes[$data['inapol_type_code_ID']]; ?>"
                                         frameborder="0" id="installmentsTab" name="installmentsTab"
-                                        scrolling="0" width="100%" height="500"></iframe>
+                                        scrolling="0" width="100%" height="600"></iframe>
                             </div>
                         </div>
                     <?php } else { ?>
@@ -320,6 +378,10 @@ $db->show_header();
                             </div>
                         </div>
                     <?php } ?>
+
+                    <div class="row">
+                        <div class="col-12" style="height: 15px;"></div>
+                    </div>
 
                     <!-- BUTTONS -->
                     <div class="form-group row">
@@ -405,6 +467,25 @@ $db->show_header();
             let result = day + '/' + month + '/' + year;
 
             $('#fld_expiry_date').val(result);
+        }
+
+        function clearDropDown(dropDownName){
+            $('#' + dropDownName).empty();
+        }
+
+        function loadDropDown(dropDownName, data){
+            $('#' + dropDownName).append(
+                '<option value=""></option>'
+            );
+            $(data).each(function (index, value) {
+
+                    console.log(value['value'] + ' -> '+ value['label']);
+
+                    $('#' + dropDownName).append(
+                        '<option value="' + value['value'] + '">' + value['label'] + '</option>'
+                    );
+                }
+            );
         }
     </script>
 <?php

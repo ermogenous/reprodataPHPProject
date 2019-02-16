@@ -23,8 +23,6 @@ $table->generate_data();
 
 <div class="container">
     <div class="row">
-        <div class="col-lg-2"></div>
-        <div class="col-lg-8">
             <div class="text-center"><?php $table->show_pages_links(); ?></div>
             <div class="table-responsive">
                 <table class="table table-hover">
@@ -33,7 +31,7 @@ $table->generate_data();
                         <th scope="col"><?php $table->display_order_links('ID', 'inainc_insurance_company_ID'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Code', 'inainc_code'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Name', 'inainc_name'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Active', 'inainc_active'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Status', 'inainc_status'); ?></th>
                         <th scope="col">
                             <a href="insurance_company_modify.php">
                                 <i class="fas fa-plus-circle"></i>
@@ -49,7 +47,7 @@ $table->generate_data();
                             <th scope="row"><?php echo $row["inainc_insurance_company_ID"]; ?></th>
                             <td><?php echo $row["inainc_code"]; ?></td>
                             <td><?php echo $row["inainc_name"]; ?></td>
-                            <td><?php echo $row["inainc_active"]; ?></td>
+                            <td><?php echo $row["inainc_status"]; ?></td>
                             <td>
                                 <a href="insurance_company_modify.php?lid=<?php echo $row["inainc_insurance_company_ID"]; ?>"><i
                                         class="fas fa-edit"></i></a>&nbsp
@@ -65,8 +63,6 @@ $table->generate_data();
                     </tbody>
                 </table>
             </div>
-        </div>
-        <div class="col-lg-2"></div>
     </div>
 </div>
 <script>

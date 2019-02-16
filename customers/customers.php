@@ -36,7 +36,7 @@ if ($_POST['search'] == 'search') {
 
 
 $table->generate_data();
-echo $table->sql;
+//echo $table->sql;
 ?>
 
 

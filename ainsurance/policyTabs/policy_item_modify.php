@@ -343,6 +343,8 @@ $db->show_empty_header();
         //every time this page loads reload the premium tab
         $( document ).ready(function() {
             parent.window.frames['premiumTab'].location.reload(true);
+
+            $('#policyItemsTab', window.parent.document).height('500px');
         });
     </script>
 <?php

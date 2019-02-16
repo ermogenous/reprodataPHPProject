@@ -37,6 +37,7 @@ class Main
     var $admin_footer_message;
     var $admin_header_message;
     var $admin_layout_printer;
+    var $adminLogin = false;
 
     var $user_data;
     var $originalUserData;
@@ -86,7 +87,7 @@ class Main
     {
         global $main;
 
-        $this->encryptionKey = base64_encode('jkashdkl34as@#!');
+        $this->encryptionKey = base64_encode('lcsEncryption123321');
 
         if ($use_this_main != 'no') {
             $this->settings = $use_this_main;
@@ -141,6 +142,7 @@ class Main
 
         $this->generateSessionDismiss();
         $this->generateSessionAlert();
+
 
         if ($login == 1) {
 
@@ -429,7 +431,7 @@ class Main
 
 
         }//else
-
+        $this->adminLogin = true;
     }
 
     private function getAllStartUpSettings(){
@@ -1290,7 +1292,6 @@ class Main
                 $log_new_values .= "`" . $fields_prefix . 'created_by' . '`' . " = '" . $this->user_data['usr_users_ID'] . "'\n";
             }
         }
-
         if ($return_or_execute == 'execute') {
             $this->query($sql);
             $new_serial = $this->insert_id();
@@ -1856,10 +1857,16 @@ class Main
         // Encrypt the data using AES 256 encryption in CBC mode using our encryption key and initialization vector.
         $encrypted = openssl_encrypt($text, 'aes-256-cbc', $encryption_key, 0, $iv);
         // The $iv is just as important as the key for decrypting, so save it with our encrypted data using a unique separator (::)
-        return base64_encode($encrypted . '::' . $iv);
+        $data = base64_encode($encrypted . '::' . $iv);
+        //fix for url
+        $data = str_replace(['+','/','='],['-','_',''],$data);
+        return $data;
     }
 
     public function decrypt($text){
+        //fix $text
+        $text = str_replace(['-','_'],['+','/'],$text);
+
         // Remove the base64 encoding from our key
         $encryption_key = base64_decode($this->encryptionKey);
         // To decrypt, split the encrypted data from our IV - our unique separator used was "::"

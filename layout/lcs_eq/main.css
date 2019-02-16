@@ -1,0 +1,77 @@
+@charset "utf-8";
+/* CSS Document */
+
+.topMenuBarColor {
+    background-color: #bcb9b8;
+    color:white;
+}
+
+.tableHeader {
+    text-decoration-color: white;
+    color: white;
+    background-color: #ca262b;
+}
+
+.tableHeader a:link, a:active, a:visited {
+    color:white;
+}
+
+.tableHeader a:hover {
+    color: #2e2c50;
+}
+
+.headerBar {
+    color: white;
+    background-color: #ca262b;
+}
+
+.headerBar a:link, a:active, a:visited{
+    color:black;
+}
+
+.headerBar a:hover{
+    color: #2e2c50;
+}
+
+.iconsHeader{
+    color:white;
+}
+
+.iconsLines{
+    color:#2f2d51;
+}
+
+.discOutstandingBgColor{
+    background-color: #fffec1;
+}
+.discOutstandingTextColor{
+    color: #fffec1;
+}
+
+.discLinkBgColor{
+    background-color: dodgerblue ;
+}
+.discLinkTextColor{
+    color: dodgerblue ;
+}
+
+.discCompletedBgColor{
+    background-color: #28a745 ;
+}
+.discCompletedTextColor{
+    color: #28a745 ;
+}
+
+.discPaidBgColor{
+    background-color: #dca16e;
+}
+.discPaidTextColor{
+    color: #dca16e;
+}
+
+.discDeletedBgColor{
+    background-color: #efa2a9;
+}
+.discDeletedTextColor{
+    color: #efa2a9;
+}

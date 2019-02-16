@@ -1,0 +1,2 @@
+-Basic accounts. when customer deleted to delete the account
+    -Or when basic accounts is enabled and customer has transactions then do not delete but set status to deleted.

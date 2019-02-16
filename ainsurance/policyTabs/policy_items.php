@@ -58,7 +58,9 @@ if ($_GET['pid'] > 0) {
                         </thead>
                         <tbody>
                         <?php
+                        $totalLines = 0;
                         while ($row = $table->fetch_data()) {
+                            $totalLines++;
                             ?>
                             <tr onclick="editLine(<?php echo $row["inapit_policy_item_ID"] . "," . $_GET['pid'] . ",'" . $_GET['type'] . "'"; ?>);">
                                 <th scope="row"><?php echo $row["inapit_policy_item_ID"]; ?></th>
@@ -110,6 +112,12 @@ if ($_GET['pid'] > 0) {
         //every time this page loads reload the premium tab
         $(document).ready(function () {
             parent.window.frames['premiumTab'].location.reload(true);
+
+
+            let fixedPx = 100;
+            let totalPx = fixedPx + (<?php echo $totalLines;?> * 60);
+            $('#policyItemsTab', window.parent.document).height(totalPx + 'px');
+
         });
     </script>
     <?php
