@@ -11,10 +11,12 @@ include('questions_list.php');
 
 if ($_GET['lg'] == 'tr') {
     $db = new Main();
+    $section = 'admin';
 } else {
     $db = new Main(0);
     $lidEncrypt = $_GET['lid'];
     $_GET['lid'] = $db->decrypt($_GET['lid']);
+    $section = 'public';
 }
 $db->admin_title = "LCS Disc Test Modify";
 
@@ -27,7 +29,7 @@ if ($_POST["action"] == "insert") {
 
     $_POST['fld_status'] = 'Outstanding';
 
-    $db->db_tool_insert_row('lcs_intro_extro_test', $_POST, 'fld_', 0, 'ietst_');
+    $db->db_tool_insert_row('lcs_disc_test', $_POST, 'fld_', 0, 'lcsdc_');
     header("Location: disc_list.php");
     exit();
 
@@ -38,36 +40,44 @@ if ($_POST["action"] == "insert") {
     }
     $db->working_section = 'LCS Disc Test Modify';
 
-    $db->db_tool_update_row('lcs_intro_extro_test', $_POST, "`ietst_intro_extro_test_ID` = " . $_POST["lid"],
-        $_POST["lid"], 'fld_', 'execute', 'ietst_');
+    $db->db_tool_update_row('lcs_disc_test', $_POST, "`lcsdc_disc_test_ID` = " . $_POST["lid"],
+        $_POST["lid"], 'fld_', 'execute', 'lcsdc_');
 
-    if ($db->adminLogin == true){
+    if ($db->adminLogin == true) {
         header("Location: disc_list.php");
         exit();
-    }
-    else {
-        if ($_GET['page'] == ''){
+    } else {
+        if ($_GET['page'] == '') {
             $page = 1;
-        }
-        else {
+        } else {
             $page = ($_GET['page'] * 1);
         }
         $page++;
 
-        header("Location: disc_modify.php?lid=".$db->encrypt($_GET['lid'])."&page=".$page);
+        header("Location: disc_modify.php?lid=" . $db->encrypt($_GET['lid']) . "&page=" . $page);
         exit();
 
     }
 
 
-
 }
-
 
 if ($_GET["lid"] != "") {
     $db->working_section = 'LCS DiSC Test Get data';
-    $sql = "SELECT * FROM `lcs_intro_extro_test` WHERE `ietst_intro_extro_test_ID` = " . $_GET["lid"];
+    $sql = "SELECT * FROM `lcs_disc_test` WHERE `lcsdc_disc_test_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
+
+    if ($section == 'public'){
+
+        //check if the test is completed
+        if ($data['lcsdc_status'] != 'Outstanding'){
+            header("Location: ../login.php");
+            exit();
+        }
+
+    }
+
+
 } else {
 
 }
@@ -83,59 +93,78 @@ $db->show_header();
                     <div class="alert headerBar text-center">
                         <b>DiSC Test</b>
                     </div>
-                    <?php if($_GET['page'] == '' || $_GET['page'] == 1) { ?>
-                    <div class="container">
+                    <?php if ($_GET['page'] == '' || $_GET['page'] == 1) { ?>
+                        <div class="container">
 
-                        <div class="form-group row">
-                            <label for="fld_name" class="col-sm-3 col-form-label text-right">Όνομα</label>
-                            <div class="col-sm-6">
-                                <input name="fld_name" type="text" id="fld_name"
-                                       class="form-control"
-                                       value="<?php echo $data["ietst_name"]; ?>"
-                                       required
-                                    <?php echo makeDisable(); ?>>
+                            <div class="form-group row">
+                                <label for="fld_name" class="col-sm-3 col-form-label text-right">Όνομα</label>
+                                <div class="col-sm-6">
+                                    <input name="fld_name" type="text" id="fld_name"
+                                           class="form-control"
+                                           value="<?php echo $data["lcsdc_name"]; ?>"
+                                           required
+                                        <?php echo makeDisable(); ?>>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="fld_tel" class="col-sm-3 col-form-label text-right">Τηλέφωνο</label>
-                            <div class="col-sm-6">
-                                <input name="fld_tel" type="text" id="fld_tel"
-                                       class="form-control"
-                                       value="<?php echo $data["ietst_tel"]; ?>"
-                                    <?php echo ifRequired(); ?>
-                                    <?php echo makeDisable(); ?>>
+                            <div class="form-group row">
+                                <label for="fld_tel" class="col-sm-3 col-form-label text-right">Τηλέφωνο</label>
+                                <div class="col-sm-6">
+                                    <input name="fld_tel" type="text" id="fld_tel"
+                                           class="form-control"
+                                           value="<?php echo $data["lcsdc_tel"]; ?>"
+                                        <?php echo ifRequired(); ?>
+                                        <?php echo makeDisable(); ?>>
+                                </div>
                             </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="fld_email" class="col-sm-3 col-form-label text-right">Email</label>
-                            <div class="col-sm-6">
-                                <input name="fld_email" type="text" id="fld_email"
-                                       class="form-control"
-                                       value="<?php echo $data["ietst_email"]; ?>"
-                                    <?php echo ifRequired(); ?>
-                                    <?php echo makeDisable(); ?>>
+                            <div class="form-group row">
+                                <label for="fld_email" class="col-sm-3 col-form-label text-right">Email</label>
+                                <div class="col-sm-6">
+                                    <input name="fld_email" type="text" id="fld_email"
+                                           class="form-control"
+                                           value="<?php echo $data["lcsdc_email"]; ?>"
+                                        <?php echo ifRequired(); ?>
+                                        <?php echo makeDisable(); ?>>
+                                </div>
                             </div>
-                        </div>
-                    </div>
 
-                    <?php
+                            <div class="form-group row">
+                                <label for="fld_process_status" class="col-sm-3 col-form-label text-right">Process
+                                    Status</label>
+                                <div class="col-sm-6">
+                                    <select name="fld_process_status" id="fld_process_status"
+                                            class="form-control"
+                                            required>
+                                        <option value="UnPaid" <?php if ($data['lcsdc_process_status'] == 'UnPaid') echo 'selected'; ?>>
+                                            UnPaid
+                                        </option>
+                                        <option value="Paid" <?php if ($data['lcsdc_process_status'] == 'Paid') echo 'selected'; ?>>
+                                            Paid
+                                        </option>
+                                        <option value="Free" <?php if ($data['lcsdc_process_status'] == 'Free') echo 'selected'; ?>>
+                                            Free
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <?php
                     }
-
                     foreach ($list as $num => $item) {
 
-                        if ($_GET['page'] == '' || $_GET['page'] == 1){
+                        if ($section == 'admin') {
+                            $start = 0;
+                            $end = 30;
+                        } else if ($_GET['page'] == '' || $_GET['page'] == 1) {
                             $start = 0;
                             $end = 10;
-                        }
-                        else if ($_GET['page'] == 2){
+                        } else if ($_GET['page'] == 2) {
                             $start = 11;
                             $end = 20;
-                        }
-                        else if ($_GET['page'] == 3){
+                        } else if ($_GET['page'] == 3) {
                             $start = 21;
                             $end = 30;
                         }
-
 
 
                         if ($num >= $start && $num <= $end) {
@@ -153,7 +182,7 @@ $db->show_header();
                                                    value="A"
                                                 <?php echo ifRequired(); ?>
                                                 <?php echo makeDisable(); ?>
-                                                <?php if ($data['ietst_question_' . $num] == 'A') echo 'checked="checked"'; ?>>
+                                                <?php if ($data['lcsdc_question_' . $num] == 'A') echo 'checked="checked"'; ?>>
                                             <label for="fld_question_<?php echo $num; ?>a"
                                                    class="custom-control-label">
                                                 <?php echo $item['A']; ?>
@@ -167,7 +196,7 @@ $db->show_header();
                                                    value="B"
                                                 <?php echo ifRequired(); ?>
                                                 <?php echo makeDisable(); ?>
-                                                <?php if ($data['ietst_question_' . $num] == 'B') echo 'checked="checked"'; ?>>
+                                                <?php if ($data['lcsdc_question_' . $num] == 'B') echo 'checked="checked"'; ?>>
                                             <label for="fld_question_<?php echo $num; ?>b"
                                                    class="custom-control-label">
                                                 <?php echo $item['B']; ?>
@@ -181,18 +210,18 @@ $db->show_header();
                             </div>
                         <?php }
                     }
-                    if ($_GET['page'] == 4){
-                    ?>
+                    if ($_GET['page'] == 4) {
+                        ?>
 
 
-                    <div class="container">
-                        <div class="row">
-                            <div class="col-12">
-                                Ευχαριστούμε για τον χρόνο σας.<br>
-                                Παρακαλώ όπως επικοινωνήσετε μαζί μας για τα αποτελέσματα σας.<br><br>
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-12">
+                                    Ευχαριστούμε για τον χρόνο σας.<br>
+                                    Παρακαλώ όπως επικοινωνήσετε μαζί μας για τα αποτελέσματα σας.<br><br>
+                                </div>
                             </div>
                         </div>
-                    </div>
                     <?php } ?>
 
                     <div class="form-group row">
@@ -202,12 +231,12 @@ $db->show_header();
                                    value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
 
-                            <?php if ($_GET['lg'] == 'tr'){ ?>
-                            <input type="button" value="Πίσω" class="btn btn-secondary"
-                                   onclick="window.location.assign('intro_extro_test_list.php')">
+                            <?php if ($section == 'admin') { ?>
+                                <input type="button" value="Πίσω" class="btn btn-secondary"
+                                       onclick="window.location.assign('disc_list.php')">
                             <?php } ?>
 
-                            <?php if (($data['ietst_status'] == 'Outstanding' || $data['ietst_status'] == 'Link' || $_GET['lid'] == '') && ($_GET['page'] == '' || $_GET['page'] != 4)) { ?>
+                            <?php if (($data['lcsdc_status'] == 'Outstanding' || $data['lcsdc_status'] == 'Link' || $_GET['lid'] == '') && ($_GET['page'] == '' || $_GET['page'] != 4)) { ?>
                                 <input type="submit" name="Submit" id="Submit"
                                        value="<?php if ($_GET["lid"] == "") echo "Καταχώρησε"; else echo "Αλλαγή στης"; ?> Επιλογές"
                                        class="btn btn-secondary" onclick="submitForm()">
@@ -236,7 +265,7 @@ $db->show_header();
 function makeDisable()
 {
     global $data;
-    if ($data['ietst_status'] == 'Outstanding' || $data['ietst_status'] == 'Link' || $_GET['lid'] == '') {
+    if ($data['lcsdc_status'] == 'Outstanding' || $data['lcsdc_status'] == 'Link' || $_GET['lid'] == '') {
         return '';
     } else {
         return 'disabled';

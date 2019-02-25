@@ -32,7 +32,8 @@ function template_header()
     <nav class="navbar navbar-expand-lg navbar-light ">
 
         <a class="navbar-brand" href="#"><img src="<?php echo $db->admin_layout_url; ?>images/lcs_logo.png" height="84"></a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -42,7 +43,6 @@ function template_header()
                     <a class="nav-link" href="<?php echo $main["site_url"]; ?>/home.php"><i class="fas fa-home"></i>
                         <span class="sr-only">(current)</span></a>
                 </li>
-
 
 
                 <?php
@@ -113,7 +113,8 @@ function template_header()
                     <?php } ?>
 
                     <!-- Settings -->
-                    <?php if ($db->user_data['usr_user_rights'] == 0) {;?>
+                    <?php if ($db->user_data['usr_user_rights'] == 0) {
+                        ; ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -278,7 +279,7 @@ if ($db->admin_layout_printer != 'yes')
 <br>
     <div class="container-fluid">
         <div class="row">&nbsp</div>
-        <div class="row glyphicon-copyright-mark bg-light <?php if ($db->imitationMode === true) echo 'alert alert-danger'; ?>" >
+        <div class="row glyphicon-copyright-mark bg-light <?php if ($db->imitationMode === true) echo 'alert alert-danger'; ?>">
             <?php if ($db->user_data['user_rights'] != '') { ?>
                 Welcome:
                 <?php if ($db->imitationMode === true) echo '<b> &nbsp;Imitating &nbsp;</b>'; ?>
@@ -290,6 +291,19 @@ if ($db->admin_layout_printer != 'yes')
     <?php
     $showStatsFooter = $db->get_setting('layout_show_footer_stats');
 if ($showStatsFooter == 'Yes') {
+    ?>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                Time Spend: <?php echo $db->get_script_time(); ?> Seconds. &nbsp;&nbsp;&nbsp;
+                Memory Used: <?php echo memory_get_usage(); ?> Bytes. &nbsp;&nbsp;
+                Memory Peak: <?php echo memory_get_peak_usage(); ?> Bytes.
+            </div>
+        </div>
+    </div>
+    <?php
+}
+else if ($showStatsFooter == 'AdminYes' && $db->user_data['usr_user_rights'] == '0') {
     ?>
     <div class="container-fluid">
         <div class="row">

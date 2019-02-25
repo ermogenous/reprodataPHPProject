@@ -125,6 +125,9 @@ $db->show_header();
                                     <option value="No" <?php if ($footerShowStats == 'No') echo 'selected'; ?>>Hide
                                         stats on footer
                                     </option>
+                                    <option value="AdminYes" <?php if ($footerShowStats == 'AdminYes') echo 'selected'; ?>>
+                                        Show stats on footer only to Admin
+                                    </option>
                                 </select>
                             </div>
                         </div>

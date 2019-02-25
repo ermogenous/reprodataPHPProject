@@ -14,6 +14,7 @@ class Policy {
     public $mif;
     public $fees;
     public $commission;
+    private $validForActive = false;
 
     public $error = false;
     public $errorDescription;
@@ -24,7 +25,7 @@ class Policy {
         $this->policyID = $policyID;
         $this->policyData = $db->query_fetch('SELECT * FROM ina_policies WHERE inapol_policy_ID = '.$policyID);
 
-        $this->totalPremium = $this->policyData['inapol_premium'] + $this->policyData['inapol_mif'] + $this->policyData['inapol_fees'];
+        $this->totalPremium = round(($this->policyData['inapol_premium'] + $this->policyData['inapol_mif'] + $this->policyData['inapol_fees'] + $this->policyData['inapol_stamps']),2);
 
     }
     //updates the policy premium by sum the policyItems premium/mif/commission
@@ -160,9 +161,18 @@ class Policy {
 
 
 
-
+        $this->validForActive = true;
         $this->errorDescription = 'Some error. Activate function needs build';
         return false;
+    }
+
+    private function issueAccountTransactions(){
+        global $db;
+
+        //for basic accounts
+        if ($db->dbSettings['accounts']['value'] == 'basic') {
+
+        }
     }
 
     public function cancelPolicy(){

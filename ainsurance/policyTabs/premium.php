@@ -42,7 +42,7 @@ $db->show_empty_header();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_premium" class="col-sm-3 col-form-label">Net Premium</label>
+                        <label for="fld_premium" class="col-sm-3 col-form-label">Policy Net Premium</label>
                         <div class="col-sm-3">
                             <input type="text" id="fld_premium" name="fld_premium"
                                    class="form-control"
@@ -50,7 +50,7 @@ $db->show_empty_header();
                                    value="<?php echo $data["inapol_premium"]; ?>">
                         </div>
 
-                        <label for="fld_commission" class="col-sm-3 col-form-label">Commission</label>
+                        <label for="fld_commission" class="col-sm-3 col-form-label">Policy Commission</label>
                         <div class="col-sm-3">
                             <input type="text" name="fld_commission" id="fld_commission"
                                    class="form-control"
@@ -60,7 +60,7 @@ $db->show_empty_header();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_fees" class="col-sm-3 col-form-label">Fees</label>
+                        <label for="fld_fees" class="col-sm-3 col-form-label">Policy Fees</label>
                         <div class="col-sm-3">
                             <input type="text" name="fld_fees" id="fld_fees"
                                    class="form-control"
@@ -68,7 +68,7 @@ $db->show_empty_header();
                                    value="<?php echo $data["inapol_fees"]; ?>">
                         </div>
 
-                        <label for="fld_mif" class="col-sm-3 col-form-label">MIF</label>
+                        <label for="fld_mif" class="col-sm-3 col-form-label">Policy MIF</label>
                         <div class="col-sm-3">
                             <input type="text" id="fld_mif" name="fld_mif"
                                    class="form-control"
@@ -78,9 +78,21 @@ $db->show_empty_header();
                     </div>
 
                     <div class="form-group row">
+                        <label for="fld_stamps" class="col-sm-3 col-form-label">Policy Stamps</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="fld_stamps" id="fld_stamps"
+                                   class="form-control"
+                                   required onchange="updateGrossPremium();"
+                                   value="<?php echo $data["inapol_stamps"]; ?>">
+                        </div>
+
+
+                    </div>
+
+                    <div class="form-group row">
                         <div class="col-sm-6 col-form-label"></div>
 
-                        <label for="fld_mif" class="col-sm-3 col-form-label alert alert-success">Gross Premium</label>
+                        <label for="fld_mif" class="col-sm-3 col-form-label alert alert-success">Policy Gross Premium</label>
                         <div class="col-sm-3 text-center alert alert-success" id="grossPremium"></div>
                     </div>
 
@@ -122,7 +134,9 @@ $db->show_empty_header();
             let commission = $('#fld_commission').val() * 1;
             let fees = $('#fld_fees').val() * 1;
             let mif = $('#fld_mif').val() * 1;
-            grossPremium = premium + fees + mif;
+            let stamps = $('#fld_stamps').val() * 1;
+
+            grossPremium = premium + fees + mif + stamps;
 
             $('#grossPremium').html(
                 grossPremium.toFixed(2)

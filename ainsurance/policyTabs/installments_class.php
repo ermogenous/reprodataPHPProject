@@ -23,7 +23,7 @@ Class Installments
         $this->policyID = $policyID;
 
         $this->policyData = $db->query_fetch('SELECT * FROM ina_policies WHERE inapol_policy_ID = ' . $this->policyID);
-        $this->totalPolicyPremium = ($this->policyData['inapol_premium'] + $this->policyData['inapol_mif'] + $this->policyData['inapol_fees']);
+        $this->totalPolicyPremium = ($this->policyData['inapol_premium'] + $this->policyData['inapol_mif'] + $this->policyData['inapol_fees'] + $this->policyData['inapol_stamps']);
         $this->policyCommission = $this->policyData['inapol_commission'];
         $instResult = $db->query('SELECT * FROM ina_policy_installments WHERE inapi_policy_ID = ' . $this->policyID);
         $this->totalInstallments = $db->num_rows($instResult);

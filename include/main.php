@@ -23,7 +23,7 @@
 //ini_set('max_execution_time', 300);
 /////////////////////////////////////////////////////////////////////
 include("common.php");
-require_once($main["local_url"].'\vendor\autoload.php');
+require_once($main["local_url"] . '/vendor/autoload.php');
 
 
 class Main
@@ -271,9 +271,9 @@ class Main
 
             //if imitate user keep the admin login into the originalUserData
             if ($this->dbSettings['admin_imitate_user']['value'] != 'No' && $this->user_data['usr_user_rights'] == 0) {
-                $this-> imitationMode = true;
+                $this->imitationMode = true;
                 $this->originalUserData = $this->user_data;
-                $this->user_data = $this->query_fetch('SELECT * FROM users WHERE usr_users_ID = '.$this->dbSettings['admin_imitate_user']['value']);
+                $this->user_data = $this->query_fetch('SELECT * FROM users WHERE usr_users_ID = ' . $this->dbSettings['admin_imitate_user']['value']);
             }
 
             //verify the users ip
@@ -399,7 +399,7 @@ class Main
 //echo $folder."<br>";
             $pos = strripos($folder, '/');
             //$folder = substr($folder, 0, $pos + 1);
-            $folder = substr($folder, 0, $pos );
+            $folder = substr($folder, 0, $pos);
 //echo $folder."<br>";
             $sql = "SELECT  IF( us.usr_user_rights =0 OR COUNT(per.prm_permissions_ID) = 0,1, pel.prl_view) as view
 					FROM `permissions` as per
@@ -434,9 +434,10 @@ class Main
         $this->adminLogin = true;
     }
 
-    private function getAllStartUpSettings(){
+    private function getAllStartUpSettings()
+    {
         $result = $this->query('SELECT * FROM settings WHERE stg_fetch_on_startup = 1');
-        while ($row = $this->fetch_assoc($result)){
+        while ($row = $this->fetch_assoc($result)) {
             $this->dbSettings[$row['stg_section']]['value'] = $row['stg_value'];
             $this->dbSettings[$row['stg_section']]['date'] = $row['stg_value_date'];
             $this->dbSettings[$row['stg_section']]['fetch_on_startup'] = $row['stg_fetch_on_startup'];
@@ -466,7 +467,7 @@ class Main
 
         $folder = substr($_SERVER['PHP_SELF'], strlen($this->settings["remote_folder"]) + 1);
         $pos = strripos($folder, '/');
-        $folder = substr($folder, 0, $pos );
+        $folder = substr($folder, 0, $pos);
         $sqlFolder = "SELECT  IF( us.usr_user_rights =0 OR COUNT(per.prm_permissions_ID) = 0,1,  pel.prl_" . $area . ") as result
 					FROM `permissions` as per
 					LEFT OUTER JOIN `permissions_lines` as `pel` ON pel.prl_permissions_ID = per.prm_permissions_ID
@@ -744,7 +745,7 @@ class Main
         }
     }
 
-    public function update_setting($section, $newValue = '',$startup = 0)
+    public function update_setting($section, $newValue = '', $startup = 0)
     {
         $newData['value'] = $newValue;
         $newData['section'] = $section;
@@ -874,7 +875,7 @@ class Main
 
     public function include_css_file($file_location, $extraHtml = '')
     {
-        $this->admin_more_head .= "<link href=\"" . $file_location . "\" rel=\"stylesheet\" type=\"text/css\" ".$extraHtml."/>\n";
+        $this->admin_more_head .= "<link href=\"" . $file_location . "\" rel=\"stylesheet\" type=\"text/css\" " . $extraHtml . "/>\n";
     }
 
     public function enable_jquery()
@@ -1201,7 +1202,7 @@ class Main
         if ($bcc != "")
             $headers .= 'Bcc: ' . $bcc . "\r\n";
 
-// Mail it
+        // Mail it
         return mail($to, $subject, $message, $headers);
     }//sendMailTo
 
@@ -1432,7 +1433,7 @@ class Main
         $log_old_values = '';
 
         //continue only if the row exists
-        if (isset($previous)){
+        if (isset($previous)) {
             foreach ($previous as $data_names => $data_values) {
 
                 $log_old_values .= $data_names . " = " . $data_values . "
@@ -1461,7 +1462,7 @@ class Main
 		`lgf_new_values` = \"" . addslashes($new_values) . "\" ,
 		`lgf_old_values` = \"" . addslashes($old_values) . "\" ,
 		`lgf_description` = \"" . addslashes($description) . "\" ";
-        $this->query($sql);
+        //$this->query($sql);
         $sql = '';
         unset($sql);
 
@@ -1528,7 +1529,7 @@ class Main
 
         if ($date_time == 1) {
             $return = $return;
-            if ($return_time == 1){
+            if ($return_time == 1) {
                 $return .= " " . $split[1];
             }
         }
@@ -1536,16 +1537,16 @@ class Main
         return $return;
     }
 
-    function convertDateToNumber($date, $format){
+    function convertDateToNumber($date, $format)
+    {
 
-        $fixedDate = $this->convert_date_format($date,$format,'dd/mm/yyyy');
-        $parts = explode('/',$fixedDate);
+        $fixedDate = $this->convert_date_format($date, $format, 'dd/mm/yyyy');
+        $parts = explode('/', $fixedDate);
 
         $return = $parts[2];
-        if ($parts[1] < 10){
-            $return .= "0".$parts[1] * 1;
-        }
-        else {
+        if ($parts[1] < 10) {
+            $return .= "0" . $parts[1] * 1;
+        } else {
             $return .= $parts[1];
         }
         $return .= $parts[0];
@@ -1805,12 +1806,14 @@ class Main
 
     //api methods
     //headers
-    public function apiGetReadHeaders(){
+    public function apiGetReadHeaders()
+    {
         header("Access-Control-Allow-Origin: *");
         header("Content-Type: application/json; charset=UTF-8");
     }
 
-    public function apiGetPostHeaders() {
+    public function apiGetPostHeaders()
+    {
         header("Access-Control-Allow-Origin: *");
         header("Content-Type: application/json; charset=UTF-8");
         header("Access-Control-Allow-Methods: POST");
@@ -1818,12 +1821,13 @@ class Main
         header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
     }
 
-    public function buildNumber($prefix, $totalLeadingZeros, $number){
+    public function buildNumber($prefix, $totalLeadingZeros, $number)
+    {
         $out = $prefix;
         if ($totalLeadingZeros > 0 && $totalLeadingZeros <= 100) {
             $numLength = strlen($number);
             for ($i = 1; $i <= $totalLeadingZeros; $i++) {
-                if ($i > $numLength){
+                if ($i > $numLength) {
                     $out .= "0";
                 }
             }
@@ -1832,24 +1836,24 @@ class Main
         return $out;
     }
 
-    public function CustomersWhere(){
+    public function CustomersWhere()
+    {
 
-        if ($this->user_data['usr_user_rights'] == 0){
-            if ($this->dbSettings['cst_admin_customers']['value'] == 'viewAll'){
+        if ($this->user_data['usr_user_rights'] == 0) {
+            if ($this->dbSettings['cst_admin_customers']['value'] == 'viewAll') {
                 return '';
-            }
-            else {
-                return 'cst_for_user_group_ID = '.$this->user_data['usr_users_ID'];
+            } else {
+                return 'cst_for_user_group_ID = ' . $this->user_data['usr_users_ID'];
             }
 
-        }
-        else {
-            return 'cst_for_user_group_ID = '.$this->user_data['usr_users_ID'];
+        } else {
+            return 'cst_for_user_group_ID = ' . $this->user_data['usr_users_ID'];
         }
 
     }
 
-    public function encrypt($text){
+    public function encrypt($text)
+    {
         // Remove the base64 encoding from our key
         $encryption_key = base64_decode($this->encryptionKey);
         // Generate an initialization vector
@@ -1859,19 +1863,32 @@ class Main
         // The $iv is just as important as the key for decrypting, so save it with our encrypted data using a unique separator (::)
         $data = base64_encode($encrypted . '::' . $iv);
         //fix for url
-        $data = str_replace(['+','/','='],['-','_',''],$data);
+        $data = str_replace(['+', '/', '='], ['-', '_', ''], $data);
+        //$data = urlencode($data);
         return $data;
     }
 
-    public function decrypt($text){
+    public function decrypt($text)
+    {
         //fix $text
-        $text = str_replace(['-','_'],['+','/'],$text);
-
+        $text = str_replace(['-', '_'], ['+', '/'], $text);
+        //$text = urldecode($text);
         // Remove the base64 encoding from our key
         $encryption_key = base64_decode($this->encryptionKey);
         // To decrypt, split the encrypted data from our IV - our unique separator used was "::"
         list($encrypted_data, $iv) = explode('::', base64_decode($text), 2);
         return openssl_decrypt($encrypted_data, 'aes-256-cbc', $encryption_key, 0, $iv);
+    }
+
+    public function encodeGetValues($string)
+    {
+        //convert them to hex
+        return dechex($string);
+    }
+
+    public function decodeGetValues($string)
+    {
+        return hexdec($string);
     }
 
 }//main class

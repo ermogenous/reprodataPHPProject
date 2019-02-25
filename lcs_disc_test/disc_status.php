@@ -20,25 +20,7 @@ if ($_GET['lid'] == '' || is_numeric($_GET['lid']) == false) {
     exit();
 }
 
-if ($_GET['action'] == 'outstanding') {
-    $test = new DiscTest($_GET['lid']);
-    if ($test->statusToOutstanding()) {
-        $db->generateSessionAlertSuccess('Status changed successfully to Outstanding');
-    } else {
-        $db->generateSessionAlertError($test->errorDescription);
-    }
-    header("Location: disc_status.php?lid=" . $_GET['lid']);
-    exit();
-} else if ($_GET['action'] == 'link') {
-    $test = new DiscTest($_GET['lid']);
-    if ($test->statusToLink()) {
-        $db->generateSessionAlertSuccess('Status changed successfully to Link');
-    } else {
-        $db->generateSessionAlertError($test->errorDescription);
-    }
-    header("Location: disc_status.php?lid=" . $_GET['lid']);
-    exit();
-} else if ($_GET['action'] == 'completed') {
+if ($_GET['action'] == 'completed') {
     $test = new DiscTest($_GET['lid']);
     if ($test->statusToCompleted()) {
         $db->generateSessionAlertSuccess('Status changed successfully to Completed');
@@ -49,8 +31,8 @@ if ($_GET['action'] == 'outstanding') {
     exit();
 } else if ($_GET['action'] == 'paid') {
     $test = new DiscTest($_GET['lid']);
-    if ($test->statusToPaid()) {
-        $db->generateSessionAlertSuccess('Status changed successfully to Paid');
+    if ($test->processStatusToPaid()) {
+        $db->generateSessionAlertSuccess('Process Status changed successfully to Paid');
     } else {
         $db->generateSessionAlertError($test->errorDescription);
     }
@@ -69,8 +51,13 @@ if ($_GET['action'] == 'outstanding') {
 
 $db->show_header();
 
-$data = $db->query_fetch('SELECT * FROM lcs_intro_extro_test WHERE ietst_intro_extro_test_ID = ' . $_GET['lid']);
-$tstResult = getDiSCResults($data);
+$disc = new DiscTest($_GET['lid']);
+$data = $disc->data;
+$tstResult = $disc->getTestResults();
+
+if ($data['lcsdc_status'] == 'Completed') {
+    $pieImage = $disc->getPieImageData('embed');
+}
 
 
 if ($_GET['action'] == 'sendLinkEmail') {
@@ -102,16 +89,16 @@ if ($_GET['action'] == 'sendLinkEmail') {
                         <p class="card-text">
                         <div class="row">
                             <div class="col-2 alert alert-info">Όνομα</div>
-                            <div class="col-4 alert"><?php echo $data['ietst_name']; ?></div>
+                            <div class="col-4 alert"><?php echo $data['lcsdc_name']; ?></div>
                             <div class="col-2 alert alert-info">Κατάσταση</div>
-                            <div class="col-4 alert"><?php echo $data['ietst_status']; ?></div>
+                            <div class="col-4 alert"><?php echo $data['lcsdc_status'] . " - " . $data['lcsdc_process_status']; ?></div>
                         </div>
 
                         <div class="row">
                             <div class="col-2 alert alert-info">Email</div>
-                            <div class="col-4 alert"><?php echo $data['ietst_email']; ?></div>
+                            <div class="col-4 alert"><?php echo $data['lcsdc_email']; ?></div>
                             <div class="col-2 alert alert-info">Τηλ.</div>
-                            <div class="col-4 alert"><?php echo $data['ietst_tel']; ?></div>
+                            <div class="col-4 alert"><?php echo $data['lcsdc_tel']; ?></div>
                         </div>
 
                         <div class="row">
@@ -173,115 +160,116 @@ if ($_GET['action'] == 'sendLinkEmail') {
                 </div>
 
                 <div class="row">
+                    <div class="col-12">
+                        <?php if ($data['lcsdc_status'] == 'Completed') { ?>
+                            <img src="data:image/jpeg;base64,<?php echo base64_encode( $pieImage );?>"/>
+                        <?php } ?>
+                    </div>
+                </div>
+
+
+                <div class="row">
                     <div class="col-12">&nbsp;</div>
                 </div>
 
-                <?php if ($data['ietst_status'] == 'Link') { ?>
+                <div class="row">
+                    <div class="col-2 alert alert-info">
+                        <label for="fld_email" class="col-sm-3 col-form-label text-right">Email</label>
+                    </div>
+                    <div class="col-4 alert">
+                        <input name="fld_email" type="text" id="fld_email"
+                               class="form-control"
+                               value="<?php echo $data["lcsdc_email"]; ?>">
+                    </div>
+                    <div class="col-2 alert">
+                        <button type="button" class="form-controm btn btn-primary" onclick="viewLinkEmail();">View
+                            Link Email
+                        </button>
+                    </div>
+                    <div class="col-4 alert"></div>
+                </div>
+
+                <?php if ($_GET['action'] == 'viewLinkEmail') { ?>
+                    <div class="row">
+                        <div class="col-12"><?php echo getEmailLayoutFillTest($data); ?><br><br></div>
+                    </div>
 
                     <div class="row">
-                        <div class="col-2 alert alert-info">
-                            <label for="fld_email" class="col-sm-3 col-form-label text-right">Email</label>
-                        </div>
-                        <div class="col-4 alert">
-                            <input name="fld_email" type="text" id="fld_email"
-                                   class="form-control"
-                                   value="<?php echo $data["ietst_email"]; ?>">
-                        </div>
-                        <div class="col-2 alert">
-                            <button type="button" class="form-controm btn btn-primary" onclick="viewLinkEmail();">View
-                                Link Email
+                        <div class="col-5"></div>
+                        <div class="col-3">
+                            <button type="button" class="btn btn-primary" onclick="sendLinkEmail();">Send Link
+                                Email
                             </button>
                         </div>
-                        <div class="col-4 alert"></div>
-                    </div>
-
-                    <?php if ($_GET['action'] == 'viewLinkEmail') { ?>
-                        <div class="row">
-                            <div class="col-12"><?php echo getEmailLayoutFillTest($data); ?><br><br></div>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-5"></div>
-                            <div class="col-3">
-                                <button type="button" class="btn btn-primary" onclick="sendLinkEmail();">Send Link
-                                    Email
-                                </button>
-                            </div>
-                            <div class="col-4"></div>
-                        </div>
-                    <?php } ?>
-
-                    <div class="row">
-                        <div class="col-12">&nbsp;</div>
+                        <div class="col-4"></div>
                     </div>
                 <?php } ?>
+
+                <div class="row">
+                    <div class="col-12">&nbsp;</div>
+                </div>
 
                 <div class="card">
                     <div class="card-body">
                         <p class="card-text text-center">
-                            <button type="button" value="Back" style="width: 140px;" class="btn btn-primary"
-                                    onclick="goBack();">
-                                Back
-                            </button>
-                            <?php
-                            if ($data['ietst_status'] == 'Link') {
-                                ?>
-                                <button type="button" value="Activate" style="width: 140px;"
-                                        class="btn <?php echo getTestColor('Outstanding'); ?>"
-                                        onclick="makeOutstanding();">
-                                    Outstanding
-                                </button>
+                        <div class="row">
+                            <div class="col-12 text-center">
                                 <?php
-                            }
-                            if ($data['ietst_status'] == 'Outstanding') {
+                                if ($data['lcsdc_status'] == 'Outstanding') {
+                                    ?>
+                                    <button type="button" value="Cancel" style="width: 150px;"
+                                            class="btn <?php echo getTestColor('Completed'); ?>"
+                                            onclick="makeCompleted();">
+                                        Completed
+                                    </button>
+                                    <?php
+                                }
+                                if ($data['lcsdc_status'] == 'Completed' && $data['lcsdc_process_status'] == 'UnPaid') {
+                                    ?>
+                                    <button type="button" value="Cancel" style="width: 150px;" class="btn bgGoldColor"
+                                            onclick="makePaid();">
+                                        Paid
+                                    </button>
+                                    <?php
+                                }
+                                if ($data['lcsdc_status'] == 'Outstanding') {
+                                    ?>
+                                    <button type="button" value="Cancel" style="width: 150px;"
+                                            class="btn <?php echo getTestColor('Deleted'); ?>"
+                                            onclick="makeDelete();">
+                                        Delete
+                                    </button>
+                                    <?php
+                                }
+
+                                if ($data['lcsdc_status'] == 'Completed') {
+                                    ?>
+                                    <button type="button" value="SendEmail" style="width: 150px;"
+                                            class="btn btn-success"
+                                            onclick="sendEmail();">
+                                        Send Email
+                                    </button>
+                                    <?php
+                                }
                                 ?>
-                                <button type="button" value="Delete" style="width: 140px;"
-                                        class="btn <?php echo getTestColor('Link'); ?>"
-                                        onclick="makeLink();">
-                                    Link
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12" style="height: 15px"></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12 text-center">
+                                <button type="button" value="Back" style="width: 140px;" class="btn btn-primary"
+                                        onclick="goBack();">
+                                    Back
                                 </button>
-                                <?php
-                            }
-                            if ($data['ietst_status'] == 'Outstanding' || $data['agr_status'] == 'Link') {
-                                ?>
-                                <button type="button" value="Cancel" style="width: 150px;"
-                                        class="btn <?php echo getTestColor('Completed'); ?>"
-                                        onclick="makeCompleted();">
-                                    Completed
+                                <button type="button" value="Modify" style="width: 150px;" class="btn btn-success"
+                                        onclick="modifyTest();">
+                                    <?php if ($data['lcsdc_status'] == 'Pending') echo 'Modify'; else echo 'View'; ?>
                                 </button>
-                                <?php
-                            }
-                            if ($data['ietst_status'] == 'Completed') {
-                                ?>
-                                <button type="button" value="Cancel" style="width: 150px;"
-                                        class="btn <?php echo getTestColor('Paid'); ?>"
-                                        onclick="makePaid();">
-                                    Paid
-                                </button>
-                                <?php
-                            }
-                            if ($data['ietst_status'] == 'Outstanding') {
-                                ?>
-                                <button type="button" value="Cancel" style="width: 150px;"
-                                        class="btn <?php echo getTestColor('Deleted'); ?>"
-                                        onclick="makeDelete();">
-                                    Delete
-                                </button>
-                                <?php
-                            }
-                            if ($data['ietst_status'] == 'Completed' || $data['ietst_status'] == 'Paid') {
-                                ?>
-                                <button type="button" value="Cancel" style="width: 150px;" class="btn bgGoldColor"
-                                        onclick="viewEmail();">
-                                    View Email
-                                </button>
-                                <?php
-                            }
-                            ?>
-                            <button type="button" value="Modify" style="width: 150px;" class="btn btn-success"
-                                    onclick="modifyTest();">
-                                <?php if ($data['ietst_status'] == 'Pending') echo 'Modify'; else echo 'View'; ?>
-                            </button>
+                            </div>
+                        </div>
                         </p>
                     </div>
                 </div>
@@ -293,17 +281,6 @@ if ($_GET['action'] == 'sendLinkEmail') {
         </div>
     </div>
     <script>
-        function makeOutstanding() {
-            if (confirm('Are you sure you want to change the status to Outstanding?')) {
-                window.location.assign('disc_status.php?lid=<?php echo $_GET['lid'];?>&action=outstanding');
-            }
-        }
-
-        function makeLink() {
-            if (confirm('Are you sure you want to change the status to Link?')) {
-                window.location.assign('disc_status.php?lid=<?php echo $_GET['lid'];?>&action=link');
-            }
-        }
 
         function makeCompleted() {
             if (confirm('Are you sure you want to change the status to Completed?')) {
@@ -324,7 +301,7 @@ if ($_GET['action'] == 'sendLinkEmail') {
         }
 
         function modifyTest() {
-            window.location.assign('disc_modify.php?lid=<?php echo $_GET['lid'];?>');
+            window.location.assign('disc_modify.php?lid=<?php echo $_GET['lid'];?>&lg=tr');
         }
 
         function viewEmail() {
@@ -341,6 +318,10 @@ if ($_GET['action'] == 'sendLinkEmail') {
 
         function goBack() {
             window.location.assign('disc_list.php');
+        }
+
+        function sendEmail() {
+            window.open('view_email_html.php?lid=<?php echo $_GET['lid'];?>','_blank');
         }
     </script>
 <?php

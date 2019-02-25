@@ -50,6 +50,13 @@ Class BasicAccounts {
         return $this->errorDescription;
     }
 
+    //TRANSACTIONS
+    public function insertTransaction($drAccount, $amount, $crAccount){
+
+    }
+
+
+
 
     function createAccountForAllCustomers(){
         global $db;

@@ -176,42 +176,6 @@ function template_header()
                         </div>
                     </li>
 
-                    <?php if ($db->dbSettings['ina_enable_agent_insurance']['value'] == 1) { ?>
-                        <!-- Agent Insurance -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-clipboard-list"></i> Agent Insurance
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/ainsurance/policies.php">
-                                    <i class="far fa-calendar-alt"></i> View Policies</a>
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/ainsurance/policy_modify.php">
-                                    <i class="far fa-calendar-alt"></i> New Policy</a>
-                            </div>
-                        </li>
-                    <?php } ?>
-
-                    <?php if ($db->dbSettings['ina_enable_agent_insurance']['value'] == 1) { ?>
-                        <!-- Accounts -->
-                        <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-clipboard-list"></i> Accounts
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/accounts/accounts/accounts.php">
-                                    <i class="far fa-calendar-alt"></i> View Accounts</a>
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/accounts/transactions/transactions.php">
-                                    <i class="far fa-calendar-alt"></i> View Transactions</a>
-                            </div>
-                        </li>
-                    <?php } ?>
-
                     <!-- USERS -->
                     <?php if ($db->user_data["usr_user_rights"] == 0) { ?>
                         <li class="nav-item dropdown">
@@ -248,25 +212,7 @@ function template_header()
                             </div>
                         </li>
                     <?php } ?>
-                    <!-- Insurance Agents Settings -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            IA<i class="fas fa-cogs"></i>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/ainsurance/codes/insurance_companies.php">
-                                <i class="fab fa-linode"></i> Insurance Companies</a>
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/send_auto_emails/send_auto_emails.php">
-                                <i class="fas fa-envelope"></i> Auto Emails</a>
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/settings/settings_update.php">
-                                <i class="fas fa-screwdriver"></i> System Settings</a>
-                        </div>
 
-                    </li>
                     <!-- Settings -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -286,20 +232,6 @@ function template_header()
                         </div>
 
                     </li>
-
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-compress"></i>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/lcs_intro_extro_test/intro_extro_test_list.php">
-                                <i class="fab fa-linode"></i> Lcs Intro/Extrovert Test List</a>
-                        </div>
-
-                    </li>
-
 
                 <?php } ?>
 

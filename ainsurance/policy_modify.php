@@ -358,7 +358,7 @@ $db->show_header();
                             <div class="tab-pane fade" id="premium" role="tabpanel" aria-labelledby="premium-tab">
                                 <iframe src="policyTabs/premium.php?pid=<?php echo $_GET["lid"] . "&type=" . $policyTypes[$data['inapol_type_code_ID']]; ?>"
                                         frameborder="0" id="premiumTab" name="premiumTab"
-                                        scrolling="0" width="100%" height="350"></iframe>
+                                        scrolling="0" width="100%" height="375"></iframe>
                             </div>
 
                             <div class="tab-pane fade" id="installments" role="tabpanel" aria-labelledby="installments-tab">

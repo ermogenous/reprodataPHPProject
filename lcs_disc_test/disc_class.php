@@ -19,7 +19,7 @@ Class DiscTest
         global $db;
         $this->testID = $id;
         if ($this->testID > 0 && is_numeric($this->testID) == true) {
-            $this->data = $db->query_fetch('SELECT * FROM lcs_intro_extro_test WHERE ietst_intro_extro_test_ID = ' . $id);
+            $this->data = $db->query_fetch('SELECT * FROM lcs_disc_test WHERE lcsdc_disc_test_ID = ' . $id);
         } else {
             $this->error = true;
             $this->errorDescription[] = 'Must provide valid ID';
@@ -31,56 +31,31 @@ Class DiscTest
     function verifyCompletion()
     {
 
-        if ($this->data['ietst_name'] == '') {
+        if ($this->data['lcsdc_name'] == '') {
             $this->error = true;
             $this->errorDescription[] = 'Το Όνομα δεν είναι συμπληρωμένο';
         }
-        if ($this->data['ietst_tel'] == '') {
+        if ($this->data['lcsdc_tel'] == '') {
             $this->error = true;
             $this->errorDescription[] = 'Το Τηλέφωνο δεν είναι συμπληρωμένο';
         }
-        if ($this->data['ietst_email'] == '') {
+        if ($this->data['lcsdc_email'] == '') {
             $this->error = true;
             $this->errorDescription[] = 'Το Email δεν είναι συμπληρωμένο';
         }
 
         for ($i = 1; $i <= 28; $i++) {
-            if ($this->data['ietst_question_' . $i] != 'A' || $this->data['ietst_question_' . $i] != 'B') {
+            if ($this->data['lcsdc_question_' . $i] != 'A' && $this->data['lcsdc_question_' . $i] != 'B') {
+
                 $this->error = true;
                 $this->errorDescription[] = 'Ερώτηση ' . $i . ' δεν είναι συμπληρωμένη';
             }
         }
-        return $this->error;
-    }
-
-    function statusToOutstanding(){
-        global $db;
-        if ($this->data['ietst_status'] == 'Link'){
-            $newData['status'] = 'Outstanding';
-            $db->db_tool_update_row('lcs_intro_extro_test', $newData, "`ietst_intro_extro_test_ID` = " . $this->testID,
-                $this->testID, '', 'execute', 'ietst_');
-            return true;
+        if($this->error == true){
+            return false;
         }
         else {
-            $this->error = true;
-            $this->errorDescription = 'Status must be Link for change to Outstanding';
-            return false;
-        }
-    }
-
-
-    function statusToLink()
-    {
-        global $db;
-        if ($this->data['ietst_status'] == 'Outstanding') {
-            $newData['status'] = 'Link';
-            $db->db_tool_update_row('lcs_intro_extro_test', $newData, "`ietst_intro_extro_test_ID` = " . $this->testID,
-                $this->testID, '', 'execute', 'ietst_');
             return true;
-        } else {
-            $this->error = true;
-            $this->errorDescription = 'Status must be Outstanding for change to Link';
-            return false;
         }
     }
 
@@ -88,10 +63,10 @@ Class DiscTest
     {
         global $db;
         if ($this->verifyCompletion()) {
-            if ($this->data['ietst_status'] == 'Outstanding' || $this->data['ietst_status'] == 'Link') {
+            if ($this->data['lcsdc_status'] == 'Outstanding') {
                 $newData['status'] = 'Completed';
-                $db->db_tool_update_row('lcs_intro_extro_test', $newData, "`ietst_intro_extro_test_ID` = " . $this->testID,
-                    $this->testID, '', 'execute', 'ietst_');
+                $db->db_tool_update_row('lcs_disc_test', $newData, "`lcsdc_disc_test_ID` = " . $this->testID,
+                    $this->testID, '', 'execute', 'lcsdc_');
                 return true;
             } else {
                 $this->error = true;
@@ -99,35 +74,47 @@ Class DiscTest
                 return false;
             }
         } else {
+            $this->error = true;
+            $this->errorDescription = 'Must answer all questions to set to completed';
             return false;
         }
     }
 
-    function statusToPaid()
+    function processStatusToPaid()
     {
         global $db;
         if ($this->verifyCompletion()) {
-            if ($this->data['ietst_status'] == 'Completed') {
-                $newData['status'] = 'Paid';
-                $db->db_tool_update_row('lcs_intro_extro_test', $newData, "`ietst_intro_extro_test_ID` = " . $this->testID,
-                    $this->testID, '', 'execute', 'ietst_');
-                return true;
+            if ($this->data['lcsdc_status'] == 'Completed') {
+                if ($this->data['lcsdc_process_status'] == 'UnPaid'){
+                    $newData['process_status'] = 'Paid';
+                    $db->db_tool_update_row('lcs_disc_test', $newData, "`lcsdc_disc_test_ID` = " . $this->testID,
+                        $this->testID, '', 'execute', 'lcsdc_');
+                    return true;
+                }
+                else {
+                    $this->error = true;
+                    $this->errorDescription = 'Process Status must be UnPaid for change to Paid';
+                    return false;
+                }
+
             } else {
                 $this->error = true;
-                $this->errorDescription = 'Status must be Completed for change to Paid';
+                $this->errorDescription = 'Process Status must be Completed for change to Paid';
                 return false;
             }
         } else {
+            $this->error = true;
+            $this->errorDescription = 'All questions are not filled.';
             return false;
         }
     }
 
     function deleteTest(){
         global $db;
-        if ($this->data['ietst_status'] == 'Outstanding'){
+        if ($this->data['lcsdc_status'] == 'Outstanding'){
             $newData['status'] = 'Deleted';
-            $db->db_tool_update_row('lcs_intro_extro_test', $newData, "`ietst_intro_extro_test_ID` = " . $this->testID,
-                $this->testID, '', 'execute', 'ietst_');
+            $db->db_tool_update_row('lcs_disc_test', $newData, "`lcsdc_disc_test_ID` = " . $this->testID,
+                $this->testID, '', 'execute', 'lcsdc_');
             return true;
         }
         else {
@@ -145,7 +132,7 @@ Class DiscTest
     }
 
     function getEmailHtml(){
-        if ($this->data['ietst_status'] == 'Completed' || $this->data['ietst_status'] == 'Paid') {
+        if ($this->data['lcsdc_status'] == 'Completed' || $this->data['lcsdc_status'] == 'Paid') {
             include('email_layout.php');
             include('questions_list.php');
             $testResults = getDiSCResults($this->data);
@@ -155,6 +142,179 @@ Class DiscTest
         else {
             return '';
         }
+    }
+
+    function getTestResults(){
+        $highDominance = 0;
+        $lowDominance = 0;
+        $highSocial = 0;
+        $lowSocial = 0;
+
+        $testData = $this->data;
+
+        //high dominance
+        if ($testData['lcsdc_question_3'] == 'A') $highDominance++;
+        if ($testData['lcsdc_question_4'] == 'A') $highDominance++;
+        if ($testData['lcsdc_question_5'] == 'A') $highDominance++;
+        if ($testData['lcsdc_question_10'] == 'A') $highDominance++;
+        if ($testData['lcsdc_question_11'] == 'A') $highDominance++;
+        if ($testData['lcsdc_question_14'] == 'A') $highDominance++;
+        if ($testData['lcsdc_question_16'] == 'A') $highDominance++;
+        if ($testData['lcsdc_question_20'] == 'A') $highDominance++;
+        if ($testData['lcsdc_question_21'] == 'A') $highDominance++;
+        if ($testData['lcsdc_question_22'] == 'A') $highDominance++;
+        if ($testData['lcsdc_question_24'] == 'A') $highDominance++;
+        if ($testData['lcsdc_question_26'] == 'A') $highDominance++;
+        if ($testData['lcsdc_question_27'] == 'A') $highDominance++;
+        if ($testData['lcsdc_question_28'] == 'A') $highDominance++;
+
+        //low dominance
+        if ($testData['lcsdc_question_3'] == 'B') $lowDominance++;
+        if ($testData['lcsdc_question_4'] == 'B') $lowDominance++;
+        if ($testData['lcsdc_question_5'] == 'B') $lowDominance++;
+        if ($testData['lcsdc_question_10'] == 'B') $lowDominance++;
+        if ($testData['lcsdc_question_11'] == 'B') $lowDominance++;
+        if ($testData['lcsdc_question_14'] == 'B') $lowDominance++;
+        if ($testData['lcsdc_question_16'] == 'B') $lowDominance++;
+        if ($testData['lcsdc_question_20'] == 'B') $lowDominance++;
+        if ($testData['lcsdc_question_21'] == 'B') $lowDominance++;
+        if ($testData['lcsdc_question_22'] == 'B') $lowDominance++;
+        if ($testData['lcsdc_question_24'] == 'B') $lowDominance++;
+        if ($testData['lcsdc_question_26'] == 'B') $lowDominance++;
+        if ($testData['lcsdc_question_27'] == 'B') $lowDominance++;
+        if ($testData['lcsdc_question_28'] == 'B') $lowDominance++;
+
+        //high sociability
+        if ($testData['lcsdc_question_1'] == 'A') $highSocial++;
+        if ($testData['lcsdc_question_2'] == 'A') $highSocial++;
+        if ($testData['lcsdc_question_6'] == 'A') $highSocial++;
+        if ($testData['lcsdc_question_7'] == 'A') $highSocial++;
+        if ($testData['lcsdc_question_8'] == 'A') $highSocial++;
+        if ($testData['lcsdc_question_9'] == 'A') $highSocial++;
+        if ($testData['lcsdc_question_12'] == 'A') $highSocial++;
+        if ($testData['lcsdc_question_13'] == 'A') $highSocial++;
+        if ($testData['lcsdc_question_15'] == 'A') $highSocial++;
+        if ($testData['lcsdc_question_17'] == 'A') $highSocial++;
+        if ($testData['lcsdc_question_18'] == 'A') $highSocial++;
+        if ($testData['lcsdc_question_19'] == 'A') $highSocial++;
+        if ($testData['lcsdc_question_23'] == 'A') $highSocial++;
+        if ($testData['lcsdc_question_25'] == 'A') $highSocial++;
+
+        //low sociability
+        if ($testData['lcsdc_question_1'] == 'B') $lowSocial++;
+        if ($testData['lcsdc_question_2'] == 'B') $lowSocial++;
+        if ($testData['lcsdc_question_6'] == 'B') $lowSocial++;
+        if ($testData['lcsdc_question_7'] == 'B') $lowSocial++;
+        if ($testData['lcsdc_question_8'] == 'B') $lowSocial++;
+        if ($testData['lcsdc_question_9'] == 'B') $lowSocial++;
+        if ($testData['lcsdc_question_12'] == 'B') $lowSocial++;
+        if ($testData['lcsdc_question_13'] == 'B') $lowSocial++;
+        if ($testData['lcsdc_question_15'] == 'B') $lowSocial++;
+        if ($testData['lcsdc_question_17'] == 'B') $lowSocial++;
+        if ($testData['lcsdc_question_18'] == 'B') $lowSocial++;
+        if ($testData['lcsdc_question_19'] == 'B') $lowSocial++;
+        if ($testData['lcsdc_question_23'] == 'B') $lowSocial++;
+        if ($testData['lcsdc_question_25'] == 'B') $lowSocial++;
+
+        $result['HighDominance'] = $highDominance;
+        $result['LowDominance'] = $lowDominance;
+        $result['HighSocial'] = $highSocial;
+        $result['LowSocial'] = $lowSocial;
+
+        $result['HighDominance-per'] = round( ($highDominance / 28)*100 ,2);
+        $result['LowDominance-per'] = round( ($lowDominance / 28)*100 ,2);
+        $result['HighSocial-per'] = round( ($highSocial / 28)*100 ,2);
+        $result['LowSocial-per'] = round( ($lowSocial / 28)*100 ,2);
+
+        return $result;
+    }
+
+    function getPieImageData($image = 'path'){
+        global $main;
+
+        $testResults = $this->getTestResults();
+        //print_r($testResults);exit();
+
+        include_once("../tools/pChart2.1.4/class/pData.class.php");
+        include_once("../tools/pChart2.1.4/class/pDraw.class.php");
+        include_once("../tools/pChart2.1.4/class/pPie.class.php");
+        include_once("../tools/pChart2.1.4/class/pImage.class.php");
+
+        $width = 950;
+        $height = 460;
+        $piePositionX = 480;
+        $piePositionY = 200;
+        $pieSize = 220;
+        $legendPositionX = 30;
+        $legendPositionY = 350;
+        $legendFontSize = 15;
+
+        $title = 'DiSC Results For '.$this->data['lcsdc_name'];
+        $titleFontSize = 12;
+
+        /* Create and populate the pData object */
+        $MyData = new pData();
+        $MyData->addPoints(
+            array(
+                $testResults['HighDominance'],
+                $testResults['LowDominance'],
+                $testResults['HighSocial'],
+                $testResults['LowSocial']
+            ),"ScoreA");
+        $MyData->setSerieDescription("ScoreA","Application A");
+
+        /* Define the absissa serie */
+        $MyData->addPoints(
+            array(
+                "ΕΥΣΥΝΕΙΔΗΤΟΣ ".$testResults['HighDominance-per']."%",
+                "ΚΥΡΙΑΡΧΟΣ ".$testResults['LowDominance-per']."%",
+                "ΣΤΑΘΕΡΟΣ ".$testResults['HighSocial-per']."%",
+                "ΕΜΠΝΕΥΣΤΙΚΟΣ ".$testResults['LowSocial-per']."%"
+            ),"Labels");
+        $MyData->setAbscissa("Labels");
+
+        /* Create the pChart object */
+        $myPicture = new pImage($width,$height,$MyData);
+
+        /* Draw a solid background */
+        $Settings = array("R"=>170, "G"=>183, "B"=>87, "Dash"=>1, "DashR"=>190, "DashG"=>203, "DashB"=>107);
+        $myPicture->drawFilledRectangle(0,0,$width,$height,$Settings);
+
+        /* Overlay with a gradient */
+        $Settings = array("StartR"=>219, "StartG"=>231, "StartB"=>139, "EndR"=>1, "EndG"=>138, "EndB"=>68, "Alpha"=>50);
+        $myPicture->drawGradientArea(0,0,$width,$height,DIRECTION_VERTICAL,$Settings);
+        $myPicture->drawGradientArea(0,0,$width,20,DIRECTION_VERTICAL,array("StartR"=>0,"StartG"=>0,"StartB"=>0,"EndR"=>50,"EndG"=>50,"EndB"=>50,"Alpha"=>100));
+
+        /* Add a border to the picture */
+        $myPicture->drawRectangle(0,0,($width-1),($height-1),array("R"=>0,"G"=>0,"B"=>0));
+
+        /* Write the picture title */
+        $myPicture->setFontProperties(array("FontName"=>$main['local_url']."/tools/pChart2.1.4/fonts/Silkscreen.ttf","FontSize"=>$titleFontSize));
+        $myPicture->drawText(10,16,$title,array("R"=>255,"G"=>255,"B"=>255));
+
+        /* Set the default font properties */
+        $myPicture->setFontProperties(array("FontName"=>$main['local_url']."/tools/pChart2.1.4/fonts/greek/OpenSans-Regular.ttf","FontSize"=>$legendFontSize,"R"=>20,"G"=>80,"B"=>80));
+
+        /* Create the pPie object */
+        $PieChart = new pPie($myPicture,$MyData);
+
+        /* Draw an AA pie chart */
+        $PieChart->draw3DPie($piePositionX,$piePositionY,array("Radius"=>$pieSize,"DrawLabels"=>TRUE,"LabelStacked"=>TRUE,"Border"=>TRUE));
+
+        /* Write the legend box */
+        $myPicture->setShadow(FALSE);
+        $PieChart->drawPieLegend($legendPositionX,$legendPositionY,array("Alpha"=>60));
+
+        /* Render the picture (choose the best way) */
+
+        if ($image == 'path'){
+            $pic = $myPicture->getPicturePath();
+        }
+        else {
+            $pic = $myPicture->getPictureData();
+        }
+
+        return $pic;
     }
 
 }
