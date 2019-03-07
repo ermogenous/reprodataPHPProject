@@ -8,6 +8,7 @@
 
 include("../include/main.php");
 include('questions_list.php');
+include('disc_class.php');
 
 if ($_GET['lg'] == 'tr') {
     $db = new Main();
@@ -17,6 +18,7 @@ if ($_GET['lg'] == 'tr') {
     $lidEncrypt = $_GET['lid'];
     $_GET['lid'] = $db->decrypt($_GET['lid']);
     $section = 'public';
+
 }
 $db->admin_title = "LCS Disc Test Modify";
 
@@ -43,7 +45,15 @@ if ($_POST["action"] == "insert") {
     $db->db_tool_update_row('lcs_disc_test', $_POST, "`lcsdc_disc_test_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'lcsdc_');
 
-    if ($db->adminLogin == true) {
+    //check if the test is completed
+    $disc = new DiscTest($_POST['lid']);
+    if ($disc->verifyCompletion() == true && $section == 'public'){
+        $disc->statusToCompleted();
+    }
+
+
+
+    if ($section == 'admin') {
         header("Location: disc_list.php");
         exit();
     } else {
@@ -70,7 +80,7 @@ if ($_GET["lid"] != "") {
     if ($section == 'public'){
 
         //check if the test is completed
-        if ($data['lcsdc_status'] != 'Outstanding'){
+        if ($data['lcsdc_status'] != 'Outstanding' && $_GET['page'] != 4){
             header("Location: ../login.php");
             exit();
         }
@@ -112,7 +122,6 @@ $db->show_header();
                                     <input name="fld_tel" type="text" id="fld_tel"
                                            class="form-control"
                                            value="<?php echo $data["lcsdc_tel"]; ?>"
-                                        <?php echo ifRequired(); ?>
                                         <?php echo makeDisable(); ?>>
                                 </div>
                             </div>
@@ -126,7 +135,7 @@ $db->show_header();
                                         <?php echo makeDisable(); ?>>
                                 </div>
                             </div>
-
+                            <?php if ($section == 'admin') { ?>
                             <div class="form-group row">
                                 <label for="fld_process_status" class="col-sm-3 col-form-label text-right">Process
                                     Status</label>
@@ -146,6 +155,8 @@ $db->show_header();
                                     </select>
                                 </div>
                             </div>
+                            <?php } ?>
+
                         </div>
 
                         <?php
@@ -238,7 +249,7 @@ $db->show_header();
 
                             <?php if (($data['lcsdc_status'] == 'Outstanding' || $data['lcsdc_status'] == 'Link' || $_GET['lid'] == '') && ($_GET['page'] == '' || $_GET['page'] != 4)) { ?>
                                 <input type="submit" name="Submit" id="Submit"
-                                       value="<?php if ($_GET["lid"] == "") echo "Καταχώρησε"; else echo "Αλλαγή στης"; ?> Επιλογές"
+                                       value="<?php if ($_GET["lid"] == "") echo "Καταχώρησε"; else echo "Συνέχεια"; ?>"
                                        class="btn btn-secondary" onclick="submitForm()">
                             <?php } ?>
                         </div>

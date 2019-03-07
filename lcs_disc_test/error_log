@@ -1,0 +1,7 @@
+[22-Feb-2019 14:21:27 Europe/Athens] PHP Fatal error:  Cannot declare class pData, because the name is already in use in /home/dc2vz8797vk4/public_html/clients/lcs/tools/pChart2.1.4/class/pData.class.php on line 56
+[22-Feb-2019 14:23:19 Europe/Athens] PHP Fatal error:  Cannot declare class pData, because the name is already in use in /home/dc2vz8797vk4/public_html/clients/lcs/tools/pChart2.1.4/class/pData.class.php on line 56
+[22-Feb-2019 14:24:05 Europe/Athens] PHP Fatal error:  Cannot declare class pData, because the name is already in use in /home/dc2vz8797vk4/public_html/clients/lcs/tools/pChart2.1.4/class/pData.class.php on line 56
+[26-Feb-2019 10:37:40 Europe/Athens] PHP Fatal error:  Uncaught Error: Class 'DiscTest' not found in /home/dc2vz8797vk4/public_html/clients/lcs/lcs_disc_test/disc_modify.php:48
+Stack trace:
+#0 {main}
+  thrown in /home/dc2vz8797vk4/public_html/clients/lcs/lcs_disc_test/disc_modify.php on line 48

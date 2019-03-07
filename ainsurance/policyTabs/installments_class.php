@@ -118,6 +118,8 @@ Class Installments
                     $data['document_date'] = $date;
                     $data['insert_date'] = date('Y-m-d');
                     $data['policy_ID'] = $this->policyID;
+                    $data['paid_status'] = 'UnPaid';
+                    $data['paid_amount'] = 0;
 
                     //check if the installment date is withing the range of the policy
                     $policyExpiryDateSplit = explode('-',$this->policyData['inapol_expiry_date']);
@@ -160,6 +162,8 @@ Class Installments
                         $data['document_date'] = $date;
                         $data['insert_date'] = date('Y-m-d');
                         $data['policy_ID'] = $this->policyID;
+                        $data['paid_status'] = 'UnPaid';
+                        $data['paid_amount'] = 0;
 
                         //check if the installment date is withing the range of the policy
                         $policyExpiryDateSplit = explode('-',$this->policyData['inapol_expiry_date']);

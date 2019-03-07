@@ -29,7 +29,7 @@ $table->generate_data();
         <div class="col-lg-10">
             <div class="text-center"><?php $table->show_pages_links(); ?></div>
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover" id="myTableList">
                     <thead class="tableHeader">
                     <tr>
                         <th scope="col"><?php $table->display_order_links('ID', 'lcsdc_disc_test_ID'); ?></th>
@@ -53,7 +53,7 @@ $table->generate_data();
                         $disc = new DiscTest($row['lcsdc_disc_test_ID']);
                         $tstResults = $disc->getTestResults();
                         ?>
-                        <tr onclick="editLine(<?php echo $row["lcsdc_disc_test_ID"];?>);">
+                        <tr>
                             <th scope="row" class="<?php echo getTestColor($row['lcsdc_status']);?>"><?php echo $row["lcsdc_disc_test_ID"]; ?></th>
                             <td><?php echo $row["lcsdc_name"]; ?></td>
                             <td><?php echo $row["lcsdc_status"]; ?></td>
@@ -63,6 +63,8 @@ $table->generate_data();
                             <td><?php echo $tstResults['HighSocial']; ?></td>
                             <td><?php echo $tstResults['LowSocial']; ?></td>
                             <td>
+                                <input type="hidden" id="myLineID" name="myLineID" value="<?php echo $row["lcsdc_disc_test_ID"]; ?>">
+
                                 <a href="disc_modify.php?lg=tr&lid=<?php echo $row["lcsdc_disc_test_ID"]; ?>"><i
                                         class="fas fa-edit iconsLines"></i></a>&nbsp
                                 <a href="disc_delete.php?lid=<?php echo $row["lcsdc_disc_test_ID"]; ?>"
@@ -109,7 +111,19 @@ $table->generate_data();
         if (ignoreEdit === false) {
             window.location.assign('disc_modify.php?lg=tr&lid=' + id);
         }
+        ignoreEdit = false;
     }
+
+    $(document).ready(function() {
+
+        $('#myTableList tr').click(function() {
+            var href = $(this).find('input[id=myLineID]').val();
+            if(href) {
+                editLine(href);
+            }
+        });
+
+    });
 
 </script>
 <?php

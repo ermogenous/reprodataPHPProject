@@ -346,6 +346,11 @@ $db->show_header();
                                 <a class="nav-link" id="installments-tab" data-toggle="tab" href="#installments" role="tab"
                                    aria-controls="installments" aria-selected="false">Installments</a>
                             </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" id="payments-tab" data-toggle="tab" href="#payments" role="tab"
+                                   aria-controls="payments" aria-selected="false">Payments</a>
+                            </li>
                         </ul>
                         <div class="tab-content" id="myTabContent">
                             <div class="tab-pane fade show active" id="items" role="tabpanel"
@@ -364,6 +369,12 @@ $db->show_header();
                             <div class="tab-pane fade" id="installments" role="tabpanel" aria-labelledby="installments-tab">
                                 <iframe src="policyTabs/installments.php?pid=<?php echo $_GET["lid"] . "&type=" . $policyTypes[$data['inapol_type_code_ID']]; ?>"
                                         frameborder="0" id="installmentsTab" name="installmentsTab"
+                                        scrolling="0" width="100%" height="600"></iframe>
+                            </div>
+
+                            <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
+                                <iframe src="policyTabs/payments.php?pid=<?php echo $_GET["lid"]; ?>"
+                                        frameborder="0" id="paymentsTab" name="paymentsTab"
                                         scrolling="0" width="100%" height="600"></iframe>
                             </div>
                         </div>

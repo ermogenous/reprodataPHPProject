@@ -35,10 +35,11 @@ Class DiscTest
             $this->error = true;
             $this->errorDescription[] = 'Το Όνομα δεν είναι συμπληρωμένο';
         }
-        if ($this->data['lcsdc_tel'] == '') {
+        /*if ($this->data['lcsdc_tel'] == '') {
             $this->error = true;
             $this->errorDescription[] = 'Το Τηλέφωνο δεν είναι συμπληρωμένο';
         }
+        */
         if ($this->data['lcsdc_email'] == '') {
             $this->error = true;
             $this->errorDescription[] = 'Το Email δεν είναι συμπληρωμένο';
@@ -240,20 +241,25 @@ Class DiscTest
         include_once("../tools/pChart2.1.4/class/pPie.class.php");
         include_once("../tools/pChart2.1.4/class/pImage.class.php");
 
-        $width = 950;
-        $height = 460;
-        $piePositionX = 480;
-        $piePositionY = 200;
-        $pieSize = 220;
+        $width = 900;
+        $height = 400;
+        $piePositionX = 450;
+        $piePositionY = 220;
+        $pieSize = 180;
+        $pieHeight = 36;
         $legendPositionX = 30;
         $legendPositionY = 350;
         $legendFontSize = 15;
 
-        $title = 'DiSC Results For '.$this->data['lcsdc_name'];
-        $titleFontSize = 12;
+        $title = ''; //'DiSC Results For '.$this->data['lcsdc_name'];
+        $titleFontSize = 9;
+        $titleHeight = 0;
 
         /* Create and populate the pData object */
         $MyData = new pData();
+        //set the palette
+        $MyData->loadPalette('pie_color_palette.color',TRUE);
+
         $MyData->addPoints(
             array(
                 $testResults['HighDominance'],
@@ -266,12 +272,13 @@ Class DiscTest
         /* Define the absissa serie */
         $MyData->addPoints(
             array(
-                "ΕΥΣΥΝΕΙΔΗΤΟΣ ".$testResults['HighDominance-per']."%",
-                "ΚΥΡΙΑΡΧΟΣ ".$testResults['LowDominance-per']."%",
-                "ΣΤΑΘΕΡΟΣ ".$testResults['HighSocial-per']."%",
-                "ΕΜΠΝΕΥΣΤΙΚΟΣ ".$testResults['LowSocial-per']."%"
+                $testResults['HighDominance-per']."%"." ΕΥΣΥΝΕΙΔΗΤΟΣ",
+                $testResults['LowDominance-per']."% "." ΚΥΡΙΑΡΧΟΣ",
+                $testResults['HighSocial-per']."% "." ΣΤΑΘΕΡΟΣ",
+                $testResults['LowSocial-per']."% "." ΕΜΠΝΕΥΣΤΙΚΟΣ"
             ),"Labels");
         $MyData->setAbscissa("Labels");
+
 
         /* Create the pChart object */
         $myPicture = new pImage($width,$height,$MyData);
@@ -281,9 +288,10 @@ Class DiscTest
         $myPicture->drawFilledRectangle(0,0,$width,$height,$Settings);
 
         /* Overlay with a gradient */
-        $Settings = array("StartR"=>219, "StartG"=>231, "StartB"=>139, "EndR"=>1, "EndG"=>138, "EndB"=>68, "Alpha"=>50);
+        $Settings = array("StartR"=>255, "StartG"=>255, "StartB"=>255, "EndR"=>255, "EndG"=>255, "EndB"=>255, "Alpha"=>255);
         $myPicture->drawGradientArea(0,0,$width,$height,DIRECTION_VERTICAL,$Settings);
-        $myPicture->drawGradientArea(0,0,$width,20,DIRECTION_VERTICAL,array("StartR"=>0,"StartG"=>0,"StartB"=>0,"EndR"=>50,"EndG"=>50,"EndB"=>50,"Alpha"=>100));
+        //section for the title
+        $myPicture->drawGradientArea(0,0,$width,$titleHeight,DIRECTION_VERTICAL,array("StartR"=>203,"StartG"=>38,"StartB"=>43,"EndR"=>203,"EndG"=>38,"EndB"=>43,"Alpha"=>100));
 
         /* Add a border to the picture */
         $myPicture->drawRectangle(0,0,($width-1),($height-1),array("R"=>0,"G"=>0,"B"=>0));
@@ -292,6 +300,7 @@ Class DiscTest
         $myPicture->setFontProperties(array("FontName"=>$main['local_url']."/tools/pChart2.1.4/fonts/Silkscreen.ttf","FontSize"=>$titleFontSize));
         $myPicture->drawText(10,16,$title,array("R"=>255,"G"=>255,"B"=>255));
 
+
         /* Set the default font properties */
         $myPicture->setFontProperties(array("FontName"=>$main['local_url']."/tools/pChart2.1.4/fonts/greek/OpenSans-Regular.ttf","FontSize"=>$legendFontSize,"R"=>20,"G"=>80,"B"=>80));
 
@@ -299,11 +308,18 @@ Class DiscTest
         $PieChart = new pPie($myPicture,$MyData);
 
         /* Draw an AA pie chart */
-        $PieChart->draw3DPie($piePositionX,$piePositionY,array("Radius"=>$pieSize,"DrawLabels"=>TRUE,"LabelStacked"=>TRUE,"Border"=>TRUE));
+        $PieChart->draw3DPie($piePositionX,$piePositionY,
+            array(
+                "Radius"=>$pieSize,
+                "DrawLabels"=>TRUE,
+                "LabelStacked"=>TRUE,
+                "Border"=>TRUE,
+                "SliceHeight"=>$pieHeight
+            ));
 
         /* Write the legend box */
         $myPicture->setShadow(FALSE);
-        $PieChart->drawPieLegend($legendPositionX,$legendPositionY,array("Alpha"=>60));
+        //$PieChart->drawPieLegend($legendPositionX,$legendPositionY,array("Alpha"=>60));
 
         /* Render the picture (choose the best way) */
 

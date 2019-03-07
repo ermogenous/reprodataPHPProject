@@ -1279,6 +1279,12 @@ class Main
             }//if the name of the field matches with the prefix
 
         }
+
+        //if no one is logged in then use 0
+        if ($this->user_data['usr_users_ID'] == ''){
+            $this->user_data['usr_users_ID'] = 0;
+        }
+
         //insert dates fields auto
         //check if the fields exists in the db
         $sqlColumns = 'SHOW COLUMNS FROM ' . $table;
@@ -1366,6 +1372,12 @@ class Main
 
         //insert dates fields auto
         //check if the fields exists in the db
+
+        //if no one is logged in then use 0
+        if ($this->user_data['usr_users_ID'] == ''){
+            $this->user_data['usr_users_ID'] = 0;
+        }
+
         if ($found_change == 1) {
             foreach ($previous as $name => $value) {
 
@@ -1462,7 +1474,7 @@ class Main
 		`lgf_new_values` = \"" . addslashes($new_values) . "\" ,
 		`lgf_old_values` = \"" . addslashes($old_values) . "\" ,
 		`lgf_description` = \"" . addslashes($description) . "\" ";
-        //$this->query($sql);
+        $this->query($sql);
         $sql = '';
         unset($sql);
 

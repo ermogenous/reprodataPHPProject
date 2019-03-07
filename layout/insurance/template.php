@@ -19,8 +19,11 @@ function template_header()
               integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
               crossorigin="anonymous">
 
-        <script language="JavaScript" type="text/javascript"
-                src="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/js/jquery-3.3.1.min.js"></script>
+        <script src="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/js/jquery-3.3.1.min.js"></script>
+        <!--Fall back to a local copy of jQuery if the CDN fails-->
+        <script>
+            window.jQuery || document.write('<script src="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/js/jquery-3.3.1.min.js"><\/script>');
+        </script>
         <!-- More Head -->
         <?php echo $db->admin_more_head; ?>
 
@@ -216,7 +219,7 @@ function template_header()
         ?>
 
         <br>
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-3"></div>
                 <div class="alert alert-success alert-dismissible fade show col-6" role="alert">
@@ -232,7 +235,7 @@ function template_header()
     }
 
     if ($db->dismissWarning != '') { ?>
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-3"></div>
                 <div class="col-6">
@@ -248,7 +251,7 @@ function template_header()
         </div>
     <?php }
     if ($db->dismissError != '') { ?>
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-3"></div>
                 <div class="col-6">
@@ -264,7 +267,7 @@ function template_header()
         </div>
     <?php }
     if ($db->dismissSuccess != '') { ?>
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-3"></div>
                 <div class="col-6">
@@ -280,7 +283,7 @@ function template_header()
         </div>
     <?php }
     if ($db->dismissInfo != '') { ?>
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-3"></div>
                 <div class="col-6">
@@ -296,7 +299,7 @@ function template_header()
         </div>
     <?php }
     if ($db->alertWarning != '') { ?>
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-3"></div>
                 <div class="col-6">
@@ -309,7 +312,7 @@ function template_header()
         </div>
     <?php }
     if ($db->alertError != '') { ?>
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-3"></div>
                 <div class="col-6">
@@ -322,7 +325,7 @@ function template_header()
         </div>
     <?php }
     if ($db->alertSuccess != '') { ?>
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-3"></div>
                 <div class="col-6">
@@ -335,7 +338,7 @@ function template_header()
         </div>
     <?php }
     if ($db->alertInfo != '') { ?>
-        <div class="container">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-3"></div>
                 <div class="col-6">

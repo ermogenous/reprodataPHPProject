@@ -20,8 +20,10 @@ if ($_POST["action"] == "insert") {
 
     $_POST['fld_policy_ID'] = $_GET['pid'];
     $_POST['fld_document_date'] = $db->convert_date_format($_POST['fld_document_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
+    $_POST['fld_paid_status'] = 'UnPaid';
+    $_POST['fld_paid_amount'] = 0;
+    $_POST['fld_insert_date'] = $db->convert_date_format($_POST['fld_insert_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $db->db_tool_insert_row('ina_policy_installments', $_POST, 'fld_', 0, 'inapi_');
-
 
     $db->commit_transaction();
 
@@ -113,12 +115,14 @@ echo "Lid:".$_GET['lid']."<br>Pid".$_GET['pid'];
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_insert_date" class="col-sm-3 col-form-label">Insert Date</label>
+                        <label for="insert_date" class="col-sm-3 col-form-label">Insert Date</label>
                         <div class="col-sm-3">
-                            <input name="fld_insert_date" type="text" id="fld_insert_date"
+                            <input name="insert_date" type="text" id="insert_date"
                                    class="form-control"
                                    value="<?php echo $db->convert_date_format($data["inapi_insert_date"], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?>"
                                    required disabled>
+                            <input type="hidden" name="fld_insert_date" id="fld_insert_date"
+                                   value="<?php echo $db->convert_date_format($data["inapi_insert_date"], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?>">
                         </div>
 
                         <label for="fld_commission_amount" class="col-sm-3 col-form-label">Commission</label>

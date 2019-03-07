@@ -6,6 +6,9 @@
  * Time: 10:04 ΠΜ
  */
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\Exception;
+
 include("../include/main.php");
 include('questions_list.php');
 include('disc_class.php');
@@ -49,11 +52,10 @@ if ($_GET['action'] == 'completed') {
     exit();
 }
 
-$db->show_header();
-
 $disc = new DiscTest($_GET['lid']);
 $data = $disc->data;
 $tstResult = $disc->getTestResults();
+
 
 if ($data['lcsdc_status'] == 'Completed') {
     $pieImage = $disc->getPieImageData('embed');
@@ -61,12 +63,39 @@ if ($data['lcsdc_status'] == 'Completed') {
 
 
 if ($_GET['action'] == 'sendLinkEmail') {
-    echo "Sending email";
 
-    $db->sendMailTo('Me@gmail.com', 'LCS EQ', 'micacca@gmail.com', 'Fill the form', getEmailLayoutFillTest($data));
+    $mail = new PHPMailer(true);                              // Passing `true` enables exceptions
+    try {
+        $mail->CharSet = 'UTF-8';
+        $mail->SMTPDebug = 1; // debugging: 1 = errors and messages, 2 = messages only
+
+        //Recipients
+        $mail->setFrom('michael@lcsdisc.agentscy.com', 'www.lcsapproach.com');
+        $mail->addAddress($disc->data['lcsdc_email'], $disc->data['lcsdc_name']);     // Add a recipient
+        $mail->addReplyTo('michael@lcsdisc.agentscy.com', 'www.lcsapproach.com');
+        //$mail->addCC('cc@example.com');
+        //$mail->addBCC('bcc@example.com');
+
+        //Attachments
+        //$mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments
+        //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
+        //$mail->addEmbeddedImage('../layout/lcs_eq/images/disc_model.jpg','discmodel','discmodel.jpg');
+
+        //Content
+        $mail->isHTML(true);                                  // Set email format to HTML
+        $mail->Subject = 'Tέστ προσωπικότητας (DISC) - ' . $disc->data['lcsdc_name'];
+        $mail->Body = getEmailLayoutFillTest($disc->data);
+        //$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
+
+        $mail->send();
+        $db->generateAlertSuccess('Email has been sent');
+        $mailSend = true;
+    } catch (Exception $e) {
+        $db->generateAlertError('Message could not be sent. Mailer Error: ' . $mail->ErrorInfo);
+    }
 
 }
-
+$db->show_header();
 
 ?>
 
@@ -162,7 +191,7 @@ if ($_GET['action'] == 'sendLinkEmail') {
                 <div class="row">
                     <div class="col-12">
                         <?php if ($data['lcsdc_status'] == 'Completed') { ?>
-                            <img src="data:image/jpeg;base64,<?php echo base64_encode( $pieImage );?>"/>
+                            <img src="data:image/jpeg;base64,<?php echo base64_encode($pieImage); ?>"/>
                         <?php } ?>
                     </div>
                 </div>
@@ -172,22 +201,38 @@ if ($_GET['action'] == 'sendLinkEmail') {
                     <div class="col-12">&nbsp;</div>
                 </div>
 
-                <div class="row">
-                    <div class="col-2 alert alert-info">
-                        <label for="fld_email" class="col-sm-3 col-form-label text-right">Email</label>
+                <?php if ($data['lcsdc_status'] == 'Outstanding') { ?>
+                    <div class="row">
+                        <div class="col-2 alert alert-info">
+                            <label for="fld_email" class="col-sm-3 col-form-label text-right">Email</label>
+                        </div>
+                        <div class="col-4 alert">
+                            <?php
+                            echo $data["lcsdc_email"];
+                            ?>
+                        </div>
+                        <div class="col-2 alert">
+                            <?php
+
+                            if (filter_var($data["lcsdc_email"], FILTER_VALIDATE_EMAIL)) {
+                                //valid email
+                                ?>
+                                <button type="button" class="form-controm btn btn-primary" onclick="viewLinkEmail();">
+                                    View
+                                    Link Email
+                                </button>
+                                <?php
+                            } else {
+                                //invalid email
+                                echo "Invalid Email";
+                            }
+
+                            ?>
+
+                        </div>
+                        <div class="col-4 alert"></div>
                     </div>
-                    <div class="col-4 alert">
-                        <input name="fld_email" type="text" id="fld_email"
-                               class="form-control"
-                               value="<?php echo $data["lcsdc_email"]; ?>">
-                    </div>
-                    <div class="col-2 alert">
-                        <button type="button" class="form-controm btn btn-primary" onclick="viewLinkEmail();">View
-                            Link Email
-                        </button>
-                    </div>
-                    <div class="col-4 alert"></div>
-                </div>
+                <?php } ?>
 
                 <?php if ($_GET['action'] == 'viewLinkEmail') { ?>
                     <div class="row">
@@ -321,7 +366,7 @@ if ($_GET['action'] == 'sendLinkEmail') {
         }
 
         function sendEmail() {
-            window.open('view_email_html.php?lid=<?php echo $_GET['lid'];?>','_blank');
+            window.open('view_email_html.php?lid=<?php echo $_GET['lid'];?>', '_blank');
         }
     </script>
 <?php

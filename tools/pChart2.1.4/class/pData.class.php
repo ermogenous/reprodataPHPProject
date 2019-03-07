@@ -57,10 +57,10 @@
   {
    var $Data;
 
-   var $Palette = array("0"=>array("R"=>188,"G"=>224,"B"=>46,"Alpha"=>100),
-                        "1"=>array("R"=>224,"G"=>100,"B"=>46,"Alpha"=>100),
-                        "2"=>array("R"=>224,"G"=>214,"B"=>46,"Alpha"=>100),
-                        "3"=>array("R"=>46,"G"=>151,"B"=>224,"Alpha"=>100),
+   var $Palette = array("0"=>array("R"=>47,"G"=>85,"B"=>150,"Alpha"=>255),
+                        "1"=>array("R"=>247,"G"=>185,"B"=>0,"Alpha"=>255),
+                        "2"=>array("R"=>165,"G"=>165,"B"=>165,"Alpha"=>255),
+                        "3"=>array("R"=>237,"G"=>125,"B"=>49,"Alpha"=>255),
                         "4"=>array("R"=>176,"G"=>46,"B"=>224,"Alpha"=>100),
                         "5"=>array("R"=>224,"G"=>46,"B"=>117,"Alpha"=>100),
                         "6"=>array("R"=>92,"G"=>224,"B"=>46,"Alpha"=>100),
@@ -528,9 +528,10 @@
    function loadPalette($FileName,$Overwrite=FALSE)
     {
      if ( !file_exists($FileName) ) { return(-1); }
-     if ( $Overwrite ) { $this->Palette = ""; }
+     if ( $Overwrite ) { $this->Palette = array(); }
 
      $fileHandle = @fopen($FileName, "r");
+
      if (!$fileHandle) { return(-1); }
      while (!feof($fileHandle))
       {

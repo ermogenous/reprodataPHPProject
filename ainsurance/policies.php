@@ -30,7 +30,7 @@ $table->generate_data();
         <div class="col-lg-8">
             <div class="text-center"><?php $table->show_pages_links(); ?></div>
             <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover" id="myTableList">
                     <thead class="alert alert-success">
                     <tr>
                         <th scope="col"><?php $table->display_order_links('ID', 'inapol_policy_ID'); ?></th>
@@ -49,13 +49,14 @@ $table->generate_data();
                     <?php
                     while ($row = $table->fetch_data()) {
                         ?>
-                        <tr onclick="editLine(<?php echo $row["inapol_policy_ID"]; ?>);">
+                        <tr>
                             <th scope="row"><?php echo $row["inapol_policy_ID"]; ?></th>
                             <td><?php echo $row["inapol_policy_number"]; ?></td>
                             <td><?php echo $row["cst_name"]; ?></td>
                             <td><?php echo $row["cst_identity_card"]; ?></td>
                             <td><?php echo $row["inapol_status"]; ?></td>
                             <td>
+                                <input type="hidden" id="myLineID" name="myLineID" value="<?php echo $row["inapol_policy_ID"]; ?>">
                                 <?php if ($row['inapol_status'] == 'Outstanding') { ?>
                                     <a href="policy_modify.php?lid=<?php echo $row["inapol_policy_ID"]; ?>"><i class="fas fa-edit"></i></a>&nbsp
                                     <a href="policy_delete.php?lid=<?php echo $row["inapol_policy_ID"]; ?>"
@@ -90,7 +91,17 @@ $table->generate_data();
         if (ignoreEdit === false) {
             window.location.assign('policy_modify.php?lid=' + id);
         }
+        ignoreEdit = false;
     }
+
+    $(document).ready(function() {
+        $('#myTableList tr').click(function() {
+            var href = $(this).find('input[id=myLineID]').val();
+            if(href) {
+                editLine(href);
+            }
+        });
+    });
 </script>
 <?php
 $db->show_footer();

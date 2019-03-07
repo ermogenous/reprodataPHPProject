@@ -44,6 +44,7 @@ function getEmailLayoutResult($testID,$images = 'embeded')
     }
 
     $html = '
+<div style="font-family: Arial">
 Στο διάγραμμα που ακολουθεί βλέπετε την κατανομή των αποτελεσμάτων σας σε ποσοστά.
 <br><br>
 Το μεγαλύτερο ποσοστό είναι το κυρίαρχο χαρακτηριστικό σας. Το δεύτερο μεγαλύτερο είναι το επόμενο λιγότερο κυρίαρχο χαρακτηριστικό κοκ.
@@ -82,7 +83,7 @@ function getEmailLayoutResult($testID,$images = 'embeded')
     <b>Αξία στον οργανισμό:</b> Κινητοποιεί τους Ανθρώπους, εισάγει νέες ιδέες, προάγει τους Ανθρώπους και τα έργα, διαχειρίζεται αποτελεσματικά συγκρούσεις
 </p>
 
-<p style="background-color: #ec7d31; width: 800px; height: 25px; vertical-align: middle;">
+<p style="background-color: #4273C4; width: 800px; height: 25px; vertical-align: middle;">
     <b>&nbsp; 3. Ευσυνείδητος | Conscientious</b>
 </p>
 <p>
@@ -94,8 +95,8 @@ function getEmailLayoutResult($testID,$images = 'embeded')
     <b>Αξία στον οργανισμό:</b> είναι περιεκτικός, νοήμον, ελέγχει συστηματικά, καθορίζει και ξεκαθαρίζει, διατηρεί πρότυπα ελέγχου ποιότητας, είναι ρεαλιστής
 </p>
 
-<p style="background-color: #a4a4a4; width: 800px; height: 25px; vertical-align: middle;">
-    <b>&nbsp; 3. Σταθερός | Steady</b>
+<p style="background-color: #A6A6A6; width: 800px; height: 25px; vertical-align: middle;">
+    <b>&nbsp; 4. Σταθερός | Steady</b>
 </p>
 <p>
     <b>Προτεραιότητες:</b> συνεπείς, συνεργάσιμος, σταθερός, δημιουργεί ξεκάθαρες διαδικασίες, ομαδικός<br><br>
@@ -184,7 +185,8 @@ function getEmailLayoutResult($testID,$images = 'embeded')
     <b>Στόχοι:</b> αποδοτικά αποτελέσματα, λογικές αποφάσεις<br>
     <b>Φόβοι:</b> αποτυχία, χάσιμο ελέγχου<br>
     <b>Ηγετικές Ικανότητες:</b> δημιουργεί ψηλές προσδοκίες, βελτιώνει διαδικασίες και μεθόδους
-</p>';
+</p>
+</div>';
 
     return $html;
 }
