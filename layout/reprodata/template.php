@@ -149,7 +149,7 @@ function template_header()
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/tickets/ticket_assignments.php">
                                 <i class="fas fa-map-marked-alt"></i> Ticket Placements
-                                <span class="badge badge-light"><?php echo $notAssignedTicketsNum;?></span>
+                                <span class="badge badge-light"><?php echo $notAssignedTicketsNum; ?></span>
                             </a>
                         </div>
                     </li>
@@ -213,25 +213,27 @@ function template_header()
                         </li>
                     <?php } ?>
 
-                    <!-- Settings -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-cogs"></i>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/codes/codes.php">
-                                <i class="fab fa-linode"></i> Codes</a>
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/send_auto_emails/send_auto_emails.php">
-                                <i class="fas fa-envelope"></i> Auto Emails</a>
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/settings/settings_update.php">
-                                <i class="fas fa-screwdriver"></i> System Settings</a>
-                        </div>
+                    <?php if ($db->user_data["usr_user_rights"] == 0) { ?>
+                        <!-- Settings -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-cogs"></i>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/codes/codes.php">
+                                    <i class="fab fa-linode"></i> Codes</a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/send_auto_emails/send_auto_emails.php">
+                                    <i class="fas fa-envelope"></i> Auto Emails</a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/settings/settings_update.php">
+                                    <i class="fas fa-screwdriver"></i> System Settings</a>
+                            </div>
 
-                    </li>
+                        </li>
+                    <?php } ?>
 
                 <?php } ?>
 
@@ -369,7 +371,6 @@ function template_header()
             <div class="col-3"></div>
         </div>
     <?php }
-
 
 
 }//template_header

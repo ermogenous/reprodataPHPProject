@@ -22,7 +22,7 @@ If the link does not work then copy paste the below link in to your browser<br>
 
     return $html;
 }
-//$images = embeded Or Link
+//$images = embeded, Link or Attached
 function getEmailLayoutResult($testID,$images = 'embeded')
 {
     include_once('disc_class.php');
@@ -36,9 +36,15 @@ function getEmailLayoutResult($testID,$images = 'embeded')
         $imageSrcDisc = 'cid:discmodel';
         $imageSrcCircle = 'cid:circlemodel';
     }
-    else {
+    else if ($images == 'attached') {
         $pic = $disc->getPieImageData('data');
         $imagesSrcPie = 'data:image/jpeg;base64,'.base64_encode( $pic );
+        $imageSrcDisc = $main["site_url"]."/layout/lcs_eq/images/disc_model.jpg";
+        $imageSrcCircle = $main["site_url"]."/layout/lcs_eq/images/circle_model.jpg";
+    }
+    else {
+        $pic = $disc->getPieImageData('path');
+        $imagesSrcPie = $pic;
         $imageSrcDisc = $main["site_url"]."/layout/lcs_eq/images/disc_model.jpg";
         $imageSrcCircle = $main["site_url"]."/layout/lcs_eq/images/circle_model.jpg";
     }

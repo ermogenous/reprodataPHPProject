@@ -44,11 +44,11 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
     $main["admin_title"] = "Reprodata";
 
     //Global variables
-    $main["site_host"] = 'http://redvape.guru/reprodata';
-    $main["site_url"] = "http://redvape.guru/reprodata"; //Not include last slash
+    $main["site_host"] = 'http://rds.agentscy.com';
+    $main["site_url"] = "http://rds.agentscy.com"; //Not include last slash
     $main["local_url"] = "/home/dc2vz8797vk4/public_html/reprodata"; //Not include last slash
     $main["remote_folder"] = "";
-    $main["remote_folder_total"] = 1;
+    $main["remote_folder_total"] = 0;
 
 
     $main["db_username"] = "rpdatadbuser";
@@ -67,7 +67,7 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
     //security
     //IPS to block, always end with ,
     $main["block_countries_from_ip"] = "TR,RS,";//Turkey,Servia
-    $main["block_countries_redirect_page"] = "http://redvape.guru/reprodata/ip_blocked.php";
+    $main["block_countries_redirect_page"] = "http://rds.agentscy.com/ip_blocked.php";
 
 
     ini_set('display_errors', 1);

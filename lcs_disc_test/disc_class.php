@@ -333,6 +333,70 @@ Class DiscTest
         return $pic;
     }
 
+    //action = OutputPdf, GetFilePath
+    public function getPdf($action = 'OutputPdf'){
+        require_once '../vendor/autoload.php';
+        include_once('email_layout.php');
+
+        $html = getEmailLayoutResult($this->testID,'link');
+        $mpdf = new \Mpdf\Mpdf();
+        $mpdf->WriteHTML($html);
+
+        if ($action == 'OutputPdf'){
+            $mpdf->Output();
+        }
+        else if ($action == 'GetFilePath') {
+            $date = new DateTime();
+            $fileName = 'pdf/discPdf-' . $date->format('dmY-Gis-v').".pdf";
+            $mpdf->Output($fileName);
+            return $fileName;
+        }
+    }
+
+    public function clearImages(){
+
+        //loop into all images in images folder
+        $allFiles = scandir('pie_images');
+
+        //time which if less or equal then delete the image
+        $date = new DateTime();
+        $hour = $date->format('G')*1 - 1;
+        $minute = $date->format('i')*1;
+        $second = $date->format('s')*1;
+        $date->setTime($hour,$minute, $second);
+
+        $timeLimit = $date->format('Gis');
+        $dateLimit = $date->format('dmY');
+
+        foreach($allFiles as $value){
+
+            //first check if its an image file
+            $imageCheck = substr($value,0,6);
+            if ($imageCheck == 'myPic-') {
+
+                $deleteFile = false;
+                //first check the date
+                $datePart = substr($value, 6, 8);
+                if ($dateLimit > $datePart) {
+                    $deleteFile = true;
+                }
+
+                //if date is not for delete then check the time
+                $timePart = substr($value, 15, 6);
+                if ($timeLimit > $timePart && $deleteFile == false) {
+                    $deleteFile = true;
+                }
+
+                if ($deleteFile == true && $value != '.' && $value != '..') {
+                    $fileToDelete = 'pie_images/' . $value;
+                    unlink($fileToDelete);
+                }
+            }
+
+        }
+
+    }
+
 }
 
 function getTestColor($status,$type = 'Bg'){

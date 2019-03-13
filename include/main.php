@@ -1474,6 +1474,7 @@ class Main
 		`lgf_new_values` = \"" . addslashes($new_values) . "\" ,
 		`lgf_old_values` = \"" . addslashes($old_values) . "\" ,
 		`lgf_description` = \"" . addslashes($description) . "\" ";
+
         $this->query($sql);
         $sql = '';
         unset($sql);

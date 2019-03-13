@@ -56,6 +56,7 @@ $disc = new DiscTest($_GET['lid']);
 $data = $disc->data;
 $tstResult = $disc->getTestResults();
 
+$disc->clearImages();
 
 if ($data['lcsdc_status'] == 'Completed') {
     $pieImage = $disc->getPieImageData('embed');

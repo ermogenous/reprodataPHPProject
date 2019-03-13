@@ -12,7 +12,7 @@ $db = new Main();
 $db->admin_title = "Products Modify";
 
 
-if ($db->user_data["usr_user_rights"] > 0) {
+if ($db->user_data["usr_user_rights"] > 1) {
 
     header("Location: products.php");
     exit();

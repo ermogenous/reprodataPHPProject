@@ -9,8 +9,8 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 
 include("../include/main.php");
-include('disc_class.php');
-include('email_layout.php');
+include_once('disc_class.php');
+include_once('email_layout.php');
 
 if ($_GET['lid'] == ''){
     header("Location: disc_list.php");
@@ -75,6 +75,10 @@ if ($_POST['action'] == 'sendMail'){
         $pieImagePath = $disc->getPieImageData();
 
         $mail->addEmbeddedImage($pieImagePath,'testpie','testpie.jpg');
+
+        //attach pdf
+        $pdfFilePath = $disc->getPdf('GetFilePath');
+        $mail->addAttachment($pdfFilePath);
 
         //Content
         $mail->isHTML(true);                                  // Set email format to HTML

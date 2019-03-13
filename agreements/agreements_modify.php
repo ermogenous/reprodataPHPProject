@@ -638,8 +638,8 @@ $db->show_header();
                                         value="New">
                                 </div>
                                 <div class="row">
-                                    <div class="col-lg-2 col-sm-3">Agrrement Type</div>
-                                    <div class="col-lg-4 col-sm-9">
+                                    <div class="col-lg-3 col-sm-3">Agrrement Type</div>
+                                    <div class="col-lg-3 col-sm-9">
                                         <select name="agreementType_` + TotalProductsShow + `" id="agreementType_` + TotalProductsShow + `"
                                             class="form-control" onChange="agreementTypeOnChange(` + TotalProductsShow + `)"
                                             required <?php disable(); ?>>
@@ -651,8 +651,8 @@ $db->show_header();
                                             <option value="No">No Agreement</option>
                                         </select>
                                     </div>
-                                    <div class="col-lg-2 col-sm-3">Unique Serial</div>
-                                    <div class="col-lg-3 col-sm-2">
+                                    <div class="col-lg-3 col-sm-3">Unique Serial</div>
+                                    <div class="col-lg-2 col-sm-2">
                                         <input name="unique_serial_` + TotalProductsShow + `" type="text" id="unique_serial_` + TotalProductsShow + `"
                                                    class="form-control" value="" <?php disable();?> onChange="checkUniqueSerial(` + TotalProductsShow + `);">
                                         <input name="unique_serial_ID_` + TotalProductsShow + `" id="unique_serial_ID_` + TotalProductsShow + `"
@@ -666,13 +666,13 @@ $db->show_header();
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-lg-2 col-sm-3">Rent Cost</div>
-                                    <div class="col-lg-4 col-sm-9">
+                                    <div class="col-lg-3 col-sm-3">Rent Cost</div>
+                                    <div class="col-lg-3 col-sm-9">
                                         <input name="rentCost_` + TotalProductsShow + `" type="text" id="rentCost_` + TotalProductsShow + `"
                                                    class="form-control" value="" <?php disable();?>>
                                     </div>
-                                    <div class="col-lg-2 col-sm-3">Black Per Copy Cost</div>
-                                    <div class="col-lg-4 col-sm-9">
+                                    <div class="col-lg-3 col-sm-3">Black Per Copy Cost</div>
+                                    <div class="col-lg-3 col-sm-9">
                                         <input name="blackPerCopyCost` + TotalProductsShow + `" type="text" id="blackPerCopyCost` + TotalProductsShow + `"
                                                    class="form-control" value="" <?php disable();?>>
                                     </div>
@@ -680,21 +680,21 @@ $db->show_header();
 
 
                                 <div class="row">
-                                    <div class="col-lg-2 col-sm-3">Color Per Copy Cost</div>
-                                    <div class="col-lg-4 col-sm-9">
+                                    <div class="col-lg-3 col-sm-3">Color Per Copy Cost</div>
+                                    <div class="col-lg-3 col-sm-9">
                                         <input name="colorPerCopyCost` + TotalProductsShow + `" type="text" id="colorPerCopyCost` + TotalProductsShow + `"
                                                    class="form-control" value="" <?php disable();?>>
                                     </div>
-                                    <div class="col-lg-2 col-sm-3">Location</div>
-                                    <div class="col-lg-4 col-sm-9">
+                                    <div class="col-lg-3 col-sm-3">Location</div>
+                                    <div class="col-lg-3 col-sm-9">
                                         <input name="location` + TotalProductsShow + `" type="text" id="location` + TotalProductsShow + `"
                                                    class="form-control" value="" <?php disable();?>>
                                     </div>
                                 </div>
 
                                 <div class="row">
-                                    <div class="col-lg-2 col-sm-3">Product</div>
-                                    <div class="col-lg-4 col-sm-3">
+                                    <div class="col-lg-3 col-sm-3">Product</div>
+                                    <div class="col-lg-3 col-sm-3">
                                         <input name="productSelect_` + TotalProductsShow + `" type="text" id="productSelect_` + TotalProductsShow + `"
                                                    class="form-control" value="" required <?php disable();?>>
 

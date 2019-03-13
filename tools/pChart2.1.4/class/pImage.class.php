@@ -204,11 +204,13 @@ class pImage extends pDraw
             imagesavealpha($this->Picture, true);
         }
 
-        $date = date('Gis');
+        //$date = date('dmY-Gis-v');
+        $datetime = new DateTime();
+        $date = $datetime->format('dmY-Gis-v');
         //create the file
-        imagepng($this->Picture, 'myPic-'.$date.'.png');
+        imagepng($this->Picture, 'pie_images/myPic-'.$date.'.png');
 
-        return 'myPic-'.$date.'.png';
+        return 'pie_images/myPic-'.$date.'.png';
     }
 
     /* Automatic output method based on the calling interface */

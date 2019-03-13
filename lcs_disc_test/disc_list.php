@@ -75,7 +75,11 @@ $table->generate_data();
                                 <a href="disc_report.php?lid=<?php echo $row["lcsdc_disc_test_ID"]; ?>" target="_blank" onclick="ignoreEdit = true;"><i class="far fa-flag iconsLines"></i></a>
                                 <?php if ($row['lcsdc_status'] == 'Completed') { ?>
                                 <a href="view_email_html.php?lid=<?php echo $row["lcsdc_disc_test_ID"]; ?>" target="_blank" onclick="ignoreEdit = true;"><i class="far fa-envelope"></i></a>
+                                    <a href="disc_pdf.php?lid=<?php echo $row["lcsdc_disc_test_ID"]; ?>&action=pdf" target="_blank" onclick="ignoreEdit = true;"><i class="fas fa-file-pdf"></i></a>
                                 <?php } ?>
+
+
+
 
                             </td>
                         </tr>

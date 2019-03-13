@@ -159,7 +159,7 @@ $table->generate_data();
                         <th scope="col"><?php $table->display_order_links('Date', 'sch_schedule_date'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Status', 'sch_status'); ?></th>
                         <th scope="col">
-                            <a href="ticket_modify.php">
+                            <a href="schedule_modify.php">
                                 <i class="fas fa-plus-circle"></i>
                             </a>
                         </th>
