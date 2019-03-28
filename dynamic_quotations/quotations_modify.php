@@ -1,5 +1,6 @@
 <?php
 include("../include/main.php");
+
 $db = new Main();
 $db->include_js_file("../include/jscripts.js");
 $db->include_css_file("main_quotation_css.css");
@@ -24,12 +25,28 @@ if ($_GET["quotation"] != "") {
     }
 }//if not new quotation
 
+//get the quotation details
+$quotation_type_data = $db->query_fetch("SELECT * FROM oqt_quotations_types WHERE oqqt_quotations_types_ID = " . $_GET["quotation_type"]);
+
 //language defined here
 if ($_POST["change_language"] != 1) {
     if ($_GET["quotation"] != "") {
         $_SESSION["oq_quotations_language"] = $q_data["oqq_language"];
     } else if ($_POST["action"] != "save") {
-        $_SESSION["oq_quotations_language"] = 'gr';
+        //default language
+        if ($quotation_type_data['oqqt_language'] == 'English'){
+            $_SESSION["oq_quotations_language"] = 'en';
+        }
+        else if ($quotation_type_data['oqqt_language'] == 'Greek'){
+            $_SESSION["oq_quotations_language"] = 'gr';
+        }
+        else if ($quotation_type_data['oqqt_language'] == 'BothGr'){
+            $_SESSION["oq_quotations_language"] = 'gr';
+        }
+        else if ($quotation_type_data['oqqt_language'] == 'BothEn'){
+            $_SESSION["oq_quotations_language"] = 'en';
+        }
+
     }
 } else {
     $_SESSION["oq_quotations_language"] = $_POST["quotation_language"];
@@ -42,8 +59,7 @@ if ($_POST["action"] == "save") {
 
 //echo "L->".$_SESSION["oq_quotations_language"];
 
-//get the quotation details
-$quotation_type_data = $db->query_fetch("SELECT * FROM oqt_quotations_types WHERE oqqt_quotations_types_ID = " . $_GET["quotation_type"]);
+
 
 //if quotation type is inactive exit
 if ($quotation_type_data["oqqt_status"] == 'I') {
@@ -65,10 +81,13 @@ $items_sql = "SELECT * FROM `oqt_items` WHERE
 //update the quotation if not change language and is new quotation.
 if ($_POST["action"] == "save") {
 
+
+
     //check if change language and new quotation
     if ($_POST["change_language"] == '1' && $_GET["quotation"] == "") {
         //do nothing
     } else {
+        $db->start_transaction();
         $quotation_id = insert_quotation_data_to_db($_POST["quotation"], $_POST["quotation_type"]);
 
         $items_res = $db->query($items_sql);
@@ -89,7 +108,7 @@ if ($_POST["action"] == "save") {
 		oqq_custom_premium2 = '" . $premium_result["custom_premium2"] . "',
 		oqq_detail_price_array = '" . $premium_result["detailed_result"] . "' WHERE oqq_quotations_ID = " . $quotation_id;
         $db->query($sql);
-
+        $db->commit_transaction();
 
         //no need to redirect if is language change.
         if ($_POST["change_language"] != "1") {
@@ -109,6 +128,9 @@ $db->admin_on_load .= 'js_function_on_load();';
 $db->enable_jquery_ui();
 $db->enable_rxjs_lite();
 $db->show_header();
+
+include('../scripts/form_validator_class.php');
+$formValidator = new customFormValidator();
 ?>
 <script language="JavaScript" type="text/javascript">
 
@@ -132,7 +154,8 @@ $db->show_header();
     <div class="row">
         <div class="col-lg-1 col-md-1 hidden-xs hidden-sm"></div>
         <div class="col-lg-10 col-md-10 col-xs-12 col-sm-12">
-            <form name="myForm" id="myForm" method="post" action="" onsubmit="return check_quotation_form();">
+            <form name="myForm" id="myForm" method="post" action=""
+                <?php $formValidator->echoFormParameters();?>>
 
                 <div class="alert alert-success text-center">
                     <b><?php echo $quotation_type_data["oqqt_quotation_label_" . $_SESSION["oq_quotations_language"]]; ?></b>
@@ -143,6 +166,9 @@ $db->show_header();
                             <b><?php show_quotation_text("Βασικές Πληροφορίες Συμβαλλομένου", "Policyholder Basic Information"); ?></b>
                         </div>
                         <div class="col-sm-3">
+                            <?php
+                            if (substr($quotation_type_data['oqqt_language'],0,4) == 'Both'){
+                            ?>
                             <input name="change_language" id="change_language" type="hidden" value="0"/>
                             <select name="quotation_language" id="quotation_language"
                                     onchange="document.getElementById('change_language').value = 1; document.myForm.submit();"
@@ -155,6 +181,7 @@ $db->show_header();
                                     English
                                 </option>
                             </select>
+                            <?php } ?>
                         </div>
                     </div>
 
@@ -166,8 +193,17 @@ $db->show_header();
                         <div class="col-sm-8">
                             <input name="insureds_name" type="text" id="insureds_name"
                                    class="form-control"
-                                   value="<?php echo $q_data["oqq_insureds_name"]; ?>"
-                                   required>
+                                   value="<?php echo $q_data["oqq_insureds_name"]; ?>">
+                            <?php
+                             $formValidator->addField(
+                                [
+                                    'fieldName' => 'insureds_name',
+                                    'fieldDataType' => 'text',
+                                    'required' => true,
+                                    'invalidText' => show_quotation_text("Συμπληρώστε το Όνομα Συμβαλλόμενου.", "Must Enter Policyholder Name",'Return')
+                                ]);
+                            ?>
+
                         </div>
                     </div>
 
@@ -178,8 +214,17 @@ $db->show_header();
                         <div class="col-sm-8">
                             <input name="insureds_id" type="text" id="insureds_id"
                                    class="form-control"
-                                   value="<?php echo $q_data["oqq_insureds_id"]; ?>"
-                                   required>
+                                   value="<?php echo $q_data["oqq_insureds_id"]; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'insureds_id',
+                                    'fieldDataType' => 'text',
+                                    'required' => true,
+                                    'invalidText' => show_quotation_text("Συμπληρώστε Ταυτότητα.", "Must Enter Identity Card",'Return')
+                                ]);
+                            ?>
+
                         </div>
                     </div>
 
@@ -190,11 +235,60 @@ $db->show_header();
                         <div class="col-sm-8">
                             <input name="insureds_tel" type="text" id="insureds_tel"
                                    class="form-control"
-                                   value="<?php echo $q_data["oqq_insureds_tel"]; ?>"
-                                   required>
+                                   value="<?php echo $q_data["oqq_insureds_tel"]; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'insureds_tel',
+                                    'fieldDataType' => 'text',
+                                    'required' => true,
+                                    'invalidText' => show_quotation_text("Συμπληρώστε Τηλέφωνο.", "Must Enter Telephone",'Return')
+                                ]);
+                            ?>
                         </div>
                     </div>
-
+                    <?php if ($quotation_type_data['oqqt_added_field_email'] == 1) { ?>
+                    <div class="form-group row">
+                        <label for="insureds_email" class="col-sm-4 col-form-label">
+                            <?php show_quotation_text("Email", "Email"); ?>
+                        </label>
+                        <div class="col-sm-8">
+                            <input name="insureds_email" type="text" id="insureds_email"
+                                   class="form-control"
+                                   value="<?php echo $q_data["oqq_insureds_email"]; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'insureds_email',
+                                    'fieldDataType' => 'text',
+                                    'required' => true,
+                                    'invalidText' => show_quotation_text("Συμπληρώστε Email.", "Must Enter Email",'Return')
+                                ]);
+                            ?>
+                        </div>
+                    </div>
+                    <?php }
+                    if ($quotation_type_data['oqqt_added_field_contact_person'] == 1) { ?>
+                    <div class="form-group row">
+                        <label for="insureds_contact_person" class="col-sm-4 col-form-label">
+                            <?php show_quotation_text("Όνομα Επικοινωνίας", "Contact Person"); ?>
+                        </label>
+                        <div class="col-sm-8">
+                            <input name="insureds_contact_person" type="text" id="insureds_contact_person"
+                                   class="form-control"
+                                   value="<?php echo $q_data["oqq_insureds_contact_person"]; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'insureds_contact_person',
+                                    'fieldDataType' => 'text',
+                                    'required' => true,
+                                    'invalidText' => show_quotation_text("Συμπληρώστε Όνομα Επικοινωνίας.", "Must Enter Contact Person",'Return')
+                                ]);
+                            ?>
+                        </div>
+                    </div>
+                    <?php } ?>
                     <div class="form-group row">
                         <label for="insureds_address" class="col-sm-4 col-form-label">
                             <?php show_quotation_text("Διεύθυνση", "Address"); ?>
@@ -202,8 +296,16 @@ $db->show_header();
                         <div class="col-sm-8">
                             <input name="insureds_address" type="text" id="insureds_address"
                                    class="form-control"
-                                   value="<?php echo $q_data["oqq_insureds_address"]; ?>"
-                                   required>
+                                   value="<?php echo $q_data["oqq_insureds_address"]; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'insureds_address',
+                                    'fieldDataType' => 'text',
+                                    'required' => true,
+                                    'invalidText' => show_quotation_text("Συμπληρώστε Διεύθυνση.", "Must Enter Address",'Return')
+                                ]);
+                            ?>
                         </div>
                     </div>
 
@@ -214,8 +316,16 @@ $db->show_header();
                         <div class="col-sm-8">
                             <input name="insureds_postal_code" type="text" id="insureds_postal_code"
                                    class="form-control"
-                                   value="<?php echo $q_data["oqq_insureds_postal_code"]; ?>"
-                                   required>
+                                   value="<?php echo $q_data["oqq_insureds_postal_code"]; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'insureds_postal_code',
+                                    'fieldDataType' => 'text',
+                                    'required' => true,
+                                    'invalidText' => show_quotation_text("Συμπληρώστε Ταχ.Κωδ..", "Must Enter Postal Code",'Return')
+                                ]);
+                            ?>
                         </div>
                     </div>
 
@@ -254,13 +364,15 @@ $db->show_header();
 
                     <div class="alert alert-success">
                         <div class="row">
-                            <div class="col-4">
-                                +/-
+                            <div class="col-12 text-center">
+                                <?php
+                                if ($items_data['oqit_disable_expansion'] == 0) {
+                                    ?>
+                                    +/-
+                                <?php } ?>
                                 <input name="plusminus_hidden_<?php echo $items_data["oqit_items_ID"]; ?>" type="hidden"
                                        id="plusminus_hidden_<?php echo $items_data["oqit_items_ID"]; ?>"
                                        value="<?php echo $hidden_value; ?>"/>
-                            </div>
-                            <div class="col-8">
                                 <b>
                                     <?php echo show_quotation_text($items_data["oqit_label_gr"], $items_data["oqit_label_en"]); ?>
                                 </b>
@@ -281,7 +393,7 @@ $db->show_header();
 
                 <div class="form-group row">
                     <label for="fld_quotation_label_gr" class="col-sm-4 col-form-label">
-                        Extra Details
+                        <?php echo show_quotation_text('Επιπρόσθετες Πληροφορίες', 'Extra Details'); ?>
                     </label>
                     <div class="col-sm-8">
                             <textarea name="situations_extra_details" id="situations_extra_details"
@@ -301,8 +413,14 @@ $db->show_header();
                                value="<?php echo $_GET["quotation_type"]; ?>"/>
                         <input name="action" type="hidden" id="action" value="save"/>
 
+                        <!--
                         <input type="button" name="Submit" value="Save Quotation" class="btn btn-secondary"
-                               onclick="document.getElementById('save_and_print').value = 0; if (check_quotation_form()) {document.myForm.submit();}"/>
+                               onclick=" if (check_quotation_form()) {document.myForm.submit();}"/>
+                        -->
+
+                        <input type="submit" value="Save Quotation"
+                               class="btn btn-secondary"
+                               onclick="document.getElementById('save_and_print').value = 0;">
                         <input name="save_and_print" id="save_and_print" type="hidden" value="0"/>
                     </div>
                 </div>
@@ -312,7 +430,10 @@ $db->show_header();
     </div>
 </div>
 
+
 <?php
+$formValidator->output();
+
 include($quotation_type_data["oqqt_js_file"]);
 $db->show_footer();
 ?>

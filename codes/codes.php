@@ -82,6 +82,7 @@ if ($_GET['search_code'] == 'search') {
                         <th scope="col"><?php $table->display_order_links('ID', 'cde_code_ID'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Name', 'cde_value_label'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Value', 'cde_value'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Status', 'cde_status'); ?></th>
                         <?php if ($_GET['type'] != 'code') { ?>
                         <th scope="col"><?php $table->display_order_links('Option', 'cde_option_value'); ?></th>
                         <?php } ?>
@@ -100,6 +101,7 @@ if ($_GET['search_code'] == 'search') {
                             <th scope="row"><?php echo $row["cde_code_ID"]; ?></th>
                             <td><?php echo $row["cde_value_label"]; ?></td>
                             <td><?php echo $row["cde_value"]; ?></td>
+                            <td><?php echo $row["cde_status"]; ?></td>
                             <?php if ($_GET['type'] != 'code') { ?>
                             <td><?php echo $row["cde_option_value"]; ?></td>
                             <?php } ?>

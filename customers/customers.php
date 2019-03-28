@@ -114,8 +114,8 @@ $table->generate_data();
     </div>
 </div>
 <script>
-    var ignoreEdit = false;
 
+    var ignoreEdit = false;
     function editLine(id) {
         if (ignoreEdit === false) {
             window.location.assign('customers_modify.php?lid=' + id);

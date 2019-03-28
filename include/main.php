@@ -1624,6 +1624,34 @@ class Main
 
     }
 
+    //returns 1 if date1 > date2, returns 0 if date1 < date2, returns 0 if date1 = date2
+    //works with date format dd/mm/yyyy but also converts with 3rd parameter from yyyy-mm-dd 
+    function compare2dates($date1, $date2, $format = 'dd/mm/yyyy')
+    {
+
+        if ($format == 'yyyy-mm-dd') {
+            $date1 = $this->convert_date_format($date1, 'yyyy-mm-dd', 'dd/mm/yyyy');
+            $date2 = $this->convert_date_format($date2, 'yyyy-mm-dd', 'dd/mm/yyyy');
+        }
+
+        $date1Parts = explode('/', $date1);
+        $date2Parts = explode('/', $date2);
+
+        $dt1 = ($date1Parts[2] * 10000) + ($date1Parts[1] * 100) + $date1Parts[0];
+        $dt2 = ($date2Parts[2] * 10000) + ($date2Parts[1] * 100) + $date2Parts[0];
+
+        $return = 2;
+        if ($dt1 > $dt2) {
+            $return = 1;
+        } else if ($dt1 < $dt2) {
+            $return = -1;
+        } else if ($dt1 == $dt2) {
+            $return = 0;
+        }
+        return $return;
+
+    }
+
     function backup_tables($host, $user, $pass, $name, $tables_to_use = '*')
     {
 

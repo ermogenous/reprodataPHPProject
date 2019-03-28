@@ -9,7 +9,9 @@ result = '';
 		result += '<?php show_quotation_text("Αδειο Πεδίο Ονομα Ασφαλισμένου.","Empty Field Insureds Name.");?>\n' ;
 	}
 
-
+	if ($('#2_oqqit_insured_amount_2').val() == 1 && $('#2_oqqit_insured_amount_3').val() == ''){
+	    result += '<?php show_quotation_text("Αδειο Πεδίο Αριθμό Μητρώου Εργοδότη.", "Empty Field Social Security Insurance Number .");?>\\n';
+    }
 
 //FORM FIXES.
 
@@ -25,20 +27,6 @@ return result;
 function js_function_on_load() {
 	
 	//updates the hidden field that updates the db at insured_amount_15 from the plusminus button if presses or not.
-	//section 5
-	check_plusminus_update_hidden_fields(5);	
-	//section 6
-	check_plusminus_update_hidden_fields(6);
-	//section 7
-	check_plusminus_update_hidden_fields(7);
-	//section 8
-	check_plusminus_update_hidden_fields(8);
-	//section 9
-	check_plusminus_update_hidden_fields(9);
-	//section 10
-	check_plusminus_update_hidden_fields(10);
-	//section 11
-	check_plusminus_update_hidden_fields(11);
 
 }
 

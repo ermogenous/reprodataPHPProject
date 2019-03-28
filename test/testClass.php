@@ -6,29 +6,30 @@
  * Time: 8:43 PM
  */
 
-Class sqlBuilder{
+class MyClass {
 
-    private $table;
-    private $select;
-    private $from;
-    private $where;
-    private $order;
-
-    function __construct($table)
+    function __construct()
     {
-        $this->table = $table;
     }
 
-    public function select($select){
-        $this->select = $select;
+    function insertData(MyType $values){
+
+        echo $values->name;
+
     }
 
-    public function from($from){
-        $this->from = $from;
-    }
-
-    public function buildQuery(){
-        $sql = "SELECT ".$this->select."\n FROM ".$this->from."\n WHERE ".$this->where;
-        return $sql;
-    }
 }
+
+class MyType {
+
+    public $name;
+    public $surname;
+
+}
+
+
+$test = new MyClass();
+$data = new MyType();
+$data->name = 'mic';
+$data->surname = 'Ermos';
+$test->insertData($data);

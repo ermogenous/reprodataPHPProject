@@ -158,6 +158,16 @@ $db->show_header();
                             <?php } ?>
 
                         </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <b>OΔΗΓΙΕΣ:</b> Απαντήστε αυθόρμητα, χωρίς πολλή σκέψη. Αυτό το οποίο κάνετε,
+                                ΟΧΙ αυτό το οποίο θα θέλατε να κάνετε. Σε κάθε ερώτηση επιλέξετε μια εκ των δυο επίλογων.
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12" style="height: 10px;"></div>
+                        </div>
+
 
                         <?php
                     }
@@ -180,6 +190,11 @@ $db->show_header();
 
                         if ($num >= $start && $num <= $end) {
                             ?>
+
+                            <div class="row">
+                                <div class="col-12" style="height: 10px;"></div>
+                            </div>
+
                             <!-- QUESTION 1 -->
                             <div class="card">
                                 <div class="card-body">

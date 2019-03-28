@@ -50,20 +50,13 @@ if ($_POST['action'] == 'sendMail'){
         //$mail->IsSMTP(); // enable SMTP
 
         $mail->SMTPDebug = 1; // debugging: 1 = errors and messages, 2 = messages only
-        /*
-        $mail->SMTPAuth = true; // authentication enabled
-        $mail->SMTPSecure = 'tls'; // secure transfer enabled REQUIRED for Gmail tls or ssl
-        $mail->Host = gethostbyname("smtp.gmail.com");//"smtp.gmail.com";
-        $mail->Port = 587; // 465 or 587
-        $mail->Username = "micacca@gmail.com";
-        $mail->Password = "Kmariou24??";
-        */
+
 
 
         //Recipients
-        $mail->setFrom('michael@lcsdisc.agentscy.com', 'www.lcsapproach.com');
+        $mail->setFrom('no-reply@lcsapproach.com', 'www.lcsapproach.com');
         $mail->addAddress($disc->data['lcsdc_email'], $disc->data['lcsdc_name']);     // Add a recipient
-        $mail->addReplyTo('michael@lcsdisc.agentscy.com', 'www.lcsapproach.com');
+        $mail->addReplyTo('no-reply@lcsapproach.com', 'www.lcsapproach.com');
         //$mail->addCC('cc@example.com');
         //$mail->addBCC('bcc@example.com');
 
@@ -72,6 +65,7 @@ if ($_POST['action'] == 'sendMail'){
         //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
         $mail->addEmbeddedImage('../layout/lcs_eq/images/disc_model.jpg','discmodel','discmodel.jpg');
         $mail->addEmbeddedImage('../layout/lcs_eq/images/circle_model.jpg','circlemodel','circlemodel.jpg');
+        $mail->addEmbeddedImage('../layout/lcs_eq/images/lcs_footer_logo.png','lcsfooterlogo','lcs_footer_logo.png');
         $pieImagePath = $disc->getPieImageData();
 
         $mail->addEmbeddedImage($pieImagePath,'testpie','testpie.jpg');

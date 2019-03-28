@@ -71,9 +71,9 @@ if ($_GET['action'] == 'sendLinkEmail') {
         $mail->SMTPDebug = 1; // debugging: 1 = errors and messages, 2 = messages only
 
         //Recipients
-        $mail->setFrom('michael@lcsdisc.agentscy.com', 'www.lcsapproach.com');
+        $mail->setFrom('no-reply@lcsapproach.com', 'www.lcsapproach.com');
         $mail->addAddress($disc->data['lcsdc_email'], $disc->data['lcsdc_name']);     // Add a recipient
-        $mail->addReplyTo('michael@lcsdisc.agentscy.com', 'www.lcsapproach.com');
+        $mail->addReplyTo('no-reply@lcsapproach.com', 'www.lcsapproach.com');
         //$mail->addCC('cc@example.com');
         //$mail->addBCC('bcc@example.com');
 

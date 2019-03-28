@@ -8,7 +8,10 @@ if ($_POST["action"] == "insert") {
     $db->working_section = 'Insert new quotations type';
     $db->start_transaction();
 
-    $db->db_tool_insert_row('oqt_quotations_types', $_POST, 'fld_',0,'oqqt_');
+    $_POST['fld_added_field_email'] = $db->get_check_value($_POST['fld_added_field_email']);
+    $_POST['fld_added_field_contact_person'] = $db->get_check_value($_POST['fld_added_field_contact_person']);
+
+    $db->db_tool_insert_row('oqt_quotations_types', $_POST, 'fld_', 0, 'oqqt_');
     $db->commit_transaction();
     $db->generateSessionAlertSuccess('New Quotation created');
     header("Location: quotations_types.php?info=New Quotation created");
@@ -19,8 +22,11 @@ if ($_POST["action"] == "insert") {
     $db->working_section = 'Modify quotations type';
     $db->start_transaction();
 
+    $_POST['fld_added_field_email'] = $db->get_check_value($_POST['fld_added_field_email']);
+    $_POST['fld_added_field_contact_person'] = $db->get_check_value($_POST['fld_added_field_contact_person']);
+
     $db->db_tool_update_row('oqt_quotations_types', $_POST, "`oqqt_quotations_types_ID` = " . $_POST["lid"], $_POST["lid"],
-        'fld_','execute','oqqt_');
+        'fld_', 'execute', 'oqqt_');
     $db->commit_transaction();
     $db->generateSessionAlertSuccess('Quotation updated');
     header("Location: quotations_types.php");
@@ -33,13 +39,18 @@ if ($_GET["lid"] != "") {
 }
 
 $db->show_header();
+
+
+include('../../scripts/form_validator_class.php');
+$formValidator = new customFormValidator();
 ?>
 
     <div class="container">
         <div class="row">
             <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
             <div class="col-lg-6 col-md-6 col-xs-12 col-sm-12">
-                <form name="myForm" id="myForm" method="post" action="" onsubmit="">
+                <form name="myForm" id="myForm" method="post" action=""
+                    <?php $formValidator->echoFormParameters(); ?>>
                     <div class="alert alert-dark text-center">
                         <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
                             &nbsp;Quotation Type</b>
@@ -51,8 +62,15 @@ $db->show_header();
                         <div class="col-sm-5">
                             <input name="fld_name" type="text" id="fld_name"
                                    class="form-control"
-                                   value="<?php echo $data["oqqt_name"]; ?>"
-                                   required>
+                                   value="<?php echo $data["oqqt_name"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_name",
+                                "fieldDataType" => "text",
+                                "required" => true,
+                                "invalidText" => "Fill Name",
+                            ]);
+                            ?>
                         </div>
                         <div class="col-sm-3">
                             <select name="fld_status" id="fld_status"
@@ -83,6 +101,28 @@ $db->show_header();
                         <div class="col-sm-8">
                             <textarea name="fld_quotation_label_en" id="fld_quotation_label_en"
                                       class="form-control"><?php echo $data["oqqt_quotation_label_en"]; ?></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="fld_language" class="col-sm-4 col-form-label">Language</label>
+                        <div class="col-sm-8">
+                            <select name="fld_language" id="fld_language"
+                                    class="form-control"
+                                    required>
+                                <option value="BothGr" <?php if ($data["oqqt_language"] == 'BothGr') echo "selected=\"selected\""; ?>>
+                                    Both Default Greek
+                                </option>
+                                <option value="BothEn" <?php if ($data["oqqt_language"] == 'BothEn') echo "selected=\"selected\""; ?>>
+                                    Both Default English
+                                </option>
+                                <option value="English" <?php if ($data["oqqt_language"] == 'English') echo "selected=\"selected\""; ?>>
+                                    English
+                                </option>
+                                <option value="Greek" <?php if ($data["oqqt_language"] == 'Greek') echo "selected=\"selected\""; ?>>
+                                    Greek
+                                </option>
+                            </select>
                         </div>
                     </div>
 
@@ -126,8 +166,15 @@ $db->show_header();
                         <div class="col-sm-8">
                             <input name="fld_functions_file" type="text" id="fld_functions_file"
                                    class="form-control"
-                                   value="<?php echo $data["oqqt_functions_file"]; ?>"
-                                   required>
+                                   value="<?php echo $data["oqqt_functions_file"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_functions_file",
+                                "fieldDataType" => "text",
+                                "required" => true,
+                                "invalidText" => "Fill Functions File URL",
+                            ]);
+                            ?>
                         </div>
                     </div>
 
@@ -136,8 +183,15 @@ $db->show_header();
                         <div class="col-sm-8">
                             <input name="fld_print_layout" type="text" id="fld_print_layout"
                                    class="form-control"
-                                   value="<?php echo $data["oqqt_print_layout"]; ?>"
-                                   required>
+                                   value="<?php echo $data["oqqt_print_layout"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_print_layout",
+                                "fieldDataType" => "text",
+                                "required" => true,
+                                "invalidText" => "Fill Print Layout File",
+                            ]);
+                            ?>
                         </div>
                     </div>
 
@@ -146,8 +200,15 @@ $db->show_header();
                         <div class="col-sm-8">
                             <input name="fld_js_file" type="text" id="fld_js_file"
                                    class="form-control"
-                                   value="<?php echo $data["oqqt_js_file"]; ?>"
-                                   required>
+                                   value="<?php echo $data["oqqt_js_file"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_js_file",
+                                "fieldDataType" => "text",
+                                "required" => true,
+                                "invalidText" => "Fill Java Script File",
+                            ]);
+                            ?>
                         </div>
                     </div>
 
@@ -156,8 +217,15 @@ $db->show_header();
                         <div class="col-sm-8">
                             <input name="fld_fees" type="text" id="fld_fees"
                                    class="form-control"
-                                   value="<?php echo $data["oqqt_fees"]; ?>"
-                                   required>
+                                   value="<?php echo $data["oqqt_fees"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_fees",
+                                "fieldDataType" => "text",
+                                "required" => true,
+                                "invalidText" => "Fill Fees Or 0",
+                            ]);
+                            ?>
                         </div>
                     </div>
 
@@ -166,8 +234,15 @@ $db->show_header();
                         <div class="col-sm-8">
                             <input name="fld_stamps" type="text" id="fld_stamps"
                                    class="form-control"
-                                   value="<?php echo $data["oqqt_stamps"]; ?>"
-                                   required>
+                                   value="<?php echo $data["oqqt_stamps"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_stamps",
+                                "fieldDataType" => "text",
+                                "required" => true,
+                                "invalidText" => "Fill Stamps Or 0",
+                            ]);
+                            ?>
                         </div>
                     </div>
 
@@ -195,12 +270,27 @@ $db->show_header();
                     </div>
 
                     <div class="form-group row">
+                        <label for="fld_enable_premium" class="col-sm-4 col-form-label">Enable Premium</label>
+                        <div class="col-sm-8">
+                            <select name="fld_enable_premium" id="fld_enable_premium"
+                                    class="form-control"
+                                    required>
+                                <option value="1" <?php if ($data["oqqt_enable_premium"] == '1') echo "selected=\"selected\""; ?>>
+                                    Enable
+                                </option>
+                                <option value="0" <?php if ($data["oqqt_enable_premium"] == '0') echo "selected=\"selected\""; ?>>
+                                    Disable
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
                         <label for="fld_minimum_premium" class="col-sm-4 col-form-label">Minimum Premium</label>
                         <div class="col-sm-8">
                             <input name="fld_minimum_premium" type="text" id="fld_minimum_premium"
                                    class="form-control"
-                                   value="<?php echo $data["oqqt_minimum_premium"]; ?>"
-                                   required>
+                                   value="<?php echo $data["oqqt_minimum_premium"]; ?>">
                         </div>
                     </div>
 
@@ -215,6 +305,35 @@ $db->show_header();
                         </div>
                     </div>
 
+                    <div class="form-group row">
+                        <div class="col-sm-4 col-form-label">
+                            Added fields
+                        </div>
+                        <div class="col-sm-8">
+                            <div class="row">
+                                <label for="fld_added_field_email" class="col-sm-5 col-form-label">
+                                    Email:
+                                </label>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                           id="fld_added_field_email" name="fld_added_field_email"
+                                           <?php if ($data['oqqt_added_field_email'] == 1) echo 'checked';?>>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label for="fld_added_field_contact_person" class="col-sm-5 col-form-label">
+                                    Contact Person:
+                                </label>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                           id="fld_added_field_contact_person" name="fld_added_field_contact_person"
+                                        <?php if ($data['oqqt_added_field_contact_person'] == 1) echo 'checked';?>>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- BUTTONS -->
                     <div class="form-group row">
                         <label for="name" class="col-sm-4 col-form-label"></label>
@@ -226,8 +345,7 @@ $db->show_header();
                                    onclick="window.location.assign('quotations_types.php')">
                             <input type="submit" name="Submit" id="Submit"
                                    value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Quotation Type"
-                                   class="btn btn-secondary"
-                                   onclick="submitForm()">
+                                   class="btn btn-secondary">
                         </div>
                     </div>
 
@@ -235,18 +353,7 @@ $db->show_header();
             </div>
         </div>
     </div>
-
-    <script>
-        function submitForm() {
-            frm = document.getElementById('myForm');
-            if (frm.checkValidity() === false) {
-
-            }
-            else {
-                document.getElementById('Submit').disabled = true
-            }
-        }
-    </script>
 <?php
+$formValidator->output();
 $db->show_footer();
 ?>

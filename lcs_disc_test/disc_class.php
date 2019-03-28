@@ -217,16 +217,35 @@ Class DiscTest
         if ($testData['lcsdc_question_23'] == 'B') $lowSocial++;
         if ($testData['lcsdc_question_25'] == 'B') $lowSocial++;
 
+        $total = ($highDominance + $lowDominance) * ($highSocial + $lowSocial);
+
+
+
         $result['HighDominance'] = $highDominance;
         $result['LowDominance'] = $lowDominance;
         $result['HighSocial'] = $highSocial;
         $result['LowSocial'] = $lowSocial;
 
+        /*
+        echo "HighDominance:".$highDominance."<br>";
+        echo "LowDominance:".$lowDominance."<br>";
+        echo "HighSocial:".$highSocial."<br>";
+        echo "LowSocial:".$lowSocial."<br>";
+        */
+
+        if ($total > 0) {
+            $result['HighDominance-per'] = round(((($highDominance * $lowSocial) / $total) * 100), 2);
+            $result['LowDominance-per'] = round(((($highSocial * $lowDominance) / $total) * 100), 2);
+            $result['HighSocial-per'] = round(((($lowSocial * $lowDominance) / $total) * 100), 2);
+            $result['LowSocial-per'] = round(((($highSocial * $highDominance) / $total) * 100), 2);
+        }
+
+        /*
         $result['HighDominance-per'] = round( ($highDominance / 28)*100 ,2);
         $result['LowDominance-per'] = round( ($lowDominance / 28)*100 ,2);
         $result['HighSocial-per'] = round( ($highSocial / 28)*100 ,2);
         $result['LowSocial-per'] = round( ($lowSocial / 28)*100 ,2);
-
+        */
         return $result;
     }
 
@@ -272,8 +291,8 @@ Class DiscTest
         /* Define the absissa serie */
         $MyData->addPoints(
             array(
-                $testResults['HighDominance-per']."%"." ΕΥΣΥΝΕΙΔΗΤΟΣ",
-                $testResults['LowDominance-per']."% "." ΚΥΡΙΑΡΧΟΣ",
+                $testResults['HighDominance-per']."%"." ΚΥΡΙΑΡΧΟΣ",
+                $testResults['LowDominance-per']."% "." ΕΥΣΥΝΕΙΔΗΤΟΣ",
                 $testResults['HighSocial-per']."% "." ΣΤΑΘΕΡΟΣ",
                 $testResults['LowSocial-per']."% "." ΕΜΠΝΕΥΣΤΙΚΟΣ"
             ),"Labels");
@@ -338,8 +357,10 @@ Class DiscTest
         require_once '../vendor/autoload.php';
         include_once('email_layout.php');
 
-        $html = getEmailLayoutResult($this->testID,'link');
-        $mpdf = new \Mpdf\Mpdf();
+        $html = getEmailLayoutResult($this->testID,'link',true);
+        $mpdf = new \Mpdf\Mpdf([
+            'default_font' => 'arial'
+        ]);
         $mpdf->WriteHTML($html);
 
         if ($action == 'OutputPdf'){

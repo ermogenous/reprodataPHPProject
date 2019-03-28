@@ -27,6 +27,8 @@ oqq_insureds_name = '" . addslashes($_POST["insureds_name"]) . "',
 oqq_insureds_id = '" . addslashes($_POST["insureds_id"]) . "',
 oqq_insureds_tel = '" . addslashes($_POST["insureds_tel"]) . "',
 oqq_insureds_address = '" . addslashes($_POST["insureds_address"]) . "',
+oqq_insureds_email = '" . addslashes($_POST["insureds_email"]) . "',
+oqq_insureds_contact_person = '" . addslashes($_POST["insureds_contact_person"]) . "',
 oqq_insureds_postal_code = '" . addslashes($_POST["insureds_postal_code"]) . "',
 oqq_situation_address = '" . addslashes($_POST["situation_address"]) . "',
 oqq_situation_postal_code = '" . addslashes($_POST["situation_postal_code"]) . "',
@@ -156,13 +158,24 @@ function insert_item_data_to_db($quotation_type_data, $quotation_id, $item_id)
 //echo $sql."\n\n\n\n\n\n\n\n<hr>";
 }//function insert_item_data_to_db($quotation_type_data,$quotation_ID,$item_id)
 
-function show_quotation_text($greek_text, $english_text)
+function show_quotation_text($greek_text, $english_text,$printOrReturn = 'Print')
 {
 
     if ($_SESSION["oq_quotations_language"] == 'en') {
-        print $english_text;
+        if ($printOrReturn == 'Print'){
+            print $english_text;
+        }
+        else {
+            return $english_text;
+        }
+
     } else {
-        print $greek_text;
+        if ($printOrReturn == 'Print'){
+            print $greek_text;
+        }
+        else {
+            return $greek_text;
+        }
     }
 
 }//function show_quotation_text($greek_text,$english_text)
@@ -316,13 +329,12 @@ function quotation_price_calculation_Get_rate_sum($rate, $amount)
 
 function quotation_price_find_fees($fees, $fees_rounding_style, $premium, $stamps)
 {
-
     $premium = round($premium, 2);
     $fees = round($fees, 2);
     $stamps = round($stamps, 2);
 
     if ($fees_rounding_style == "NoRounding") {
-        $result = $premium;
+        $result = $fees;
     } else if ($fees_rounding_style == "RoundUpFees") {
 
         $total = $fees + $premium + $stamps;
@@ -336,6 +348,7 @@ function quotation_price_find_fees($fees, $fees_rounding_style, $premium, $stamp
     }
 
     $result = round($result, 2);
+
     return $result;
 }
 

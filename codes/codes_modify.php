@@ -18,28 +18,44 @@ if ($db->user_data["usr_user_rights"] > 0) {
 
 }
 
-if ($_POST["action"] == "insert") {
-    $db->check_restriction_area('insert');
-
-    $db->db_tool_insert_row('codes', $_POST, 'fld_', 0, 'cde_');
-    header("Location: codes.php?type=" . $_POST['codeSelection'] . "&search_code=search");
-    exit();
-
-} else if ($_POST["action"] == "update") {
-    $db->check_restriction_area('update');
-
-    $db->db_tool_update_row('codes', $_POST, "`cde_code_ID` = " . $_POST["lid"], $_POST["lid"], 'fld_', 'execute', 'cde_');
-    header("Location: codes.php?type=" . $_POST['codeSelection'] . "&search_code=search");
-    exit();
-
-}
-
 if ($_GET['codeSelection'] == 'code') {
-    $codeLabels['cde_value_label'] = 'Value';
+    $codeLabels['cde_value_label'] = 'Value Type Unique';
     $codeLabels['cde_value_label_2'] = 'Value 2';
 } else {
     $codeLabels = $db->query_fetch("SELECT * FROM `codes` WHERE `cde_type` = 'code' AND `cde_value` = '" . $_GET['codeSelection'] . "'");
 }
+
+
+if ($_POST["action"] == "insert") {
+    $db->start_transaction();
+    $db->check_restriction_area('insert');
+
+    if ($_GET['codeSelection'] != 'code') {
+        $_POST['fld_option_label'] = $codeLabels['cde_option_label'];
+        $_POST['fld_option_label_2'] = $codeLabels['cde_option_label_2'];
+    }
+
+    $db->db_tool_insert_row('codes', $_POST, 'fld_', 0, 'cde_');
+    $db->commit_transaction();
+    header("Location: codes.php?type=" . $_POST['codeSelection'] . "&search_code=search");
+    exit();
+
+} else if ($_POST["action"] == "update") {
+    $db->start_transaction();
+    $db->check_restriction_area('update');
+
+    if ($_GET['codeSelection'] != 'code') {
+        $_POST['fld_option_label'] = $codeLabels['cde_option_label'];
+        $_POST['fld_option_label_2'] = $codeLabels['cde_option_label_2'];
+    }
+
+    $db->db_tool_update_row('codes', $_POST, "`cde_code_ID` = " . $_POST["lid"], $_POST["lid"], 'fld_', 'execute', 'cde_');
+    $db->commit_transaction();
+    header("Location: codes.php?type=" . $_POST['codeSelection'] . "&search_code=search");
+    exit();
+
+}
+
 
 if ($_GET["lid"] != "") {
     $sql = "SELECT * FROM `codes` WHERE `cde_code_ID` = " . $_GET["lid"];
@@ -86,6 +102,23 @@ $db->show_header();
                         </select>
                     </div>
                 </div>
+
+                <div class="form-group row">
+                    <label for="fld_status" class="col-sm-4 col-form-label">Status</label>
+                    <div class="col-sm-8">
+                        <select name="fld_status" id="fld_status"
+                                class="form-control"
+                                required>
+                            <option value="Active" <?php if ($data['cde_status'] == 'Active') echo 'selected'; ?>>
+                                Active
+                            </option>
+                            <option value="Inactive" <?php if ($data['cde_status'] == 'Inactive') echo 'selected'; ?>>
+                                In-Active
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
                 <?php
                 if ($_GET['codeSelection'] == 'code') {
                     ?>
@@ -119,6 +152,18 @@ $db->show_header();
                                    value="<?php echo $data["cde_table_field3"]; ?>">
                         </div>
                     </div>
+
+                    <div class="form-group row">
+                        <label for="surname"
+                               class="col-sm-4 col-form-label"><?php echo $codeLabels['cde_value_label']; ?></label>
+                        <div class="col-sm-8">
+                            <input name="fld_value" type="text" id="fld_value"
+                                   class="form-control"
+                                   value="<?php echo $data["cde_value"]; ?>"
+                                   required>
+                        </div>
+                    </div>
+
                     <div class="form-group row">
 
                         <label for="fld_value_label" class="col-sm-4 col-form-label">Value Label</label>
@@ -130,7 +175,11 @@ $db->show_header();
 
                         </div>
                     </div>
-
+                    <div class="row">
+                        <div class="col-12">
+                            <hr>
+                        </div>
+                    </div>
                     <div class="form-group row">
 
                         <label for="fld_option_value" class="col-sm-4 col-form-label">Options Values</label>
@@ -155,21 +204,45 @@ $db->show_header();
 
                         </div>
                     </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="form-group row">
 
+                        <label for="fld_option_value_2" class="col-sm-4 col-form-label">Options Values 2</label>
+                        <div class="col-sm-8">
+
+                            <input name="fld_option_value_2" type="text" id="fld_option_value_2"
+                                   class="form-control"
+                                   value="<?php echo $data["cde_option_value_2"]; ?>">
+                            Separate by #
+
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+
+                        <label for="fld_option_label_2" class="col-sm-4 col-form-label">Options Label 2</label>
+                        <div class="col-sm-8">
+
+                            <input name="fld_option_label_2" type="text" id="fld_option_label_2"
+                                   class="form-control"
+                                   value="<?php echo $data["cde_option_label_2"]; ?>">
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <hr>
+                        </div>
+                    </div>
                 <?php } else { ?>
                     <input type="hidden" name="fld_value_label" id="fld_value_label"
                            value="<?php echo $codeLabels['cde_value_label']; ?>">
                 <?php } ?>
-                <div class="form-group row">
-                    <label for="surname"
-                           class="col-sm-4 col-form-label"><?php echo $codeLabels['cde_value_label']; ?></label>
-                    <div class="col-sm-8">
-                        <input name="fld_value" type="text" id="fld_value"
-                               class="form-control"
-                               value="<?php echo $data["cde_value"]; ?>"
-                               required>
-                    </div>
-                </div>
+
 
                 <?php
                 if ($_GET['codeSelection'] == 'code') {
@@ -198,27 +271,46 @@ $db->show_header();
                         </div>
                     </div>
                 <?php }
-                if ($_GET['codeSelection'] != 'code') {?>
+                if ($_GET['codeSelection'] != 'code' && $codeLabels['cde_option_label'] != '') { ?>
                     <div class="form-group row">
                         <label for="fld_option_value"
                                class="col-sm-4 col-form-label"><?php echo $codeLabels['cde_option_label']; ?></label>
                         <div class="col-sm-8">
                             <select name="fld_option_value" id="fld_option_value"
-                                    class="form-control"
-                                    required>
-                            <?php echo $data["cde_option_value"]; ?>
+                                    class="form-control">
+                                <?php echo $data["cde_option_value"]; ?>
 
                                 <?php
-                                    $options = explode("#",$codeLabels['cde_option_value']);
-                                    foreach ($options as $value){
-                                ?>
-                                <option value="<?php echo $value;?>" <?php if($value == $data['cde_option_value']) echo 'selected';?>><?php echo $value;?></option>
+                                $options = explode("#", $codeLabels['cde_option_value']);
+                                foreach ($options as $value) {
+                                    ?>
+                                    <option value="<?php echo $value; ?>" <?php if ($value == $data['cde_option_value']) echo 'selected'; ?>><?php echo $value; ?></option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                    </div>
+                <?php }
+
+
+                if ($_GET['codeSelection'] != 'code' && $codeLabels['cde_option_label_2'] != '') { ?>
+                    <div class="form-group row">
+                        <label for="fld_option_value_2"
+                               class="col-sm-4 col-form-label"><?php echo $codeLabels['cde_option_label_2']; ?></label>
+                        <div class="col-sm-8">
+                            <select name="fld_option_value_2" id="fld_option_value_2"
+                                    class="form-control">
+                                <?php echo $data["cde_option_value_2"]; ?>
+
+                                <?php
+                                $options = explode("#", $codeLabels['cde_option_value_2']);
+                                foreach ($options as $value) {
+                                    ?>
+                                    <option value="<?php echo $value; ?>" <?php if ($value == $data['cde_option_value_2']) echo 'selected'; ?>><?php echo $value; ?></option>
                                 <?php } ?>
                             </select>
                         </div>
                     </div>
                 <?php } ?>
-
 
 
                 <div class="form-group row">

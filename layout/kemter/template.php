@@ -28,7 +28,7 @@ function template_header()
         <?php echo $db->admin_more_head; ?>
 
     </head>
-    <body>
+    <body onload="<?php echo $db->admin_on_load;?>">
     <?php if ($db->admin_layout_printer != 'yes') { ?>
     <nav class="navbar navbar-expand-lg navbar-dark navbar-custom" style="background-color: #e0a800">
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"

@@ -13,55 +13,80 @@ function getEmailLayoutFillTest($data)
     $id = $db->encrypt($data['lcsdc_disc_test_ID']);
 
     $html = '
-Please fill the form in the below link.<br>
-<a href="' . $main["site_url"] . '/lcs_disc_test/disc_modify.php?lid=' . $id . '">Click Here</a><br>
-If the link does not work then copy paste the below link in to your browser<br>
+Σας ευχαριστούμε πολύ που επιλέξετε την www.lcsppoach.com.
+<br><br>
+Παρακαλώ κάντε κλικ στο επόμενο σύνδεσμο και ακολουθήστε τις οδηγίες.
+<br>
+<a href="' . $main["site_url"] . '/lcs_disc_test/disc_modify.php?lid=' . $id . '">Click Here</a>
+<br><br>
+Σε περίπτωση που δεν ενεργοποιηθεί ο σύνδεσμος, αντιγράψτε επικολλήστε τον παρακάτω σύνδεσμο στο πρόγραμμα περιήγησής σας.
+<br><br>
 ' . $main["site_url"] . '/lcs_disc_test/disc_modify.php?lid=' . $id . '
-    ';
+';
 
 
     return $html;
 }
+
 //$images = embeded, Link or Attached
-function getEmailLayoutResult($testID,$images = 'embeded')
+function getEmailLayoutResult($testID, $images = 'embeded',$pdf=false)
 {
     include_once('disc_class.php');
-    global $main;
+    global $main, $db;
 
     $disc = new DiscTest($testID);
 
 
-    if ($images == 'embeded'){
+    if ($images == 'embeded') {
         $imagesSrcPie = 'cid:testpie';
         $imageSrcDisc = 'cid:discmodel';
         $imageSrcCircle = 'cid:circlemodel';
-    }
-    else if ($images == 'attached') {
+        $imageSrcLogo = 'cid:lcsfooterlogo';
+    } else if ($images == 'attached') {
         $pic = $disc->getPieImageData('data');
-        $imagesSrcPie = 'data:image/jpeg;base64,'.base64_encode( $pic );
-        $imageSrcDisc = $main["site_url"]."/layout/lcs_eq/images/disc_model.jpg";
-        $imageSrcCircle = $main["site_url"]."/layout/lcs_eq/images/circle_model.jpg";
-    }
-    else {
+        $imagesSrcPie = 'data:image/jpeg;base64,' . base64_encode($pic);
+        $imageSrcDisc = $main["site_url"] . "/layout/lcs_eq/images/disc_model.jpg";
+        $imageSrcCircle = $main["site_url"] . "/layout/lcs_eq/images/circle_model.jpg";
+        $imageSrcLogo = $main["site_url"] . "/layout/lcs_eq/images/lcs_footer_logo.png";
+    } else {
         $pic = $disc->getPieImageData('path');
         $imagesSrcPie = $pic;
-        $imageSrcDisc = $main["site_url"]."/layout/lcs_eq/images/disc_model.jpg";
-        $imageSrcCircle = $main["site_url"]."/layout/lcs_eq/images/circle_model.jpg";
+        $imageSrcDisc = "../layout/lcs_eq/images/disc_model.jpg";
+        $imageSrcCircle = "../layout/lcs_eq/images/circle_model.jpg";
+        $imageSrcLogo = "../layout/lcs_eq/images/lcs_footer_logo.png";
+
+    }
+
+    $createdDate = explode(' ', $disc->data['lcsdc_created_date_time']);
+
+    $bodyTagStart = '';
+    $bodyTagFinish = '';
+    if ($pdf == true){
+        $bodyTagStart = '<body style="font-family: Arial; font-size: 11pt;">';
+        $bodyTagFinish = '</body>';
     }
 
     $html = '
-<div style="font-family: Arial">
+'.$bodyTagStart.'
+
+<div style="font-family: Arial; width: 800px;">
+<b>
+' . $disc->data['lcsdc_name'] . ' - ' . $db->convert_date_format($createdDate[0], 'yyyy-mm-dd', 'dd/mm/yyyy') . '
+</b>
+<br><br>
 Στο διάγραμμα που ακολουθεί βλέπετε την κατανομή των αποτελεσμάτων σας σε ποσοστά.
 <br><br>
 Το μεγαλύτερο ποσοστό είναι το κυρίαρχο χαρακτηριστικό σας. Το δεύτερο μεγαλύτερο είναι το επόμενο λιγότερο κυρίαρχο χαρακτηριστικό κοκ.
 <br><br>
-<img src="'.$imagesSrcPie.'"/>
+<img src="' . $imagesSrcPie . '"/>
 <br><br>
 Για να σας βοηθήσουμε να κατανοήσουμε το μοντέλο προσωπικότητας DISC, σας παραθέτουμε πιο κάτω τις απαραίτητες επεξηγήσεις
 <br><br>
-<img src="'.$imageSrcDisc.'">
+<img src="' . $imageSrcDisc . '">
 <br><br>
-<img src="'.$imageSrcCircle.'">
+<img src="' . $imageSrcCircle . '">
+<br>
+<br>
 <p style="background-color: #fdbf01; width: 800px; height: 25px; vertical-align: middle;">
     <b>&nbsp; 1. Κυρίαρχος | Dominant</b>
 </p>
@@ -117,14 +142,14 @@ function getEmailLayoutResult($testID,$images = 'embeded')
     Πολύ βασικό είναι οι βασικοί συνδυασμοί.<br>
     Τα 2 μεγαλύτερα ποσοστά αποτελούν τον βασικό συνδυασμό σας.
 </p>
+<br>
 <p style="background-color: #404040; width: 800px; height: 25px; vertical-align: middle; color: white;">
     <b>&nbsp; 8 βασική συνδυασμοί </b>
 </p>
 
 <p>
     <b><u>1. DC: ΠΡΟΚΛΗΣΗ, ΑΠΟΤΕΛΕΣΜΑΤΑ, ΑΚΡΙΒΕΙΑ</u></b>
-</p>
-<p>
+    <br>
     <b>Στόχοι:</b> ανεξαρτησία, προσωπική επιτυχία<br>
     <b>Φόβοι:</b> αποτυχία να φτάσουν τους στόχους τους<br>
     <b>Ηγετικές Ικανότητες:</b> Έχουν αυτοπεποίθηση, αναλαμβάνουν τις ευθύνες τους, συγκεντρώνονται στο αποτέλεσμα
@@ -132,8 +157,7 @@ function getEmailLayoutResult($testID,$images = 'embeded')
 
 <p>
     <b><u>2. DI: ΕΝΕΡΓΕΙΕΣ, ΑΠΟΤΕΛΕΣΜΑΤΑ, ΕΝΘΟΥΣΙΑΣΜΟΣ</u></b>
-</p>
-<p>
+    <br>
     <b>Στόχοι:</b> γρήγορες κινήσεις, νέες ευκαιρίες<br>
     <b>Φόβοι:</b> απώλεια εξουσίας<br>
     <b>Ηγετικές Ικανότητες:</b> επεκτείνει τα όρια, βρίσκει ευκαιρίες
@@ -141,8 +165,7 @@ function getEmailLayoutResult($testID,$images = 'embeded')
 
 <p>
     <b><u>3. ΙD: ΕΝΕΡΓΕΙΕΣ, ΕΝΘΟΥΣΙΑΣΜΟΣ, ΑΠΟΤΕΛΕΣΜΑΤΑ</u></b>
-</p>
-<p>
+    <br>
     <b>Στόχοι:</b> συναρπαστική πρόοδος – ανάπτυξη<br>
     <b>Φόβοι:</b> σταθερό περιβάλλον, ελλείψει προσοχής, απώλεια εξουσίας<br>
     <b>Ηγετικές Ικανότητες:</b> ανακαλύψει ευκαιριών, προώθηση τολμηρών ενεργειών
@@ -150,8 +173,7 @@ function getEmailLayoutResult($testID,$images = 'embeded')
 
 <p>
     <b><u>4. IS: ΣΥΝΕΡΓΑΣΙΑ, ΕΝΘΟΥΣΙΑΣΜΟΣ, ΥΠΟΣΤΗΡΙΞΗ</u></b>
-</p>
-<p>
+    <br>
     <b>Στόχοι:</b> σχέσεις<br>
     <b>Φόβοι:</b> να μην είναι αρεστός, να πιέζει τους άλλους<br>
     <b>Ηγετικές Ικανότητες:</b> προσιτός, αναγνωρίζει την προσφορά των άλλων
@@ -159,8 +181,7 @@ function getEmailLayoutResult($testID,$images = 'embeded')
 
 <p>
     <b><u>5. SI: ΣΥΝΕΡΓΑΣΙΑ, ΥΠΟΣΤΗΡΙΞΗ, ΕΝΘΟΥΣΙΑΣΜΟΣ</u></b>
-</p>
-<p>
+    <br>
     <b>Στόχοι:</b> αποδοχή, σχέσεις<br>
     <b>Φόβοι:</b> να μην είναι αρεστός, να πιέζει τους άλλους<br>
     <b>Ηγετικές Ικανότητες:</b> είναι αποδεκτός, κτίζει καλές σχέσεις
@@ -168,8 +189,7 @@ function getEmailLayoutResult($testID,$images = 'embeded')
 
 <p>
     <b><u>6. SC: ΣΤΑΘΕΡΟΤΗΤΑ, ΥΠΟΣΤΗΡΙΞΗ, ΑΚΡΙΒΕΙΑ</u></b>
-</p>
-<p>
+    <br>
     <b>Στόχοι:</b> ήρεμο περιβάλλον, σταθεροί στόχοι, σταθερή πρόοδος<br>
     <b>Φόβοι:</b> πίεση χρόνου, αβεβαιότητα, χάος<br>
     <b>Ηγετικές Ικανότητες:</b> διατήρηση ψυχραιμίας, δίκαιος
@@ -177,8 +197,7 @@ function getEmailLayoutResult($testID,$images = 'embeded')
 
 <p>
     <b><u>7. CS: ΣΤΑΘΕΡΟΤΗΤΑ, ΑΚΡΙΒΕΙΑ, ΥΠΟΣΤΗΡΙΞΗ</u></b>
-</p>
-<p>
+    <br>
     <b>Στόχοι:</b> σταθερότητα, αξιόπιστα αποτελέσματα<br>
     <b>Φόβοι:</b> συναισθηματικές φορτισμένες καταστάσεις, ασάφεια<br>
     <b>Ηγετικές Ικανότητες:</b> ξεκάθαρη επικοινωνία, προάγει πειθαρχημένη ανάλυση
@@ -186,13 +205,17 @@ function getEmailLayoutResult($testID,$images = 'embeded')
 
 <p>
     <b><u>8. CD: ΠΡΟΚΛΗΣΗ, ΑΚΡΙΒΕΙΑ, ΑΠΟΤΕΛΕΣΜΑΤΑ</u></b>
-</p>
-<p>
+    <br>
     <b>Στόχοι:</b> αποδοτικά αποτελέσματα, λογικές αποφάσεις<br>
     <b>Φόβοι:</b> αποτυχία, χάσιμο ελέγχου<br>
     <b>Ηγετικές Ικανότητες:</b> δημιουργεί ψηλές προσδοκίες, βελτιώνει διαδικασίες και μεθόδους
 </p>
-</div>';
+<div align="center">
+    <img src="' . $imageSrcLogo . '" width="500">
+</div>
+</div>
+
+'.$bodyTagFinish;
 
     return $html;
 }
