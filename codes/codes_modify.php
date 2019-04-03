@@ -152,7 +152,9 @@ $db->show_header();
                                    value="<?php echo $data["cde_table_field3"]; ?>">
                         </div>
                     </div>
-
+                    <?php
+                        }
+                    ?>
                     <div class="form-group row">
                         <label for="surname"
                                class="col-sm-4 col-form-label"><?php echo $codeLabels['cde_value_label']; ?></label>
@@ -163,7 +165,9 @@ $db->show_header();
                                    required>
                         </div>
                     </div>
-
+                <?php
+                if ($_GET['codeSelection'] == 'code') {
+                    ?>
                     <div class="form-group row">
 
                         <label for="fld_value_label" class="col-sm-4 col-form-label">Value Label</label>
@@ -175,6 +179,7 @@ $db->show_header();
 
                         </div>
                     </div>
+
                     <div class="row">
                         <div class="col-12">
                             <hr>

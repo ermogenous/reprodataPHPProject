@@ -20,7 +20,8 @@ if ($_GET['lid'] == ''){
 $db = new Main(1, 'UTF-8');
 $db->admin_title = "LCS DiSC Test List";
 $disc = new DiscTest($_GET['lid']);
-$layout = getEmailLayoutResult($_GET['lid']);
+//$layout = getEmailLayoutResult($_GET['lid']);
+$layout = getEmailLayoutBodyForResult($disc->data);
 $layoutHtml = getEmailLayoutResult($_GET['lid'],'path');
 
 if ($disc->data['lcsdc_status'] != 'Completed'){
@@ -54,21 +55,22 @@ if ($_POST['action'] == 'sendMail'){
 
 
         //Recipients
-        $mail->setFrom('no-reply@lcsapproach.com', 'www.lcsapproach.com');
+        $mail->setFrom('info@lcsapproach.com', 'www.lcsapproach.com');
         $mail->addAddress($disc->data['lcsdc_email'], $disc->data['lcsdc_name']);     // Add a recipient
-        $mail->addReplyTo('no-reply@lcsapproach.com', 'www.lcsapproach.com');
+        $mail->addReplyTo('info@lcsapproach.com', 'www.lcsapproach.com');
+
         //$mail->addCC('cc@example.com');
         //$mail->addBCC('bcc@example.com');
 
         //Attachments
         //$mail->addAttachment('/var/tmp/file.tar.gz');         // Add attachments
         //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
-        $mail->addEmbeddedImage('../layout/lcs_eq/images/disc_model.jpg','discmodel','discmodel.jpg');
-        $mail->addEmbeddedImage('../layout/lcs_eq/images/circle_model.jpg','circlemodel','circlemodel.jpg');
-        $mail->addEmbeddedImage('../layout/lcs_eq/images/lcs_footer_logo.png','lcsfooterlogo','lcs_footer_logo.png');
+        //$mail->addEmbeddedImage('../layout/lcs_eq/images/disc_model.jpg','discmodel','discmodel.jpg');
+        //$mail->addEmbeddedImage('../layout/lcs_eq/images/circle_model.jpg','circlemodel','circlemodel.jpg');
+        //$mail->addEmbeddedImage('../layout/lcs_eq/images/lcs_logo_small.jpg','lcslogo','lcs_footer_logo.png');
         $pieImagePath = $disc->getPieImageData();
 
-        $mail->addEmbeddedImage($pieImagePath,'testpie','testpie.jpg');
+        //$mail->addEmbeddedImage($pieImagePath,'testpie','testpie.jpg');
 
         //attach pdf
         $pdfFilePath = $disc->getPdf('GetFilePath');

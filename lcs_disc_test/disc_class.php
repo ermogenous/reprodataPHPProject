@@ -52,10 +52,9 @@ Class DiscTest
                 $this->errorDescription[] = 'Ερώτηση ' . $i . ' δεν είναι συμπληρωμένη';
             }
         }
-        if($this->error == true){
+        if ($this->error == true) {
             return false;
-        }
-        else {
+        } else {
             return true;
         }
     }
@@ -86,13 +85,12 @@ Class DiscTest
         global $db;
         if ($this->verifyCompletion()) {
             if ($this->data['lcsdc_status'] == 'Completed') {
-                if ($this->data['lcsdc_process_status'] == 'UnPaid'){
+                if ($this->data['lcsdc_process_status'] == 'UnPaid') {
                     $newData['process_status'] = 'Paid';
                     $db->db_tool_update_row('lcs_disc_test', $newData, "`lcsdc_disc_test_ID` = " . $this->testID,
                         $this->testID, '', 'execute', 'lcsdc_');
                     return true;
-                }
-                else {
+                } else {
                     $this->error = true;
                     $this->errorDescription = 'Process Status must be UnPaid for change to Paid';
                     return false;
@@ -110,42 +108,44 @@ Class DiscTest
         }
     }
 
-    function deleteTest(){
+    function deleteTest()
+    {
         global $db;
-        if ($this->data['lcsdc_status'] == 'Outstanding'){
+        if ($this->data['lcsdc_status'] == 'Outstanding') {
             $newData['status'] = 'Deleted';
             $db->db_tool_update_row('lcs_disc_test', $newData, "`lcsdc_disc_test_ID` = " . $this->testID,
                 $this->testID, '', 'execute', 'lcsdc_');
             return true;
-        }
-        else {
+        } else {
             $this->error = true;
             $this->errorDescription = 'Status must be Outstanding to Delete';
             return false;
         }
     }
 
-    function sendEmail($email){
+    function sendEmail($email)
+    {
         include('email_layout.php');
         include('questions_list.php');
         $testResults = getIntorExtroResults($this->data);
         $html = getEmailLayout($this->data, $testResults);
     }
 
-    function getEmailHtml(){
+    function getEmailHtml()
+    {
         if ($this->data['lcsdc_status'] == 'Completed' || $this->data['lcsdc_status'] == 'Paid') {
             include('email_layout.php');
             include('questions_list.php');
             $testResults = getDiSCResults($this->data);
             $html = getEmailLayoutResult($this->data, $testResults);
             return $html;
-        }
-        else {
+        } else {
             return '';
         }
     }
 
-    function getTestResults(){
+    function getTestResults()
+    {
         $highDominance = 0;
         $lowDominance = 0;
         $highSocial = 0;
@@ -220,7 +220,6 @@ Class DiscTest
         $total = ($highDominance + $lowDominance) * ($highSocial + $lowSocial);
 
 
-
         $result['HighDominance'] = $highDominance;
         $result['LowDominance'] = $lowDominance;
         $result['HighSocial'] = $highSocial;
@@ -241,6 +240,13 @@ Class DiscTest
         }
 
         /*
+        echo "HighDominance: ".$result['HighDominance-per']."<br>";
+        echo "LowDominance: ".$result['LowDominance-per']."<br>";
+        echo "HighSocial: ".$result['HighSocial-per']."<br>";
+        echo "LowSocial: ".$result['LowSocial-per']."<br>";
+        */
+
+        /*
         $result['HighDominance-per'] = round( ($highDominance / 28)*100 ,2);
         $result['LowDominance-per'] = round( ($lowDominance / 28)*100 ,2);
         $result['HighSocial-per'] = round( ($highSocial / 28)*100 ,2);
@@ -249,7 +255,8 @@ Class DiscTest
         return $result;
     }
 
-    function getPieImageData($image = 'path'){
+    function getPieImageData($image = 'path')
+    {
         global $main;
 
         $testResults = $this->getTestResults();
@@ -277,63 +284,63 @@ Class DiscTest
         /* Create and populate the pData object */
         $MyData = new pData();
         //set the palette
-        $MyData->loadPalette('pie_color_palette.color',TRUE);
+        $MyData->loadPalette('pie_color_palette.color', TRUE);
 
         $MyData->addPoints(
             array(
-                $testResults['HighDominance'],
-                $testResults['LowDominance'],
-                $testResults['HighSocial'],
-                $testResults['LowSocial']
-            ),"ScoreA");
-        $MyData->setSerieDescription("ScoreA","Application A");
+                $testResults['HighDominance-per'],
+                $testResults['LowDominance-per'],
+                $testResults['HighSocial-per'],
+                $testResults['LowSocial-per']
+            ), "ScoreA");
+        $MyData->setSerieDescription("ScoreA", "Application A");
 
         /* Define the absissa serie */
         $MyData->addPoints(
             array(
-                $testResults['HighDominance-per']."%"." ΚΥΡΙΑΡΧΟΣ",
-                $testResults['LowDominance-per']."% "." ΕΥΣΥΝΕΙΔΗΤΟΣ",
-                $testResults['HighSocial-per']."% "." ΣΤΑΘΕΡΟΣ",
-                $testResults['LowSocial-per']."% "." ΕΜΠΝΕΥΣΤΙΚΟΣ"
-            ),"Labels");
+                $testResults['HighDominance-per'] . "%" . " ΚΥΡΙΑΡΧΟΣ",
+                $testResults['LowDominance-per'] . "% " . " ΕΥΣΥΝΕΙΔΗΤΟΣ",
+                $testResults['HighSocial-per'] . "% " . " ΣΤΑΘΕΡΟΣ",
+                $testResults['LowSocial-per'] . "% " . " ΕΜΠΝΕΥΣΤΙΚΟΣ"
+            ), "Labels");
         $MyData->setAbscissa("Labels");
 
 
         /* Create the pChart object */
-        $myPicture = new pImage($width,$height,$MyData);
+        $myPicture = new pImage($width, $height, $MyData);
 
         /* Draw a solid background */
-        $Settings = array("R"=>170, "G"=>183, "B"=>87, "Dash"=>1, "DashR"=>190, "DashG"=>203, "DashB"=>107);
-        $myPicture->drawFilledRectangle(0,0,$width,$height,$Settings);
+        $Settings = array("R" => 170, "G" => 183, "B" => 87, "Dash" => 1, "DashR" => 190, "DashG" => 203, "DashB" => 107);
+        $myPicture->drawFilledRectangle(0, 0, $width, $height, $Settings);
 
         /* Overlay with a gradient */
-        $Settings = array("StartR"=>255, "StartG"=>255, "StartB"=>255, "EndR"=>255, "EndG"=>255, "EndB"=>255, "Alpha"=>255);
-        $myPicture->drawGradientArea(0,0,$width,$height,DIRECTION_VERTICAL,$Settings);
+        $Settings = array("StartR" => 255, "StartG" => 255, "StartB" => 255, "EndR" => 255, "EndG" => 255, "EndB" => 255, "Alpha" => 255);
+        $myPicture->drawGradientArea(0, 0, $width, $height, DIRECTION_VERTICAL, $Settings);
         //section for the title
-        $myPicture->drawGradientArea(0,0,$width,$titleHeight,DIRECTION_VERTICAL,array("StartR"=>203,"StartG"=>38,"StartB"=>43,"EndR"=>203,"EndG"=>38,"EndB"=>43,"Alpha"=>100));
+        $myPicture->drawGradientArea(0, 0, $width, $titleHeight, DIRECTION_VERTICAL, array("StartR" => 203, "StartG" => 38, "StartB" => 43, "EndR" => 203, "EndG" => 38, "EndB" => 43, "Alpha" => 100));
 
         /* Add a border to the picture */
-        $myPicture->drawRectangle(0,0,($width-1),($height-1),array("R"=>0,"G"=>0,"B"=>0));
+        $myPicture->drawRectangle(0, 0, ($width - 1), ($height - 1), array("R" => 0, "G" => 0, "B" => 0));
 
         /* Write the picture title */
-        $myPicture->setFontProperties(array("FontName"=>$main['local_url']."/tools/pChart2.1.4/fonts/Silkscreen.ttf","FontSize"=>$titleFontSize));
-        $myPicture->drawText(10,16,$title,array("R"=>255,"G"=>255,"B"=>255));
+        $myPicture->setFontProperties(array("FontName" => $main['local_url'] . "/tools/pChart2.1.4/fonts/Silkscreen.ttf", "FontSize" => $titleFontSize));
+        $myPicture->drawText(10, 16, $title, array("R" => 255, "G" => 255, "B" => 255));
 
 
         /* Set the default font properties */
-        $myPicture->setFontProperties(array("FontName"=>$main['local_url']."/tools/pChart2.1.4/fonts/greek/OpenSans-Regular.ttf","FontSize"=>$legendFontSize,"R"=>20,"G"=>80,"B"=>80));
+        $myPicture->setFontProperties(array("FontName" => $main['local_url'] . "/tools/pChart2.1.4/fonts/greek/OpenSans-Regular.ttf", "FontSize" => $legendFontSize, "R" => 20, "G" => 80, "B" => 80));
 
         /* Create the pPie object */
-        $PieChart = new pPie($myPicture,$MyData);
+        $PieChart = new pPie($myPicture, $MyData);
 
         /* Draw an AA pie chart */
-        $PieChart->draw3DPie($piePositionX,$piePositionY,
+        $PieChart->draw3DPie($piePositionX, $piePositionY,
             array(
-                "Radius"=>$pieSize,
-                "DrawLabels"=>TRUE,
-                "LabelStacked"=>TRUE,
-                "Border"=>TRUE,
-                "SliceHeight"=>$pieHeight
+                "Radius" => $pieSize,
+                "DrawLabels" => TRUE,
+                "LabelStacked" => TRUE,
+                "Border" => TRUE,
+                "SliceHeight" => $pieHeight
             ));
 
         /* Write the legend box */
@@ -342,10 +349,9 @@ Class DiscTest
 
         /* Render the picture (choose the best way) */
 
-        if ($image == 'path'){
+        if ($image == 'path') {
             $pic = $myPicture->getPicturePath();
-        }
-        else {
+        } else {
             $pic = $myPicture->getPictureData();
         }
 
@@ -353,46 +359,47 @@ Class DiscTest
     }
 
     //action = OutputPdf, GetFilePath
-    public function getPdf($action = 'OutputPdf'){
+    public function getPdf($action = 'OutputPdf')
+    {
         require_once '../vendor/autoload.php';
         include_once('email_layout.php');
 
-        $html = getEmailLayoutResult($this->testID,'link',true);
+        $html = getEmailLayoutResult($this->testID, 'link', true);
         $mpdf = new \Mpdf\Mpdf([
             'default_font' => 'arial'
         ]);
         $mpdf->WriteHTML($html);
 
-        if ($action == 'OutputPdf'){
+        if ($action == 'OutputPdf') {
             $mpdf->Output();
-        }
-        else if ($action == 'GetFilePath') {
+        } else if ($action == 'GetFilePath') {
             $date = new DateTime();
-            $fileName = 'pdf/discPdf-' . $date->format('dmY-Gis-v').".pdf";
+            $fileName = 'pdf/discPdf-' . $date->format('dmY-Gis-v') . ".pdf";
             $mpdf->Output($fileName);
             return $fileName;
         }
     }
 
-    public function clearImages(){
+    public function clearImages()
+    {
 
         //loop into all images in images folder
         $allFiles = scandir('pie_images');
 
         //time which if less or equal then delete the image
         $date = new DateTime();
-        $hour = $date->format('G')*1 - 1;
-        $minute = $date->format('i')*1;
-        $second = $date->format('s')*1;
-        $date->setTime($hour,$minute, $second);
+        $hour = $date->format('G') * 1 - 1;
+        $minute = $date->format('i') * 1;
+        $second = $date->format('s') * 1;
+        $date->setTime($hour, $minute, $second);
 
         $timeLimit = $date->format('Gis');
         $dateLimit = $date->format('dmY');
 
-        foreach($allFiles as $value){
+        foreach ($allFiles as $value) {
 
             //first check if its an image file
-            $imageCheck = substr($value,0,6);
+            $imageCheck = substr($value, 0, 6);
             if ($imageCheck == 'myPic-') {
 
                 $deleteFile = false;
@@ -420,20 +427,17 @@ Class DiscTest
 
 }
 
-function getTestColor($status,$type = 'Bg'){
-    if ($status == 'Outstanding'){
-        return 'discOutstanding'.$type.'Color';
-    }
-    else if ($status == 'Link'){
-        return 'discLink'.$type.'Color';
-    }
-    else if ($status == 'Completed'){
-        return 'discCompleted'.$type.'Color';
-    }
-    else if ($status == 'Paid'){
-        return 'discPaid'.$type.'Color';
-    }
-    else if ($status == 'Deleted'){
-        return 'discDeleted'.$type.'Color';
+function getTestColor($status, $type = 'Bg')
+{
+    if ($status == 'Outstanding') {
+        return 'discOutstanding' . $type . 'Color';
+    } else if ($status == 'Link') {
+        return 'discLink' . $type . 'Color';
+    } else if ($status == 'Completed') {
+        return 'discCompleted' . $type . 'Color';
+    } else if ($status == 'Paid') {
+        return 'discPaid' . $type . 'Color';
+    } else if ($status == 'Deleted') {
+        return 'discDeleted' . $type . 'Color';
     }
 }

@@ -10,6 +10,7 @@ if ($_POST["action"] == "insert") {
 
     $_POST['fld_added_field_email'] = $db->get_check_value($_POST['fld_added_field_email']);
     $_POST['fld_added_field_contact_person'] = $db->get_check_value($_POST['fld_added_field_contact_person']);
+    $_POST['fld_added_field_extra_details'] = $db->get_check_value($_POST['fld_added_field_extra_details']);
 
     $db->db_tool_insert_row('oqt_quotations_types', $_POST, 'fld_', 0, 'oqqt_');
     $db->commit_transaction();
@@ -24,6 +25,7 @@ if ($_POST["action"] == "insert") {
 
     $_POST['fld_added_field_email'] = $db->get_check_value($_POST['fld_added_field_email']);
     $_POST['fld_added_field_contact_person'] = $db->get_check_value($_POST['fld_added_field_contact_person']);
+    $_POST['fld_added_field_extra_details'] = $db->get_check_value($_POST['fld_added_field_extra_details']);
 
     $db->db_tool_update_row('oqt_quotations_types', $_POST, "`oqqt_quotations_types_ID` = " . $_POST["lid"], $_POST["lid"],
         'fld_', 'execute', 'oqqt_');
@@ -329,6 +331,17 @@ $formValidator = new customFormValidator();
                                     <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
                                            id="fld_added_field_contact_person" name="fld_added_field_contact_person"
                                         <?php if ($data['oqqt_added_field_contact_person'] == 1) echo 'checked';?>>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label for="fld_added_field_extra_details" class="col-sm-5 col-form-label">
+                                    Extra Details:
+                                </label>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                           id="fld_added_field_extra_details" name="fld_added_field_extra_details"
+                                        <?php if ($data['oqqt_added_field_extra_details'] == 1) echo 'checked';?>>
                                 </div>
                             </div>
                         </div>

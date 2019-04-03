@@ -13,23 +13,121 @@ function getEmailLayoutFillTest($data)
     $id = $db->encrypt($data['lcsdc_disc_test_ID']);
 
     $html = '
-Σας ευχαριστούμε πολύ που επιλέξετε την www.lcsppoach.com.
+<html>
+<body style="font-family: \'Arial Narrow\'">
+<div style="font-family: \'Arial Narrow\'; font-size: 18px">
+κ. '.$data['lcsdc_name'].',<br><br>
+ 
+Το προφίλ DiSC, είναι ένα εργαλείο που χρησιμοποιείται για τη συζήτηση των διαφορών στην συμπεριφορά των ανθρώπων.
+<br><br>
+Το DiSC είναι ένα από τα κορυφαίο εργαλείο αξιολόγησης που χρησιμοποιείτε πέραν από ένα εκατομμύριο ανθρώπους κάθε 
+χρόνο για τη βελτίωση της παραγωγικότητας της εργασίας, της ομαδικής εργασίας και της αποτελεσματικής και αρμονικής επικοινωνίας.
+<br><br>
+Σημειώστε ότι τα τεστ προσωπικότητας είναι η απεικόνιση της στιγμής, είναι δεδομένα από εσάς για εσάς και αντιπροσωπεύει 
+τις δικές σας απαντήσεις. Στο συγκεκριμένο τεστ δεν υπάρχει καλό ή κακό αποτέλεσμα. Προσδιορίζει τέσσερις πτυχές της 
+προσωπικότητας. Αυτό το οποίο είναι ωφέλιμο είναι να συλλογιστούμε πόσο αντιπροσωπευτικό είναι, να προβληματιστούμε 
+εάν υπάρχει κάτι που μας εκπλήσσει και επίσης να βελτιώσουμε οτιδήποτε θεωρούμε ότι χρήζει βελτίωσης, ανάλογα πάντα με την 
+θέση εργασίας μας.     
 <br><br>
 Παρακαλώ κάντε κλικ στο επόμενο σύνδεσμο και ακολουθήστε τις οδηγίες.
-<br>
+*πολύ σημαντικό είναι να απαντήσετε με αυθορμητισμό και ειλικρίνεια. Όχι τι θα θέλατε ή τι θα έπρεπε να κάνετε αλλά το τι 
+κάνετε και πως συμπεριφέρεστε αυτή την δεδομένη στιγμή.  <br>
 <a href="' . $main["site_url"] . '/lcs_disc_test/disc_modify.php?lid=' . $id . '">Click Here</a>
 <br><br>
-Σε περίπτωση που δεν ενεργοποιηθεί ο σύνδεσμος, αντιγράψτε επικολλήστε τον παρακάτω σύνδεσμο στο πρόγραμμα περιήγησής σας.
+Σε περίπτωση που δεν ενεργοποιηθεί ο σύνδεσμος, αντιγράψτε επικολλήστε τον παρακάτω σύνδεσμο στο πρόγραμμα περιήγησής σας.<br> 
+' . $main["site_url"] . '/lcs_disc_test/disc_modify.php?lid=' . $id . ' 
 <br><br>
-' . $main["site_url"] . '/lcs_disc_test/disc_modify.php?lid=' . $id . '
+Για οποιανδήποτε απορία επικοινωνήστε μαζί μας. 
+<br><br>
+<a href="http://www.lcsapproach.com">http://www.lcsapproach.com</a> <br>
+<a href="https://www.facebook.com/lcsapproach">https://www.facebook.com/lcsapproach</a> <br>  
+<a href="https://www.linkedin.com/in/nicolaouchristos">https://www.linkedin.com/in/nicolaouchristos</a> <br>
+<a href="mailto:email:info@lcsapproach.com">email:info@lcsapproach.com</a> <br>
+<br><br>
+<span style="color: red;">
+#Leadership #Emotional Intelligence #Human Resource Management #Startup Management
+</span>
+<hr style="height: 1px; color: black;">
+<br><br>
+</div>
+</body>
+</html>
+ΣΗΜΕΙΩΣΤΕ: Αυτό το ηλεκτρονικό μήνυμα μαζί με τα τυχόν επισυναπτόμενα του αρχεία προορίζεται για χρήση μόνο από τα άτομα 
+στα οποία απευθύνεται και δύναται να περιέχει προσωπικές και εμπιστευτικές πληροφορίες. Εάν δεν είστε ο προοριζόμενος 
+παραλήπτης , η προώθηση και αντιγραφή αυτού του μηνύματος απαγορεύεται αυστηρά. Εάν λάβατε αυτό το μήνυμα κατά λάθος, 
+παρακαλούμε όπως μας ενημερώσετε αμέσως μέσω τηλεφώνου, φαξ ή ηλεκτρονικού ταχυδρομείου. Παραβίαση της παρούσας ανακοίνωσης 
+ίσως να είναι παράνομη.
+<br>
+PLEASE NOTE: This e-mail and any attachments are confidential. It is intended for the recipient only. If you are not the 
+intended recipient, any use, disclosure, distribution, printing or copying of this e-mail is unauthorised. If you have 
+received this e-mail in error, please immediately notify the sender by replying to this e-mail and delete the e-mail from 
+your computer. Thank you for your cooperation.
+<br>
+<br><br>
+Παρακαλούμε αναλογιστείτε την περιβαλλοντική σας ευθύνη πριν εκτυπώσετε αυτό το μήνυμα
+
+
 ';
-
-
     return $html;
 }
 
+function getEmailLayoutBodyForResult($data)
+{
+    global $db, $main;
+
+    $html = "
+    <html>
+    <body>
+<div style=\"font-family: 'Arial Narrow'; font-size: 18px\">
+    
+Ημερομηνία: " . date('d/m/Y') . "
+
+κ. ".$data['lcsdc_name']." συγχαρητήρια!
+<br><br>
+Επισυνάπτονται τα αποτελέσματα της αξιολόγησης.
+<br><br>
+Το DiSC είναι ένα από τα κορυφαίο εργαλείο αξιολόγησης που χρησιμοποιείτε πέραν από ένα εκατομμύριο ανθρώπους κάθε χρόνο 
+για τη βελτίωση της παραγωγικότητας της εργασίας, της ομαδικής εργασίας και της αποτελεσματικής και αρμονικής επικοινωνίας. 
+Το προφίλ DiSC, είναι ένα εργαλείο που χρησιμοποιείται για τη συζήτηση των διαφορών στην συμπεριφορά των ανθρώπων.  
+<br><br>
+Σημειώστε ότι τα τεστ προσωπικότητας είναι η απεικόνιση της στιγμής, είναι δεδομένα από εσάς για εσάς και αντιπροσωπεύει 
+τις δικές σας απαντήσεις. Στο συγκεκριμένο τεστ δεν υπάρχει καλό ή κακό αποτέλεσμα. Προσδιορίζει τέσσερις πτυχές της 
+προσωπικότητας. Αυτό το οποίο είναι ωφέλιμο είναι να συλλογιστούμε πόσο αντιπροσωπευτικό είναι, να προβληματιστούμε εάν 
+υπάρχει κάτι που μας εκπλήσσει και επίσης να βελτιώσουμε οτιδήποτε θεωρούμε ότι χρήζει βελτίωσης, ανάλογα πάντα με την 
+θέση εργασίας μας.
+<br><br>
+Για οποιανδήποτε απορία επικοινωνήστε μαζί μας.
+<br><br>
+<a href=\"http://www.lcsapproach.com\">http://www.lcsapproach.com</a> <br>
+<a href=\"https://www.facebook.com/lcsapproach\">https://www.facebook.com/lcsapproach</a> <br>  
+<a href=\"https://www.linkedin.com/in/nicolaouchristos\">https://www.linkedin.com/in/nicolaouchristos</a> <br>
+<a href=\"mailto:email:info@lcsapproach.com\">email:info@lcsapproach.com</a> <br>
+<span style='color: red;'>
+#Leadership #Emotional Intelligence #Human Resource Management #Startup Management
+</span><br><br>
+<hr style=\"height: 1px; color: black;\">
+</div>
+</body>
+</html>
+ΣΗΜΕΙΩΣΤΕ: Αυτό το ηλεκτρονικό μήνυμα μαζί με τα τυχόν επισυναπτόμενα του αρχεία προορίζεται για χρήση μόνο από τα άτομα 
+στα οποία απευθύνεται και δύναται να περιέχει προσωπικές και εμπιστευτικές πληροφορίες. Εάν δεν είστε ο προοριζόμενος 
+παραλήπτης , η προώθηση και αντιγραφή αυτού του μηνύματος απαγορεύεται αυστηρά. Εάν λάβατε αυτό το μήνυμα κατά λάθος, 
+παρακαλούμε όπως μας ενημερώσετε αμέσως μέσω τηλεφώνου, φαξ ή ηλεκτρονικού ταχυδρομείου. Παραβίαση της παρούσας ανακοίνωσης 
+ίσως να είναι παράνομη.
+<br><br>
+PLEASE NOTE: This e-mail and any attachments are confidential. It is intended for the recipient only. If you are not the 
+intended recipient, any use, disclosure, distribution, printing or copying of this e-mail is unauthorised. If you have 
+received this e-mail in error, please immediately notify the sender by replying to this e-mail and delete the e-mail from 
+your computer. Thank you for your cooperation.
+<br><br>
+Παρακαλούμε αναλογιστείτε την περιβαλλοντική σας ευθύνη πριν εκτυπώσετε αυτό το μήνυμα 
+";
+    return $html;
+
+}
+
 //$images = embeded, Link or Attached
-function getEmailLayoutResult($testID, $images = 'embeded',$pdf=false)
+function getEmailLayoutResult($testID, $images = 'embeded', $pdf = false)
 {
     include_once('disc_class.php');
     global $main, $db;
@@ -61,15 +159,15 @@ function getEmailLayoutResult($testID, $images = 'embeded',$pdf=false)
 
     $bodyTagStart = '';
     $bodyTagFinish = '';
-    if ($pdf == true){
-        $bodyTagStart = '<body style="font-family: Arial; font-size: 11pt;">';
+    if ($pdf == true) {
+        $bodyTagStart = '<body font-size: 11pt;">';
         $bodyTagFinish = '</body>';
     }
 
     $html = '
-'.$bodyTagStart.'
+' . $bodyTagStart . '
 
-<div style="font-family: Arial; width: 800px;">
+<div style="font-family: arial_narrow; width: 800px;">
 <b>
 ' . $disc->data['lcsdc_name'] . ' - ' . $db->convert_date_format($createdDate[0], 'yyyy-mm-dd', 'dd/mm/yyyy') . '
 </b>
@@ -142,7 +240,7 @@ function getEmailLayoutResult($testID, $images = 'embeded',$pdf=false)
     Πολύ βασικό είναι οι βασικοί συνδυασμοί.<br>
     Τα 2 μεγαλύτερα ποσοστά αποτελούν τον βασικό συνδυασμό σας.
 </p>
-<br>
+
 <p style="background-color: #404040; width: 800px; height: 25px; vertical-align: middle; color: white;">
     <b>&nbsp; 8 βασική συνδυασμοί </b>
 </p>
@@ -215,7 +313,7 @@ function getEmailLayoutResult($testID, $images = 'embeded',$pdf=false)
 </div>
 </div>
 
-'.$bodyTagFinish;
+' . $bodyTagFinish;
 
     return $html;
 }

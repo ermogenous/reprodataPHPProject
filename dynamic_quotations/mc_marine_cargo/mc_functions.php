@@ -78,7 +78,7 @@ function mc_shipment_details_3()
         <label for="3_oqqit_rate_3" class="col-4">
             <?php show_quotation_text("Insured Value", "Insured Value"); ?>
         </label>
-        <div class="col-8">
+        <div class="col-4">
             <input name="3_oqqit_rate_3" type="text" id="3_oqqit_rate_3"
                    class="form-control"
                    value="<?php echo $qitem_data["oqqit_rate_3"]; ?>">
@@ -216,12 +216,12 @@ function mc_shipment_details_3()
     </div>
 
     <script>
-        function checkConveyanceDropDown(){
+        function checkConveyanceDropDown() {
             let conv = $('#3_oqqit_rate_6').val();
-            if (conv == 'Ocean Vessel'){
+            if (conv == 'Ocean Vessel') {
                 $('#ocean-vessel-name-div').show();
                 $('#ocean-steamer-div').show();
-            }else {
+            } else {
                 $('#ocean-vessel-name-div').hide();
                 $('#ocean-steamer-div').hide();
             }
@@ -272,12 +272,16 @@ function mc_shipment_details_3()
                 <?php
                 $sql = "SELECT * FROM codes WHERE cde_type = 'Countries' ORDER BY cde_value ASC";
                 $result = $db->query($sql);
-                while ($country = $db->fetch_assoc($result)){
-                ?>
-                <option value="<?php echo $country['cde_code_ID'];?>"
-                    <?php if ($qitem_data['oqqit_rate_10'] == $country['cde_code_ID']) echo 'selected'; ?>>
-                    <?php echo $country['cde_value']; ?>
-                </option>
+                while ($country = $db->fetch_assoc($result)) {
+                    $reffered = '';
+                    if ($country['cde_option_value'] == 'Referred'){
+                        $reffered = ' - <b>Needs Referal</b>';
+                    }
+                    ?>
+                    <option value="<?php echo $country['cde_code_ID']; ?>"
+                        <?php if ($qitem_data['oqqit_rate_10'] == $country['cde_code_ID']) echo 'selected'; ?>>
+                        <?php echo $country['cde_value'].$reffered; ?>
+                    </option>
                 <?php } ?>
             </select>
             <?php
@@ -303,11 +307,15 @@ function mc_shipment_details_3()
                 <?php
                 $sql = "SELECT * FROM codes WHERE cde_type = 'Countries' ORDER BY cde_value ASC";
                 $result = $db->query($sql);
-                while ($country = $db->fetch_assoc($result)){
+                while ($country = $db->fetch_assoc($result)) {
+                    $reffered = '';
+                    if ($country['cde_option_value'] == 'Referred'){
+                        $reffered = ' - <b>Needs Referal</b>';
+                    }
                     ?>
-                    <option value="<?php echo $country['cde_code_ID'];?>"
+                    <option value="<?php echo $country['cde_code_ID']; ?>"
                         <?php if ($qitem_data['oqqit_rate_11'] == $country['cde_code_ID']) echo 'selected'; ?>>
-                        <?php echo $country['cde_value']; ?>
+                        <?php echo $country['cde_value'].$reffered; ?>
                     </option>
                 <?php } ?>
             </select>
@@ -334,11 +342,15 @@ function mc_shipment_details_3()
                 <?php
                 $sql = "SELECT * FROM codes WHERE cde_type = 'Countries' ORDER BY cde_value ASC";
                 $result = $db->query($sql);
-                while ($country = $db->fetch_assoc($result)){
+                while ($country = $db->fetch_assoc($result)) {
+                    $reffered = '';
+                    if ($country['cde_option_value'] == 'Referred'){
+                        $reffered = ' - <b>Needs Referal</b>';
+                    }
                     ?>
-                    <option value="<?php echo $country['cde_code_ID'];?>"
+                    <option value="<?php echo $country['cde_code_ID']; ?>"
                         <?php if ($qitem_data['oqqit_rate_12'] == $country['cde_code_ID']) echo 'selected'; ?>>
-                        <?php echo $country['cde_value']; ?>
+                        <?php echo $country['cde_value'].$reffered; ?>
                     </option>
                 <?php } ?>
             </select>
@@ -354,19 +366,68 @@ function mc_shipment_details_3()
         </div>
     </div>
 
+
+
+    <?php
+}
+
+function mc_cargo_details_4()
+{
+    global $db, $items_data, $qitem_data, $formValidator;
+    ?>
+
     <div class="form-group row">
-        <label for="3_oqqit_rate_13" class="col-sm-4 col-form-label">
+        <label for="4_oqqit_rate_1" class="col-sm-4 col-form-label">
             <?php show_quotation_text("Full Description of Cargo", "Full Description of Cargo"); ?>
         </label>
         <div class="col-sm-8">
-            <textarea name="3_oqqit_rate_13" id="3_oqqit_rate_13" class="form-control" ><?php echo $qitem_data['oqqit_rate_12']; ?></textarea>
+            <textarea name="4_oqqit_rate_1" id="4_oqqit_rate_1"
+                      class="form-control"><?php echo $qitem_data['oqqit_rate_12']; ?></textarea>
             <?php
             $formValidator->addField(
                 [
-                    'fieldName' => '3_oqqit_rate_13',
+                    'fieldName' => '4_oqqit_rate_1',
                     'fieldDataType' => 'text',
                     'required' => true,
                     'invalidText' => show_quotation_text("Συμπληρώστε Full Description of Cargo.", "Must Fill Full Description of Cargo", 'Return')
+                ]);
+            ?>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="4_oqqit_rate_2" class="col-sm-4 col-form-label">
+            <?php show_quotation_text("Marks & Numbers", "Marks & Numbers"); ?>
+        </label>
+        <div class="col-sm-8">
+            <textarea name="4_oqqit_rate_2" id="4_oqqit_rate_2"
+                      class="form-control"><?php echo $qitem_data['oqqit_rate_2']; ?></textarea>
+            <?php
+            $formValidator->addField(
+                [
+                    'fieldName' => '4_oqqit_rate_2',
+                    'fieldDataType' => 'text',
+                    'required' => true,
+                    'invalidText' => show_quotation_text("Συμπληρώστε Marks & Numbers.", "Must Fill Marks & Numbers", 'Return')
+                ]);
+            ?>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="4_oqqit_rate_3" class="col-sm-4 col-form-label">
+            <?php show_quotation_text("Letter of Credit Conditions", "Letter of Credit Conditions"); ?>
+        </label>
+        <div class="col-sm-8">
+            <textarea name="4_oqqit_rate_3" id="4_oqqit_rate_3"
+                      class="form-control"><?php echo $qitem_data['oqqit_rate_3']; ?></textarea>
+            <?php
+            $formValidator->addField(
+                [
+                    'fieldName' => '4_oqqit_rate_3',
+                    'fieldDataType' => 'text',
+                    'required' => true,
+                    'invalidText' => show_quotation_text("Συμπληρώστε Letter of Credit Conditions.", "Must Fill Letter of Credit Conditions", 'Return')
                 ]);
             ?>
         </div>

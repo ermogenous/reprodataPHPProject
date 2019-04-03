@@ -61,5 +61,7 @@ function show_lang_text($greek, $english)
     }
 }
 
+$db->show_empty_header();
+$db->show_empty_footer();
 
 ?>

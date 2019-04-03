@@ -19,12 +19,22 @@ if ($_GET['search_code'] == 'search') {
     $table->extras = "cde_type = '" . $_GET['type'] . "'";
     $codeSelection = $_GET['type'];
     $table->generate_data();
+
+    //save the search in session
+    $_SESSION['codes_search_type'] = $_GET['type'];
 } else {
 
-
     $table = new draw_table('codes', 'cde_code_ID', 'ASC');
-    $table->extras = "cde_type = 'code'";
-    $codeSelection = 'code';
+    if ($_SESSION['codes_search_type'] != ''){
+        $table->extras = "cde_type = '" . $_SESSION['codes_search_type'] . "'";
+        $codeSelection = $_SESSION['codes_search_type'];
+    }
+    else {
+        $table->extras = "cde_type = 'code'";
+        $codeSelection = 'code';
+    }
+
+
 
     //if not admin return empty sql
     if($db->user_data['usr_user_rights'] > 0){

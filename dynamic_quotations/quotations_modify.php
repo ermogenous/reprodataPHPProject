@@ -389,7 +389,9 @@ $formValidator = new customFormValidator();
                         ?>
                     </div>
 
-                <?php } ?>
+                <?php }
+                if ($quotation_type_data['oqqt_added_field_extra_details'] == 1 ) {
+                ?>
 
                 <div class="form-group row">
                     <label for="fld_quotation_label_gr" class="col-sm-4 col-form-label">
@@ -402,6 +404,8 @@ $formValidator = new customFormValidator();
                             </textarea>
                     </div>
                 </div>
+
+                <?php } ?>
 
                 <!-- BUTTONS -->
                 <div class="form-group row">
@@ -417,7 +421,10 @@ $formValidator = new customFormValidator();
                         <input type="button" name="Submit" value="Save Quotation" class="btn btn-secondary"
                                onclick=" if (check_quotation_form()) {document.myForm.submit();}"/>
                         -->
-
+                        <input type="button" value="Back"
+                               class="btn btn-secondary"
+                               onclick="window.location.assign('quotations.php')">
+                        <input name="save_and_print" id="save_and_print" type="hidden" value="0"/>
                         <input type="submit" value="Save Quotation"
                                class="btn btn-secondary"
                                onclick="document.getElementById('save_and_print').value = 0;">

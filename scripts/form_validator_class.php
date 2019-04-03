@@ -128,7 +128,7 @@ class customFormValidator
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                 $('#" . $fieldData['fieldName'] . "-invalid-text').show();
                 ErrorFound = true;
-                alert('radio error');
+                //alert('radio error');
             }
             else {
                 $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
