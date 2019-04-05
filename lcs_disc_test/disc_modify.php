@@ -158,6 +158,21 @@ $db->show_header();
                             <?php } ?>
 
                         </div>
+                        <div class="row">
+                            <div class="col-12 text-center" style="height: 45px;">
+                                <?php if (($data['lcsdc_status'] == 'Outstanding'
+                                        || $data['lcsdc_status'] == 'Link'
+                                        || $_GET['lid'] == '')
+
+                                        && ($_GET['page'] == '' || $_GET['page'] != 4)
+                                        && $section == 'admin'
+                                    ) { ?>
+                                    <input type="submit" name="Submit" id="Submit"
+                                           value="<?php if ($_GET["lid"] == "") echo "Καταχώρησε"; else echo "Συνέχεια"; ?>"
+                                           class="btn btn-secondary" onclick="submitForm()">
+                                <?php } ?>
+                            </div>
+                        </div>
                         <div class="card">
                             <div class="card-body">
                                 <b>OΔΗΓΙΕΣ:</b> Απαντήστε αυθόρμητα, χωρίς πολλή σκέψη. Αυτό το οποίο κάνετε,

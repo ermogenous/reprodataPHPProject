@@ -68,8 +68,14 @@ if ($_GET['action'] == 'sendLinkEmail') {
     $mail = new PHPMailer(true);                              // Passing `true` enables exceptions
     try {
         $mail->CharSet = 'UTF-8';
-        $mail->SMTPDebug = 1; // debugging: 1 = errors and messages, 2 = messages only
-
+        //$mail->SMTPDebug = 1; // debugging: 1 = errors and messages, 2 = messages only
+        $mail->isSMTP();                                      // Set mailer to use SMTP
+        $mail->Host = 'smtp.sendgrid.net';  // Specify main and backup SMTP servers
+        $mail->SMTPAuth = true;                               // Enable SMTP authentication
+        $mail->Username = 'apikey';                 // SMTP username
+        $mail->Password = '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';                           // SMTP password
+        $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+        $mail->Port = 587;                                    // TCP port to connect to
         //Recipients
         $mail->setFrom('info@lcsapproach.com', 'www.lcsapproach.com');
         $mail->addAddress($disc->data['lcsdc_email'], $disc->data['lcsdc_name']);     // Add a recipient

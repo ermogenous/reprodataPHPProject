@@ -38,19 +38,17 @@ if ($_POST['action'] == 'sendMail'){
         $mail->CharSet = 'UTF-8';
         //Server settings
         //$mail->SMTPDebug = 2;                                 // Enable verbose debug output
-        //$mail->isSMTP();                                      // Set mailer to use SMTP
-        //$mail->Host = 'smtp1.example.com;smtp2.example.com';  // Specify main and backup SMTP servers
-        //$mail->SMTPAuth = true;                               // Enable SMTP authentication
-        //$mail->Username = 'user@example.com';                 // SMTP username
-        //$mail->Password = 'secret';                           // SMTP password
-        //$mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
-        //$mail->Port = 587;                                    // TCP port to connect to
+        $mail->isSMTP();                                      // Set mailer to use SMTP
+        $mail->Host = 'smtp.sendgrid.net';  // Specify main and backup SMTP servers
+        $mail->SMTPAuth = true;                               // Enable SMTP authentication
+        $mail->Username = 'apikey';                 // SMTP username
+        $mail->Password = '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';                           // SMTP password
+        $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+        $mail->Port = 587;                                    // TCP port to connect to
 
 
-        //google test
-        //$mail->IsSMTP(); // enable SMTP
 
-        $mail->SMTPDebug = 1; // debugging: 1 = errors and messages, 2 = messages only
+        //$mail->SMTPDebug = 1; // debugging: 1 = errors and messages, 2 = messages only
 
 
 
