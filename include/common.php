@@ -26,6 +26,13 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
     $main["no-reply-email"] = 'no-reply@akdemetriou.com';
     $main["no-reply-email-name"] = $main["admin_title"].' - No-Reply';
 
+    //smtp email settings
+    $main['smtp_host'] = 'smtp.gmail.com';
+    $main['smtp_username'] = 'agentscyprus@gmail.com';
+    $main['smtp_password'] = 'npebysgpszsmqizt';
+    $main['smtp_secure'] = 'tls'; // Enable TLS encryption, `ssl` also accepted, Can use 'tls' or 'ssl'
+    $main['smtp_port'] = '587';
+
     $main["test_dadabase"] = 'yes';
     $main["environment"] = 'reprodata';
 
@@ -61,6 +68,12 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
     $main["no-reply-email"] = 'no-reply@gmail.com';
     $main["no-reply-email-name"] = $main["admin_title"].' - No-Reply';
 
+    //smtp email settings
+    $main['smtp_host'] = 'smtp.gmail.com';
+    $main['smtp_username'] = 'agentscyprus@gmail.com';
+    $main['smtp_password'] = 'npebysgpszsmqizt';
+    $main['smtp_secure'] = 'tls'; // Enable TLS encryption, `ssl` also accepted, Can use 'tls' or 'ssl'
+    $main['smtp_port'] = '587';
 
     $main["environment"] = 'extranet';
     $main["login_page_filename"] = 'login.php';

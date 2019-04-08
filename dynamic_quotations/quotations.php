@@ -184,9 +184,15 @@ if ($_GET["price_id"] != "") {
                                         <td>
                                             <a href="quotations_modify.php?quotation_type=<?php  echo $row["oqq_quotations_type_ID"];?>&quotation=<?php  echo $row["oqq_quotations_ID"];?>"><i
                                                         class="fas fa-edit"></i></a>&nbsp
+
                                             <a href="quotations_delete.php?quotation_type=<?php  echo $row["oqq_quotations_type_ID"];?>&quotation=<?php  echo $row["oqq_quotations_ID"];?>"
                                                onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this quotation?');"><i
-                                                        class="fas fa-minus-circle"></i></a>
+                                                        class="fas fa-minus-circle"></i></a>&nbsp
+
+                                            <a target="_blank" href="quotation_print.php?quotation=<?php echo $row["oqq_quotations_ID"]; ?>&pdf=1" onclick="ignoreEdit = true;">
+                                                <i class="far fa-file-pdf"></i>
+                                            </a>
+
                                         </td>
                                     </tr>
                                     <?php
@@ -196,8 +202,8 @@ if ($_GET["price_id"] != "") {
                                 if ($i == 0) {
                                     ?>
                                     <tr>
-                                        <td colspan="5" align="center">No Quotations Found. Press &lt;NEW&gt; to create
-                                            a new quotation.
+                                        <td colspan="5" align="center">
+                                            No Quotations Found. Press &lt;NEW&gt; to create a new quotation.
                                         </td>
                                     </tr>
                                 <?php } ?>

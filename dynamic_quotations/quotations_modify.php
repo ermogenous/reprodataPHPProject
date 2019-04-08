@@ -66,9 +66,9 @@ if ($quotation_type_data["oqqt_status"] == 'I') {
     header("Location: quotations.php");
     exit();
 }
-
 //include the quotation file functions
 include($quotation_type_data["oqqt_functions_file"]);
+
 //link to js file from type
 //$db->include_js_file($quotation_type_data["oqqt_js_file"]);
 
@@ -123,14 +123,32 @@ if ($_POST["action"] == "save") {
     }//if change language and not new quotation
 }//save quotation
 
+//retrieve users underwriter data
+$underwriterData = $db->query_fetch('SELECT * FROM oqt_quotations_underwriters 
+                                        WHERE oqun_user_ID = '.$db->user_data['usr_users_ID']. " AND oqun_status = 'Active'");
+if ($underwriterData['oqun_user_ID'] > 0){
+    //underwriter is found.
+    //all ok
+}
+else {
+    //no underwriter. exit the page
+    $db->generateSessionAlertError('No underwriter found for this user.');
+    header('Location: quotations.php');
+    exit();
+}
+
 //add a function onload
 $db->admin_on_load .= 'js_function_on_load();';
 $db->enable_jquery_ui();
 $db->enable_rxjs_lite();
+$db->include_js_file('../scripts/ui_scripts.js');
 $db->show_header();
 
 include('../scripts/form_validator_class.php');
 $formValidator = new customFormValidator();
+
+
+
 ?>
 <script language="JavaScript" type="text/javascript">
 

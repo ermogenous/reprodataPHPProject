@@ -55,8 +55,7 @@ if ($_GET["price_id"] != "") {
                     <img src="images/printer_icon_medium.jpg" width="64" height="64" border="0"/>
                 </a>
                 &nbsp;&nbsp;&nbsp;
-                <a target="_blank"
-                   href="quotation_print.php?quotation=<?php echo $data["oqq_quotations_ID"]; ?>&pdf=1">
+                <a target="_blank" href="quotation_print.php?quotation=<?php echo $data["oqq_quotations_ID"]; ?>&pdf=1">
                     <img src="images/pdf_icon.png" height="64" border="0"/>
                 </a>
             </td>
@@ -75,16 +74,18 @@ if ($_GET["price_id"] != "") {
             <td colspan="3">
                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
                     <tr>
-                        <td width="33%" align="center"><a
-                                    href="quotations_modify.php?quotation_type=<?php echo $data["oqq_quotations_type_ID"]; ?>&quotation=<?php echo $data["oqq_quotations_ID"]; ?>"><img
-                                        src="images/edit_icon_medium.jpg" width="64" height="64" border="0"/><br/>
-                                Edit Quotation </a></td>
-                        <td width="34%" align="center"><a href="index.php"><img src="images/home-icon_medium.jpg"
-                                                                                width="64" height="64" border="0"/><br/>
-                                Quotations Home </a></td>
-                        <td width="33%" align="center"><a href="quotations.php"><img src="images/search_icon.jpg"
-                                                                                     width="64" height="64" border="0"/><br/>
-                                All Quotations </a></td>
+                        <td width="33%" align="center">
+                            <a href="quotations_modify.php?quotation_type=<?php echo $data["oqq_quotations_type_ID"]; ?>&quotation=<?php echo $data["oqq_quotations_ID"]; ?>">
+                                <img src="images/edit_icon_medium.jpg" width="64" height="64" border="0"/><br/>
+                                Edit Quotation
+                            </a>
+                        </td>
+                        <td width="33%" align="center">
+                            <a href="quotations.php">
+                                <img src="images/search_icon.jpg" width="64" height="64" border="0"/><br/>
+                                All Quotations
+                            </a>
+                        </td>
                     </tr>
 
                 </table>

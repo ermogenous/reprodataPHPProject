@@ -1,5 +1,4 @@
 <?php
-include('mff_insured_amounts_function.php');
 //shows the tables for each section (item)
 //the name of the field is OQIT_ITEMS_ID"_"FIELD_NAME
 function mff_insured_details_1()
@@ -111,9 +110,9 @@ function mff_insured_details_1()
         <label for="1_oqqit_date_1" class="col-sm-4 col-form-label">
             <?php show_quotation_text("Ημερομηνία Γέννησης", "Date of Birth"); ?>
         </label>
-        <div class="col-sm-8">
+        <div class="col-sm-2">
             <input name="1_oqqit_date_1" type="text" id="1_oqqit_date_1"
-                   class="form-control"
+                   class="form-control" onchange="showInsuredAge();"
                    <?php $formValidator->echoDateFieldFormatTag();?>
                    value="<?php echo $qitem_data["oqqit_date_1"]; ?>">
             <?php
@@ -128,6 +127,17 @@ function mff_insured_details_1()
                 ]);
             ?>
         </div>
+        <div class="col-sm-1">
+            Age:<span id="insured_age"></span>
+
+        </div>
+        <div class="col-5">
+            <span id="insuredAgeError" class="alert-danger"></span>
+        </div>
+        <?php
+        //add the custom code for checking age based on the underwriters
+        $formValidator->addCustomCode('checkInsuredAge();');
+        ?>
     </div>
 
     <div class="form-group row">
@@ -160,6 +170,7 @@ function mff_insurance_period_2()
         </label>
         <div class="col-sm-4">
             <input name="2_oqqit_date_1" type="text" id="2_oqqit_date_1"
+                   onchange="showInsuredAge();"
                    class="form-control">
             <?php
             $formValidator->addField(

@@ -13,6 +13,7 @@ class customFormValidator
     private $inputFieldsList = array();
     private $fieldCode = '';
     private $needIsDateFunction = false;
+    private $customCode = [];
 
 
     function __construct()
@@ -28,7 +29,7 @@ class customFormValidator
     function addField(array $fieldData)
     {
         //fieldName:string
-        //fieldDataType: text/number/date/age/radio/Select
+        //fieldDataType: text/number/date/age/radio/select
         //required: true/false
         //enableDatePicker: true/false ->when true it will echo the script required for the datepicker. jqueryUi must already exists.
         //datePickerValue: the value date to be inserted on creation
@@ -127,7 +128,7 @@ class customFormValidator
                 $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                 $('#" . $fieldData['fieldName'] . "-invalid-text').show();
-                ErrorFound = true;
+                FormErrorFound = true;
                 //alert('radio error');
             }
             else {
@@ -136,13 +137,14 @@ class customFormValidator
                 $('#" . $fieldData['fieldName'] . "-invalid-text').hide();
             }
             ";
-            } //For other
+            }
+            //For other
             else {
                 $return = "
             if ($('#" . $fieldData['fieldName'] . "').val() == '' " . $requiredAddedCustomCode . "){
                 $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
-                ErrorFound = true;
+                FormErrorFound = true;
             }
             else {
                 $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
@@ -152,6 +154,7 @@ class customFormValidator
             }
 
         }
+        //DATE added check if valid date
         if ($fieldData['required'] == true && $fieldData['fieldDataType'] == 'date') {
             $this->needIsDateFunction = true;
             $return .= "
@@ -162,18 +165,39 @@ class customFormValidator
             else {
                 $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
-                ErrorFound = true;
+                FormErrorFound = true;
+            }
+            ";
+        }
+        //NUMBER added check if valid number
+        if ($fieldData['fieldDataType'] == 'number') {
+            $return .= "
+            if ($.isNumeric($('#" . $fieldData['fieldName'] . "').val()) == true ){
+                $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
+                $('#" . $fieldData['fieldName'] . "').removeClass('is-invalid');
+            }
+            else {
+                $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
+                $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
+                FormErrorFound = true;
             }
             ";
         }
 
         return $return;
     }
+    public function addCustomCode($code){
+        $this->customCode[] = $code;
+    }
 
     private function getCustomCode()
     {
-        return '';
-        //return 'alert("custom code")';
+        $customCode = '';
+        foreach($this->customCode as $code){
+            $customCode .= $code."\n";
+        }
+
+        return $customCode;
     }
 
     public function output()
@@ -183,6 +207,7 @@ class customFormValidator
 
         echo "
  <script>
+ var FormErrorFound = false;
     (function () {
         'use strict';
         window.addEventListener('load', function () {
@@ -197,12 +222,13 @@ class customFormValidator
                     }
                     //alert('Checking Form');
                     //console.log('Checking Form');
-                    var ErrorFound = false;
+                    
+                    FormErrorFound = false;
 
                     " . $fieldsValidationsText . "
                     " . $customCode . "
 
-                    if (ErrorFound) {
+                    if (FormErrorFound) {
                         //alert('Error validation');
                         event.preventDefault();
                         event.stopPropagation();
@@ -253,5 +279,7 @@ class customFormValidator
         echo "</script>";
 
     }
+
+
 
 }

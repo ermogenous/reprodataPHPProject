@@ -12,18 +12,22 @@ $db->show_header();
         </div>
     </div>
     <div class="row">
-        <div class="col-3"></div>
+        <div class="col-2"></div>
         <div class="col-3 text-right">
             <button class="btn btn-primary" onclick="window.location.assign('quotations_types.php')">
                 View Quotations Types
             </button>
         </div>
-        <div class="col-3">
+        <div class="col-2 text-left">
             <button class="btn btn-primary" onclick="window.location.assign('items.php')">
                 View Quotations Items
             </button>
         </div>
-        <div class="col-3"></div>
+        <div class="col-2 text-right">
+            <button class="btn btn-primary" onclick="window.location.assign('underwriters.php')">
+                Underwriters
+            </button>
+        </div>
     </div>
 </div>
 <?php

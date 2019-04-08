@@ -15,7 +15,7 @@ if ($_POST["action"] == "insert") {
     $db->db_tool_insert_row('oqt_quotations_types', $_POST, 'fld_', 0, 'oqqt_');
     $db->commit_transaction();
     $db->generateSessionAlertSuccess('New Quotation created');
-    header("Location: quotations_types.php?info=New Quotation created");
+    header("Location: quotations_types.php");
     exit();
 
 } else if ($_POST["action"] == "update") {
@@ -83,6 +83,22 @@ $formValidator = new customFormValidator();
                                 </option>
                                 <option value="I" <?php if ($data["oqqt_status"] == 'I') echo "selected=\"selected\""; ?>>
                                     Inactive
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="fld_quotation_or_cover_note" class="col-sm-4 col-form-label">Quotation/Cover Note</label>
+                        <div class="col-sm-8">
+                            <select name="fld_quotation_or_cover_note" id="fld_quotation_or_cover_note"
+                                    class="form-control"
+                                    required>
+                                <option value="QT" <?php if ($data["oqqt_quotation_or_cover_note"] == 'QT') echo "selected=\"selected\""; ?>>
+                                    Quotation
+                                </option>
+                                <option value="CN" <?php if ($data["oqqt_quotation_or_cover_note"] == 'CN') echo "selected=\"selected\""; ?>>
+                                    Cover Note
                                 </option>
                             </select>
                         </div>

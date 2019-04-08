@@ -382,7 +382,7 @@ function mc_cargo_details_4()
         </label>
         <div class="col-sm-8">
             <textarea name="4_oqqit_rate_1" id="4_oqqit_rate_1"
-                      class="form-control"><?php echo $qitem_data['oqqit_rate_12']; ?></textarea>
+                      class="form-control"><?php echo $qitem_data['oqqit_rate_1']; ?></textarea>
             <?php
             $formValidator->addField(
                 [
