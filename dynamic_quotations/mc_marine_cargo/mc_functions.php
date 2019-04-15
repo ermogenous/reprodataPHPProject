@@ -274,8 +274,8 @@ function mc_shipment_details_3()
                 $result = $db->query($sql);
                 while ($country = $db->fetch_assoc($result)) {
                     $reffered = '';
-                    if ($country['cde_option_value'] == 'Referred'){
-                        $reffered = ' - <b>Needs Referal</b>';
+                    if ($country['cde_option_value'] == 'Reject'){
+                        $reffered = ' - <b>Country Not Allowed</b>';
                     }
                     ?>
                     <option value="<?php echo $country['cde_code_ID']; ?>"
@@ -309,8 +309,8 @@ function mc_shipment_details_3()
                 $result = $db->query($sql);
                 while ($country = $db->fetch_assoc($result)) {
                     $reffered = '';
-                    if ($country['cde_option_value'] == 'Referred'){
-                        $reffered = ' - <b>Needs Referal</b>';
+                    if ($country['cde_option_value'] == 'Reject'){
+                        $reffered = ' - <b>Country Not Allowed</b>';
                     }
                     ?>
                     <option value="<?php echo $country['cde_code_ID']; ?>"
@@ -344,8 +344,8 @@ function mc_shipment_details_3()
                 $result = $db->query($sql);
                 while ($country = $db->fetch_assoc($result)) {
                     $reffered = '';
-                    if ($country['cde_option_value'] == 'Referred'){
-                        $reffered = ' - <b>Needs Referal</b>';
+                    if ($country['cde_option_value'] == 'Reject'){
+                        $reffered = ' - <b>Country Not Allowed</b>';
                     }
                     ?>
                     <option value="<?php echo $country['cde_code_ID']; ?>"
@@ -439,6 +439,106 @@ function mc_cargo_details_4()
 function insured_amount_custom_rates($array, $values, $quotation_id)
 {
     return $array;
+}
+
+function activate_custom_validation($data){
+    global $db;
+    
+    $result['error'] = false;
+    $result['errorDescription'] = '';
+
+
+    //get item 3 data
+    $sql = 'SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = '.$data['oqq_quotations_ID'].' AND oqqit_items_ID = 3';
+    $item3 = $db->query_fetch($sql);
+
+    if ($item3['oqqit_rate_10'] == '' || $item3['oqqit_rate_11'] == '' || $item3['oqqit_rate_12'] == ''){
+        $result['error'] = true;
+        $result['errorDescription'] = 'Missing data';
+        return $result;
+    }
+
+
+    //get all 3 countries from codes
+    $countriesResult = $db->query("
+        SELECT * FROM codes WHERE cde_type = 'Countries' AND (
+            cde_code_ID = ".$item3['oqqit_rate_10']." OR
+            cde_code_ID = ".$item3['oqqit_rate_11']." OR
+            cde_code_ID = ".$item3['oqqit_rate_12']." 
+        )");
+    while ($country = $db->fetch_assoc($countriesResult)){
+        $countries[$country['cde_code_ID']] = $country;
+    }
+
+    //check origin country
+    $originCountryID = $item3['oqqit_rate_10'];
+    if ($countries[$originCountryID]['cde_option_value'] == 'Reject'){
+        $result['error'] = true;
+        $result['errorDescription'] = 'Origin Country: '.$countries[$originCountryID]['cde_value']." Cannot be used.<br>";
+    }
+
+
+    //check via country
+    $viaCountryID = $item3['oqqit_rate_11'];
+    if ($countries[$viaCountryID]['cde_option_value'] == 'Reject'){
+        $result['error'] = true;
+        $result['errorDescription'] .= 'Via Country: '.$countries[$viaCountryID]['cde_value']." Cannot be used.<br>";
+    }
+
+    //check destination country
+    $destinationCountryID = $item3['oqqit_rate_12'];
+    if ($countries[$destinationCountryID]['cde_option_value'] == 'Reject'){
+        $result['error'] = true;
+        $result['errorDescription'] .= 'Destination Country: '.$countries[$destinationCountryID]['cde_value']." Cannot be used.<br>";
+    }
+
+
+    return $result;
+}
+
+function customCheckForApproval($data){
+    global $db;
+
+    $result['error'] = false;
+    $result['errorDescription'] = '';
+
+    //get item 3 data
+    $item3 = $db->query_fetch('SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = '.$data['oqq_quotations_ID'].' AND oqqit_items_ID = 3');
+
+    //get all 3 countries from codes
+    $countriesResult = $db->query("
+        SELECT * FROM codes WHERE cde_type = 'Countries' AND (
+            cde_code_ID = ".$item3['oqqit_rate_10']." OR
+            cde_code_ID = ".$item3['oqqit_rate_11']." OR
+            cde_code_ID = ".$item3['oqqit_rate_12']." 
+        )");
+    while ($country = $db->fetch_assoc($countriesResult)){
+        $countries[$country['cde_code_ID']] = $country;
+    }
+
+    //check origin country
+    $originCountryID = $item3['oqqit_rate_10'];
+    if ($countries[$originCountryID]['cde_option_value'] == 'Approval'){
+        $result['error'] = true;
+        $result['errorDescription'] = 'Origin Country: '.$countries[$originCountryID]['cde_value']." Needs Approval.<br>";
+    }
+
+
+    //check via country
+    $viaCountryID = $item3['oqqit_rate_11'];
+    if ($countries[$viaCountryID]['cde_option_value'] == 'Approval'){
+        $result['error'] = true;
+        $result['errorDescription'] .= 'Via Country: '.$countries[$viaCountryID]['cde_value']." Needs Approval.<br>";
+    }
+
+    //check destination country
+    $destinationCountryID = $item3['oqqit_rate_12'];
+    if ($countries[$destinationCountryID]['cde_option_value'] == 'Approval'){
+        $result['error'] = true;
+        $result['errorDescription'] .= 'Destination Country: '.$countries[$destinationCountryID]['cde_value']." Needs Approval.<br>";
+    }
+
+    return $result;
 }
 
 ?>

@@ -13,7 +13,15 @@ function getQuotationHTML($quotationID)
     $quotationData = $db->query_fetch('SELECT * FROM oqt_quotations WHERE oqq_quotations_ID = ' . $quotationID);
 
     //get items data
-    $sect1 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $_GET["quotation"] . " AND oqqit_items_ID = 3");
+    $sect1 = $db->query_fetch("
+      SELECT 
+        *,
+        (SELECT cde_value FROM codes WHERE oqqit_rate_10 = cde_code_ID)as clo_country_from,
+        (SELECT cde_value FROM codes WHERE oqqit_rate_11 = cde_code_ID)as clo_country_via,
+        (SELECT cde_value FROM codes WHERE oqqit_rate_12 = cde_code_ID)as clo_country_to
+        FROM 
+        oqt_quotations_items 
+        WHERE oqqit_quotations_ID = " . $_GET["quotation"] . " AND oqqit_items_ID = 3");
     $sect2 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $_GET["quotation"] . " AND oqqit_items_ID = 4");
 
 
@@ -79,10 +87,10 @@ function getQuotationHTML($quotationID)
             <td colspan="3">
                 <table width="100%">
                     <tr>
-                        <td width="16%">Conveyance</td>
-                        <td width="17%"></td>
-                        <td width="16%">From</td>
-                        <td width="17%"></td>
+                        <td width="12%">Conveyance:</td>
+                        <td width="21%">'.$sect1['oqqit_rate_6'].'</td>
+                        <td width="16%">From:</td>
+                        <td width="17%">'.$sect1['clo_country_from'].'</td>
                         <td width="16%"></td>
                         <td></td>
                     </tr>
@@ -93,12 +101,12 @@ function getQuotationHTML($quotationID)
             <td colspan="3">
                 <table width="100%">
                     <tr>
-                       <td width="16%">Via</td>
-                       <td width="17%"></td>
+                       <td width="12%">Via</td>
+                       <td width="21%">'.$sect1['clo_country_via'].'</td>
                        <td width="16%">To</td>
-                       <td width="17%"></td>
+                       <td width="17%">'.$sect1['clo_country_to'].'</td>
                        <td width="16%">Insured Value/Currency</td>
-                       <td></td>
+                       <td>'.$sect1['oqqit_rate_2'].'</td>
                     </tr>
                 </table>
             </td>

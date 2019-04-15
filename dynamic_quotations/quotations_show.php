@@ -1,13 +1,10 @@
 <?php
 include("../include/main.php");
 include("../include/tables.php");
+include("quotations_class.php");
 $db = new Main();
 
-
-$db->show_header();
-
-
-if ($_GET["price_id"] != "") {
+if ($_GET["lid"] != "") {
     $data = $db->query_fetch("SELECT 
 	oqq_insureds_name
 	,oqq_quotations_ID
@@ -19,14 +16,36 @@ if ($_GET["price_id"] != "") {
 	oqt_quotations 
 	JOIN oqt_quotations_types ON oqqt_quotations_types_ID = oqq_quotations_type_ID
 	WHERE 
-	oqq_quotations_ID = " . $_GET["price_id"]);
+	oqq_quotations_ID = " . $_GET["lid"]);
 
+    $quote = new dynamicQuotation($_GET['lid']);
+
+} else {
+    header("Location: quotations.php");
+    exit();
 }
 
+//activate quotation
+if ($_GET['action'] == 'activate' && $_GET['lid'] > 0) {
+    $db->start_transaction();
+    if ($quote->activate() == true) {
+        $db->generateSessionAlertSuccess($quote->getQuotationType() . " activated successfully");
+    } else {
+        if ($quote->errorType == 'warning') {
+            $db->generateSessionAlertWarning($quote->errorDescription);
+        } else {
+            $db->generateSessionAlertError($quote->errorDescription);
+        }
+    }
+    $db->commit_transaction();
+    header("Location: quotations_show.php?lid=" . $_GET['lid']);
+    exit();
+}
+$db->show_header();
 ?>
     <table width="500" border="0" align="center" cellpadding="0" cellspacing="0" class="row_table_border">
         <tr class="row_table_head">
-            <td colspan="3" align="center"><strong>Your quotation has been saved succesfully </strong></td>
+            <td colspan="3" align="center"><strong><?php echo $quote->getQuotationType(); ?> Information</strong></td>
         </tr>
         <tr>
             <td>&nbsp;</td>
@@ -49,16 +68,8 @@ if ($_GET["price_id"] != "") {
         <?php } ?>
         <tr>
             <td>&nbsp;</td>
-            <td><strong>Print View </strong></td>
-            <td><a target="_blank"
-                   href="quotation_print.php?quotation=<?php echo $data["oqq_quotations_ID"]; ?>">
-                    <img src="images/printer_icon_medium.jpg" width="64" height="64" border="0"/>
-                </a>
-                &nbsp;&nbsp;&nbsp;
-                <a target="_blank" href="quotation_print.php?quotation=<?php echo $data["oqq_quotations_ID"]; ?>&pdf=1">
-                    <img src="images/pdf_icon.png" height="64" border="0"/>
-                </a>
-            </td>
+            <td><strong>Status</strong></td>
+            <td><?php echo $quote->quotationData()['oqq_status']; ?></td>
         </tr>
         <tr>
             <td colspan="3">
@@ -74,18 +85,54 @@ if ($_GET["price_id"] != "") {
             <td colspan="3">
                 <table width="100%" border="0" cellspacing="0" cellpadding="0">
                     <tr>
-                        <td width="33%" align="center">
-                            <a href="quotations_modify.php?quotation_type=<?php echo $data["oqq_quotations_type_ID"]; ?>&quotation=<?php echo $data["oqq_quotations_ID"]; ?>">
-                                <img src="images/edit_icon_medium.jpg" width="64" height="64" border="0"/><br/>
-                                Edit Quotation
+                        <td width="25%" align="center">
+                            <a href="#">
+                                <i class="fas fa-edit fa-5x"
+                                   onclick="window.location.assign('quotations_modify.php?quotation_type=<?php echo $data["oqq_quotations_type_ID"]; ?>&quotation=<?php echo $data["oqq_quotations_ID"]; ?>')">
+                                </i><br>
                             </a>
+                            <?php
+                            if ($quote->quotationData()['oqq_status'] == 'Outstanding') {
+                                echo 'Edit ';
+                            } else {
+                                echo 'View ';
+                            }
+                            echo $quote->getQuotationType();
+                            ?>
+
+
                         </td>
-                        <td width="33%" align="center">
-                            <a href="quotations.php">
-                                <img src="images/search_icon.jpg" width="64" height="64" border="0"/><br/>
-                                All Quotations
+                        <td width="25%" align="center">
+                            <a href="#">
+                                <i class="far fa-file-pdf fa-5x"
+                                    <?php if ($quote->quotationData()['oqq_status'] == 'Active') { ?>
+                                        onclick="window.open('quotation_print.php?quotation=<?php echo $data["oqq_quotations_ID"]; ?>&pdf=1','_blank')"
+                                    <?php } ?>
+                                >
+                                </i><br>
                             </a>
+                            PDF
                         </td>
+                        <td width="25%" align="center">
+                            <a href="#">
+                                <i class="fas fa-list fa-5x"
+                                   onclick="window.location.assign('quotations.php');"></i><br/>
+                            </a>
+                            All Quotations
+                        </td>
+                        <td width="25%" align="center">
+                            <a href="#">
+                                <i class="fas fa-lock fa-5x"
+                                    <?php if ($quote->quotationData()['oqq_status'] == 'Outstanding') { ?>
+                                        onclick="window.location.assign('quotations_show.php?action=activate&lid=<?php echo $data["oqq_quotations_ID"]; ?>')"
+                                    <?php } ?>
+                                >
+                                </i>
+                            </a>
+                            Activate
+
+                        </td>
+
                     </tr>
 
                 </table>

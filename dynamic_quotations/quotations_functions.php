@@ -9,7 +9,8 @@ function insert_quotation_data_to_db($quotation_id, $quotation_type_id)
     if ($quotation_id == "") {
 
         $sql = "INSERT INTO `oqt_quotations` SET 
-		oqq_users_ID = '" . $db->user_data["usr_users_ID"] . "',";
+		oqq_users_ID = '" . $db->user_data["usr_users_ID"] . "',
+		oqq_status = 'Outstanding',";
 
     }//insert
     //exists use update

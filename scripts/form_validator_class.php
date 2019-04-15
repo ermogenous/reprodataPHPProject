@@ -15,6 +15,9 @@ class customFormValidator
     private $needIsDateFunction = false;
     private $customCode = [];
 
+    private $disableForm = false;
+    private $formName = 'myForm';
+
 
     function __construct()
     {
@@ -47,6 +50,14 @@ class customFormValidator
 
         $this->echoInvalidText($fieldData);
 
+    }
+
+    public function disableForm(){
+        $this->disableForm = true;
+    }
+
+    public function setFormName($name){
+        $this->formName = $name;
     }
 
     public function printAllFields()
@@ -275,6 +286,12 @@ class customFormValidator
             return true;
         }
         ";
+        }
+        if ($this->disableForm == true){
+            echo '
+            $("#'.$this->formName.' :input").prop("disabled", true);
+            ';
+            echo '';
         }
         echo "</script>";
 
