@@ -16,9 +16,16 @@ if ($_GET["quotation"] != "") {
     $q_data = $db->query_fetch("SELECT * FROM oqt_quotations WHERE oqq_quotations_ID = " . $_GET["quotation"]);
     $quote = new dynamicQuotation($_GET['quotation']);
     $quotation_type_data = $quote->quotationData();
+
+    //check if this quotation exists
+    if ($quote->quotationData()['oqq_quotations_ID'] == ''){
+        header("Location: quotations.php");
+        exit();
+    }
+
 }
 else {
-    //get the quotation details
+    //get the quotation type details
     $quotation_type_data = $db->query_fetch("SELECT * FROM oqt_quotations_types WHERE oqqt_quotations_types_ID = " . $_GET["quotation_type"]);
     $quote = new dynamicQuotation($_GET['quotation']);
 }
@@ -166,7 +173,7 @@ $db->show_header();
 include('../scripts/form_validator_class.php');
 $formValidator = new customFormValidator();
 $formValidator->setFormName('myForm');
-if ($quote->quotationData()['oqq_status'] != 'Outstanding'){
+if ($quote->quotationData()['oqq_status'] != 'Outstanding' && $_GET['quotation'] > 0){
     $formValidator->disableForm();
 }
 
@@ -198,7 +205,7 @@ if ($quote->quotationData()['oqq_status'] != 'Outstanding'){
             <form name="myForm" id="myForm" method="post" action=""
                 <?php $formValidator->echoFormParameters();?>>
 
-                <?php if ($_GET['quotation'] > 0) { ?>
+                <?php if ($_GET['quotation'] > 0 && $quote->quotationData()['oqq_status'] != 'Outstanding') { ?>
                 <div class="alert alert-warning">
                     <?php echo $quote->getQuotationType()." is ".$quote->quotationData()['oqq_status']." Cannot modify";?>
                 </div>
@@ -469,7 +476,7 @@ if ($quote->quotationData()['oqq_status'] != 'Outstanding'){
                         -->
                         <div class="btn btn-secondary" onclick="window.location.assign('quotations.php')">Back</div>
                         <input name="save_and_print" id="save_and_print" type="hidden" value="0"/>
-                        <?php if ($quote->quotationData()['oqq_status'] == 'Outstanding') { ?>
+                        <?php if ($quote->quotationData()['oqq_status'] == 'Outstanding' || $_GET['quotation'] == '') { ?>
                         <input type="submit" value="Save Quotation"
                                class="btn btn-secondary"
                                onclick="document.getElementById('save_and_print').value = 0;">

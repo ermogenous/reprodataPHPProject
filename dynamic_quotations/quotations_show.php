@@ -43,107 +43,138 @@ if ($_GET['action'] == 'activate' && $_GET['lid'] > 0) {
 }
 $db->show_header();
 ?>
-    <table width="500" border="0" align="center" cellpadding="0" cellspacing="0" class="row_table_border">
-        <tr class="row_table_head">
-            <td colspan="3" align="center"><strong><?php echo $quote->getQuotationType(); ?> Information</strong></td>
-        </tr>
-        <tr>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-        </tr>
-        <tr>
-            <td width="10">&nbsp;</td>
-            <td width="93" height="27"><strong>Name</strong></td>
-            <td width="397"><?php echo $data["oqq_insureds_name"]; ?></td>
-        </tr>
-        <?php
-        if ($data['oqqt_enable_premium'] == 1) {
-            ?>
-            <tr>
-                <td>&nbsp;</td>
-                <td height="27"><strong>Total Price </strong></td>
-                <td>€<?php echo $data["clo_total_price"]; ?></td>
-            </tr>
-        <?php } ?>
-        <tr>
-            <td>&nbsp;</td>
-            <td><strong>Status</strong></td>
-            <td><?php echo $quote->quotationData()['oqq_status']; ?></td>
-        </tr>
-        <tr>
-            <td colspan="3">
-                <hr/>
-            </td>
-        </tr>
-        <tr>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-        </tr>
-        <tr>
-            <td colspan="3">
-                <table width="100%" border="0" cellspacing="0" cellpadding="0">
-                    <tr>
-                        <td width="25%" align="center">
-                            <a href="#">
-                                <i class="fas fa-edit fa-5x"
-                                   onclick="window.location.assign('quotations_modify.php?quotation_type=<?php echo $data["oqq_quotations_type_ID"]; ?>&quotation=<?php echo $data["oqq_quotations_ID"]; ?>')">
-                                </i><br>
-                            </a>
-                            <?php
-                            if ($quote->quotationData()['oqq_status'] == 'Outstanding') {
-                                echo 'Edit ';
-                            } else {
-                                echo 'View ';
-                            }
-                            echo $quote->getQuotationType();
-                            ?>
 
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-2"></div>
+            <div class="col-8">
 
-                        </td>
-                        <td width="25%" align="center">
-                            <a href="#">
-                                <i class="far fa-file-pdf fa-5x"
-                                    <?php if ($quote->quotationData()['oqq_status'] == 'Active') { ?>
-                                        onclick="window.open('quotation_print.php?quotation=<?php echo $data["oqq_quotations_ID"]; ?>&pdf=1','_blank')"
-                                    <?php } ?>
-                                >
-                                </i><br>
-                            </a>
-                            PDF
-                        </td>
-                        <td width="25%" align="center">
-                            <a href="#">
-                                <i class="fas fa-list fa-5x"
-                                   onclick="window.location.assign('quotations.php');"></i><br/>
-                            </a>
-                            All Quotations
-                        </td>
-                        <td width="25%" align="center">
-                            <a href="#">
-                                <i class="fas fa-lock fa-5x"
-                                    <?php if ($quote->quotationData()['oqq_status'] == 'Outstanding') { ?>
-                                        onclick="window.location.assign('quotations_show.php?action=activate&lid=<?php echo $data["oqq_quotations_ID"]; ?>')"
-                                    <?php } ?>
-                                >
-                                </i>
-                            </a>
-                            Activate
+                <div class="row">
+                    <div class="col-12 text-center alert alert-primary">
+                        <strong><?php echo $quote->getQuotationType(); ?> Information</strong>
+                    </div>
+                </div>
 
-                        </td>
+                <div class="row">
+                    <div class="col-5 text-right"><strong>Name</strong></div>
+                    <div class="col-7"><?php echo $data["oqq_insureds_name"]; ?></div>
+                </div>
+                <?php
+                if ($data['oqqt_enable_premium'] == 1) {
+                    ?>
+                    <div class="row">
+                        <div class="col-5 text-right"><strong>Total Price </strong></div>
+                        <div class="col-7">€<?php echo $data["clo_total_price"]; ?></div>
+                    </div>
+                <?php } ?>
 
-                    </tr>
+                <div class="row">
+                    <div class="col-5 text-right"><strong>Status</strong></div>
+                    <div class="col-7"><?php echo $quote->quotationData()['oqq_status']; ?></div>
+                </div>
 
-                </table>
-            </td>
-        </tr>
-        <tr>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-            <td>&nbsp;</td>
-        </tr>
-    </table>
+                <div class="row">
+                    <div class="col-12">
+                        <hr style="color: grey;">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-2"></div>
+                    <div class="col-2 text-center">
+                        <a href="#">
+                            <i class="fas fa-edit fa-5x"
+                               onclick="window.location.assign('quotations_modify.php?quotation_type=<?php echo $data["oqq_quotations_type_ID"]; ?>&quotation=<?php echo $data["oqq_quotations_ID"]; ?>')">
+                            </i><br>
+                        </a>
+                        <?php
+                        if ($quote->quotationData()['oqq_status'] == 'Outstanding') {
+                            echo 'Edit ';
+                        } else {
+                            echo 'View ';
+                        }
+                        echo $quote->getQuotationType();
+                        ?>
+                    </div>
+                    <div class="col-2 text-center">
+                        <a href="#">
+                            <i class="far fa-file-pdf fa-5x"
+                                <?php if ($quote->quotationData()['oqq_status'] == 'Active') { ?>
+                                    onclick="window.open('quotation_print.php?quotation=<?php echo $data["oqq_quotations_ID"]; ?>&pdf=1','_blank')"
+                                <?php } ?>
+                            >
+                            </i><br>
+                        </a>
+                        PDF
+                    </div>
+                    <div class="col-2 text-center">
+                        <a href="#">
+                            <i class="fas fa-list fa-5x"
+                               onclick="window.location.assign('quotations.php');"></i><br/>
+                        </a>
+                        View All
+                    </div>
+                    <div class="col-2 text-center">
+                        <a href="#">
+                            <i class="fas fa-lock fa-5x"
+                                <?php if ($quote->quotationData()['oqq_status'] == 'Outstanding') { ?>
+                                    onclick="
+                                            if (confirm('Are you sure you want to activate this <?php echo $quote->getQuotationType();?>?')){
+                                                window.location.assign('quotations_show.php?action=activate&lid=<?php echo $data["oqq_quotations_ID"]; ?>')
+                                            }
+                                            else {
+                                                return false;
+                                            }
+
+                                            "
+                                <?php } ?>
+                            >
+                            </i>
+                        </a><br>
+                        Activate
+                    </div>
+                    <div class="col-2"></div>
+                </div>
+                <div class="row">
+                    <div class="col-12">
+                        <hr style="color: grey;">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-12">
+                        <strong>Approvals</strong>
+                    </div>
+                </div>
+                <?php
+                $sql = "SELECT * FROM oqt_quotation_approvals WHERE oqqp_quotation_ID = " . $_GET['lid'];
+                $result = $db->query($sql);
+                $i = 0;
+                while ($row = $db->fetch_assoc($result)) {
+                    $i++;
+                    $createdSplit = explode(' ', $row['oqqp_created_date_time']);
+
+                    ?>
+
+                    <div class="row">
+                        <div class="col-2">Created on</div>
+                        <div class="col-3"><?php echo $db->convert_date_format($createdSplit[0], 'yyyy-mm-dd', 'dd/mm/yyyy') . " " . $createdSplit[1]; ?></div>
+                        <div class="col-1">Status</div>
+                        <div class="col-2"><?php echo $row['oqqp_status']; ?></div>
+                    </div>
+
+                    <?php
+                }
+                if ($i == 0) {
+                    ?>
+                    <div class="row">
+                        <div class="col-12"><strong>No approvals found.</strong></div>
+                    </div>
+                <?php } ?>
+            </div>
+            <div class="col-2"></div>
+        </div>
+    </div>
 
 <?php
 $db->show_footer();

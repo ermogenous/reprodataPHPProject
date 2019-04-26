@@ -17,7 +17,11 @@ class PolicyPayment
     function __construct($paymentID)
     {
         global $db;
-        $this->paymentData = $db->query_fetch('SELECT * FROM ina_policy_payments WHERE inapp_policy_payment_ID = ' . $paymentID);
+        $this->paymentData = $db->query_fetch('
+          SELECT * FROM 
+            ina_policy_payments
+            JOIN ina_policies ON inapp_policy_ID = inapol_policy_ID
+            WHERE inapp_policy_payment_ID = ' . $paymentID);
         $this->paymentID = $paymentID;
 
     }
@@ -47,6 +51,11 @@ class PolicyPayment
     public function postPayment()
     {
         global $db;
+
+        if ($this->paymentData['inapol_status'] != 'Active'){
+            $this->error = true;
+            $this->errorDescription = 'Policy must be Active to post payments';
+        }
 
         if ($this->paymentData['inapp_status'] != 'Outstanding') {
             $this->error = true;

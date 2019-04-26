@@ -20,18 +20,27 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
     $main["db_host"] = "localhost";
     $main["db_database"] = "reprodata";
 
-    $main["admin_email"] = 'micacca@gmail.com';
+
     //phpmyadmin -> https://mysqladmin3.secureserver.net/m50/179
     //no-reply email
     $main["no-reply-email"] = 'no-reply@akdemetriou.com';
     $main["no-reply-email-name"] = $main["admin_title"].' - No-Reply';
 
+    //EMAIL SETTINGS
+    $main["admin_email"] = 'micacca@gmail.com';
+    $main["admin_email_name"] = 'Ermogenous Michael';
     //smtp email settings
+    $main['smtp_email_from'] = 'agentscyprus@gmail.com';
+    $main['smtp_email_from_name'] = 'Kemter Insurance Agencies Sub-Agencies &amp; Consultants, Limassol - Cyprus';
+    $main['smtp_email_reply'] = 'agentscyprus@gmail.com';
+    $main['smtp_email_reply_name'] = 'Kemter Insurance Agencies Sub-Agencies &amp; Consultants, Limassol - Cyprus';
     $main['smtp_host'] = 'smtp.gmail.com';
     $main['smtp_username'] = 'agentscyprus@gmail.com';
     $main['smtp_password'] = 'npebysgpszsmqizt';
     $main['smtp_secure'] = 'tls'; // Enable TLS encryption, `ssl` also accepted, Can use 'tls' or 'ssl'
     $main['smtp_port'] = '587';
+    $main['smtp_charSet'] = 'UTF-8';
+    $main['smtp_enable_authentication'] = true; //Enable SMTP authentication
 
     $main["test_dadabase"] = 'yes';
     $main["environment"] = 'reprodata';

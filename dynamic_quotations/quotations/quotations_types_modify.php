@@ -49,8 +49,8 @@ $formValidator = new customFormValidator();
 
     <div class="container">
         <div class="row">
-            <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
-            <div class="col-lg-6 col-md-6 col-xs-12 col-sm-12">
+            <div class="col-lg-1 col-md-1 hidden-xs hidden-sm"></div>
+            <div class="col-lg-10 col-md-10 col-xs-12 col-sm-12">
                 <form name="myForm" id="myForm" method="post" action=""
                     <?php $formValidator->echoFormParameters(); ?>>
                     <div class="alert alert-dark text-center">
@@ -89,7 +89,8 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_quotation_or_cover_note" class="col-sm-4 col-form-label">Quotation/Cover Note</label>
+                        <label for="fld_quotation_or_cover_note" class="col-sm-4 col-form-label">Quotation/Cover
+                            Note</label>
                         <div class="col-sm-8">
                             <select name="fld_quotation_or_cover_note" id="fld_quotation_or_cover_note"
                                     class="form-control"
@@ -313,6 +314,89 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="form-group row">
+                        <label for="fld_quotation_number_prefix" class="col-sm-4 col-form-label">Number Prefix</label>
+                        <div class="col-sm-8">
+                            <input name="fld_quotation_number_prefix" type="text" id="fld_quotation_number_prefix"
+                                   class="form-control"
+                                   value="<?php echo $data["oqqt_quotation_number_prefix"]; ?>">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="fld_quotation_number_leading_zeros" class="col-sm-4 col-form-label">Number Leading Zeros</label>
+                        <div class="col-sm-8">
+                            <input name="fld_quotation_number_leading_zeros" type="text" id="fld_quotation_number_leading_zeros"
+                                   class="form-control"
+                                   value="<?php echo $data["oqqt_quotation_number_leading_zeros"]; ?>">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="fld_quotation_number_last_used" class="col-sm-4 col-form-label">Number Last Used</label>
+                        <div class="col-sm-8">
+                            <input name="fld_quotation_number_last_used" type="text" id="fld_quotation_number_last_used"
+                                   class="form-control"
+                                   value="<?php echo $data["oqqt_quotation_number_last_used"]; ?>">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="fld_active_send_mail" class="col-sm-4 col-form-label">
+                            On active send email
+                            <br>Email||Name Break
+                            <br>[QTID] - Quotation ID
+                            <br>[QTNUMBER] - Quotation Number
+                            <br>[QTLINK] Link for the quotation
+                            <br>[USERSNAME] Name of the creator
+                            <br>[PDFLINK] Link for PDF
+                        </label>
+                        <div class="col-sm-8">
+                            <textarea name="fld_active_send_mail" id="fld_active_send_mail"
+                                      class="form-control"><?php echo $data["oqqt_active_send_mail"]; ?></textarea>
+
+                            <div class="row">
+                                <label for="fld_active_send_mail_cc" class="col-sm-3 col-form-label">
+                                    CC Mail/s:<br>Email||Name \n
+                                </label>
+                                <div class="col-9">
+                                    <textarea name="fld_active_send_mail_cc" id="fld_active_send_mail_cc"
+                                              class="form-control"><?php echo $data["oqqt_active_send_mail_cc"]; ?></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label for="fld_active_send_mail_bcc" class="col-sm-3 col-form-label">
+                                    BCC Mail/s:<br>Email||Name \n
+                                </label>
+                                <div class="col-9">
+                                    <textarea name="fld_active_send_mail_bcc" id="fld_active_send_mail_bcc"
+                                              class="form-control"><?php echo $data["oqqt_active_send_mail_bcc"]; ?></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label for="fld_active_send_mail_from" class="col-sm-3 col-form-label">
+                                    Subject:
+                                </label>
+                                <div class="col-9">
+                                    <textarea name="fld_active_send_mail_subject" id="fld_active_send_mail_subject"
+                                              class="form-control"><?php echo $data["oqqt_active_send_mail_subject"]; ?></textarea>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label for="fld_active_send_mail_from" class="col-sm-3 col-form-label">
+                                    Body: HTML
+                                </label>
+                                <div class="col-9">
+                                    <textarea name="fld_active_send_mail_body" id="fld_active_send_mail_body"
+                                              class="form-control"><?php echo $data["oqqt_active_send_mail_body"]; ?></textarea>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
                         <label for="fld_allowed_user_groups" class="col-sm-4 col-form-label">Allowed User
                             Groups</label>
                         <div class="col-sm-8">
@@ -335,7 +419,7 @@ $formValidator = new customFormValidator();
                                 <div class="col-sm-1">
                                     <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
                                            id="fld_added_field_email" name="fld_added_field_email"
-                                           <?php if ($data['oqqt_added_field_email'] == 1) echo 'checked';?>>
+                                        <?php if ($data['oqqt_added_field_email'] == 1) echo 'checked'; ?>>
                                 </div>
                             </div>
 
@@ -346,7 +430,7 @@ $formValidator = new customFormValidator();
                                 <div class="col-sm-1">
                                     <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
                                            id="fld_added_field_contact_person" name="fld_added_field_contact_person"
-                                        <?php if ($data['oqqt_added_field_contact_person'] == 1) echo 'checked';?>>
+                                        <?php if ($data['oqqt_added_field_contact_person'] == 1) echo 'checked'; ?>>
                                 </div>
                             </div>
 
@@ -357,7 +441,7 @@ $formValidator = new customFormValidator();
                                 <div class="col-sm-1">
                                     <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
                                            id="fld_added_field_extra_details" name="fld_added_field_extra_details"
-                                        <?php if ($data['oqqt_added_field_extra_details'] == 1) echo 'checked';?>>
+                                        <?php if ($data['oqqt_added_field_extra_details'] == 1) echo 'checked'; ?>>
                                 </div>
                             </div>
                         </div>

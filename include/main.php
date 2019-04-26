@@ -1621,6 +1621,11 @@ class Main
         return substr($text, 0, (strlen($text) - 1));
     }
 
+    /**
+     * @param $date
+     * @param string $format
+     * @return string
+     */
     function verify_date($date, $format = 'd/m/Y')
     {
         $dt = new DateTime($date);
@@ -1878,6 +1883,13 @@ class Main
         header("Access-Control-Max-Age: 3600");
         header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
     }
+
+    /**
+     * @param $prefix
+     * @param $totalLeadingZeros
+     * @param $number
+     * @return string
+     */
 
     public function buildNumber($prefix, $totalLeadingZeros, $number)
     {

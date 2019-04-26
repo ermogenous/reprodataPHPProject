@@ -377,8 +377,27 @@ function mc_cargo_details_4()
     ?>
 
     <div class="form-group row">
+        <label for="4_oqqit_rate_5" class="col-sm-4 col-form-label">
+            <?php show_quotation_text("Supplier", "Supplier"); ?>
+        </label>
+        <div class="col-sm-8">
+            <textarea name="4_oqqit_rate_5" id="4_oqqit_rate_5"
+                      class="form-control"><?php echo $qitem_data['oqqit_rate_5']; ?></textarea>
+            <?php
+            $formValidator->addField(
+                [
+                    'fieldName' => '4_oqqit_rate_5',
+                    'fieldDataType' => 'text',
+                    'required' => true,
+                    'invalidText' => show_quotation_text("Συμπληρώστε Supplier.", "Must Fill Supplier", 'Return')
+                ]);
+            ?>
+        </div>
+    </div>
+
+    <div class="form-group row">
         <label for="4_oqqit_rate_1" class="col-sm-4 col-form-label">
-            <?php show_quotation_text("Full Description of Cargo", "Full Description of Cargo"); ?>
+            <?php show_quotation_text("Full Description of Cargo", "Full Description of Cargo/Goods Insured"); ?>
         </label>
         <div class="col-sm-8">
             <textarea name="4_oqqit_rate_1" id="4_oqqit_rate_1"

@@ -225,7 +225,7 @@ if ($_GET["price_id"] != "") {
                                                 </a>
                                             <?php } ?>
 
-                                            <?php if ($row['oqq_status'] == 'Outstanding') { ?>
+                                            <?php if ($row['oqq_status'] == 'Outstanding' || $row['oqq_status'] == 'Approved') { ?>
                                                 <a href="#">
                                                     <i class="fas fa-lock"
                                                        onclick="activateQuotation(<?php echo $row["oqq_quotations_ID"]; ?>);"></i>

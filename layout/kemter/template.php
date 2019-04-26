@@ -10,7 +10,7 @@ function template_header()
     <head>
         <meta charset="UTF-8">
         <title>Kemter Insurance Agencies Sub-Agencies &amp; Consultants, Limassol - Cyprus</title>
-        <LINK REL="SHORTCUT ICON" HREF="<?php echo $main["site_url"]; ?>/favicon.png">
+        <LINK REL="SHORTCUT ICON" HREF="<?php echo $main["site_url"]; ?>/favicon-kemter.png">
         <link rel="stylesheet" href="<?php echo $db->admin_layout_url; ?>style.css" rel="stylesheet">
 
         <link rel="stylesheet" href="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/css/bootstrap.min.css"
@@ -70,17 +70,22 @@ function template_header()
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations.php">
-                                <i class="far fa-calendar-alt"></i> View Quotations</a>
+                                <i class="far fa-eye"></i> View Quotations</a>
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations_modify.php?quotation_type=1">
-                                <i class="far fa-calendar-alt"></i> New Medical For Foreigners</a>
+                                <i class="fas fa-briefcase-medical"></i> New Medical For Foreigners</a>
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations_modify.php?quotation_type=2">
-                                <i class="far fa-calendar-alt"></i> New Marine Cargo</a>
+                                <i class="fas fa-truck-moving"></i> New Marine Cargo</a>
+                            <?php if ($db->user_data["usr_user_rights"] <= 2) { ?>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/dynamic_quotations/approvals.php">
+                                    <i class="far fa-thumbs-up"></i> Approvals</a>
+                            <?php } ?>
                             <?php if ($db->user_data["usr_user_rights"] == 0) { ?>
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations/index.php">
-                                    <i class="far fa-calendar-alt"></i> Administration</a>
+                                    <i class="fas fa-cogs"></i> Administration</a>
                             <?php } ?>
                         </div>
                     </li>
@@ -375,8 +380,8 @@ if ($db->admin_layout_printer != 'yes')
         //this opens a div on top of the footer that fixes the problem.
         //also fires on window resize
         function fix_footer() {
-            //console.log('Doc: ' + $(document).height() + ' Win: ' + window.innerHeight);
-            if ($(document).height() > window.innerHeight) {
+            console.log('Doc: ' + $(document).height() + ' Win: ' + window.innerHeight);
+            if ($(document).height() >= window.innerHeight) {
                 $('#footer-extra-space').height(100);
             }
         }

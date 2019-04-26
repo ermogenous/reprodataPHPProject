@@ -94,20 +94,39 @@ function clear_search() {
 </script>
 
 <form action="" method="get" id="search_form" name="search_form">
+    <div class="container">
+        <div class="row">
+            <div class="col-5">
+                <input name="search_text" type="text" id="search_text" size="50"
+                       class="form-control"
+                       value="<?php echo $_GET["search_text"];?>" />
+            </div>
+            <div class="col-3">
+                <select name="search_type" id="search_type" class="form-control">
+                    <option value="sae_label2" <?php if ($_SESSION["send_auto_emails"]["type"] == 'sae_label2') echo 'selected="selected"';?>>Policy Numbers</option>
+                    <option value="sae_email_to" <?php if ($_SESSION["send_auto_emails"]["type"] == 'sae_email_to') echo 'selected="selected"';?>>Email to</option>
+                    <option value="sae_email_to_name" <?php if ($_SESSION["send_auto_emails"]["type"] == 'sae_email_to_name') echo 'selected="selected"';?>>Email to Name</option>
+                    <option value="sae_email_subject" <?php if ($_SESSION["send_auto_emails"]["type"] == 'sae_email_subject') echo 'selected="selected"';?>>Email Subject</option>
+                    <option value="sae_agent_code" <?php if ($_SESSION["send_auto_emails"]["type"] == 'sae_agent_code') echo 'selected="selected"';?>>Agent Code</option>
+                    <option value="sae_email_body" <?php if ($_SESSION["send_auto_emails"]["type"] == 'sae_email_body') echo 'selected="selected"';?>>Email Body</option>
+                </select>
+            </div>
+            <div class="col-2">
+                <input type="submit" name="button" id="button" value="Search" class="form-control btn btn-primary" />
+                <input name="search_action" type="hidden" id="search_action" value="search" />
+            </div>
+            <div class="col-1">
+                <input type="button" name="button2" id="button2" value="Clear" onclick="clear_search();"
+                class="form-control btn btn-primary"/>
+            </div>
+        </div>
+    </div>
 <table width="800" border="0" align="center" cellpadding="0" cellspacing="0">
   <tr>
-    <td align="center"><input name="search_text" type="text" id="search_text" size="50" value="<?php echo $_GET["search_text"];?>" />
-      <select name="search_type" id="search_type">
-        <option value="sae_label2" <?php if ($_SESSION["send_auto_emails"]["type"] == 'sae_label2') echo 'selected="selected"';?>>Policy Numbers</option>
-        <option value="sae_email_to" <?php if ($_SESSION["send_auto_emails"]["type"] == 'sae_email_to') echo 'selected="selected"';?>>Email to</option>
-        <option value="sae_email_to_name" <?php if ($_SESSION["send_auto_emails"]["type"] == 'sae_email_to_name') echo 'selected="selected"';?>>Email to Name</option>
-        <option value="sae_email_subject" <?php if ($_SESSION["send_auto_emails"]["type"] == 'sae_email_subject') echo 'selected="selected"';?>>Email Subject</option>
-        <option value="sae_agent_code" <?php if ($_SESSION["send_auto_emails"]["type"] == 'sae_agent_code') echo 'selected="selected"';?>>Agent Code</option>
-        <option value="sae_email_body" <?php if ($_SESSION["send_auto_emails"]["type"] == 'sae_email_body') echo 'selected="selected"';?>>Email Body</option>
-      </select>
-      <input type="submit" name="button" id="button" value="Search" />
-      <input name="search_action" type="hidden" id="search_action" value="search" />
-      <input type="button" name="button2" id="button2" value="Clear" onclick="clear_search();" /></td>
+    <td align="center">
+
+
+      </td>
     </tr>
   <tr>
     <td align="center">&nbsp;</td>
@@ -116,37 +135,78 @@ function clear_search() {
 
 </form>
 <br />
-<table width="1000" border="0" align="center" cellpadding="0" cellspacing="0" class="row_table_border">
-  <tr class="row_table_head">
-    <td width="38" align="center"><?php $table->display_order_links('ID','sae_send_auto_emails_serial');?></td>
-    <td width="72" align="left"><?php $table->display_order_links('Type','sae_type');?></td>
-    <td width="54" align="center"><?php $table->display_order_links('Active','sae_active');?></td>
-    <td width="140" align="center"><?php $table->display_order_links('Send Date/Time','sae_send_datetime');?></td>
-    <td width="81" align="center"><?php $table->display_order_links('Result','sae_send_result');?></td>
-    <td width="82" align="center"><?php $table->display_order_links('Agent Code','sae_agent_code');?></td>
-    <td width="440" align="center"><?php $table->display_order_links('Email','sae_email_to');?></td>
-    <td colspan="2" align="center"><a href="send_auto_emails_modify.php">New</a></td>
-  </tr>
-<?php
-$i=0;
-while ($row = $table->fetch_data()) {
-$i++;
-?>
-  <tr class="row_table_<?php if ($i%2 == 0) echo "odd"; else echo "even";?>">
-    <td height="30" align="center" class="main_text"<?php if ($row["sae_active"] == 'I') echo " style=\"text-decoration:line-through\"";?>><?php echo $row["sae_send_auto_emails_serial"];?></td>
-    <td align="left" class="main_text"<?php if ($row["sae_active"] == 'I') echo " style=\"text-decoration:line-through\"";?>><?php echo $row["sae_type"];?></td>
-    <td align="center" class="main_text"<?php if ($row["sae_active"] == 'I') echo " style=\"text-decoration:line-through\"";?>><?php echo $row["sae_active"];?></td>
-    <td align="center" class="main_text"<?php if ($row["sae_active"] == 'I') echo " style=\"text-decoration:line-through\"";?>><?php echo $db->convert_date_format($row["sae_send_datetime"],'yyyy-mm-dd','dd/mm/yyyy',1);?></td>
-    <td align="center" class="main_text"<?php if ($row["sae_active"] == 'I') echo " style=\"text-decoration:line-through\"";?>><?php echo $row["sae_send_result"];?></td>
-    <td align="center" class="main_text"<?php if ($row["sae_active"] == 'I') echo " style=\"text-decoration:line-through\"";?>><?php echo $row["sae_agent_code"];?></td>
-    <td align="center" class="main_text"<?php if ($row["sae_active"] == 'I') echo " style=\"text-decoration:line-through\"";?>><?php echo substr($row["sae_email_to"],0,55); if (strlen($row["sae_email_to"]) > 55) {echo "...";}?></td>
-    <td width="50" align="center" class="main_text"><a href="send_auto_emails_modify.php?lid=<?php echo $row["sae_send_auto_emails_serial"];?>">Modify</a></td>
-    <td width="43" align="center" class="main_text"><a href="send_auto_emails_send.php?lid=<?php echo $row['sae_send_auto_emails_serial']; ?>" target="_blank">Send</a></td>
-  </tr>
-<?php
-}
-?>
-</table><br />
+
+
+
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="text-center"><?php $table->show_pages_links(); ?></div>
+            <div class="table-responsive">
+                <table class="table table-hover" id="myTableList">
+                    <thead class="alert alert-success">
+                    <tr>
+                        <th scope="col"><?php $table->display_order_links('ID', 'sae_send_auto_emails_serial'); ?></th>
+                        <th scope="col" width="12%"><?php $table->display_order_links('Type', 'sae_type'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Active', 'sae_active'); ?></th>
+                        <th scope="col" width="20%"><?php $table->display_order_links('Send Date/Time', 'sae_send_datetime'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Result', 'sae_send_result'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Email', 'sae_email_to'); ?></th>
+                        <th scope="col" class="text-center" width="12%">
+                            <a href="policy_modify.php">
+                                <i class="fas fa-plus-circle"></i>
+                            </a>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+                    while ($row = $table->fetch_data()) {
+                        ?>
+                        <tr>
+                            <th scope="row"><?php echo $row["sae_send_auto_emails_serial"]; ?></th>
+                            <td><?php echo $row["sae_type"]; ?></td>
+                            <td><?php echo $row["sae_active"]; ?></td>
+                            <td><?php echo $row["sae_send_datetime"]; ?></td>
+                            <td><?php echo $row["sae_send_result"]; ?></td>
+                            <td><?php echo $row["sae_email_to"]; ?></td>
+                            <td>
+                                <a href="send_auto_emails_modify.php?lid=<?php echo $row["sae_send_auto_emails_serial"];?>">Modify</a>
+                                <a href="send_auto_emails_send.php?lid=<?php echo $row['sae_send_auto_emails_serial']; ?>" target="_blank">Send</a>
+                            </td>
+                        </tr>
+                        <?php
+                    }
+                    ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var ignoreEdit = false;
+
+    function editLine(id) {
+        if (ignoreEdit === false) {
+            window.location.assign('policy_modify.php?lid=' + id);
+        }
+        ignoreEdit = false;
+    }
+
+    $(document).ready(function() {
+        $('#myTableList tr').click(function() {
+            var href = $(this).find('input[id=myLineID]').val();
+            if(href) {
+                editLine(href);
+            }
+        });
+    });
+</script>
+
+
 <div align="center"><a href="send_auto_email_execute_all.php" target="_blank">Execute all pending emails</a></div>
 <?php
 $db->show_footer();

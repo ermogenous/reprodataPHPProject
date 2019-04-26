@@ -44,7 +44,7 @@ function getQuotationHTML($quotationID)
     <table width="900" style="font-size: 14px;">
         <tr>
             <td width="33%"><img src="' . $db->admin_layout_url . '/images/Kemter-Logo-WhiteBG-300x60.png"></td>        
-            <td width="34%" align="center">Certificate Number<br>Αριθμός Πιστοποιητικού<br><b>ABC123456</b></td>
+            <td width="34%" align="center">Certificate Number<br>Αριθμός Πιστοποιητικού<br><b>'.$quotationData['oqq_number'].'</b></td>
             <td width="33%" align="right"><img src="' . $db->admin_layout_url . '/images/LLOYDS-Logo.png"></td>
         </tr>
         <tr>

@@ -180,7 +180,8 @@ function mff_insurance_period_2()
                     'required' => true,
                     'enableDatePicker' => true,
                     'datePickerValue' => $db->convert_date_format($qitem_data["oqqit_date_1"], 'yyyy-mm-dd', 'dd/mm/yyyy'),
-                    'invalidText' => show_quotation_text("Συμπληρώστε την Ημερομηνία Από.", "Must Enter Date From",'Return')
+                    'dateMinDate' => date('d/m/Y'),
+                    'invalidText' => show_quotation_text("Συμπληρώστε την Ημερομηνία Από. Όχι μικρότερη απο σήμερα", "Must Enter Date From. Not less than today",'Return')
                 ]);
             ?>
         </div>
@@ -197,8 +198,9 @@ function mff_insurance_period_2()
                     'fieldDataType' => 'date',
                     'required' => true,
                     'enableDatePicker' => true,
+                    'dateMinDate' => "$('#2_oqqit_date_1').val()",
                     'datePickerValue' => $db->convert_date_format($qitem_data["oqqit_date_2"], 'yyyy-mm-dd', 'dd/mm/yyyy'),
-                    'invalidText' => show_quotation_text("Συμπληρώστε την Ημερομηνία Μέχρι.", "Must Enter Date To",'Return')
+                    'invalidText' => show_quotation_text("Συμπληρώστε την Ημερομηνία Μέχρι και μεγαλήτερη από έναρξη", "Must Enter Date To",'Return')
                 ]);
             ?>
         </div>
@@ -466,6 +468,7 @@ function mff_insurance_period_2()
     <div class="row">
         <div class="col-12" style="height: 30px;"></div>
     </div>
+
     <?php
 }
 
