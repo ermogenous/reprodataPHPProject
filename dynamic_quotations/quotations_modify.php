@@ -10,9 +10,24 @@ $db->include_js_file("jscripts.js");
 //$db->include_css_file("../scripts/bootstrap-3.3.7-dist/css/bootstrap-theme.min.css");
 //$db->include_js_file("../scripts/bootstrap-3.3.7-dist/js/bootstrap.min.js");
 include("quotations_functions.php");
+include('quotations_class.php');
 
 if ($_GET["quotation"] != "") {
     $q_data = $db->query_fetch("SELECT * FROM oqt_quotations WHERE oqq_quotations_ID = " . $_GET["quotation"]);
+    $quote = new dynamicQuotation($_GET['quotation']);
+    $quotation_type_data = $quote->quotationData();
+
+    //check if this quotation exists
+    if ($quote->quotationData()['oqq_quotations_ID'] == ''){
+        header("Location: quotations.php");
+        exit();
+    }
+
+}
+else {
+    //get the quotation type details
+    $quotation_type_data = $db->query_fetch("SELECT * FROM oqt_quotations_types WHERE oqqt_quotations_types_ID = " . $_GET["quotation_type"]);
+    $quote = new dynamicQuotation($_GET['quotation']);
 }
 
 //first check if the user is allowed to view this quotation
@@ -25,8 +40,7 @@ if ($_GET["quotation"] != "") {
     }
 }//if not new quotation
 
-//get the quotation details
-$quotation_type_data = $db->query_fetch("SELECT * FROM oqt_quotations_types WHERE oqqt_quotations_types_ID = " . $_GET["quotation_type"]);
+
 
 //language defined here
 if ($_POST["change_language"] != 1) {
@@ -66,9 +80,9 @@ if ($quotation_type_data["oqqt_status"] == 'I') {
     header("Location: quotations.php");
     exit();
 }
-
 //include the quotation file functions
-include($quotation_type_data["oqqt_functions_file"]);
+include_once($quotation_type_data["oqqt_functions_file"]);
+
 //link to js file from type
 //$db->include_js_file($quotation_type_data["oqqt_js_file"]);
 
@@ -108,6 +122,18 @@ if ($_POST["action"] == "save") {
 		oqq_custom_premium2 = '" . $premium_result["custom_premium2"] . "',
 		oqq_detail_price_array = '" . $premium_result["detailed_result"] . "' WHERE oqq_quotations_ID = " . $quotation_id;
         $db->query($sql);
+
+        //check for approval
+        $quote = new dynamicQuotation($quotation_id);
+        if ($quote->checkForApproval() == false){
+            if ($quote->errorType == 'warning'){
+                $db->generateSessionAlertWarning($quote->errorDescription);
+            }
+            else {
+                $db->generateSessionAlertError($quote->errorDescription);
+            }
+        }
+
         $db->commit_transaction();
 
         //no need to redirect if is language change.
@@ -115,7 +141,7 @@ if ($_POST["action"] == "save") {
             if ($_POST["save_and_print"] == 1) {
                 header("Location: " . $quotation_type_data["oqqt_print_layout"] . "?quotation=" . $quotation_id);
             } else {
-                header("Location: quotations_show.php?price_id=" . $quotation_id);
+                header("Location: quotations_show.php?lid=" . $quotation_id);
             }
             exit();
         }
@@ -123,14 +149,36 @@ if ($_POST["action"] == "save") {
     }//if change language and not new quotation
 }//save quotation
 
+//retrieve users underwriter data
+$underwriterData = $db->query_fetch('SELECT * FROM oqt_quotations_underwriters 
+                                        WHERE oqun_user_ID = '.$db->user_data['usr_users_ID']. " AND oqun_status = 'Active'");
+if ($underwriterData['oqun_user_ID'] > 0){
+    //underwriter is found.
+    //all ok
+}
+else {
+    //no underwriter. exit the page
+    $db->generateSessionAlertError('No underwriter found for this user.');
+    header('Location: quotations.php');
+    exit();
+}
+
 //add a function onload
 $db->admin_on_load .= 'js_function_on_load();';
 $db->enable_jquery_ui();
 $db->enable_rxjs_lite();
+$db->include_js_file('../scripts/ui_scripts.js');
 $db->show_header();
 
 include('../scripts/form_validator_class.php');
 $formValidator = new customFormValidator();
+$formValidator->setFormName('myForm');
+if ($quote->quotationData()['oqq_status'] != 'Outstanding' && $_GET['quotation'] > 0){
+    $formValidator->disableForm();
+}
+
+
+
 ?>
 <script language="JavaScript" type="text/javascript">
 
@@ -157,6 +205,11 @@ $formValidator = new customFormValidator();
             <form name="myForm" id="myForm" method="post" action=""
                 <?php $formValidator->echoFormParameters();?>>
 
+                <?php if ($_GET['quotation'] > 0 && $quote->quotationData()['oqq_status'] != 'Outstanding') { ?>
+                <div class="alert alert-warning">
+                    <?php echo $quote->getQuotationType()." is ".$quote->quotationData()['oqq_status']." Cannot modify";?>
+                </div>
+                <?php } ?>
                 <div class="alert alert-success text-center">
                     <b><?php echo $quotation_type_data["oqqt_quotation_label_" . $_SESSION["oq_quotations_language"]]; ?></b>
                 </div>
@@ -421,13 +474,13 @@ $formValidator = new customFormValidator();
                         <input type="button" name="Submit" value="Save Quotation" class="btn btn-secondary"
                                onclick=" if (check_quotation_form()) {document.myForm.submit();}"/>
                         -->
-                        <input type="button" value="Back"
-                               class="btn btn-secondary"
-                               onclick="window.location.assign('quotations.php')">
+                        <div class="btn btn-secondary" onclick="window.location.assign('quotations.php')">Back</div>
                         <input name="save_and_print" id="save_and_print" type="hidden" value="0"/>
+                        <?php if ($quote->quotationData()['oqq_status'] == 'Outstanding' || $_GET['quotation'] == '') { ?>
                         <input type="submit" value="Save Quotation"
                                class="btn btn-secondary"
                                onclick="document.getElementById('save_and_print').value = 0;">
+                        <?php } ?>
                         <input name="save_and_print" id="save_and_print" type="hidden" value="0"/>
                     </div>
                 </div>

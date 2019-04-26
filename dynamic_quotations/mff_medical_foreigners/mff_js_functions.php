@@ -4,14 +4,7 @@
 function custom_js_functions_return() {
 var result;
 result = '';
-	//check insureds name not to be empty
-	if (document.getElementById('insureds_name').value == "") {
-		result += '<?php show_quotation_text("Αδειο Πεδίο Ονομα Ασφαλισμένου.","Empty Field Insureds Name.");?>\n' ;
-	}
 
-	if ($('#2_oqqit_insured_amount_2').val() == 1 && $('#2_oqqit_insured_amount_3').val() == ''){
-	    result += '<?php show_quotation_text("Αδειο Πεδίο Αριθμό Μητρώου Εργοδότη.", "Empty Field Social Security Insurance Number .");?>\\n';
-    }
 
 //FORM FIXES.
 
@@ -26,16 +19,36 @@ return result;
 
 function js_function_on_load() {
 	
-	//updates the hidden field that updates the db at insured_amount_15 from the plusminus button if presses or not.
+
+}
+var insuredAge;
+function showInsuredAge(){
+    let fromDate = $('#2_oqqit_date_1').val();
+    let toDate = $('#1_oqqit_date_1').val();
+
+    if (isDate(fromDate) && isDate(toDate)) {
+        insuredAge = getYearsFromDates(fromDate,toDate);
+        $('#insured_age').html(insuredAge);
+        checkInsuredAge();
+    }
+}
+
+function checkInsuredAge(){
+    var ageLimit = '<?php echo $underwriterData['oqun_mf_age_restriction'];?>';
+    if (insuredAge > ageLimit){
+        var error = 'Age limit is: ' + ageLimit;
+        $('#insuredAgeError').html(error);
+        FormErrorFound = true;
+    }
+    else {
+        var error = '';
+        $('#insuredAgeError').html(error);
+    }
+
 
 }
 
-function check_plusminus_update_hidden_fields(section) {
-
-	if (document.getElementById(section + '_oqqit_insured_amount_15').value !=  document.getElementById('plusminus_hidden_' + section).value && document.getElementById(section + '_oqqit_insured_amount_15').value != '') {
-		switchPlusMinusButton('plusminus' + section,'<?php echo $db->admin_layout_url;?>images/buttons/grey_plus.gif','<?php echo $db->admin_layout_url;?>images/buttons/grey_minus.gif','plusminus_hidden_' + section);
-		openCloseDivWindow('section1_div' + section);
-	}
-
-}
+$( document ).ready(function() {
+    showInsuredAge();
+});
 </script>

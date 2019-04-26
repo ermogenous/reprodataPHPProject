@@ -71,10 +71,10 @@ if ($_GET['action'] == 'sendLinkEmail') {
         //$mail->SMTPDebug = 1; // debugging: 1 = errors and messages, 2 = messages only
         /*
         $mail->isSMTP();                                      // Set mailer to use SMTP
-        $mail->Host = 'smtp.sendgrid.net';  // Specify main and backup SMTP servers
+        $mail->Host = $main['smtp_host'];  // Specify main and backup SMTP servers
         $mail->SMTPAuth = true;                               // Enable SMTP authentication
-        $mail->Username = 'apikey';                 // SMTP username
-        $mail->Password = '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';                           // SMTP password
+        $mail->Username = $main['smtp_username'];                 // SMTP username
+        $mail->Password = $main['smtp_password'];                           // SMTP password
         $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
         $mail->Port = 587;                                    // TCP port to connect to
         */

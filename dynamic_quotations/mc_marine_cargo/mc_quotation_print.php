@@ -13,7 +13,15 @@ function getQuotationHTML($quotationID)
     $quotationData = $db->query_fetch('SELECT * FROM oqt_quotations WHERE oqq_quotations_ID = ' . $quotationID);
 
     //get items data
-    $sect1 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $_GET["quotation"] . " AND oqqit_items_ID = 3");
+    $sect1 = $db->query_fetch("
+      SELECT 
+        *,
+        (SELECT cde_value FROM codes WHERE oqqit_rate_10 = cde_code_ID)as clo_country_from,
+        (SELECT cde_value FROM codes WHERE oqqit_rate_11 = cde_code_ID)as clo_country_via,
+        (SELECT cde_value FROM codes WHERE oqqit_rate_12 = cde_code_ID)as clo_country_to
+        FROM 
+        oqt_quotations_items 
+        WHERE oqqit_quotations_ID = " . $_GET["quotation"] . " AND oqqit_items_ID = 3");
     $sect2 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $_GET["quotation"] . " AND oqqit_items_ID = 4");
 
 
@@ -33,14 +41,27 @@ function getQuotationHTML($quotationID)
 }
 
 </style>
+';
 
+    for ($i=1; $i<=3; $i++) {
+        $copy = '';
+        if ($i==1){
+            $copy = 'ORIGINAL';
+        }
+        else if ($i == 2){
+            $copy = 'DUPLICATE';
+        }
+        else if ($i == 3){
+            $copy = 'Non Negotiable Copy';
+        }
+        $html .= '
 <div style="font-family: Tahoma;">
 
     <table width="900" style="font-size: 11px;">
         <tr>
             <td width="20%">
-            <span style="font-size: 16px;">
-                <b>ORIGINAL</b>
+            <span style="font-size: 14px;">
+                <b>'.$copy.'</b>
             </span>
             <br><br>
             <div style="text-align: center">
@@ -79,10 +100,10 @@ function getQuotationHTML($quotationID)
             <td colspan="3">
                 <table width="100%">
                     <tr>
-                        <td width="16%">Conveyance</td>
-                        <td width="17%"></td>
-                        <td width="16%">From</td>
-                        <td width="17%"></td>
+                        <td width="12%">Conveyance:</td>
+                        <td width="21%">' . $sect1['oqqit_rate_6'] . '</td>
+                        <td width="16%">From:</td>
+                        <td width="17%">' . $sect1['clo_country_from'] . '</td>
                         <td width="16%"></td>
                         <td></td>
                     </tr>
@@ -93,12 +114,12 @@ function getQuotationHTML($quotationID)
             <td colspan="3">
                 <table width="100%">
                     <tr>
-                       <td width="16%">Via</td>
-                       <td width="17%"></td>
+                       <td width="12%">Via</td>
+                       <td width="21%">' . $sect1['clo_country_via'] . '</td>
                        <td width="16%">To</td>
-                       <td width="17%"></td>
+                       <td width="17%">' . $sect1['clo_country_to'] . '</td>
                        <td width="16%">Insured Value/Currency</td>
-                       <td></td>
+                       <td>' . $sect1['oqqit_rate_2'] . '</td>
                     </tr>
                 </table>
             </td>
@@ -114,11 +135,11 @@ function getQuotationHTML($quotationID)
                     <tr>
                         <td width="50%">
                             <b>Marks and Numbers</b><br><br>
-                            sadfdsa
+                            ' . $sect2['oqqit_rate_2'] . '
                         </td>
                         <td width="50%">
                             <b>Goods Insured</b><br><br>
-                            sdafsdafsd
+                            ' . $sect2['oqqit_rate_1'] . '
                         </td>
                     </tr>
                 </table>
@@ -129,9 +150,23 @@ function getQuotationHTML($quotationID)
         </tr>
         <tr>
             <td colspan="3" height="270px" valign="top">
-                <b>Conditions of Insurance</b><br><br>
-                sadfdsa
+            
+            
+                <table width="100%">
+                    <tr>
+                        <td width="50%">
+                            <b>Conditions of Insurance</b><br><br>
+                            <???????>
+                        </td>
+                        <td width="50%">
+                            <b>Supplier</b><br><br>
+                            ' . $sect2['oqqit_rate_5'] . '
+                        </td>
+                    </tr>
+                </table>
+            
             </td>
+            
         </tr>
         
         <tr>
@@ -143,7 +178,7 @@ function getQuotationHTML($quotationID)
         <tr>
             <td colspan="3">
                 <b>Underwriters Agree Losses, if any, shall be payable to the order of 
-                _________________________________ 
+                _____________<??????????>______________ 
                 on surrender of this Certificate
                 </b><br><br><br><br>
                 <br><br><br><br>
@@ -505,6 +540,7 @@ function getQuotationHTML($quotationID)
 </div>
 
 ';
+    }
 
     return $html;
 

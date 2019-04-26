@@ -9,8 +9,8 @@ function template_header()
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title><?php echo $main["conf_title"] . " " . $db->admin_title; ?></title>
-        <LINK REL="SHORTCUT ICON" HREF="<?php echo $main["site_url"]; ?>/favicon.png">
+        <title>Kemter Insurance Agencies Sub-Agencies &amp; Consultants, Limassol - Cyprus</title>
+        <LINK REL="SHORTCUT ICON" HREF="<?php echo $main["site_url"]; ?>/favicon-kemter.png">
         <link rel="stylesheet" href="<?php echo $db->admin_layout_url; ?>style.css" rel="stylesheet">
 
         <link rel="stylesheet" href="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/css/bootstrap.min.css"
@@ -28,9 +28,12 @@ function template_header()
         <?php echo $db->admin_more_head; ?>
 
     </head>
-    <body onload="<?php echo $db->admin_on_load;?>">
+    <body onload="<?php echo $db->admin_on_load; ?>">
     <?php if ($db->admin_layout_printer != 'yes') { ?>
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom" style="background-color: #e0a800">
+    <nav class="navbar navbar-expand-lg navbar-mycustom">
+        &nbsp;&nbsp;&nbsp;
+        <img src="<?php echo $db->admin_layout_url; ?>images/Kemter-Icon.png" height="40">
+        &nbsp;&nbsp;&nbsp;
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -39,7 +42,7 @@ function template_header()
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
+                <li class="nav-item">
                     <a class="nav-link" href="<?php echo $main["site_url"]; ?>/home.php"><i class="fas fa-home"></i>
                         <span class="sr-only">(current)</span></a>
                 </li>
@@ -67,14 +70,22 @@ function template_header()
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations.php">
-                                <i class="far fa-calendar-alt"></i> View Quotations</a>
+                                <i class="far fa-eye"></i> View Quotations</a>
                             <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/accounts/transactions/transactions.php">
-                                <i class="far fa-calendar-alt"></i> New Medical For Foreigners</a>
+                               href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations_modify.php?quotation_type=1">
+                                <i class="fas fa-briefcase-medical"></i> New Medical For Foreigners</a>
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations_modify.php?quotation_type=2">
+                                <i class="fas fa-truck-moving"></i> New Marine Cargo</a>
+                            <?php if ($db->user_data["usr_user_rights"] <= 2) { ?>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/dynamic_quotations/approvals.php">
+                                    <i class="far fa-thumbs-up"></i> Approvals</a>
+                            <?php } ?>
                             <?php if ($db->user_data["usr_user_rights"] == 0) { ?>
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations/index.php">
-                                    <i class="far fa-calendar-alt"></i> Administration</a>
+                                    <i class="fas fa-cogs"></i> Administration</a>
                             <?php } ?>
                         </div>
                     </li>
@@ -144,8 +155,13 @@ function template_header()
                                 <a class="nav-link disabled" href="#">Disabled</a>
                             </li>
                  -->
+
             </ul>
-            <img src="<?php echo $main["site_url"]; ?>/images/logo_transparent.gif" height="40">
+            <span class="nav-item d-none d-lg-block d-md-block d-sm-block d-xl-block">
+                <img src="<?php echo $db->admin_layout_url; ?>images/LLOYDS-Logo.png"
+                     height="35">
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            </span>
         </div>
     </nav>
 
@@ -302,34 +318,86 @@ if ($db->admin_layout_printer != 'yes')
     ?>
 
 <br>
-    <div class="container-fluid">
-        <div class="row">&nbsp</div>
-        <div class="row glyphicon-copyright-mark navbar-custom <?php if ($db->imitationMode === true) echo 'alert alert-danger'; ?>">
-            Welcome:
-            <?php if ($db->imitationMode === true) echo '<b> &nbsp;Imitating &nbsp;</b>'; ?>
-            <?php echo $db->user_data['usr_name']; ?>
-        </div>
-    </div>
-    <?php
-    $showStatsFooter = $db->get_setting('layout_show_footer_stats');
-if ($showStatsFooter == 'Yes') {
-    ?>
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12">
-                Time Spend: <?php echo $db->get_script_time(); ?> Seconds. &nbsp;&nbsp;&nbsp;
-                Memory Used: <?php echo memory_get_usage(); ?> Bytes. &nbsp;&nbsp;
-                Memory Peak: <?php echo memory_get_peak_usage(); ?> Bytes.
+
+    <div id="footer-extra-space"></div>
+    <footer class="footer">
+        <div class="container-fluid grey_text" style="background-color: #191A1B;">
+            <div class="row">
+                <div class="d-xl-block d-lg-block d-none col-1"></div>
+                <div class="col-10">
+                    <div class="row">
+                        <div class="col-12 <?php if ($db->imitationMode === true) echo 'alert alert-danger'; ?>">
+                            Welcome:
+                            <?php if ($db->imitationMode === true)
+                                echo '<b> &nbsp;Imitating </b>&nbsp;'; ?>
+                            <?php echo $db->user_data['usr_name']; ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3">
+                            <a href="<?php echo $main['site_url']; ?>/dynamic_quotations/quotations.php">Cover Notes</a>
+                            <br>
+                            <a href="<?php echo $main['site_url']; ?>/login.php?action=logout">Logout</a>
+                        </div>
+                        <div class="col-6 text-center">
+                            <img src="<?php echo $db->admin_layout_url; ?>/images/Kemter-Logo-WhiteBG-300x60.png"
+                                 height="35">
+                            &nbsp;&nbsp;&nbsp;
+                            <img src="<?php echo $db->admin_layout_url; ?>/images/LLOYDS-Logo-Dark.png" height="35">
+                        </div>
+                        <div class="col-3">
+
+                        </div>
+                    </div>
+                    <div class="row" style="height: 10px;"></div>
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            © Copyright Kemter Insurance Agencies Sub-Agencies and Consultants Ltd 2019. All rights
+                            reserved. Developed by Ermogenous.M
+                        </div>
+                    </div>
+                    <div class="row" style="height: 10px;"></div>
+                    <div class="row">
+                        <div class="col-12">
+                            <?php
+                            $showStatsFooter = $db->get_setting('layout_show_footer_stats');
+                            if ($showStatsFooter == 'Yes' || $showStatsFooter == 'AdminYes') {
+                                ?>
+                                Time Spend: <?php echo $db->get_script_time(); ?> Seconds. &nbsp;&nbsp;&nbsp;
+                                Memory Used: <?php echo memory_get_usage(); ?> Bytes. &nbsp;&nbsp;
+                                Memory Peak: <?php echo memory_get_peak_usage(); ?> Bytes.
+                            <?php } ?>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-xl-block d-lg-block d-none col-1"></div>
             </div>
         </div>
-    </div>
+    </footer>
+
+    <script>
+        //if the page height is long then the footer sits on top of other elements.
+        //this opens a div on top of the footer that fixes the problem.
+        //also fires on window resize
+        function fix_footer() {
+            console.log('Doc: ' + $(document).height() + ' Win: ' + window.innerHeight);
+            if ($(document).height() >= window.innerHeight) {
+                $('#footer-extra-space').height(100);
+            }
+        }
+        $( window ).resize(function() {
+            fix_footer();
+        });
+        fix_footer();
+    </script>
+
 <?php
-}
 }//printer layout
 ?>
 
     <script src="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/js/popper.min.js"></script>
     <script src="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/js/bootstrap.min.js"></script>
+
     </body>
     </html>
     <?php

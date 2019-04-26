@@ -8,6 +8,7 @@
 
 include("../include/main.php");
 include("policy_class.php");
+include('../scripts/form_validator_class.php');
 $db = new Main();
 $db->admin_title = "AInsurance Policy Modify";
 
@@ -73,13 +74,21 @@ if ($_GET["lid"] != "") {
 $db->enable_jquery_ui();
 $db->enable_rxjs_lite();
 $db->show_header();
+
+$formValidator = new customFormValidator();
+$formValidator->setFormName('myForm');
+if ($quote->$data['inapol_status'] != 'Outstanding' && $_GET['quotation'] > 0){
+    $formValidator->disableForm();
+}
+
 ?>
 
     <div class="container">
         <div class="row">
             <div class="col-lg-1 col-md-1 hidden-xs hidden-sm"></div>
             <div class="col-lg-10 col-md-10 col-xs-12 col-sm-12">
-                <form name="myForm" id="myForm" method="post" action="" onsubmit="">
+                <form name="myForm" id="myForm" method="post" action="" onsubmit=""
+                    <?php $formValidator->echoFormParameters();?>>
                     <div class="alert alert-dark text-center">
                         <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
                             &nbsp;Policy</b>
@@ -90,7 +99,6 @@ $db->show_header();
                         <div class="col-sm-4">
                             <select name="fld_agent_ID" id="fld_agent_ID"
                                     class="form-control"
-                                    required
                                     onchange="loadInsuranceCompanies();">
                                 <option value=""></option>
                                 <?php
@@ -106,6 +114,15 @@ $db->show_header();
                                     ><?php echo $agent['agnt_name']; ?></option>
                                 <?php } ?>
                             </select>
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_agent_ID',
+                                    'fieldDataType' => 'select',
+                                    'required' => true,
+                                    'invalidText' => 'Must select Agent'
+                                ]);
+                            ?>
                         </div>
 
                     </div>
@@ -115,10 +132,33 @@ $db->show_header();
                         <div class="col-sm-4">
                             <select name="fld_insurance_company_ID" id="fld_insurance_company_ID"
                                     class="form-control"
-                                    required
                                     onchange="loadPolicyTypes();">
+                                <?php
+                                $sql = "SELECT * FROM 
+                                          ina_underwriter_companies
+                                          JOIN ina_underwriters ON inaund_underwriter_ID = inaunc_underwriter_ID
+                                          JOIN ina_insurance_companies ON inainc_insurance_company_ID = inaunc_insurance_company_ID
+                                          WHERE
+                                          inaunc_status = 'Active' AND
+                                          inaund_user_ID = ".$db->user_data['usr_users_ID'];
+                                $result = $db->query($sql);
+                                while ($row = $db->fetch_assoc($result)){
+                                ?>
+                                    <option value="<?php echo $row['inaunc_insurance_company_ID'];?>"><?php echo $row['inainc_name'];?></option>
+                                <?php
+                                }
+                                ?>
 
                             </select>
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_insurance_company_ID',
+                                    'fieldDataType' => 'select',
+                                    'required' => true,
+                                    'invalidText' => 'Must select Company'
+                                ]);
+                            ?>
                             <script>
 
                                 function loadInsuranceCompanies(){
@@ -148,9 +188,17 @@ $db->show_header();
                         <div class="col-sm-4">
                             <select name="fld_type_code_ID" id="fld_type_code_ID"
                                     class="form-control"
-                                    onchange="insuranceTypeChange()"
-                                    required>
+                                    onchange="insuranceTypeChange()">
                             </select>
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_type_code_ID',
+                                    'fieldDataType' => 'select',
+                                    'required' => true,
+                                    'invalidText' => 'Must select Type'
+                                ]);
+                            ?>
                         </div>
                         <script>
                             function loadPolicyTypes(){
@@ -184,8 +232,16 @@ $db->show_header();
                         <div class="col-sm-4">
                             <input name="customerSelect" type="text" id="customerSelect"
                                    class="form-control"
-                                   value="<?php echo $data["cst_name"] . " " . $data['cst_surname']; ?>"
-                                   required>
+                                   value="<?php echo $data["cst_name"] . " " . $data['cst_surname']; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'customerSelect',
+                                    'fieldDataType' => 'text',
+                                    'required' => true,
+                                    'invalidText' => 'Must select Customer'
+                                ]);
+                            ?>
                             <input name="fld_customer_ID" id="fld_customer_ID" type="hidden"
                                    value="<?php echo $data['cst_customer_ID']; ?>">
                             <script>
@@ -222,8 +278,16 @@ $db->show_header();
                         <div class="col-sm-3">
                             <input name="fld_policy_number" type="text" id="fld_policy_number"
                                    class="form-control"
-                                   value="<?php echo $data["inapol_policy_number"]; ?>"
-                                   required>
+                                   value="<?php echo $data["inapol_policy_number"]; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_policy_number',
+                                    'fieldDataType' => 'text',
+                                    'required' => true,
+                                    'invalidText' => 'Must enter Policy Number'
+                                ]);
+                            ?>
                         </div>
                     </div>
 
@@ -240,16 +304,17 @@ $db->show_header();
                         <div class="col-sm-3">
                             <input name="fld_period_starting_date" type="text" id="fld_period_starting_date"
                                    class="form-control"
-                                   value=""
-                                   required>
-                            <script>
-                                $(function () {
-                                    $("#fld_period_starting_date").datepicker();
-                                    $("#fld_period_starting_date").datepicker("option", "dateFormat", "dd/mm/yy");
-                                    $("#fld_period_starting_date").val('<?php echo $db->convert_date_format($data["inapol_period_starting_date"], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?>');
-
-                                });
-                            </script>
+                                   value="">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_period_starting_date',
+                                    'fieldDataType' => 'date',
+                                    'enableDatePicker' => true,
+                                    'required' => true,
+                                    'invalidText' => 'Must enter Period Starting Date'
+                                ]);
+                            ?>
                         </div>
                     </div>
 
@@ -273,16 +338,17 @@ $db->show_header();
                         <div class="col-sm-3">
                             <input name="fld_starting_date" type="text" id="fld_starting_date"
                                    class="form-control"
-                                   value=""
-                                   required>
-                            <script>
-                                $(function () {
-                                    $("#fld_starting_date").datepicker();
-                                    $("#fld_starting_date").datepicker("option", "dateFormat", "dd/mm/yy");
-                                    $("#fld_starting_date").val('<?php echo $db->convert_date_format($data["inapol_starting_date"], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?>');
-
-                                });
-                            </script>
+                                   value="">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_starting_date',
+                                    'fieldDataType' => 'date',
+                                    'enableDatePicker' => true,
+                                    'required' => true,
+                                    'invalidText' => 'Must enter Starting Date'
+                                ]);
+                            ?>
                         </div>
                     </div>
 
@@ -306,16 +372,17 @@ $db->show_header();
                         <div class="col-sm-3">
                             <input name="fld_expiry_date" type="text" id="fld_expiry_date"
                                    class="form-control"
-                                   value=""
-                                   required>
-                            <script>
-                                $(function () {
-                                    $("#fld_expiry_date").datepicker();
-                                    $("#fld_expiry_date").datepicker("option", "dateFormat", "dd/mm/yy");
-                                    $("#fld_expiry_date").val('<?php echo $db->convert_date_format($data["inapol_expiry_date"], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?>');
-
-                                });
-                            </script>
+                                   value="">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_expiry_date',
+                                    'fieldDataType' => 'date',
+                                    'enableDatePicker' => true,
+                                    'required' => true,
+                                    'invalidText' => 'Must enter Expiry Date'
+                                ]);
+                            ?>
                         </div>
                     </div>
 
@@ -403,12 +470,16 @@ $db->show_header();
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
                             <input type="button" value="Back" class="btn btn-secondary"
                                    onclick="window.location.assign('policies.php')">
-                            <input type="button" name="Save" id="Save"
-                                   value="Save Policy"
-                                   class="btn btn-secondary" onclick="submitForm('save')">
-                            <input type="button" name="Submit" id="Submit"
-                                   value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Policy"
-                                   class="btn btn-secondary" onclick="submitForm('exit')">
+
+
+                            <input type="submit" value="Save Policy"
+                                   class="btn btn-secondary" id="Save"
+                                   onclick="submitForm('save');">
+                            <input type="submit" value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Policy"
+                                   class="btn btn-secondary" id="Submit"
+                                   onclick="submitForm('exit');">
+
+
                             <input type="hidden" name="sub-action" id="sub-action" value="">
                         </div>
                     </div>
@@ -422,16 +493,9 @@ $db->show_header();
 
 
         function submitForm(action) {
-            frm = document.getElementById('myForm');
-            if (frm.checkValidity() === false) {
-
-            }
-            else {
                 $('#sub-action').val(action);
-                document.getElementById('Submit').disabled = true
-                document.getElementById('Save').disabled = true
-                $('#myForm').submit();
-            }
+                //document.getElementById('Submit').disabled = true;
+                //document.getElementById('Save').disabled = true;
         }
 
         function insuranceTypeChange() {
@@ -500,5 +564,6 @@ $db->show_header();
         }
     </script>
 <?php
+$formValidator->output();
 $db->show_footer();
 ?>

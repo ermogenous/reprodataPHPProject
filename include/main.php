@@ -16,6 +16,7 @@
 //- 29/9/2016 username/password session has been added the $main["environment"]
 //- 09/8/2018 add insert/update automatically fields insert_date_time, last_update_date_time and by
 //- 04/01/2019 db_tool_delete_row check if the record exists before deleting
+//- 09/04/2019 setDebugMode. When true prints all queries executed
 //usefull information
 //
 //mysqli_query("SET NAMES 'utf8'");
@@ -70,6 +71,7 @@ class Main
 
 //settings array
     var $settings;
+    private $debugMode = false; //when true prints all queries and executes them also.
 
 //errors
     var $working_section;
@@ -233,6 +235,10 @@ class Main
             header("Location:" . $main["block_countries_redirect_page"]);
             exit();
         }
+    }
+
+    public function setDebugMode(){
+        $this->debugMode = true;
     }
 
     public function check_login()
@@ -574,7 +580,10 @@ class Main
             echo "<strong>INFO:</strong> " . $info . "<br>" . $sql . '&nbsp;&nbsp;' . $more_info . "<HR>";
             $this->db_all_queries .= $sql . '&nbsp;&nbsp;' . $more_info . "<HR>";
         } else {
-            $result = mysqli_query($this->db_handle, $sql) or die($this->error($sql . "<hr>" . $this->db_handle->error));
+            $result = mysqli_query($this->db_handle, $sql)
+                or die(
+                    $this->error($sql . "<hr>" . $this->db_handle->error)
+                );
             if ($this->db_handle->errno != 0) {
                 $this->error($sql . "<hr>" . $this->db_handle->error);
             }
@@ -583,6 +592,11 @@ class Main
                 $this->all_query_results[$this->db_total_queries]["result"] = $result;
                 $this->all_query_results[$this->db_total_queries]["info"] = $info;
                 $this->db_total_queries++;
+            }
+
+            //if debug mode echo the sql
+            if ($this->debugMode == true){
+                echo $sql."\n<br><hr>";
             }
 
         }
@@ -1328,6 +1342,7 @@ class Main
      */
     function db_tool_update_row($table, $data_array, $where_clause, $row_serial, $data_prefix = 'fld_', $return_or_execute = 'execute', $fields_prefix = '')
     {
+        //echo "UPDATING<br>\n";
         $log_new_values = '';
         $log_old_values = '';
 //get the previous values
@@ -1405,7 +1420,9 @@ class Main
             $sql .= "WHERE " . $where_clause;
             if ($return_or_execute == 'execute') {
                 //echo $sql;
+                //echo "executing sql<br>\n";
                 $this->query($sql);
+
                 //update the log file.
                 $this->update_log_file($table, $row_serial, 'UPDATE RECORD', $log_new_values, $log_old_values, $sql);
             } else if ($return_or_execute == 'only_return') {
@@ -1604,6 +1621,11 @@ class Main
         return substr($text, 0, (strlen($text) - 1));
     }
 
+    /**
+     * @param $date
+     * @param string $format
+     * @return string
+     */
     function verify_date($date, $format = 'd/m/Y')
     {
         $dt = new DateTime($date);
@@ -1861,6 +1883,13 @@ class Main
         header("Access-Control-Max-Age: 3600");
         header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
     }
+
+    /**
+     * @param $prefix
+     * @param $totalLeadingZeros
+     * @param $number
+     * @return string
+     */
 
     public function buildNumber($prefix, $totalLeadingZeros, $number)
     {

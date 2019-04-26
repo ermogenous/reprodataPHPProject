@@ -159,11 +159,23 @@ class Policy {
             return false;
         }
 
+        //if all validations are ok!
+        if ($this->error == false){
+            //update the policy to active
+            $newData['status'] = 'Active';
+            $db->db_tool_update_row('ina_policies',
+                $newData,
+                'inapol_policy_ID = '.$this->policyID,
+                $this->policyID,
+                '',
+                'execute',
+                'inapol_');
+        }
 
 
-        $this->validForActive = true;
-        $this->errorDescription = 'Some error. Activate function needs build';
-        return false;
+        //$this->validForActive = true;
+        //$this->errorDescription = 'Some error. Activate function needs build';
+        return true;
     }
 
     private function issueAccountTransactions(){

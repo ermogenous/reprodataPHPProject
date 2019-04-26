@@ -1,6 +1,69 @@
 @charset "utf-8";
 /* CSS Document */
 
+.navbar-mycustom {
+    background-color: #ffffff;
+}
+
+/* change the brand and text color */
+.navbar-mycustom .navbar-brand,
+.navbar-mycustom .navbar-text {
+    color: rgba(100, 100, 255, .8);
+}
+
+/* change the link color */
+.navbar-mycustom .navbar-nav .nav-link {
+    color: rgba(255, 255, 255, .5);
+}
+
+/* change the color of active or hovered links */
+.navbar-mycustom .nav-item.active .nav-link,
+.navbar-mycustom .nav-item:hover .nav-link {
+    color: #ffffff;
+}
+
+/* this is a black icon with 50% opacity*/
+.navbar-mycustom .navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(0,0,0, 0.5)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+.navbar-mycustom.navbar-toggler {
+    border-color: rgb(0,0,0);
+}
+
+.navbar-mycustom .navbar-nav .nav-link {
+    color: rgba(0, 0, 0, 0.5);
+}
+
+.navbar-mycustom .navbar-nav .nav-link:hover, .navbar-dark .navbar-nav .nav-link:focus {
+    color: #0f3e68;
+}
+.navbar-mycustom .navbar-nav .nav-link.disabled {
+    color: #0f3e68;
+}
+.navbar-mycustom .navbar-nav .show > .nav-link,
+.navbar-mycustom .navbar-nav .active > .nav-link,
+.navbar-mycustom .navbar-nav .nav-link.show,
+.navbar-mycustom .navbar-nav .nav-link.active {
+    color: #0f3e68;
+}
+
+html {
+    position: relative;
+    min-height: 100%;
+}
+body {
+    margin-bottom: 120px; /* Margin bottom by footer height */
+}
+.footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 120px; /* Set the fixed height of the footer here */
+    line-height: 20px; /* Vertically center the text there */
+    /* background-color: #f5f5f5;*/
+}
+
+
 .main_text_strikethrough {
     text-decoration: line-through;
 }
@@ -27,175 +90,181 @@
     font-size: 12px;
 }
 
-.home_butterfly_bg{
+.home_butterfly_bg {
     background-image: url("images/butterfly.png");
     background-repeat: no-repeat;
     background-position-x: center;
 }
 
-.main_text_big_white{
+.main_text_big_white {
     font-size: 40px;
     color: white;
 }
 
-/* change the background color */
-.navbar-custom {
-    background-color: #e0a800;
-}
-/* change the brand and text color */
-.navbar-custom .navbar-brand,
-.navbar-custom .navbar-text {
-    color: rgba(255,255,255,.8);
-}
-/* change the link color */
-.navbar-custom .navbar-nav .nav-link {
-    color: rgba(255,255,255,.5);
-}
-/* change the color of active or hovered links */
-.navbar-custom .nav-item.active .nav-link,
-.navbar-custom .nav-item:hover .nav-link {
-    color: #ffffff;
+.grey_text, .grey_text a:link, .grey_text a:active, .grey_text a:visited {
+    font-size: 15px;
+    color: #999979;
 }
 
-.h-divider{
-    margin-top:5px;
-    margin-bottom:5px;
-    height:1px;
-    width:100%;
-    border-top:1px solid gray;
+.grey_text a:hover {
+    color: white;
+    text-decoration: none;
+}
+
+.h-divider {
+    margin-top: 5px;
+    margin-bottom: 5px;
+    height: 1px;
+    width: 100%;
+    border-top: 1px solid gray;
 }
 
 .greenColor {
-    color:green;
+    color: green;
 }
 
-.yellowColor{
-    color:yellow;
+.yellowColor {
+    color: yellow;
 }
 
-.redColor{
-    color:red;
+.redColor {
+    color: red;
 }
 
-.darkRedColor{
-    color:darkred;
+.darkRedColor {
+    color: darkred;
 }
 
-.orangeColor{
-    color:orange;
+.orangeColor {
+    color: orange;
 }
 
-.goldColor{
-    color:gold;
+.goldColor {
+    color: gold;
 }
 
-.purpleColor{
-    color:purple;
+.purpleColor {
+    color: purple;
 }
 
 .bgGreenColor {
-    background-color:green;
+    background-color: green;
 }
 
-.bgLightGreenColor{
+.bgLightGreenColor {
     background-color: #b9ffc1;
 }
 
-.bgYellowColor{
-    background-color:yellow;
+.bgYellowColor {
+    background-color: yellow;
 }
 
-.bgRedColor{
-    background-color:red;
+.bgRedColor {
+    background-color: red;
 }
 
-.bgDarkRedColor{
-    background-color:darkred;
+.bgDarkRedColor {
+    background-color: darkred;
 }
 
-.bgLightRedColor{
+.bgLightRedColor {
     background-color: #efa2a9;
 }
 
-.bgOrangeColor{
-    background-color:orange;
+.bgOrangeColor {
+    background-color: orange;
 }
 
-.bgLightOrangeColor{
+.bgLightOrangeColor {
     background-color: #ffd9a9;
 }
 
-.bgGoldColor{
-    background-color:gold;
+.bgGoldColor {
+    background-color: gold;
 }
 
-.bgPurpleColor{
-    background-color:purple;
+.bgPurpleColor {
+    background-color: purple;
 }
 
-.bgDarkSkyBlueColor{
-    background-color:deepskyblue;
+.bgDarkSkyBlueColor {
+    background-color: deepskyblue;
 }
 
-.agrOpenColor{
+.agrOpenColor {
     background-color: #fffec1;
 }
-.agrLockedColor{
+
+.agrLockedColor {
     background-color: lightblue;
 }
-.agrActiveColor{
+
+.agrActiveColor {
     background-color: lightgreen;
 }
-.agrArchivedColor{
+
+.agrArchivedColor {
     background-color: #ffde99;
 }
-.agrExpiredColor{
+
+.agrExpiredColor {
     background-color: darkgray;
 }
-.agrDeletedColor{
+
+.agrDeletedColor {
     background-color: #ffc6c3;
 }
-.agrCancelledColor{
+
+.agrCancelledColor {
     background-color: #ffa7a3;
 }
 
 /* Tickets Status */
-.tckOutstandingColor{
+.tckOutstandingColor {
     background-color: #fffec1;
 }
-.tckOpenColor{
+
+.tckOpenColor {
     background-color: lightblue;
 }
-.tckClosedColor{
+
+.tckClosedColor {
     background-color: lightgreen;
 }
-.tckDeletedColor{
+
+.tckDeletedColor {
     background-color: #ffc6c3;
 }
 
 /* Schedules Status */
-.schOutstandingColor{
+.schOutstandingColor {
     background-color: #fffec1;
 }
-.schOpenColor{
+
+.schOpenColor {
     background-color: lightblue;
 }
-.schClosedColor{
+
+.schClosedColor {
     background-color: lightgreen;
 }
-.schDeletedColor{
+
+.schDeletedColor {
     background-color: #ffc6c3;
 }
 
-.inapolOutstandingColor{
+.inapolOutstandingColor {
     background-color: #fffec1;
 }
-.inapolActiveColor{
+
+.inapolActiveColor {
     background-color: lightblue;
 }
-.inapolCancelledColor{
+
+.inapolCancelledColor {
     background-color: #ffc6c3;
 }
-.inapolDeletedColor{
+
+.inapolDeletedColor {
     background-color: #bd2130;
 }

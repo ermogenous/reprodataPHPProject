@@ -1,7 +1,28 @@
 <?php
 include("../include/main.php");
 include("../include/tables.php");
+include('quotations_class.php');
 $db = new Main();
+
+//activate quotation
+if ($_GET['action'] == 'activate' && $_GET['lid'] > 0) {
+    $quote = new dynamicQuotation($_GET['lid']);
+    $db->start_transaction();
+    if ($quote->activate() == true) {
+        $db->generateSessionAlertSuccess($quote->getQuotationType() . " activated successfully");
+    } else {
+        if ($quote->errorType == 'warning') {
+            $db->generateSessionAlertWarning($quote->errorDescription);
+        } else {
+            $db->generateSessionAlertError($quote->errorDescription);
+        }
+    }
+    $db->commit_transaction();
+    header("Location: quotations.php");
+    exit();
+
+}
+
 
 $table = new draw_table('oqt_quotations', 'oqq_quotations_ID', 'DESC');
 $table->extra_from_section = " JOIN `oqt_quotations_types` ON oqqt_quotations_types_ID = oqq_quotations_type_ID ";
@@ -152,8 +173,8 @@ if ($_GET["price_id"] != "") {
                                 <tr class="alert alert-success">
                                     <th scope="col"><?php $table->display_order_links('ID', 'oqq_quotations_ID'); ?></th>
                                     <th scope="col"><?php $table->display_order_links('Name', 'oqq_insureds_name'); ?></th>
-                                    <th scope="col"><?php $table->display_order_links('Quotation', 'oqqt_name'); ?></th>
-                                    <th scope="col"><?php $table->display_order_links('Price', 'clo_total_price'); ?></th>
+                                    <th scope="col"><?php $table->display_order_links('Type', 'oqqt_name'); ?></th>
+                                    <th scope="col"><?php $table->display_order_links('Status', 'oqq_status'); ?></th>
                                     <th scope="col">
                                     </th>
                                 </tr>
@@ -164,7 +185,8 @@ if ($_GET["price_id"] != "") {
                                 while ($row = $table->fetch_data()) {
                                     $i++;
                                     ?>
-                                    <tr onclick="editLine(<?php echo $row["oqq_quotations_type_ID"].",".$row["oqq_quotations_ID"]; ?>);">
+                                    <tr onclick="editLine(<?php echo $row["oqq_quotations_type_ID"] . "," . $row["oqq_quotations_ID"] . ",'" . $row['oqq_status'] . "'"; ?>);"
+                                        class="<?php if ($row['oqq_status'] == 'Deleted') echo 'alert alert-danger'; ?>">
                                         <th scope="row">
 
                                             <?php if ($db->user_data["usr_user_rights"] <= 2) { ?>
@@ -180,13 +202,37 @@ if ($_GET["price_id"] != "") {
                                             <?php echo "<div id=\"quot_info_id_" . $row["oqq_quotations_ID"] . "\" style=\"display:none\">" . $row["oqq_detail_price_array"] . "</div>"; ?>
                                         </td>
                                         <td><?php echo $row["oqqt_name"]; ?></td>
-                                        <td><?php echo $row["clo_total_price"]; ?></td>
+                                        <td><?php echo $row["oqq_status"]; ?></td>
                                         <td>
-                                            <a href="quotations_modify.php?quotation_type=<?php  echo $row["oqq_quotations_type_ID"];?>&quotation=<?php  echo $row["oqq_quotations_ID"];?>"><i
-                                                        class="fas fa-edit"></i></a>&nbsp
-                                            <a href="quotations_delete.php?quotation_type=<?php  echo $row["oqq_quotations_type_ID"];?>&quotation=<?php  echo $row["oqq_quotations_ID"];?>"
-                                               onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this quotation?');"><i
-                                                        class="fas fa-minus-circle"></i></a>
+                                                <a href="quotations_show.php?lid=<?php echo $row["oqq_quotations_ID"]; ?>">
+                                                    <i class="fas fa-info-circle"></i>
+                                                </a>
+
+                                            <?php if ($row['oqq_status'] == 'Outstanding') { ?>
+                                                <a href="quotations_modify.php?quotation_type=<?php echo $row["oqq_quotations_type_ID"]; ?>&quotation=<?php echo $row["oqq_quotations_ID"]; ?>"><i
+                                                            class="fas fa-edit"></i></a>&nbsp
+                                            <?php } ?>
+                                            <?php if ($row['oqq_status'] == 'Outstanding') { ?>
+                                                <a href="quotations_delete.php?quotation_type=<?php echo $row["oqq_quotations_type_ID"]; ?>&quotation=<?php echo $row["oqq_quotations_ID"]; ?>"
+                                                   onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this quotation?');"><i
+                                                            class="fas fa-minus-circle"></i></a>&nbsp
+                                            <?php } ?>
+                                            <?php if ($row['oqq_status'] == 'Active') { ?>
+                                                <a target="_blank"
+                                                   href="quotation_print.php?quotation=<?php echo $row["oqq_quotations_ID"]; ?>&pdf=1"
+                                                   onclick="ignoreEdit = true;">
+                                                    <i class="far fa-file-pdf"></i>
+                                                </a>
+                                            <?php } ?>
+
+                                            <?php if ($row['oqq_status'] == 'Outstanding' || $row['oqq_status'] == 'Approved') { ?>
+                                                <a href="#">
+                                                    <i class="fas fa-lock"
+                                                       onclick="activateQuotation(<?php echo $row["oqq_quotations_ID"]; ?>);"></i>
+                                                </a>
+                                            <?php } ?>
+
+
                                         </td>
                                     </tr>
                                     <?php
@@ -196,8 +242,8 @@ if ($_GET["price_id"] != "") {
                                 if ($i == 0) {
                                     ?>
                                     <tr>
-                                        <td colspan="5" align="center">No Quotations Found. Press &lt;NEW&gt; to create
-                                            a new quotation.
+                                        <td colspan="5" align="center">
+                                            No Quotations Found. Press &lt;NEW&gt; to create a new quotation.
                                         </td>
                                     </tr>
                                 <?php } ?>
@@ -218,9 +264,21 @@ if ($_GET["price_id"] != "") {
 
         var ignoreEdit = false;
 
-        function editLine(quotationType,quotation) {
+        function editLine(quotationType, quotation, status) {
             if (ignoreEdit === false) {
-                window.location.assign('quotations_modify.php?quotation_type=' + quotationType + '&quotation=' + quotation);
+                if (status == 'Outstanding') {
+                    window.location.assign('quotations_modify.php?quotation_type=' + quotationType + '&quotation=' + quotation);
+                }
+                else {
+                    window.location.assign('quotations_show.php?price_id=' + quotation);
+                }
+            }
+        }
+
+        function activateQuotation(id) {
+            ignoreEdit = true;
+            if (confirm('Are you sure you want to activate this?')) {
+                window.location.assign('quotations.php?lid=' + id + '&action=activate')
             }
         }
     </script>

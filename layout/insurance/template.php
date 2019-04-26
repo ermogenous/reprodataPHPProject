@@ -30,7 +30,8 @@ function template_header()
     </head>
     <body>
     <?php if ($db->admin_layout_printer != 'yes') { ?>
-    <nav class="navbar navbar-expand-lg navbar-dark navbar-custom" style="background-color: #e0a800">
+    <nav class="navbar navbar-expand-lg navbar-mycustom">
+        &nbsp;&nbsp;&nbsp;
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -39,7 +40,7 @@ function template_header()
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
 
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
+                <li class="nav-item">
                     <a class="nav-link" href="<?php echo $main["site_url"]; ?>/home.php"><i class="fas fa-home"></i>
                         <span class="sr-only">(current)</span></a>
                 </li>
@@ -164,6 +165,9 @@ function template_header()
                                href="<?php echo $main["site_url"]; ?>/ainsurance/codes/insurance_companies.php">
                                 <i class="fab fa-linode"></i> Insurance Companies</a>
                             <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/ainsurance/underwriters/underwriters.php">
+                                <i class="fas fa-users"></i> Insurance Underwriters</a>
+                            <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/send_auto_emails/send_auto_emails.php">
                                 <i class="fas fa-envelope"></i> Auto Emails</a>
                             <a class="dropdown-item"
@@ -206,7 +210,7 @@ function template_header()
                             </li>
                  -->
             </ul>
-            <img src="<?php echo $main["site_url"]; ?>/images/logo_transparent.gif" height="40">
+            <img src="<?php echo $db->admin_layout_url; ?>/images/insurance_logo.jpg" height="50">
         </div>
     </nav>
 
@@ -365,7 +369,7 @@ if ($db->admin_layout_printer != 'yes')
 <br>
     <div class="container-fluid">
         <div class="row">&nbsp</div>
-        <div class="row glyphicon-copyright-mark navbar-custom <?php if ($db->imitationMode === true) echo 'alert alert-danger'; ?>">
+        <div class="row glyphicon-copyright-mark footer-bar <?php if ($db->imitationMode === true) echo 'alert alert-danger'; ?>">
             Welcome:
             <?php if ($db->imitationMode === true) echo '<b> &nbsp;Imitating &nbsp;</b>'; ?>
             <?php echo $db->user_data['usr_name']; ?>
