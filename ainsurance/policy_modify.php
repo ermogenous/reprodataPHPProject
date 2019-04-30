@@ -65,6 +65,7 @@ if ($_GET["lid"] != "") {
     $db->working_section = 'AInsurance policy Get data';
     $sql = "SELECT * FROM `ina_policies` 
             LEFT OUTER JOIN customers ON cst_customer_ID = inapol_customer_ID
+            LEFT OUTER JOIN ina_insurance_companies ON inainc_insurance_company_ID = inapol_insurance_company_ID
             WHERE `inapol_policy_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
 } else {
@@ -127,28 +128,18 @@ if ($quote->$data['inapol_status'] != 'Outstanding' && $_GET['quotation'] > 0){
 
                     </div>
 
+                    </script>
                     <div class="form-group row">
                         <label for="fld_insurance_company_ID" class="col-sm-2 col-form-label">Company</label>
                         <div class="col-sm-4">
                             <select name="fld_insurance_company_ID" id="fld_insurance_company_ID"
                                     class="form-control"
                                     onchange="loadPolicyTypes();">
-                                <?php
-                                $sql = "SELECT * FROM 
-                                          ina_underwriter_companies
-                                          JOIN ina_underwriters ON inaund_underwriter_ID = inaunc_underwriter_ID
-                                          JOIN ina_insurance_companies ON inainc_insurance_company_ID = inaunc_insurance_company_ID
-                                          WHERE
-                                          inaunc_status = 'Active' AND
-                                          inaund_user_ID = ".$db->user_data['usr_users_ID'];
-                                $result = $db->query($sql);
-                                while ($row = $db->fetch_assoc($result)){
-                                ?>
-                                    <option value="<?php echo $row['inaunc_insurance_company_ID'];?>"><?php echo $row['inainc_name'];?></option>
-                                <?php
-                                }
-                                ?>
-
+                                        <?php if ($_GET['lid'] > 0) {?>
+                                        <option value="<?php echo $data['inainc_insurance_company_ID'];?>">
+                                            <?php echo $data['inainc_name']; ?>
+                                        </option>
+                                        <?php }//if ?>
                             </select>
                             <?php
                             $formValidator->addField(
@@ -162,7 +153,6 @@ if ($quote->$data['inapol_status'] != 'Outstanding' && $_GET['quotation'] > 0){
                             <script>
 
                                 function loadInsuranceCompanies(){
-
                                     let agentSelected = $('#fld_agent_ID').val();
 
                                     if (agentSelected > 0){
@@ -184,16 +174,16 @@ if ($quote->$data['inapol_status'] != 'Outstanding' && $_GET['quotation'] > 0){
                             </script>
                         </div>
 
-                        <label for="fld_type_code_ID" class="col-sm-2 col-form-label">Type</label>
+                        <label for="fld_type_code" class="col-sm-2 col-form-label">Type</label>
                         <div class="col-sm-4">
-                            <select name="fld_type_code_ID" id="fld_type_code_ID"
+                            <select name="fld_type_code" id="fld_type_code"
                                     class="form-control"
                                     onchange="insuranceTypeChange()">
                             </select>
                             <?php
                             $formValidator->addField(
                                 [
-                                    'fieldName' => 'fld_type_code_ID',
+                                    'fieldName' => 'fld_type_code',
                                     'fieldDataType' => 'select',
                                     'required' => true,
                                     'invalidText' => 'Must select Type'
@@ -217,8 +207,8 @@ if ($quote->$data['inapol_status'] != 'Outstanding' && $_GET['quotation'] > 0){
                                             () => { }
                                             ,
                                             () => {
-                                                clearDropDown('fld_type_code_ID');
-                                                loadDropDown('fld_type_code_ID',data);
+                                                clearDropDown('fld_type_code');
+                                                loadDropDown('fld_type_code',data);
                                             }
                                         );
                                 }
@@ -562,6 +552,10 @@ if ($quote->$data['inapol_status'] != 'Outstanding' && $_GET['quotation'] > 0){
                 }
             );
         }
+
+        $( document ).ready(function() {
+
+        });
     </script>
 <?php
 $formValidator->output();

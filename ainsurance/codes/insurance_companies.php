@@ -23,7 +23,7 @@ $table->generate_data();
 
 <div class="container">
     <div class="row">
-            <div class="text-center"><?php $table->show_pages_links(); ?></div>
+            <div class="text-center col-12"><?php $table->show_pages_links(); ?></div>
             <div class="table-responsive">
                 <table class="table table-hover">
                     <thead class="alert alert-success">
@@ -64,7 +64,14 @@ $table->generate_data();
                 </table>
             </div>
     </div>
+
+    <div class="row">
+        <div class="col-12 text-center">
+            <?php echo $table->show_per_page_links();?>
+        </div>
+    </div>
 </div>
+
 <script>
     var ignoreEdit = false;
     function editLine(id){

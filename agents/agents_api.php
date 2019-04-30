@@ -13,17 +13,18 @@ $db->apiGetReadHeaders();
 
 if ($_GET['section'] == 'agent_commission_types_insurance_companies') {
 
-    $sql = "SELECT 
+    $sql = "SELECT
               inainc_insurance_company_ID as value, 
               CONCAT(inainc_code, ' ', inainc_name) as label,
               inainc_status as clo_status
-              FROM agent_commission_types
-              JOIN ina_insurance_companies ON agcmt_insurance_company_ID = inainc_insurance_company_ID 
-              WHERE 
-              agcmt_agent_ID = '".$_GET['agent']."'
-              GROUP BY
-              inainc_insurance_company_ID, inainc_code, inainc_name, inainc_status
-	          LIMIT 0,25";
+              FROM 
+              ina_underwriter_companies
+              JOIN ina_underwriters ON inaund_underwriter_ID = inaunc_underwriter_ID
+              JOIN ina_insurance_companies ON inainc_insurance_company_ID = inaunc_insurance_company_ID
+              WHERE
+              inaunc_status = 'Active' AND
+              inaund_user_ID = ".$_GET['agent']."
+              LIMIT 0,25";
 
     $result = $db->query($sql);
     while ($row = $db->fetch_assoc($result)) {
@@ -34,20 +35,53 @@ if ($_GET['section'] == 'agent_commission_types_insurance_companies') {
 }
 else if ($_GET['section'] == 'agent_commission_types_policy_types') {
 
-    $sql = "SELECT 
-              inapot_policy_type_ID as value, 
-              CONCAT(inapot_code, ' ', inapot_name) as label,
-              inapot_status as clo_status
-              FROM agent_commission_types
-              JOIN ina_policy_types ON inapot_policy_type_ID = agcmt_policy_type_ID 
-              WHERE 
-              agcmt_insurance_company_ID = '".$_GET['inscompany']."'
-              AND agcmt_agent_ID = '".$_GET['agent']."'
-	          LIMIT 0,25";
+    $sql = "SELECT
+            *
+            FROM
+            ina_underwriters
+            JOIN ina_underwriter_companies ON inaund_underwriter_ID = inaunc_underwriter_ID
+            JOIN ina_insurance_companies ON inaunc_insurance_company_ID = inainc_insurance_company_ID
+            WHERE
+            inaund_user_ID = '".$_GET['agent']."'
+            AND inainc_insurance_company_ID = ".$_GET['inscompany']."
+            
+	        LIMIT 0,25";
 
-    $result = $db->query($sql);
-    while ($row = $db->fetch_assoc($result)) {
-        $data[] = $row;
+    $undData = $db->query_fetch($sql);
+    if ($undData['inainc_use_motor'] == 1) {
+        $newData['value'] = 'Motor';
+        $newData['label'] = 'Motor';
+        $data[] = $newData;
+    }
+    if ($undData['inainc_use_fire'] == 1) {
+        $newData['value'] = 'Fire';
+        $newData['label'] = 'Fire';
+        $data[] = $newData;
+    }
+    if ($undData['inainc_use_pa'] == 1) {
+        $newData['value'] = 'PA';
+        $newData['label'] = 'Personal Accident';
+        $data[] = $newData;
+    }
+    if ($undData['inainc_use_el'] == 1) {
+        $newData['value'] = 'EL';
+        $newData['label'] = 'Employers Liability';
+        $data[] = $newData;
+    }
+    if ($undData['inainc_use_pi'] == 1) {
+        $newData['value'] = 'PI';
+        $newData['label'] = 'Professional Indemnity';
+        $data[] = $newData;
+    }
+    if ($undData['inainc_use_pl'] == 1) {
+        $newData['value'] = 'PL';
+        $newData['label'] = 'Public Liability';
+        $data[] = $newData;
+    }
+    if ($undData['inainc_use_medical'] == 1) {
+        $newData['value'] = 'Medical';
+        $newData['label'] = 'Medical';
+        $data[] = $newData;
     }
 
     $db->update_log_file_custom($sql, 'Insurance Companies From commission Types API:none GET:'.print_r($_GET,true));

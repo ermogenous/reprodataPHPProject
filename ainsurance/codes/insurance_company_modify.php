@@ -43,12 +43,16 @@ else {
 
 
 $db->show_header();
+
+include('../../scripts/form_validator_class.php');
+$formValidator = new customFormValidator();
 ?>
 <div class="container">
     <div class="row">
         <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
         <div class="col-lg-6 col-md-6 col-xs-12 col-sm-12">
-            <form name="myForm" id="myForm" method="post" action="" onsubmit="">
+            <form name="myForm" id="myForm" method="post" action=""
+                <?php $formValidator->echoFormParameters(); ?>>
                 <div class="alert alert-dark text-center">
                     <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
                         &nbsp;Insurance Company</b>
@@ -58,11 +62,17 @@ $db->show_header();
                     <label for="fld_status" class="col-sm-4 col-form-label">Status</label>
                     <div class="col-sm-8">
                         <select name="fld_status" id="fld_status"
-                                class="form-control"
-                                required>
+                                class="form-control">
                             <option value="Active" <?php if ($data['inainc_status'] == 'Active') echo 'selected';?>>Active</option>
                             <option value="InActive" <?php if ($data['inainc_status'] == 'InActive') echo 'selected';?>>In-active</option>
                         </select>
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_code",
+                            "fieldDataType" => "select",
+                            "required" => true,
+                        ]);
+                        ?>
                     </div>
                 </div>
 
@@ -71,8 +81,14 @@ $db->show_header();
                     <div class="col-sm-8">
                         <input name="fld_code" type="text" id="fld_code"
                                class="form-control"
-                               value="<?php echo $data["inainc_code"]; ?>"
-                               required>
+                               value="<?php echo $data["inainc_code"]; ?>">
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_code",
+                            "fieldDataType" => "text",
+                            "required" => true,
+                        ]);
+                        ?>
                     </div>
                 </div>
 
@@ -81,8 +97,14 @@ $db->show_header();
                     <div class="col-sm-8">
                         <input name="fld_name" type="text" id="fld_name"
                                class="form-control"
-                               value="<?php echo $data["inainc_name"]; ?>"
-                               required>
+                               value="<?php echo $data["inainc_name"]; ?>">
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_name",
+                            "fieldDataType" => "text",
+                            "required" => true,
+                        ]);
+                        ?>
                     </div>
                 </div>
 
@@ -92,6 +114,13 @@ $db->show_header();
                         <input name="fld_description" type="text" id="fld_description"
                                class="form-control"
                                value="<?php echo $data["inainc_description"]; ?>">
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_description",
+                            "fieldDataType" => "text",
+                            "required" => false,
+                        ]);
+                        ?>
                     </div>
                 </div>
 
@@ -113,6 +142,180 @@ $db->show_header();
                                 </option>
                             <?php } ?>
                         </select>
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_country_code_ID",
+                            "fieldDataType" => "select",
+                            "required" => false,
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="row alert alert-primary">
+                    <div class="col-12">
+                        Policy Types
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label for="fld_use_motor"
+                           class="col-sm-9">Motor</label>
+                    <div class="col-sm-3" style="height: 45px;">
+                        <select name="fld_use_motor" id="fld_use_motor"
+                                class="form-control">
+                            <option value="1" <?php if ($data['inainc_use_motor'] == '1') echo "selected=\"selected\""; ?>>
+                                Yes
+                            </option>
+                            <option value="0" <?php if ($data['inainc_use_motor'] == '0' || $data['inainc_use_motor'] == '') echo "selected=\"selected\""; ?>>
+                                No
+                            </option>
+                        </select>
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_use_motor",
+                            "fieldDataType" => "select",
+                            "required" => false,
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label for="fld_use_fire"
+                           class="col-sm-9">Fire</label>
+                    <div class="col-sm-3" style="height: 45px;">
+                        <select name="fld_use_fire" id="fld_use_fire"
+                                class="form-control">
+                            <option value="1" <?php if ($data['inainc_use_fire'] == '1') echo "selected=\"selected\""; ?>>
+                                Yes
+                            </option>
+                            <option value="0" <?php if ($data['inainc_use_fire'] == '0' || $data['inainc_use_fire'] == '') echo "selected=\"selected\""; ?>>
+                                No
+                            </option>
+                        </select>
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_use_fire",
+                            "fieldDataType" => "select",
+                            "required" => false,
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label for="fld_use_pa"
+                           class="col-sm-9">Personal Accident</label>
+                    <div class="col-sm-3" style="height: 45px;">
+                        <select name="fld_use_pa" id="fld_use_pa"
+                                class="form-control">
+                            <option value="1" <?php if ($data['inainc_use_pa'] == '1') echo "selected=\"selected\""; ?>>
+                                Yes
+                            </option>
+                            <option value="0" <?php if ($data['inainc_use_pa'] == '0' || $data['inainc_use_pa'] == '') echo "selected=\"selected\""; ?>>
+                                No
+                            </option>
+                        </select>
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_use_pa",
+                            "fieldDataType" => "select",
+                            "required" => false,
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label for="fld_use_el"
+                           class="col-sm-9">Employers Liability</label>
+                    <div class="col-sm-3" style="height: 45px;">
+                        <select name="fld_use_el" id="fld_use_el"
+                                class="form-control">
+                            <option value="1" <?php if ($data['inainc_use_el'] == '1') echo "selected=\"selected\""; ?>>
+                                Yes
+                            </option>
+                            <option value="0" <?php if ($data['inainc_use_el'] == '0' || $data['inainc_use_el'] == '') echo "selected=\"selected\""; ?>>
+                                No
+                            </option>
+                        </select>
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_use_el",
+                            "fieldDataType" => "select",
+                            "required" => false,
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label for="fld_use_pi"
+                           class="col-sm-9">Professional Indemnity</label>
+                    <div class="col-sm-3" style="height: 45px;">
+                        <select name="fld_use_pi" id="fld_use_pi"
+                                class="form-control">
+                            <option value="1" <?php if ($data['inainc_use_pi'] == '1') echo "selected=\"selected\""; ?>>
+                                Yes
+                            </option>
+                            <option value="0" <?php if ($data['inainc_use_pi'] == '0' || $data['inainc_use_pi'] == '') echo "selected=\"selected\""; ?>>
+                                No
+                            </option>
+                        </select>
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_use_pi",
+                            "fieldDataType" => "select",
+                            "required" => false,
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label for="fld_use_pl"
+                           class="col-sm-9">Public Liability</label>
+                    <div class="col-sm-3" style="height: 45px;">
+                        <select name="fld_use_pl" id="fld_use_pl"
+                                class="form-control">
+                            <option value="1" <?php if ($data['inainc_use_pl'] == '1') echo "selected=\"selected\""; ?>>
+                                Yes
+                            </option>
+                            <option value="0" <?php if ($data['inainc_use_pl'] == '0' || $data['inainc_use_pl'] == '') echo "selected=\"selected\""; ?>>
+                                No
+                            </option>
+                        </select>
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_use_pl",
+                            "fieldDataType" => "select",
+                            "required" => false,
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label for="fld_use_medical"
+                           class="col-sm-9">Medical</label>
+                    <div class="col-sm-3" style="height: 45px;">
+                        <select name="fld_use_medical" id="fld_use_medical"
+                                class="form-control">
+                            <option value="1" <?php if ($data['inainc_use_medical'] == '1') echo "selected=\"selected\""; ?>>
+                                Yes
+                            </option>
+                            <option value="0" <?php if ($data['inainc_use_medical'] == '0' || $data['inainc_use_medical'] == '') echo "selected=\"selected\""; ?>>
+                                No
+                            </option>
+                        </select>
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_use_medical",
+                            "fieldDataType" => "select",
+                            "required" => false,
+                        ]);
+                        ?>
                     </div>
                 </div>
 
