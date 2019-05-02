@@ -217,15 +217,33 @@ class dynamicQuotation
             $dataArray['secondary_serial'] = '';
             $dataArray['secondary_label'] = '';
             $dataArray['user_ID'] = $this->quotationData['oqq_users_ID'];
+            //file attachment
+            if ($this->quotationData['oqqt_attach_print_filename'] != ''){
+                $dataArray['attachment_string_name'] = $this->quotationData['oqqt_attach_print_filename'];
 
-            //fix the subject/body
+                //get the pdf data
+                include($this->quotationData['oqqt_print_layout']);
+                require_once '../vendor/autoload.php';
+                $html = getQuotationHTML($this->quotationID);
+                $mpdf = new \Mpdf\Mpdf([
+                    'default_font' => 'dejavusans'
+                ]);
+                $mpdf->WriteHTML($html);
+                $dataArray['attachment_string'] = $mpdf->Output('filename.pdf', \Mpdf\Output\Destination::STRING_RETURN);
+                //echo "DATA STRING<br>\n\n\n\n\n".$dataArray['attachment_string'];exit();
+            }
+
+            //fix the subject/body with the ReplaceCodes
             //[QTID]
             $dataArray['email_subject'] = str_replace('[QTID]', $this->quotationData['oqq_quotations_ID'], $dataArray['email_subject']);
             $dataArray['email_body'] = str_replace('[QTID]', $this->quotationData['oqq_quotations_ID'], $dataArray['email_body']);
+            $dataArray['attachment_string_name'] = str_replace('[QTID]', $this->quotationData['oqq_quotations_ID'], $dataArray['attachment_string_name']);
+
 
             //[QTNUMBER]
             $dataArray['email_subject'] = str_replace('[QTNUMBER]', $this->quotationData['oqq_number'], $dataArray['email_subject']);
             $dataArray['email_body'] = str_replace('[QTNUMBER]', $this->quotationData['oqq_number'], $dataArray['email_body']);
+            $dataArray['attachment_string_name'] = str_replace('[QTNUMBER]', $this->quotationData['oqq_number'], $dataArray['attachment_string_name']);
 
             //[QTLINK]
             $link = $main["site_url"]."/dynamic_quotations/quotations_modify.php?quotation_type=".$this->quotationData['oqq_quotations_type_ID']."&quotation=".$this->quotationData['oqq_quotations_ID'];
@@ -235,6 +253,7 @@ class dynamicQuotation
             //[USERNAME]
             $dataArray['email_subject'] = str_replace('[USERSNAME]', $this->quotationData['usr_name'], $dataArray['email_subject']);
             $dataArray['email_body'] = str_replace('[USERSNAME]', $this->quotationData['usr_name'], $dataArray['email_body']);
+            $dataArray['attachment_string_name'] = str_replace('[USERSNAME]', $this->quotationData['usr_name'], $dataArray['attachment_string_name']);
 
             //[PDFLINK]
             $link = $main["site_url"]."/dynamic_quotations/quotation_print.php?quotation=".$this->quotationData['oqq_quotations_ID']."&pdf=1";

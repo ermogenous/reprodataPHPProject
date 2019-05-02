@@ -99,7 +99,9 @@ $db->show_header();
                     <div class="col-2 text-center">
                         <a href="#">
                             <i class="far fa-file-pdf fa-5x"
-                                <?php if ($quote->quotationData()['oqq_status'] == 'Active') { ?>
+                                <?php
+                                if ($quote->quotationData()['oqq_status'] == 'Active' ||
+                                    ($quote->quotationData()['oqq_status'] == 'Outstanding' && $quote->quotationData()['oqqt_allow_print_outstanding'] == 1)) { ?>
                                     onclick="window.open('quotation_print.php?quotation=<?php echo $data["oqq_quotations_ID"]; ?>&pdf=1','_blank')"
                                 <?php } ?>
                             >

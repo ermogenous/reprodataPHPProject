@@ -91,14 +91,36 @@ function mff_insured_details_1()
             <?php show_quotation_text("Χώρα", "Country"); ?>
         </label>
         <div class="col-sm-8">
-            <input name="1_oqqit_rate_5" type="text" id="1_oqqit_rate_5"
-                   class="form-control"
-                   value="<?php echo $qitem_data["oqqit_rate_5"]; ?>">
+
+
+            <select name="1_oqqit_rate_5" id="1_oqqit_rate_5"
+                    class="form-control">
+                <option value=""></option>
+                <?php
+                $sql = "SELECT * FROM codes WHERE cde_type = 'Countries' ORDER BY cde_value ASC";
+                $result = $db->query($sql);
+                while ($country = $db->fetch_assoc($result)) {
+                    $reffered = '';
+                    if ($country['cde_option_value'] == 'Reject'){
+                        $reffered = ' - <b>Country Not Allowed</b>';
+                    }
+                    ?>
+                    <option value="<?php echo $country['cde_code_ID']; ?>"
+                        <?php if ($qitem_data['oqqit_rate_5'] == $country['cde_code_ID']) echo 'selected'; ?>>
+                        <?php echo $country['cde_value'].$reffered; ?>
+                    </option>
+                <?php } ?>
+            </select>
+
+
+
+
+
             <?php
             $formValidator->addField(
                 [
                     'fieldName' => '1_oqqit_rate_5',
-                    'fieldDataType' => 'text',
+                    'fieldDataType' => 'select',
                     'required' => true,
                     'invalidText' => show_quotation_text("Συμπληρώστε την Χώρα.", "Must Enter Country",'Return')
                 ]);
@@ -110,7 +132,7 @@ function mff_insured_details_1()
         <label for="1_oqqit_date_1" class="col-sm-4 col-form-label">
             <?php show_quotation_text("Ημερομηνία Γέννησης", "Date of Birth"); ?>
         </label>
-        <div class="col-sm-2">
+        <div class="col-sm-3">
             <input name="1_oqqit_date_1" type="text" id="1_oqqit_date_1"
                    class="form-control" onchange="showInsuredAge();"
                    <?php $formValidator->echoDateFieldFormatTag();?>
@@ -131,7 +153,7 @@ function mff_insured_details_1()
             Age:<span id="insured_age"></span>
 
         </div>
-        <div class="col-5">
+        <div class="col-4">
             <span id="insuredAgeError" class="alert-danger"></span>
         </div>
         <?php
@@ -164,14 +186,16 @@ function mff_insurance_period_2()
 {
     global $db, $items_data, $qitem_data, $formValidator;
     ?>
+
     <div class="form-group row">
         <label for="2_oqqit_date_1" class="col-sm-2 col-form-label">
             <?php show_quotation_text("Από", "From"); ?>
         </label>
-        <div class="col-sm-4">
+        <div class="col-sm-3">
             <input name="2_oqqit_date_1" type="text" id="2_oqqit_date_1"
-                   onchange="showInsuredAge();"
-                   class="form-control">
+                   class="form-control" onchange="changeStartingDate()"
+                <?php $formValidator->echoDateFieldFormatTag();?>
+                   value="<?php echo $qitem_data["oqqit_date_1"]; ?>">
             <?php
             $formValidator->addField(
                 [
@@ -181,29 +205,122 @@ function mff_insurance_period_2()
                     'enableDatePicker' => true,
                     'datePickerValue' => $db->convert_date_format($qitem_data["oqqit_date_1"], 'yyyy-mm-dd', 'dd/mm/yyyy'),
                     'dateMinDate' => date('d/m/Y'),
-                    'invalidText' => show_quotation_text("Συμπληρώστε την Ημερομηνία Από. Όχι μικρότερη απο σήμερα", "Must Enter Date From. Not less than today",'Return')
+                    'invalidText' => show_quotation_text("Υποχρεωτικό. Μεταγενέστερη απο σήμερα", "Required. Greater than today",'Return')
                 ]);
             ?>
         </div>
-        <label for="2_oqqit_date_2" class="col-sm-2 col-form-label">
+        <label for="2_oqqit_date_2" class="col-sm-1 col-form-label">
             <?php show_quotation_text("Μέχρι", "To"); ?>
         </label>
-        <div class="col-sm-4">
+        <div class="col-sm-1">
+            <button type="button" class="btn btn-block" onclick="setExpiryDate(3)">3M</button>
+        </div>
+        <div class="col-sm-1">
+            <button type="button" class="btn btn-block" onclick="setExpiryDate(6)">6M</button>
+        </div>
+        <div class="col-sm-1">
+            <button type="button" class="btn btn-block" onclick="setExpiryDate(9)">9M</button>
+        </div>
+        <div class="col-sm-1">
+            <button type="button" class="btn btn-block" onclick="setExpiryDate(12)">12M</button>
+        </div>
+        <div class="col-sm-2">
             <input name="2_oqqit_date_2" type="text" id="2_oqqit_date_2"
-                   class="form-control">
+                   class="form-control" readonly value="<?php echo $db->convert_date_format($qitem_data["oqqit_date_2"], 'yyyy-mm-dd', 'dd/mm/yyyy');?>">
             <?php
             $formValidator->addField(
                 [
                     'fieldName' => '2_oqqit_date_2',
                     'fieldDataType' => 'date',
                     'required' => true,
-                    'enableDatePicker' => true,
                     'dateMinDate' => "$('#2_oqqit_date_1').val()",
-                    'datePickerValue' => $db->convert_date_format($qitem_data["oqqit_date_2"], 'yyyy-mm-dd', 'dd/mm/yyyy'),
-                    'invalidText' => show_quotation_text("Συμπληρώστε την Ημερομηνία Μέχρι και μεγαλήτερη από έναρξη", "Must Enter Date To",'Return')
+                    'invalidText' => show_quotation_text("Υποχρεωτικό", "Required",'Return')
                 ]);
             ?>
         </div>
+        <script>
+            function changeStartingDate(){
+                //when the starting date is changed then reset the expiry.
+                $('#2_oqqit_date_2').val('');
+            }
+            function setExpiryDate(months){
+                let newMonth = 0;
+                let newDay = 0;
+                let newYear = 0;
+                let curDay;
+                let curMonth;
+                let curYear;
+                let curDate = $('#2_oqqit_date_1').val();
+                if (curDate != ''){
+
+                    //split the current date;
+                    let split = curDate.split('/');
+                    curDay = split[0];
+                    curMonth = split[1];
+                    curYear = split[2];
+
+                    //first add the months
+                    newMonth = (curMonth*1) + months;
+                    //update the rest of the fields
+                    newDay = (curDay*1) - 1;
+                    newYear = curYear;
+
+                    //check the month if need to change year
+                    if (newMonth > 12){
+                        //first update the year
+                        newYear++;
+                        newMonth = newMonth - 12;
+                    }
+
+                    let isLeap = ((newYear % 4 == 0) && (newYear % 100 != 0)) || (newYear % 400 == 0);
+
+                    //check the day. if 0 then need to go back one day and one month
+                    if (newDay == 0){
+                        //first fix the month
+                        newMonth--;
+                        //check if the month now is 0
+                        if (newMonth == 0){
+                            newMonth = 12;
+                            newYear--;
+                        }
+                        //now set the day to 31
+                        newDay = 31;
+
+
+                    }
+
+                    //validate days 31, 30, 29
+                    if (newDay >= 28 && newDay <= 31){
+
+                        //now check the day compared to month
+                        if (newMonth == 1 || newMonth == 3 || newMonth == 5 || newMonth == 7 || newMonth == 8 || newMonth == 10 || newMonth == 12){
+                            //do nothing is already 29 or 30 or 31;
+                        }
+                        else if (newMonth == 2){
+                            //find leap year
+                            if (isLeap == true){
+                                if (newDay > 29) {
+                                    newDay = 29;
+                                }
+                            }
+                            else {
+                                if (newDay > 28) {
+                                    newDay = 28;
+                                }
+                            }
+                        }
+                        else {
+                            if (newDay > 30) {
+                                newDay = 30;
+                            }
+                        }
+                    }
+
+                    //update the field with the new date
+                    $('#2_oqqit_date_2').val(newDay + '/' + newMonth + '/' + newYear);
+                }
+            }
+        </script>
     </div>
 
     <div class="row">

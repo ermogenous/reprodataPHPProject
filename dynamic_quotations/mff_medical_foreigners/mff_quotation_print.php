@@ -30,6 +30,18 @@ function getQuotationHTML($quotationID)
         $socialSecurity = $sect2['oqqit_rate_3'];
     }
 
+    //certificate number
+    if ($quotationData['oqq_status'] != 'Active'){
+        $certificateNumber = 'DRAFT';
+        $draft = 'DRAFT';
+        $draftImage = 'background-image:url(' . $main['site_url'] . '/dynamic_quotations/images/draft.gif);';
+    }
+    else {
+        $certificateNumber = $quotationData['oqq_number'];
+        $draft = '';
+        $draftImage = '';
+    }
+
     $html = '
 <style>
 .tableTdBorder td{
@@ -40,11 +52,11 @@ function getQuotationHTML($quotationID)
 }
 
 </style>
-<div style="font-family: Tahoma;">
+<div style="font-family: Tahoma; '.$draftImage.'">
     <table width="900" style="font-size: 14px;">
         <tr>
             <td width="33%"><img src="' . $db->admin_layout_url . '/images/Kemter-Logo-WhiteBG-300x60.png"></td>        
-            <td width="34%" align="center">Certificate Number<br>Αριθμός Πιστοποιητικού<br><b>'.$quotationData['oqq_number'].'</b></td>
+            <td width="34%" align="center">Certificate Number<br>Αριθμός Πιστοποιητικού<br><b>'.$certificateNumber.'</b></td>
             <td width="33%" align="right"><img src="' . $db->admin_layout_url . '/images/LLOYDS-Logo.png"></td>
         </tr>
         <tr>
@@ -222,7 +234,8 @@ function getQuotationHTML($quotationID)
         Αθηνών 82, Ακίνητα Ιεράς Μητρόπολης, Πολυκατοικία B’, Γραφείο 112-113, 3040 Λεμεσός<br>
         T.K. 53538, Λεμεσός 3303 / P.O. Box . 53538, Limassol 3303<br>
         Tel.: 25 755 954 / Τηλ.: 25 755 954 / Fax.: 25 755 953 / Φαξ.: 25 755 953<br>
-        Email: kemter@kemterinsurance.com
+        Email: kemter@kemterinsurance.com<br>
+        '.$draft.'
     </div>
  </div>
     ';

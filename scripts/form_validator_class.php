@@ -170,6 +170,7 @@ class customFormValidator
                 $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                 FormErrorFound = true;
+
             }
             else {
                 $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
@@ -184,13 +185,17 @@ class customFormValidator
             $this->needIsDateFunction = true;
             $return .= "
             if (isDate($('#" . $fieldData['fieldName'] . "').val())){
-                $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
-                $('#" . $fieldData['fieldName'] . "').removeClass('is-invalid');
+                //if is-invalid already exists then another check hit. do not make as valid.
+                if ($('#" . $fieldData['fieldName'] . "').hasClass('is-invalid') != true){
+                    $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
+                    $('#" . $fieldData['fieldName'] . "').removeClass('is-invalid');
+                }
             }
             else {
                 $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                 FormErrorFound = true;
+                
             }
             ";
         }
@@ -198,16 +203,20 @@ class customFormValidator
         if ($fieldData['fieldDataType'] == 'date' && $fieldData['dateMinDate'] != ''){
             $this->needCompare2DatesFunction = true;
             $return .= "
-                if ( compare2Dates($('#" . $fieldData['fieldName'] . "').val(),".$fieldData['dateMinDate'].") == 2 ){
+                if ($('#" . $fieldData['fieldName'] . "').val() != '' && compare2Dates($('#" . $fieldData['fieldName'] . "').val(),".$fieldData['dateMinDate'].") == 2 ){
                     $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                     $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                     FormErrorFound = true;
                     FieldsErrors['".$fieldData['fieldName']."']['dateMin'] = false;
                 }
                 else {
-                    $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
-                    $('#" . $fieldData['fieldName'] . "').removeClass('is-invalid');
-                    FieldsErrors['".$fieldData['fieldName']."']['dateMin'] = true;
+                    //if is-invalid already exists then another check hit. do not make as valid.
+                    if ($('#" . $fieldData['fieldName'] . "').hasClass('is-invalid') != true){
+                        $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
+                        $('#" . $fieldData['fieldName'] . "').removeClass('is-invalid');
+                        FieldsErrors['".$fieldData['fieldName']."']['dateMin'] = true;
+                    }
+                    
                 }
             ";
         }
@@ -215,15 +224,14 @@ class customFormValidator
         if ($fieldData['fieldDataType'] == 'date' && $fieldData['dateMaxDate'] != ''){
             $this->needCompare2DatesFunction = true;
             $return .= "
-                if ( compare2Dates($('#" . $fieldData['fieldName'] . "').val(), ".$fieldData['dateMaxDate'].") == 1 ){
+                if ( $('#" . $fieldData['fieldName'] . "').val() != '' && compare2Dates($('#" . $fieldData['fieldName'] . "').val(), ".$fieldData['dateMaxDate'].") == 1 ){
                     $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                     $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                     FormErrorFound = true;
-                    console.log('max date issue');
                 }
                 else {
-                    //aslo check if previous checks are valid
-                    if (FieldsErrors['".$fieldData['fieldName']."']['dateMin'] == true){
+                    //if is-invalid already exists then another check hit. do not make as valid.
+                    if ($('#" . $fieldData['fieldName'] . "').hasClass('is-invalid') != true){
                         $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
                         $('#" . $fieldData['fieldName'] . "').removeClass('is-invalid');
                     }

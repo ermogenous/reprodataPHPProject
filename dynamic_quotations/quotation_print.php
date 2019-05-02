@@ -30,7 +30,8 @@ $quote = new dynamicQuotation($_GET['quotation']);
 if (is_file($quote->quotationData()['oqqt_print_layout'])) {
     include($quote->quotationData()['oqqt_print_layout']);
 
-    if ($quote->quotationData()['oqq_status'] != 'Active') {
+    //check in parameters if allowed to print on outstanding
+    if ($quote->quotationData()['oqq_status'] != 'Active' && $qdata['oqqt_allow_print_outstanding'] != 1) {
         $db->generateAlertError($quote->getQuotationType().' is not active. Cannot view report.');
         $db->show_header();
         $db->show_footer();

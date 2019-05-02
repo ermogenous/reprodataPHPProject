@@ -116,6 +116,29 @@ $db->show_header();
                                         <?php echo makeDisable(); ?>>
                                 </div>
                             </div>
+
+                            <div class="form-group row">
+                                <label for="fld_email" class="col-sm-3 col-form-label text-right">Email</label>
+                                <div class="col-sm-6">
+                                    <input name="fld_email" type="text" id="fld_email"
+                                           class="form-control"
+                                           value="<?php echo $data["lcsdc_email"]; ?>"
+                                           required
+                                        <?php echo ifRequired(); ?>
+                                        <?php echo makeDisable(); ?>>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="fld_company_name" class="col-sm-3 col-form-label text-right">Ονομα Εταιρείας</label>
+                                <div class="col-sm-6">
+                                    <input name="fld_company_name" type="text" id="fld_company_name"
+                                           class="form-control"
+                                           value="<?php echo $data["lcsdc_company_name"]; ?>"
+                                        <?php echo makeDisable(); ?>>
+                                </div>
+                            </div>
+
                             <div class="form-group row">
                                 <label for="fld_tel" class="col-sm-3 col-form-label text-right">Τηλέφωνο</label>
                                 <div class="col-sm-6">
@@ -125,16 +148,7 @@ $db->show_header();
                                         <?php echo makeDisable(); ?>>
                                 </div>
                             </div>
-                            <div class="form-group row">
-                                <label for="fld_email" class="col-sm-3 col-form-label text-right">Email</label>
-                                <div class="col-sm-6">
-                                    <input name="fld_email" type="text" id="fld_email"
-                                           class="form-control"
-                                           value="<?php echo $data["lcsdc_email"]; ?>"
-                                        <?php echo ifRequired(); ?>
-                                        <?php echo makeDisable(); ?>>
-                                </div>
-                            </div>
+
                             <?php if ($section == 'admin') { ?>
                             <div class="form-group row">
                                 <label for="fld_process_status" class="col-sm-3 col-form-label text-right">Process

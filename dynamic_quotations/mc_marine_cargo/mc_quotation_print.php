@@ -21,8 +21,8 @@ function getQuotationHTML($quotationID)
         (SELECT cde_value FROM codes WHERE oqqit_rate_12 = cde_code_ID)as clo_country_to
         FROM 
         oqt_quotations_items 
-        WHERE oqqit_quotations_ID = " . $_GET["quotation"] . " AND oqqit_items_ID = 3");
-    $sect2 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $_GET["quotation"] . " AND oqqit_items_ID = 4");
+        WHERE oqqit_quotations_ID = " . $quotationID . " AND oqqit_items_ID = 3");
+    $sect2 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $quotationID . " AND oqqit_items_ID = 4");
 
 
     $html = '
@@ -54,10 +54,23 @@ function getQuotationHTML($quotationID)
         else if ($i == 3){
             $copy = 'Non Negotiable Copy';
         }
+
+        //certificate number
+        if ($quotationData['oqq_status'] != 'Active'){
+            $certificateNumber = 'DRAFT';
+            $draft = 'DRAFT';
+            $draftImage = 'background-image:url(' . $main['site_url'] . '/dynamic_quotations/images/draft.gif);';
+        }
+        else {
+            $certificateNumber = $quotationData['oqq_number'];
+            $draft = '';
+            $draftImage = '';
+        }
+
         $html .= '
 <div style="font-family: Tahoma;">
 
-    <table width="900" style="font-size: 11px;">
+    <table width="900" style="font-size: 11px; '.$draftImage.'">
         <tr>
             <td width="20%">
             <span style="font-size: 14px;">
@@ -72,12 +85,11 @@ function getQuotationHTML($quotationID)
             <td width="20%" align="right"></td>
         </tr>
         <tr>
-            <td colspan="3" align="center">&nbsp;<br><br><br></td>
+            <td colspan="3" align="center">&nbsp;<br><br></td>
         </tr>
         <tr>
             <td colspan="3" align="center"><b>
-                <span style="font-size: 18px;">CERIFICATE OF INSURANCE</span>
-                <span style="font-size: 11px;">KMC</span>
+                <span style="font-size: 17px;">CERIFICATE OF INSURANCE<br></span>'.$certificateNumber.'
             </b></td>
         </tr>
         <tr>
@@ -119,7 +131,7 @@ function getQuotationHTML($quotationID)
                        <td width="16%">To</td>
                        <td width="17%">' . $sect1['clo_country_to'] . '</td>
                        <td width="16%">Insured Value/Currency</td>
-                       <td>' . $sect1['oqqit_rate_2'] . '</td>
+                       <td>' . $sect1['oqqit_rate_3']."/".$sect1['oqqit_rate_2'] . '</td>
                     </tr>
                 </table>
             </td>
@@ -231,7 +243,7 @@ function getQuotationHTML($quotationID)
                             Block B\', Office 112 <br>
                             3040 Limassol <br>
                             Cyprus <br>
-                            <br><br>
+                            <br>
                             Tel. : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+357 25 755 952 <br>
                             Fax. : &nbsp;&nbsp;&nbsp;&nbsp;+357 25 755 953 <br>
                             E-mail: &nbsp;&nbsp;<u>claims@kemterinsurance.com</u>
@@ -245,7 +257,7 @@ function getQuotationHTML($quotationID)
     
     <hr style="page-break-after: always; color: white;">
     
-    <table width="900" style="font-size: 11px;">
+    <table width="900" style="font-size: 11px; '.$draftImage.'">
         <tr>
             <td colspan="3" align="center">
                 <b>TERMINATION OF TRANSIT CLAUSE (TERRORISM)</b>
@@ -425,7 +437,7 @@ function getQuotationHTML($quotationID)
     <b>IMPORTANT INSTRUCTIONS IN THE EVENT OF A CLAIM</b>
     </div> 
     
-<table width="900" class="tableTdBorder" cellpadding="0" cellspacing="0">
+<table width="900" class="tableTdBorder" cellpadding="0" cellspacing="0" style="'.$draftImage.'">
     <tr>
         <td width="410" align="center" valign="top">
         <table width="100%" border="0" class="tableTdNoBorder">

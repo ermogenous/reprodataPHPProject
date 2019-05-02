@@ -11,6 +11,7 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_added_field_email'] = $db->get_check_value($_POST['fld_added_field_email']);
     $_POST['fld_added_field_contact_person'] = $db->get_check_value($_POST['fld_added_field_contact_person']);
     $_POST['fld_added_field_extra_details'] = $db->get_check_value($_POST['fld_added_field_extra_details']);
+    $_POST['fld_allow_print_outstanding'] = $db->get_check_value($_POST['fld_allow_print_outstanding']);
 
     $db->db_tool_insert_row('oqt_quotations_types', $_POST, 'fld_', 0, 'oqqt_');
     $db->commit_transaction();
@@ -26,6 +27,7 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_added_field_email'] = $db->get_check_value($_POST['fld_added_field_email']);
     $_POST['fld_added_field_contact_person'] = $db->get_check_value($_POST['fld_added_field_contact_person']);
     $_POST['fld_added_field_extra_details'] = $db->get_check_value($_POST['fld_added_field_extra_details']);
+    $_POST['fld_allow_print_outstanding'] = $db->get_check_value($_POST['fld_allow_print_outstanding']);
 
     $db->db_tool_update_row('oqt_quotations_types', $_POST, "`oqqt_quotations_types_ID` = " . $_POST["lid"], $_POST["lid"],
         'fld_', 'execute', 'oqqt_');
@@ -314,6 +316,15 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="form-group row">
+                        <label for="fld_allow_print_outstanding" class="col-sm-4 col-form-label">Allow Print on Outstanding</label>
+                        <div class="col-sm-8">
+                            <input type="checkbox" value="1" class="form-control"  style="margin-top: 12px;"
+                                id="fld_allow_print_outstanding" name="fld_allow_print_outstanding"
+                                <?php if ($data['oqqt_allow_print_outstanding'] == 1) echo "checked";?>>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
                         <label for="fld_quotation_number_prefix" class="col-sm-4 col-form-label">Number Prefix</label>
                         <div class="col-sm-8">
                             <input name="fld_quotation_number_prefix" type="text" id="fld_quotation_number_prefix"
@@ -343,6 +354,7 @@ $formValidator = new customFormValidator();
                     <div class="form-group row">
                         <label for="fld_active_send_mail" class="col-sm-4 col-form-label">
                             On active send email
+                            <br><b>ReplaceCodes</b>
                             <br>Email||Name Break
                             <br>[QTID] - Quotation ID
                             <br>[QTNUMBER] - Quotation Number
@@ -393,6 +405,16 @@ $formValidator = new customFormValidator();
                                               class="form-control"><?php echo $data["oqqt_active_send_mail_body"]; ?></textarea>
                                 </div>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="fld_attach_print_filename" class="col-sm-4 col-form-label">Attach Print PDF to email/Filename</label>
+                        <div class="col-sm-8">
+                            <input name="fld_attach_print_filename" type="text" id="fld_attach_print_filename"
+                                   class="form-control"
+                                   value="<?php echo $data["oqqt_attach_print_filename"]; ?>">
+                            If filename is inserted then the PDF will be attached to the email. ReplaceCodes Apply
                         </div>
                     </div>
 

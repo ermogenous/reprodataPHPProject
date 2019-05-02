@@ -177,6 +177,15 @@ class send_auto_emails
             //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
         }
 
+        //add attachment string. Attachment file but from database
+        if ($this->data['sae_attachment_string'] != '' && $this->data['sae_attachment_string_name'] != '') {
+
+            $mail->addStringAttachment($this->data['sae_attachment_string'], $this->data['sae_attachment_string_name']);
+        }
+        if ($this->data['sae_attachment_string_2'] != '' && $this->data['sae_attachment_string_2_name'] != '') {
+            $mail->addStringAttachment($this->data['sae_attachment_string_2'], $this->data['sae_attachment_string_2_name']);
+        }
+
         $mail->isHTML(true);                                  // Set email format to HTML
 
         $mail->Subject = $this->data["sae_email_subject"];
@@ -186,8 +195,6 @@ class send_auto_emails
         //$mail->Body    = mb_convert_encoding($this->data["sae_email_body"], "ISO-8859-1", mb_detect_encoding($this->data["sae_email_body"], "UTF-8, ISO-8859-1, ISO-8859-15", true));
 
         //$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
-
-        print_r($this->messages);
 
         if (!$mail->send()) {
             $this->messages[] = "Error sending email: Error message: " . $mail->ErrorInfo;
@@ -259,6 +266,11 @@ class createNewAutoEmail
         $newData['email_bcc'] = $dataArray['email_bcc'];
         $newData['email_body'] = $dataArray['email_body'];
         $newData['attachment_file'] = $dataArray['attachment_file'];
+        $newData['attachment_string'] = mysqli_real_escape_string($db->db_handle, $dataArray['attachment_string']);
+        $newData['attachment_string_name'] = $dataArray['attachment_string_name'];
+        $newData['attachment_string_2'] = $dataArray['attachment_string_2'];
+        $newData['attachment_string_2_name'] = $dataArray['attachment_string_2_name'];
+
         $newData['type'] = $dataArray['type'];
 
         $newData['active'] = 'A';
