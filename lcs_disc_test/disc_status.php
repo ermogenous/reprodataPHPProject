@@ -69,6 +69,7 @@ if ($_GET['action'] == 'sendLinkEmail') {
     try {
         $mail->CharSet = 'UTF-8';
         //$mail->SMTPDebug = 1; // debugging: 1 = errors and messages, 2 = messages only
+        /*
         $mail->isSMTP();                                      // Set mailer to use SMTP
         $mail->Host = $main['smtp_host'];  // Specify main and backup SMTP servers
         $mail->SMTPAuth = true;                               // Enable SMTP authentication
@@ -76,6 +77,18 @@ if ($_GET['action'] == 'sendLinkEmail') {
         $mail->Password = $main['smtp_password'];                           // SMTP password
         $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
         $mail->Port = 587;                                    // TCP port to connect to
+        */
+
+
+        $mail->isSMTP();                                      // Set mailer to use SMTP
+        $mail->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
+        $mail->SMTPAuth = true;                               // Enable SMTP authentication
+        $mail->Username = 'agentscyprus@gmail.com';                 // SMTP username
+        $mail->Password = 'cqlnjxaqbnhruwjt';                           // SMTP password
+        $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
+        $mail->Port = 587;
+
+
         //Recipients
         $mail->setFrom('info@lcsapproach.com', 'www.lcsapproach.com');
         $mail->addAddress($disc->data['lcsdc_email'], $disc->data['lcsdc_name']);     // Add a recipient
