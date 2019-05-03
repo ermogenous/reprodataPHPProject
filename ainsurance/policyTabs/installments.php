@@ -9,6 +9,7 @@
 include("../../include/main.php");
 include("../../include/tables.php");
 include("installments_class.php");
+include('../policy_class.php');
 
 $db = new Main(1, 'UTF-8');
 $db->admin_title = "AInsurance Policy Installments";
@@ -59,8 +60,8 @@ if ($_GET['action'] == 'calculate' && $_GET['pid'] != '') {
     }
 }
 
+//if not items exists then show alert and hide everything else
 
-$db->show_empty_header();
 
 if ($_GET['pid'] > 0) {
 
@@ -68,150 +69,163 @@ if ($_GET['pid'] > 0) {
     $table->extras .= 'inapi_policy_ID = ' . $_GET['pid'];
 
     $table->generate_data();
+
+    $policy = new Policy($_GET['pid']);
+    if ($policy->getTotalItems() == 0) {
+        $db->generateAlertError('Must Insert Vehicle First');
+    }
+
+    $db->show_empty_header();
+
+
+    $totalLines = 0; //number of records found to resize the window accordingly
+    if ($policy->getTotalItems() > 0) {
 //echo $table->sql;
 //echo $_GET['type'];
-    ?>
+        ?>
 
 
-    <div class="container-fluid">
-        <div class="row">
-            <div class="col-12" style="height: 25px;"></div>
-            <div class="col-3">
-                <input type="button" value="Calculate Premium" class="btn btn-primary" onclick="calculatePremium();">
-            </div>
-            <div class="col-2">
-                <input type="button" value="Clear All" class="btn btn-danger" onclick="clearAll();">
-            </div>
-            <div class="col-2">
-                <input type="button" value="Make Payment" class="btn btn-primary" onclick="makePayment();">
-            </div>
-            <div class="col-1"></div>
-            <div class="col-2"></div>
-            <div class="col-2"></div>
-            <div class="col-2"></div>
-            <script>
-                function calculatePremium() {
-                    if (confirm('Are you sure you want to calculate? This will replace existing installments amount')) {
-                        window.location.assign('?pid=<?php echo $_GET['pid'];?>&action=calculate');
-                    }
-                }
-
-                function clearAll() {
-                    if (confirm('Are you sure you want to delete all installments?')) {
-                        window.location.assign('?pid=<?php echo $_GET['pid'];?>&action=clearall');
-                    }
-                }
-
-                function makePayment() {
-                    window.location.assign('make_payment.php?pid=<?php echo $_GET['pid'];?>&type=<?php echo $_GET['type'];?>');
-                }
-            </script>
-        </div>
-        <div class="row">
-            <div class="col-12">
-                <div class="text-center"><?php $table->show_pages_links(); ?></div>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead class="alert alert-success">
-                        <tr>
-                            <th scope="col"><?php $table->display_order_links('ID', 'inapi_policy_installments_ID'); ?></th>
-                            <th scope="col"><?php $table->display_order_links('Doc.Date', 'inapi_document_date'); ?></th>
-                            <th scope="col"><?php $table->display_order_links('Amount', 'inapi_amount'); ?></th>
-                            <th scope="col"><?php $table->display_order_links('Paid', 'inapi_paid_amount'); ?></th>
-                            <th scope="col"><?php $table->display_order_links('Commission', 'inapi_commission_amount'); ?></th>
-                            <th scope="col"><?php $table->display_order_links('Status', 'inapi_paid_status'); ?></th>
-                            <th scope="col">
-                                <a href="installment_modify.php?pid=<?php echo $_GET['pid'] ?>">
-                                    <i class="fas fa-plus-circle"></i>
-                                </a>
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <?php
-                        $amountSum = 0;
-                        $commSum = 0;
-                        $totalLines = 0;
-                        while ($row = $table->fetch_data()) {
-                            $totalLines++;
-                            $amountSum += $row["inapi_amount"];
-                            $commSum += $row["inapi_commission_amount"];
-                            ?>
-                            <tr onclick="editLine(<?php echo $row["inapi_policy_installments_ID"] . "," . $_GET['pid'] . ",'" . $_GET['type'] . "'"; ?>);">
-                                <th scope="row"><?php echo $row["inapi_policy_installments_ID"]; ?></th>
-                                <td><?php echo $db->convert_date_format($row["inapi_document_date"], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?></td>
-                                <td><?php echo $row["inapi_amount"]; ?></td>
-                                <td><?php echo $row["inapi_paid_amount"]; ?></td>
-                                <td><?php echo $row["inapi_commission_amount"]; ?></td>
-                                <td><?php echo $row["inapi_paid_status"]; ?></td>
-                                <td>
-                                    <a href="installment_modify.php?lid=<?php echo $row["inapi_policy_installments_ID"] . "&pid=" . $_GET['pid']; ?>"><i
-                                                class="fas fa-edit"></i></a>&nbsp
-                                    <a href="installment_delete.php?lid=<?php echo $row["inapi_policy_installments_ID"] . "&pid=" . $_GET['pid']; ?>"
-                                       onclick="ignoreEdit = true;
-                               return confirm('Are you sure you want to delete this policy installment?');"><i
-                                                class="fas fa-minus-circle"></i></a>
-                                </td>
-                            </tr>
-                            <?php
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12" style="height: 25px;"></div>
+                <div class="col-3">
+                    <input type="button" value="Calculate Premium" class="btn btn-primary"
+                           onclick="calculatePremium();">
+                </div>
+                <div class="col-2">
+                    <input type="button" value="Clear All" class="btn btn-danger" onclick="clearAll();">
+                </div>
+                <div class="col-2"></div>
+                <div class="col-1"></div>
+                <div class="col-2"></div>
+                <div class="col-2"></div>
+                <div class="col-2"></div>
+                <script>
+                    function calculatePremium() {
+                        if (confirm('Are you sure you want to calculate? This will replace existing installments amount')) {
+                            window.location.assign('?pid=<?php echo $_GET['pid'];?>&action=calculate');
                         }
-                        ?>
-                        <tr>
-                            <td colspan="2" class="text-right"><b>Total:</b></td>
-                            <td><b><?php echo $amountSum; ?></b></td>
-                            <td><b><?php echo $commSum; ?></b></td>
-                            <td></td>
-                        </tr>
+                    }
 
-                        </tbody>
-                    </table>
+                    function clearAll() {
+                        if (confirm('Are you sure you want to delete all installments?')) {
+                            window.location.assign('?pid=<?php echo $_GET['pid'];?>&action=clearall');
+                        }
+                    }
+
+                </script>
+            </div>
+            <div class="row">
+                <div class="col-12">
+                    <div class="text-center"><?php $table->show_pages_links(); ?></div>
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="alert alert-success">
+                            <tr>
+                                <th scope="col"><?php $table->display_order_links('ID', 'inapi_policy_installments_ID'); ?></th>
+                                <th scope="col"><?php $table->display_order_links('Doc.Date', 'inapi_document_date'); ?></th>
+                                <th scope="col"><?php $table->display_order_links('Amount', 'inapi_amount'); ?></th>
+                                <th scope="col"><?php $table->display_order_links('Paid', 'inapi_paid_amount'); ?></th>
+                                <th scope="col"><?php $table->display_order_links('Commission', 'inapi_commission_amount'); ?></th>
+                                <th scope="col"><?php $table->display_order_links('Status', 'inapi_paid_status'); ?></th>
+                                <th scope="col">
+                                    <a href="installment_modify.php?pid=<?php echo $_GET['pid'] ?>">
+                                        <i class="fas fa-plus-circle"></i>
+                                    </a>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <?php
+                            $amountSum = 0;
+                            $commSum = 0;
+                            while ($row = $table->fetch_data()) {
+                                $totalLines++;
+                                $amountSum += $row["inapi_amount"];
+                                $commSum += $row["inapi_commission_amount"];
+                                $paidSum += $row["inapi_paid_amount"];
+                                ?>
+                                <tr onclick="editLine(<?php echo $row["inapi_policy_installments_ID"] . "," . $_GET['pid'] . ",'" . $_GET['type'] . "'"; ?>);">
+                                    <th scope="row"><?php echo $row["inapi_policy_installments_ID"]; ?></th>
+                                    <td><?php echo $db->convert_date_format($row["inapi_document_date"], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?></td>
+                                    <td><?php echo $row["inapi_amount"]; ?></td>
+                                    <td><?php echo $row["inapi_paid_amount"]; ?></td>
+                                    <td><?php echo $row["inapi_commission_amount"]; ?></td>
+                                    <td><?php echo $row["inapi_paid_status"]; ?></td>
+                                    <td>
+                                        <a href="installment_modify.php?lid=<?php echo $row["inapi_policy_installments_ID"] . "&pid=" . $_GET['pid']; ?>"><i
+                                                    class="fas fa-edit"></i></a>&nbsp
+                                        <a href="installment_delete.php?lid=<?php echo $row["inapi_policy_installments_ID"] . "&pid=" . $_GET['pid']; ?>"
+                                           onclick="ignoreEdit = true;
+                               return confirm('Are you sure you want to delete this policy installment?');"><i
+                                                    class="fas fa-minus-circle"></i></a>
+                                    </td>
+                                </tr>
+                                <?php
+                            }
+                            ?>
+                            <tr>
+                                <td colspan="2" class="text-right"><b>Total:</b></td>
+                                <td><b><?php echo $amountSum; ?></b></td>
+                                <td><b><?php echo $paidSum;?></b></td>
+                                <td><b><?php echo $commSum; ?></b></td>
+                                <td></td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-12" style="height: 25px;"></div>
-            <div class="col-4">
-                Generate Recursive Installments
+            <div class="row">
+                <div class="col-12" style="height: 25px;"></div>
+                <div class="col-4">
+                    Generate Recursive Installments
+                </div>
+                <div class="col-2">
+                    <select name="genRescursiveAmount" id="genRescursiveAmount"
+                            class="form-control">
+                        <?php
+                        for ($i = 1; $i <= 12; $i++) {
+                            ?>
+                            <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+                        <?php } ?>
+                    </select>
+                </div>
+                <div class="col-6">
+                    <input type="button" value="Generate" class="btn btn-secondary"
+                           onclick="generateRecursive(<?php echo $_GET['pid']; ?>);">
+                </div>
             </div>
-            <div class="col-2">
-                <select name="genRescursiveAmount" id="genRescursiveAmount"
-                        class="form-control">
-                    <?php
-                    for ($i = 1; $i <= 12; $i++) {
-                        ?>
-                        <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
-                    <?php } ?>
-                </select>
+            <div class="row">
+                <div class="col-12" style="height: 15px;"></div>
             </div>
-            <div class="col-6">
-                <input type="button" value="Generate" class="btn btn-secondary"
-                       onclick="generateRecursive(<?php echo $_GET['pid']; ?>);">
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-12" style="height: 15px;"></div>
-        </div>
-        <div class="row">
+            <div class="row">
 
-            <div class="col-4">
-                Generate Divided Installments
-            </div>
-            <div class="col-3">
-                <select name="genDividedAmount" id="genDividedAmount"
-                        class="form-control">
-                    <option value="12">Monthly - 12</option>
-                    <option value="4">Quarterly - 4</option>
-                    <option value="2">Semi-YEarly - 2</option>
-                    <option value="1">Yearly - 1</option>
-                </select>
-            </div>
-            <div class="col-5">
-                <input type="button" value="Generate" class="btn btn-secondary"
-                       onclick="generateDivided(<?php echo $_GET['pid']; ?>);">
-            </div>
+                <div class="col-4">
+                    Generate Divided Installments
+                </div>
+                <div class="col-3">
+                    <select name="genDividedAmount" id="genDividedAmount"
+                            class="form-control">
+                        <option value="12">Monthly - 12</option>
+                        <option value="4">Quarterly - 4</option>
+                        <option value="2">Semi-YEarly - 2</option>
+                        <option value="1">Yearly - 1</option>
+                    </select>
+                </div>
+                <div class="col-5">
+                    <input type="button" value="Generate" class="btn btn-secondary"
+                           onclick="generateDivided(<?php echo $_GET['pid']; ?>);">
+                </div>
 
+            </div>
         </div>
-    </div>
+
+        <?php
+    }//if items exists
+}//if policy exists
+?>
     <script>
 
         function generateRecursive(pid) {
@@ -234,14 +248,11 @@ if ($_GET['pid'] > 0) {
 
         $(document).ready(function () {
             let fixedPx = 400;
-            let totalPx = fixedPx + (<?php echo $totalLines;?> * 60
-        )
-            ;
+            let totalPx = fixedPx + (<?php echo $totalLines;?> * 60);
             $('#installmentsTab', window.parent.document).height(totalPx + 'px');
         });
 
     </script>
-    <?php
-}
+<?php
 $db->show_empty_footer();
 ?>

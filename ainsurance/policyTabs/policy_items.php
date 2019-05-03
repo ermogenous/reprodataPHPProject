@@ -112,6 +112,7 @@ if ($_GET['pid'] > 0) {
         //every time this page loads reload the premium tab
         $(document).ready(function () {
             parent.window.frames['premiumTab'].location.reload(true);
+            parent.window.frames['installmentsTab'].location.reload(true);
 
 
             let fixedPx = 100;

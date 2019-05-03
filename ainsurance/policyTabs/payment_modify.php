@@ -158,7 +158,7 @@ $db->show_empty_header();
                 $('#myForm').submit();
             }
         }
-
+        $('#paymentsTab', window.parent.document).height(200 + 'px');
     </script>
 <?php
 $db->show_empty_footer();

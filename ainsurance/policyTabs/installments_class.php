@@ -122,21 +122,22 @@ Class Installments
                     $data['paid_amount'] = 0;
 
                     //check if the installment date is withing the range of the policy
-                    $policyExpiryDateSplit = explode('-',$this->policyData['inapol_expiry_date']);
+                    $policyExpiryDateSplit = explode('-', $this->policyData['inapol_expiry_date']);
                     $policyExpiry = ($policyExpiryDateSplit[0] * 10000) + ($policyExpiryDateSplit[1] * 100) + $policyExpiryDateSplit[2];
-                    $instDateSplit = explode('-',$date);
+                    $instDateSplit = explode('-', $date);
                     $instDate = ($instDateSplit[0] * 10000) + ($instDateSplit[1] * 100) + $instDateSplit[2];
-                    if ($instDate > $policyExpiry){
+                    if ($instDate > $policyExpiry) {
                         //reach more than the expiry of the policy.
                         //do nothing.
-                        //save all installments upto here
-                    }
-                    else {
+                        //save all installments upto here and notify the user
+                        $db->generateAlertWarning('Policy period is not long enough to generate all the installments. Some created.');
+                    } else {
                         $this->insertInstallment($data);
                     }
                 }
                 return true;
             }
+
 
         } else {
             $this->error = true;
@@ -145,7 +146,8 @@ Class Installments
         }
     }
 
-    public function generateDividedInstallments($amount){
+    public function generateDividedInstallments($amount)
+    {
         global $db;
         if ($this->policyData['inapol_status'] == 'Outstanding') {
             if ($this->totalInstallments > 0) {
@@ -156,7 +158,7 @@ Class Installments
             else {
                 $startingDate = explode('-', $this->policyData['inapol_starting_date']);
 
-                if ($amount == 12){
+                if ($amount == 12) {
                     for ($i = 0; $i < $amount; $i++) {
                         $date = date('Y-m-d', mktime(0, 0, 0, ($startingDate[1] + $i), $startingDate[2], $startingDate[0]));
                         $data['document_date'] = $date;
@@ -166,21 +168,19 @@ Class Installments
                         $data['paid_amount'] = 0;
 
                         //check if the installment date is withing the range of the policy
-                        $policyExpiryDateSplit = explode('-',$this->policyData['inapol_expiry_date']);
+                        $policyExpiryDateSplit = explode('-', $this->policyData['inapol_expiry_date']);
                         $policyExpiry = ($policyExpiryDateSplit[0] * 10000) + ($policyExpiryDateSplit[1] * 100) + $policyExpiryDateSplit[2];
-                        $instDateSplit = explode('-',$date);
+                        $instDateSplit = explode('-', $date);
                         $instDate = ($instDateSplit[0] * 10000) + ($instDateSplit[1] * 100) + $instDateSplit[2];
-                        if ($instDate > $policyExpiry){
+                        if ($instDate > $policyExpiry) {
                             //reach more than the expiry of the policy.
                             //do nothing.
                             //save all installments upto here
-                        }
-                        else {
+                        } else {
                             $this->insertInstallment($data);
                         }
                     }
-                }
-                else if ($amount == 4){
+                } else if ($amount == 4) {
                     $data['insert_date'] = date('Y-m-d');
                     $data['policy_ID'] = $this->policyID;
                     //insert first installment same with starting date.
@@ -202,8 +202,7 @@ Class Installments
                     $date = date('Y-m-d', mktime(0, 0, 0, ($startingDate[1] + 9), $startingDate[2], $startingDate[0]));
                     $data['document_date'] = $date;
                     $this->insertInstallment($data);
-                }
-                else if ($amount == 2){
+                } else if ($amount == 2) {
                     $data['insert_date'] = date('Y-m-d');
                     $data['policy_ID'] = $this->policyID;
                     //insert first installment same with starting date.
@@ -215,8 +214,7 @@ Class Installments
                     $date = date('Y-m-d', mktime(0, 0, 0, ($startingDate[1] + 6), $startingDate[2], $startingDate[0]));
                     $data['document_date'] = $date;
                     $this->insertInstallment($data);
-                }
-                else if ($amount == 1){
+                } else if ($amount == 1) {
                     $date = date('Y-m-d', mktime(0, 0, 0, $startingDate[1], $startingDate[2], $startingDate[0]));
                     $data['document_date'] = $date;
                     $data['insert_date'] = date('Y-m-d');
@@ -225,18 +223,18 @@ Class Installments
                 }
 
 
-
                 return true;
             }
 
-        }else {
+        } else {
             $this->error = true;
             $this->errorDescription = 'Policy must be Outstanding to generate recursive installments';
             return false;
         }
     }
 
-    private function insertInstallment($data){
+    private function insertInstallment($data)
+    {
         global $db;
         $newId = $db->db_tool_insert_row('ina_policy_installments', $data, '', 1, 'inapi_');
 

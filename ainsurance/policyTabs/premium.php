@@ -7,6 +7,7 @@
  */
 
 include("../../include/main.php");
+include('../policy_class.php');
 
 $db = new Main(1, 'UTF-8');
 $db->admin_title = "AInsurance Policy Items Premium";
@@ -25,8 +26,8 @@ if ($_POST['action'] == 'update'){
 }
 
 
-$data = $db->query_fetch("SELECT * FROM ina_policies WHERE inapol_policy_ID = " . $_GET['pid']);
-
+//$data = $db->query_fetch("SELECT * FROM ina_policies WHERE inapol_policy_ID = " . $_GET['pid']);
+$policy = new Policy($_GET['pid']);
 
 $db->show_empty_header();
 
@@ -47,7 +48,7 @@ $db->show_empty_header();
                             <input type="text" id="fld_premium" name="fld_premium"
                                    class="form-control"
                                    required onchange="updateGrossPremium();"
-                                   value="<?php echo $data["inapol_premium"]; ?>">
+                                   value="<?php echo $policy->policyData["inapol_premium"]; ?>">
                         </div>
 
                         <label for="fld_commission" class="col-sm-3 col-form-label">Policy Commission</label>
@@ -55,7 +56,7 @@ $db->show_empty_header();
                             <input type="text" name="fld_commission" id="fld_commission"
                                    class="form-control"
                                    required onchange="updateGrossPremium();"
-                                   value="<?php echo $data["inapol_commission"]; ?>">
+                                   value="<?php echo $policy->policyData["inapol_commission"]; ?>">
                         </div>
                     </div>
 
@@ -65,7 +66,7 @@ $db->show_empty_header();
                             <input type="text" name="fld_fees" id="fld_fees"
                                    class="form-control"
                                    required onchange="updateGrossPremium();"
-                                   value="<?php echo $data["inapol_fees"]; ?>">
+                                   value="<?php echo $policy->policyData["inapol_fees"]; ?>">
                         </div>
 
                         <label for="fld_mif" class="col-sm-3 col-form-label">Policy MIF</label>
@@ -73,7 +74,7 @@ $db->show_empty_header();
                             <input type="text" id="fld_mif" name="fld_mif"
                                    class="form-control"
                                    required onchange="updateGrossPremium();"
-                                   value="<?php echo $data["inapol_mif"]; ?>">
+                                   value="<?php echo $policy->policyData["inapol_mif"]; ?>">
                         </div>
                     </div>
 
@@ -83,7 +84,7 @@ $db->show_empty_header();
                             <input type="text" name="fld_stamps" id="fld_stamps"
                                    class="form-control"
                                    required onchange="updateGrossPremium();"
-                                   value="<?php echo $data["inapol_stamps"]; ?>">
+                                   value="<?php echo $policy->policyData["inapol_stamps"]; ?>">
                         </div>
 
 
@@ -100,14 +101,18 @@ $db->show_empty_header();
                     <div class="form-group row">
                         <label for="name" class="col-sm-5 col-form-label"></label>
                         <div class="col-sm-7">
-                            <input name="action" type="hidden" id="action"
-                                   value="update">
+                            <?php if ($policy->getTotalItems() > 0) {?>
+
+                                <input type="button" name="Save" id="Save"
+                                       value="Save Premium"
+                                       class="btn btn-secondary" onclick="submitForm()">
+                            <?php } else { ?>
+                                <div class="col-5 alert alert-danger">Must insert <?php echo $policy->getTypeFullName();?></div>
+                            <?php } ?>
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
                             <input name="pid" type="hidden" id="pid" value="<?php echo $_GET["pid"]; ?>">
                             <input name="type" type="hidden" id="type" value="<?php echo $_GET["type"]; ?>">
-                            <input type="button" name="Save" id="Save"
-                                   value="Save Premium"
-                                   class="btn btn-secondary" onclick="submitForm()">
+                            <input name="action" type="hidden" id="action" value="update">
                         </div>
                     </div>
 

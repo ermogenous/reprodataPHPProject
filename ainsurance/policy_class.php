@@ -6,7 +6,8 @@
  * Time: 11:11 ΠΜ
  */
 
-class Policy {
+class Policy
+{
 
     public $policyID;
     public $policyData;
@@ -15,6 +16,7 @@ class Policy {
     public $fees;
     public $commission;
     private $validForActive = false;
+    private $totalItems = 0;
 
     public $error = false;
     public $errorDescription;
@@ -23,13 +25,18 @@ class Policy {
     {
         global $db;
         $this->policyID = $policyID;
-        $this->policyData = $db->query_fetch('SELECT * FROM ina_policies WHERE inapol_policy_ID = '.$policyID);
+        $this->policyData = $db->query_fetch('SELECT * FROM ina_policies WHERE inapol_policy_ID = ' . $policyID);
 
-        $this->totalPremium = round(($this->policyData['inapol_premium'] + $this->policyData['inapol_mif'] + $this->policyData['inapol_fees'] + $this->policyData['inapol_stamps']),2);
+        $this->totalPremium = round(($this->policyData['inapol_premium'] + $this->policyData['inapol_mif'] + $this->policyData['inapol_fees'] + $this->policyData['inapol_stamps']), 2);
+
+        $result = $db->query_fetch('SELECT COUNT(*)as clo_total FROM ina_policy_items WHERE inapit_policy_ID = ' . $this->policyID);
+        $this->totalItems = $result['clo_total'];
 
     }
+
     //updates the policy premium by sum the policyItems premium/mif/commission
-    public function updatePolicyPremium(){
+    public function updatePolicyPremium()
+    {
         global $db;
 
         //get the total premium
@@ -40,43 +47,66 @@ class Policy {
             FROM
             ina_policy_items
             WHERE
-            inapit_policy_ID = ".$this->policyID;
+            inapit_policy_ID = " . $this->policyID;
         $total = $db->query_fetch($sql);
 
-        $data['premium'] = round($total['clo_total_premium'],2);
-        $data['mif'] = round($total['clo_total_mif'],2);
+        $data['premium'] = round($total['clo_total_premium'], 2);
+        $data['mif'] = round($total['clo_total_mif'], 2);
 
-        $db->db_tool_update_row('ina_policies', $data, 'inapol_policy_ID = '.$this->policyID, $this->policyID,'', 'execute', 'inapol_');
+        $db->db_tool_update_row('ina_policies', $data, 'inapol_policy_ID = ' . $this->policyID, $this->policyID, '', 'execute', 'inapol_');
 
     }
 
-    public function checkInsuranceTypeChange($newInsType){
+    public function getTotalItems()
+    {
+        return $this->totalItems;
+    }
+
+    public function checkInsuranceTypeChange($newInsType)
+    {
         global $db;
 
         //get current type tab name
-        $currentType = $db->query_fetch('SELECT * FROM ina_insurance_codes WHERE inaic_insurance_code_ID = '.$this->policyData['inapol_type_code_ID']);
-        $newType = $db->query_fetch('SELECT * FROM ina_insurance_codes WHERE inaic_insurance_code_ID = '.$newInsType);
+        $currentType = $this->policyData['inapol_type_code'];
 
-        if ($currentType == $newType){
+        if ($currentType == $newInsType) {
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public function deletePolicyItem($inapitID){
-        global $db;
-        if ($this->policyData['inapol_status'] == 'Outstanding'){
+    public function getTypeFullName()
+    {
+        if ($this->policyData['inapol_type_code'] == 'Motor') {
+            return 'Vehicles';
+        }
 
-            $db->db_tool_delete_row('ina_policy_items', $inapitID,'inapit_policy_item_ID = '.$inapitID);
+        return $this->policyData['inapol_type_code'];
+    }
+
+    //affects the input form
+    public function getInputType(){
+        if ($this->policyData['inapol_type_code'] == 'Motor') {
+            return 'Vehicles';
+        }
+        else if ($this->policyData['inapol_type_code'] == 'Fire') {
+            return 'Risk Location';
+        }
+    }
+
+    public function deletePolicyItem($inapitID)
+    {
+        global $db;
+        if ($this->policyData['inapol_status'] == 'Outstanding') {
+
+            $db->db_tool_delete_row('ina_policy_items', $inapitID, 'inapit_policy_item_ID = ' . $inapitID);
 
             $this->updatePolicyPremium();
 
             return true;
 
-        }
-        else {
+        } else {
             $this->error = true;
             $this->errorDescription = 'To delete policy item status must be outstanding.';
             return false;
@@ -84,48 +114,49 @@ class Policy {
 
     }
 
-    public function deletePolicy(){
+    public function deletePolicy()
+    {
         global $db;
 
-        if ($this->policyData['inapol_status'] == 'Outstanding'){
+        if ($this->policyData['inapol_status'] == 'Outstanding') {
             //first delete the policy items
 
-            $result = $db->query_fetch('SELECT * FROM ina_policy_items WHERE inapit_policy_ID = '.$this->policyID);
-            while ($pit = $db->fetch_assoc($result)){
+            $result = $db->query_fetch('SELECT * FROM ina_policy_items WHERE inapit_policy_ID = ' . $this->policyID);
+            while ($pit = $db->fetch_assoc($result)) {
 
-                $db->db_tool_delete_row('ina_policy_items', $pit['inapit_policy_item_ID'],'inapit_policy_item_ID = '.$pit['inapit_policy_item_ID']);
+                $db->db_tool_delete_row('ina_policy_items', $pit['inapit_policy_item_ID'], 'inapit_policy_item_ID = ' . $pit['inapit_policy_item_ID']);
 
             }
 
             //delete the policy
-            $db->db_tool_delete_row('ina_policies', $this->policyID, 'inapol_policy_ID = '.$this->policyID);
+            $db->db_tool_delete_row('ina_policies', $this->policyID, 'inapol_policy_ID = ' . $this->policyID);
 
             return true;
-        }
-        else {
+        } else {
             $this->error = true;
             $this->errorDescription = 'To delete policy status must be outstanding.';
             return false;
         }
     }
 
-    public function activatePolicy(){
+    public function activatePolicy()
+    {
         global $db;
-        if($this->policyData['inapol_status'] == 'Outstanding'){
+        if ($this->policyData['inapol_status'] == 'Outstanding') {
             //perform validations.
             //1. Check if premium is equal to total premium of items
             $premCheck = $db->query_fetch('SELECT 
               SUM(inapit_premium)as clo_total_premium,
               SUM(inapit_mif) as clo_total_mif 
-              FROM ina_policy_items WHERE inapit_policy_ID = '.$this->policyID);
+              FROM ina_policy_items WHERE inapit_policy_ID = ' . $this->policyID);
 
-            if ($this->policyData['inapol_premium'] != $premCheck['clo_total_premium']){
+            if ($this->policyData['inapol_premium'] != $premCheck['clo_total_premium']) {
                 $this->error = true;
                 $this->errorDescription = 'Policy Premium is not equal with total items premium';
                 return false;
             }
 
-            if ($this->policyData['inapol_mif'] != $premCheck['clo_total_mif']){
+            if ($this->policyData['inapol_mif'] != $premCheck['clo_total_mif']) {
                 $this->error = true;
                 $this->errorDescription = 'Policy MIF is not equal with total items MIF';
                 return false;
@@ -137,35 +168,34 @@ class Policy {
                     SUM(ROUND(inapi_commission_amount,2)) as clo_total_commission_amount
                     FROM ina_policy_installments
                     WHERE
-                    inapi_policy_ID = '.$this->policyID);
+                    inapi_policy_ID = ' . $this->policyID);
 
-            if ($this->totalPremium != $instCheck['clo_total_amount']){
+            if ($this->totalPremium != $instCheck['clo_total_amount']) {
                 $this->error = true;
                 $this->errorDescription = 'Installments Premium is not equal with policy premium. Re-Calculate installments.';
                 return false;
             }
 
-            if ($this->policyData['inapol_commission'] != $instCheck['clo_total_commission_amount']){
+            if ($this->policyData['inapol_commission'] != $instCheck['clo_total_commission_amount']) {
                 $this->error = true;
                 $this->errorDescription = 'Installments Commission is not equal with policy commission. Re-Calculate installments.';
                 return false;
             }
 
 
-        }
-        else {
+        } else {
             $this->error = true;
             $this->errorDescription = 'Policy must be outstanding to activate.';
             return false;
         }
 
         //if all validations are ok!
-        if ($this->error == false){
+        if ($this->error == false) {
             //update the policy to active
             $newData['status'] = 'Active';
             $db->db_tool_update_row('ina_policies',
                 $newData,
-                'inapol_policy_ID = '.$this->policyID,
+                'inapol_policy_ID = ' . $this->policyID,
                 $this->policyID,
                 '',
                 'execute',
@@ -178,7 +208,8 @@ class Policy {
         return true;
     }
 
-    private function issueAccountTransactions(){
+    private function issueAccountTransactions()
+    {
         global $db;
 
         //for basic accounts
@@ -187,16 +218,17 @@ class Policy {
         }
     }
 
-    public function cancelPolicy(){
+    public function cancelPolicy()
+    {
         global $db;
         $this->errorDescription = 'Some error. Cancel function needs build';
         return false;
     }
 
 
-
 }
 
-function getPolicyClass($status){
-    return 'inapol'.$status.'Color';
+function getPolicyClass($status)
+{
+    return 'inapol' . $status . 'Color';
 }
