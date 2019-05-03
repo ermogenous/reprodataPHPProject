@@ -294,8 +294,7 @@ $formValidator = new customFormValidator();
                         <label for="fld_enable_premium" class="col-sm-4 col-form-label">Enable Premium</label>
                         <div class="col-sm-8">
                             <select name="fld_enable_premium" id="fld_enable_premium"
-                                    class="form-control"
-                                    required>
+                                    class="form-control">
                                 <option value="1" <?php if ($data["oqqt_enable_premium"] == '1') echo "selected=\"selected\""; ?>>
                                     Enable
                                 </option>

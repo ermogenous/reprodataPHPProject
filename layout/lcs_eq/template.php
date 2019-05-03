@@ -71,7 +71,14 @@ function template_header()
                                 <i class="far fa-calendar-alt"></i> View DiSC Tests</a>
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/lcs_disc_test/disc_modify.php">
-                                <i class="far fa-calendar-alt"></i> New DiSC Test</a>
+                                <i class="far fa-calendar-alt"></i><i class="fas fa-plus"></i> New DiSC Test</a>
+
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/lcs_disc_test/batch/batches.php">
+                                <i class="fas fa-align-center"></i> View Batches</a>
+                            <a class="dropdown-item"
+                               href="<?php echo $main["site_url"]; ?>/lcs_disc_test/batch/batch_modify.php">
+                                <i class="fas fa-align-center"></i><i class="fas fa-plus"></i> New Batch</a>
                         </div>
                     </li>
 

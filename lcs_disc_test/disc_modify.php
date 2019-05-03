@@ -19,6 +19,31 @@ if ($_GET['lg'] == 'tr') {
     $_GET['lid'] = $db->decrypt($_GET['lid']);
     $section = 'public';
 
+    //check if lid is provided
+    if ($_GET['lid'] == ''){
+        //if not provided then either not allowed or is in batch mode
+        if ($_GET['bt'] == ''){
+            //no batch was specified then not allowed in here
+            header('Location: ../home.php?1');
+            exit();
+        }
+        else {
+            //this is in batch mode.
+            //get the batch info
+            $batchData = $db->query_fetch("SELECT * FROM lcs_disc_batch WHERE lcsdb_link_name = '".$_GET['bt']."'");
+            if ($batchData['lcsdb_disc_batch_ID'] == ''){
+                //no batch found. then exit
+                header('Location: ../home.php');
+                exit();
+            }
+
+            //proceed
+            $batchName = " For ".$batchData['lcsdb_batch_name'];
+            $batchID = $batchData['lcsdb_disc_batch_ID'];
+
+        }
+    }
+
 }
 $db->admin_title = "LCS Disc Test Modify";
 
@@ -27,15 +52,35 @@ if ($_POST["action"] == "insert") {
     if ($db->adminLogin == true) {
         $db->check_restriction_area('insert');
     }
+    $db->start_transaction();
     $db->working_section = 'LCS Disc Test Insert';
 
     $_POST['fld_status'] = 'Outstanding';
 
-    $db->db_tool_insert_row('lcs_disc_test', $_POST, 'fld_', 0, 'lcsdc_');
-    header("Location: disc_list.php");
-    exit();
+    //check for the batch
+    if ($_POST['batchID'] > 0){
+        $_POST['fld_batch_ID'] = $_POST['batchID'];
+        //update the batch
+        $batchData = $db->query_fetch("SELECT * FROM lcs_disc_batch WHERE lcsdb_disc_batch_ID = ".$_POST['batchID']);
+        $sql = "UPDATE lcs_disc_batch SET lcsdb_used_tests = ".($batchData['lcsdb_used_tests'] +1)." WHERE lcsdb_disc_batch_ID = ".$_POST['batchID'];
+        $db->query($sql);
+    }
 
-} else if ($_POST["action"] == "update") {
+    $newID = $db->db_tool_insert_row('lcs_disc_test', $_POST, 'fld_', 1, 'lcsdc_');
+
+    $db->commit_transaction();
+
+    if ($_POST['batchID'] > 0){
+        header("Location: disc_modify.php?lid=" . $db->encrypt($newID) . "&page=2");
+        exit();
+    }
+    else {
+        header("Location: disc_list.php");
+        exit();
+    }
+
+}
+else if ($_POST["action"] == "update") {
 
     if ($db->adminLogin == true) {
         $db->check_restriction_area('update');
@@ -100,8 +145,9 @@ $db->show_header();
             <div class="col-lg-1 col-md-1 hidden-xs hidden-sm"></div>
             <div class="col-lg-10 col-md-10 col-xs-12 col-sm-12">
                 <form name="myForm" id="myForm" method="post" action="" onsubmit="">
+                    <input type="hidden" name="batchID" id="batchID" value="<?php echo $batchID;?>">
                     <div class="alert headerBar text-center">
-                        <b>DiSC Test</b>
+                        <b>DiSC Test<?php echo $batchName;?></b>
                     </div>
                     <?php if ($_GET['page'] == '' || $_GET['page'] == 1) { ?>
                         <div class="container">
