@@ -217,33 +217,21 @@ class dynamicQuotation
             $dataArray['secondary_serial'] = '';
             $dataArray['secondary_label'] = '';
             $dataArray['user_ID'] = $this->quotationData['oqq_users_ID'];
-            //file attachment
-            if ($this->quotationData['oqqt_attach_print_filename'] != ''){
-                $dataArray['attachment_string_name'] = $this->quotationData['oqqt_attach_print_filename'];
+            //file attachment filename
+            $attachment_file_name = $this->quotationData['oqqt_attach_print_filename'];
 
-                //get the pdf data
-                include($this->quotationData['oqqt_print_layout']);
-                require_once '../vendor/autoload.php';
-                $html = getQuotationHTML($this->quotationID);
-                $mpdf = new \Mpdf\Mpdf([
-                    'default_font' => 'dejavusans'
-                ]);
-                $mpdf->WriteHTML($html);
-                $dataArray['attachment_string'] = $mpdf->Output('filename.pdf', \Mpdf\Output\Destination::STRING_RETURN);
-                //echo "DATA STRING<br>\n\n\n\n\n".$dataArray['attachment_string'];exit();
-            }
 
             //fix the subject/body with the ReplaceCodes
             //[QTID]
             $dataArray['email_subject'] = str_replace('[QTID]', $this->quotationData['oqq_quotations_ID'], $dataArray['email_subject']);
             $dataArray['email_body'] = str_replace('[QTID]', $this->quotationData['oqq_quotations_ID'], $dataArray['email_body']);
-            $dataArray['attachment_string_name'] = str_replace('[QTID]', $this->quotationData['oqq_quotations_ID'], $dataArray['attachment_string_name']);
+            $attachment_file_name = str_replace('[QTID]', $this->quotationData['oqq_quotations_ID'], $attachment_file_name);
 
 
             //[QTNUMBER]
             $dataArray['email_subject'] = str_replace('[QTNUMBER]', $this->quotationData['oqq_number'], $dataArray['email_subject']);
             $dataArray['email_body'] = str_replace('[QTNUMBER]', $this->quotationData['oqq_number'], $dataArray['email_body']);
-            $dataArray['attachment_string_name'] = str_replace('[QTNUMBER]', $this->quotationData['oqq_number'], $dataArray['attachment_string_name']);
+            $attachment_file_name = str_replace('[QTNUMBER]', $this->quotationData['oqq_number'], $attachment_file_name);
 
             //[QTLINK]
             $link = $main["site_url"]."/dynamic_quotations/quotations_modify.php?quotation_type=".$this->quotationData['oqq_quotations_type_ID']."&quotation=".$this->quotationData['oqq_quotations_ID'];
@@ -253,12 +241,27 @@ class dynamicQuotation
             //[USERNAME]
             $dataArray['email_subject'] = str_replace('[USERSNAME]', $this->quotationData['usr_name'], $dataArray['email_subject']);
             $dataArray['email_body'] = str_replace('[USERSNAME]', $this->quotationData['usr_name'], $dataArray['email_body']);
-            $dataArray['attachment_string_name'] = str_replace('[USERSNAME]', $this->quotationData['usr_name'], $dataArray['attachment_string_name']);
+            $attachment_file_name = str_replace('[USERSNAME]', $this->quotationData['usr_name'], $attachment_file_name);
 
             //[PDFLINK]
             $link = $main["site_url"]."/dynamic_quotations/quotation_print.php?quotation=".$this->quotationData['oqq_quotations_ID']."&pdf=1";
             $dataArray['email_subject'] = str_replace('[PDFLINK]', $link, $dataArray['email_subject']);
             $dataArray['email_body'] = str_replace('[PDFLINK]', $link, $dataArray['email_body']);
+
+            //file attachment
+            if ($this->quotationData['oqqt_attach_print_filename'] != ''){
+                //get the pdf data
+                include($this->quotationData['oqqt_print_layout']);
+                require_once '../vendor/autoload.php';
+                $html = getQuotationHTML($this->quotationID);
+                $mpdf = new \Mpdf\Mpdf([
+                    'default_font' => 'dejavusans'
+                ]);
+                $mpdf->WriteHTML($html);
+                $filename = date('YmdGisu').".pdf";
+                $mpdf->Output($main['local_url'].'/send_auto_emails/attachment_files/'.$filename, \Mpdf\Output\Destination::FILE);
+                $dataArray['attachment_files'] = $filename."||".$attachment_file_name;
+            }
 
             //create the record
             $autoEmailID = $autoEmail->addData($dataArray);
@@ -269,8 +272,6 @@ class dynamicQuotation
                 $this->errorDescription = 'There was an error sending the email. You can manually resend the email in auto emails.';
                 $this->error = true;
             }
-
-
         }
     }
 

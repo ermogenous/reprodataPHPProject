@@ -172,18 +172,20 @@ class send_auto_emails
                 }
             }
         }
-        if ($this->data['sae_attachment_file'] != '') {
-            $mail->addAttachment($main["local_url"] . '/' . $this->data['sae_attachment_file']);         // Add attachments
+        if ($this->data['sae_attachment_files'] != '') {
+
+            $attachFile = explode(PHP_EOL, $this->data['sae_attachment_files']);
+            foreach ($attachFile as $value) {
+                $split = explode('||', $value);
+                if ($mail->addAttachment('attachment_files/'.$split[0],$split[1])) {
+                    $this->messages[] = "Adding Attachment File - " . $split[0] . " " . $split[1] . " added succesfully";
+                } else {
+                    $this->messages[] = "Error adding Attachment File - " . $split[0] . " " . $split[1];
+                    $this->error_messages .= "\nError Attachment File - " . $split[0] . " " . $split[1];
+                }
+            }
+            //$mail->addAttachment($main["local_url"] . '/' . $this->data['sae_attachment_file']);         // Add attachments
             //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
-        }
-
-        //add attachment string. Attachment file but from database
-        if ($this->data['sae_attachment_string'] != '' && $this->data['sae_attachment_string_name'] != '') {
-
-            $mail->addStringAttachment($this->data['sae_attachment_string'], $this->data['sae_attachment_string_name']);
-        }
-        if ($this->data['sae_attachment_string_2'] != '' && $this->data['sae_attachment_string_2_name'] != '') {
-            $mail->addStringAttachment($this->data['sae_attachment_string_2'], $this->data['sae_attachment_string_2_name']);
         }
 
         $mail->isHTML(true);                                  // Set email format to HTML
@@ -265,11 +267,7 @@ class createNewAutoEmail
         $newData['email_cc'] = $dataArray['email_cc'];
         $newData['email_bcc'] = $dataArray['email_bcc'];
         $newData['email_body'] = $dataArray['email_body'];
-        $newData['attachment_file'] = $dataArray['attachment_file'];
-        $newData['attachment_string'] = mysqli_real_escape_string($db->db_handle, $dataArray['attachment_string']);
-        $newData['attachment_string_name'] = $dataArray['attachment_string_name'];
-        $newData['attachment_string_2'] = $dataArray['attachment_string_2'];
-        $newData['attachment_string_2_name'] = $dataArray['attachment_string_2_name'];
+        $newData['attachment_files'] = $dataArray['attachment_files'];
 
         $newData['type'] = $dataArray['type'];
 
