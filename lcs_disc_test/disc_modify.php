@@ -24,7 +24,7 @@ if ($_GET['lg'] == 'tr') {
         //if not provided then either not allowed or is in batch mode
         if ($_GET['bt'] == ''){
             //no batch was specified then not allowed in here
-            header('Location: ../home.php?1');
+            header('Location: ../home.php');
             exit();
         }
         else {
@@ -37,6 +37,28 @@ if ($_GET['lg'] == 'tr') {
                 exit();
             }
 
+            //first check if there is a cookie present.
+            if ($_COOKIE['LCSDISCBATCH-ID'] > 0){
+                //this user has already created a test.
+                //retrieve the test to check if not completed.
+                $sql = "SELECT * FROM `lcs_disc_test` WHERE `lcsdc_disc_test_ID` = " . $_COOKIE['LCSDISCBATCH-ID'];
+                $DiscDataFromCookie = $db->query_fetch($sql);
+                if ($DiscDataFromCookie['lcsdc_status'] == 'Outstanding') {
+                    //redirect him to continue his test
+                    header("Location: disc_modify.php?lid=" . $db->encrypt($_COOKIE['LCSDISCBATCH-ID']) . "&page=" . $_COOKIE['LCSDISCBATCH-PAGE']);
+                    exit();
+                }
+                //the test is completed. redirect to home
+                else {
+                    header('Location: ../home.php');
+                    exit();
+                }
+            }
+            //check if max tests are reached
+            if ($batchData['lcsdb_used_tests'] >= $batchData['lcsdb_max_tests']) {
+                header('Location: ../home.php');
+                exit();
+            }
             //proceed
             $batchName = " For ".$batchData['lcsdb_batch_name'];
             $batchID = $batchData['lcsdb_disc_batch_ID'];
@@ -68,8 +90,14 @@ if ($_POST["action"] == "insert") {
 
     $newID = $db->db_tool_insert_row('lcs_disc_test', $_POST, 'fld_', 1, 'lcsdc_');
 
+    if ($_POST['batchID'] > 0){
+        //create a cookie to limit this user to one test and also if he tries the link again to continue where he left of.
+        setcookie('LCSDISCBATCH-ID', $newID, time() + (86400 * 30), "/"); // 86400 = 1 day
+        setcookie('LCSDISCBATCH-PAGE', 2, time() + (86400 * 30), "/"); // 86400 = 1 day
+    }
     $db->commit_transaction();
 
+    //go to page 2 of the new batch test
     if ($_POST['batchID'] > 0){
         header("Location: disc_modify.php?lid=" . $db->encrypt($newID) . "&page=2");
         exit();
@@ -95,6 +123,9 @@ else if ($_POST["action"] == "update") {
     if ($disc->verifyCompletion() == true && $section == 'public'){
         $disc->statusToCompleted();
     }
+    else {
+
+    }
 
 
 
@@ -109,6 +140,10 @@ else if ($_POST["action"] == "update") {
         }
         $page++;
 
+        //check if is from batch and update the cookie
+        if ($_POST['discBatchID'] > 0){
+            setcookie('LCSDISCBATCH-PAGE', $page, time() + (86400 * 30), "/"); // 86400 = 1 day
+        }
         header("Location: disc_modify.php?lid=" . $db->encrypt($_GET['lid']) . "&page=" . $page);
         exit();
 
@@ -146,6 +181,8 @@ $db->show_header();
             <div class="col-lg-10 col-md-10 col-xs-12 col-sm-12">
                 <form name="myForm" id="myForm" method="post" action="" onsubmit="">
                     <input type="hidden" name="batchID" id="batchID" value="<?php echo $batchID;?>">
+                    <input type="hidden" name="discBatchID" id="discBatchID" value="<?php echo $data['lcsdc_batch_ID'];?>">
+
                     <div class="alert headerBar text-center">
                         <b>DiSC Test<?php echo $batchName;?></b>
                     </div>

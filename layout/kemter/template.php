@@ -380,7 +380,7 @@ if ($db->admin_layout_printer != 'yes')
         //this opens a div on top of the footer that fixes the problem.
         //also fires on window resize
         function fix_footer() {
-            console.log('Doc: ' + $(document).height() + ' Win: ' + window.innerHeight);
+            //console.log('Doc: ' + $(document).height() + ' Win: ' + window.innerHeight);
             if ($(document).height() >= window.innerHeight) {
                 $('#footer-extra-space').height(100);
             }

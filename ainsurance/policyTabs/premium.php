@@ -31,13 +31,20 @@ $policy = new Policy($_GET['pid']);
 
 $db->show_empty_header();
 
+include('../../scripts/form_validator_class.php');
+$formValidator = new customFormValidator();
+if ($policy->policyData['inapol_status'] != 'Oustanding'){
+    $formValidator->disableForm();
+}
+
 //echo $db->prepare_text_as_html(print_r($data, true));
 ?>
 
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12">
-                <form name="myForm" id="myForm" method="post" action="" onsubmit="">
+                <form name="myForm" id="myForm" method="post" action=""
+                    <?php $formValidator->echoFormParameters();?> >
                     <div class="alert alert-dark text-center">
                         <b>Premium</b>
                     </div>
@@ -49,6 +56,15 @@ $db->show_empty_header();
                                    class="form-control"
                                    required onchange="updateGrossPremium();"
                                    value="<?php echo $policy->policyData["inapol_premium"]; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_premium',
+                                    'fieldDataType' => 'number',
+                                    'required' => true,
+                                    'invalidText' => 'Net Premium is Required'
+                                ]);
+                            ?>
                         </div>
 
                         <label for="fld_commission" class="col-sm-3 col-form-label">Policy Commission</label>
@@ -57,6 +73,15 @@ $db->show_empty_header();
                                    class="form-control"
                                    required onchange="updateGrossPremium();"
                                    value="<?php echo $policy->policyData["inapol_commission"]; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_commission',
+                                    'fieldDataType' => 'number',
+                                    'required' => true,
+                                    'invalidText' => 'Commission is Required'
+                                ]);
+                            ?>
                         </div>
                     </div>
 
@@ -67,6 +92,15 @@ $db->show_empty_header();
                                    class="form-control"
                                    required onchange="updateGrossPremium();"
                                    value="<?php echo $policy->policyData["inapol_fees"]; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_fees',
+                                    'fieldDataType' => 'number',
+                                    'required' => true,
+                                    'invalidText' => 'Fees is Required'
+                                ]);
+                            ?>
                         </div>
 
                         <label for="fld_mif" class="col-sm-3 col-form-label">Policy MIF</label>
@@ -75,6 +109,15 @@ $db->show_empty_header();
                                    class="form-control"
                                    required onchange="updateGrossPremium();"
                                    value="<?php echo $policy->policyData["inapol_mif"]; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_mif',
+                                    'fieldDataType' => 'number',
+                                    'required' => true,
+                                    'invalidText' => 'MIF is Required'
+                                ]);
+                            ?>
                         </div>
                     </div>
 
@@ -85,6 +128,15 @@ $db->show_empty_header();
                                    class="form-control"
                                    required onchange="updateGrossPremium();"
                                    value="<?php echo $policy->policyData["inapol_stamps"]; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_stamps',
+                                    'fieldDataType' => 'number',
+                                    'required' => true,
+                                    'invalidText' => 'Stamps is Required'
+                                ]);
+                            ?>
                         </div>
 
 
@@ -101,12 +153,19 @@ $db->show_empty_header();
                     <div class="form-group row">
                         <label for="name" class="col-sm-5 col-form-label"></label>
                         <div class="col-sm-7">
-                            <?php if ($policy->getTotalItems() > 0) {?>
+                            <?php if ($policy->getTotalItems() > 0 ) {
+                                    if ($policy->policyData['inapol_status'] == 'Outstanding')
+                                    {
+                                ?>
 
-                                <input type="button" name="Save" id="Save"
+                                <input type="submit" name="Save" id="Save"
                                        value="Save Premium"
-                                       class="btn btn-secondary" onclick="submitForm()">
-                            <?php } else { ?>
+                                       class="btn btn-secondary">
+
+
+                            <?php
+                                    }
+                            } else { ?>
                                 <div class="col-5 alert alert-danger">Must insert <?php echo $policy->getTypeFullName();?></div>
                             <?php } ?>
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
@@ -121,17 +180,6 @@ $db->show_empty_header();
         </div>
     </div>
     <script>
-        function submitForm(action) {
-            frm = document.getElementById('myForm');
-            if (frm.checkValidity() === false) {
-
-            }
-            else {
-                document.getElementById('Save').disabled = true
-                $('#myForm').submit();
-            }
-        }
-
         function updateGrossPremium(){
 
             let grossPremium = 0;
@@ -154,5 +202,6 @@ $db->show_empty_header();
     </script>
 
 <?php
+$formValidator->output();
 $db->show_empty_footer();
 ?>

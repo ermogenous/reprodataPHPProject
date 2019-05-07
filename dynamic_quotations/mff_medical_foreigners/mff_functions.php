@@ -205,7 +205,8 @@ function mff_insurance_period_2()
                     'enableDatePicker' => true,
                     'datePickerValue' => $db->convert_date_format($qitem_data["oqqit_date_1"], 'yyyy-mm-dd', 'dd/mm/yyyy'),
                     'dateMinDate' => date('d/m/Y'),
-                    'invalidText' => show_quotation_text("Υποχρεωτικό. Μεταγενέστερη απο σήμερα", "Required. Greater than today",'Return')
+                    'dateMaxDate' => date('d/m/Y',mktime(0,0,0,date('m'), (date('d') + 45), date('Y') )),
+                    'invalidText' => show_quotation_text("Λάθος Ημερομηνία", "Wrong Date",'Return')
                 ]);
             ?>
         </div>
@@ -321,6 +322,17 @@ function mff_insurance_period_2()
                 }
             }
         </script>
+    </div>
+
+    <div class="row">
+        <div class="col-2"></div>
+        <div class="col-10 text-danger" style="margin-bottom: 10px;">
+            <?php show_quotation_text("
+            Όχι προγενέστερη απο Σήμερα. Όχι μεταγενέστερη 45 μέρες απο σήμερα.
+            ", "
+            Not before today. Not after 45 days from today.
+            "); ?>
+        </div>
     </div>
 
     <div class="row">
@@ -594,4 +606,42 @@ function insured_amount_custom_rates($array, $values, $quotation_id)
     return $array;
 }
 
+function activate_custom_validation($quotationData){
+
+    global $db;
+    $result['error'] = false;
+    $result['errorDescription'] = '';
+
+    //get item data
+    $sect2 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $quotationData['oqq_quotations_ID'] . " AND oqqit_items_ID = 2");
+
+    $startDate = $sect2['oqqit_date_1'];
+    $expirydate = $sect2['oqqit_date_2'];
+    $startDateSplit = explode('-',$startDate);
+    $expirydateSplit = explode('-', $expirydate);
+    //convert to number for easier manipulation
+    $startDate = ($startDateSplit[0] * 10000) + ($startDateSplit[1] * 100) + $startDateSplit[2];
+    $expirydate = ($expirydateSplit[0] * 10000) + ($expirydateSplit[1] * 100) + $expirydateSplit[2];
+    $today = (date('Y') * 10000) + (date('m') * 100) + date('d');
+    $days45 = date('Y-m-d', mktime(0,0,0,date('m'), (date('d') + 45), date('Y') ));
+    $days45Split = explode('/', $days45);
+    $days45 = ($days45[0] * 10000) + ($days45[1] * 100) + $days45[2];
+    //1. if startdate is before today
+    if ($startDate < $today){
+        $result['error'] = true;
+        $result['errorDescription'] = "Starting Date cannot be before today.";
+    }
+    //2. Expiry cannot be before starting
+    if ($expirydate < $startDate){
+        $result['error'] = true;
+        $result['errorDescription'] = "Expiry date cannot be before starting date.";
+    }
+    //3. Starting date not more than 45 days from today
+    if ($startDate > $days45){
+        $result['error'] = true;
+        $result['errorDescription'] = "Starting Date cannot be more than 45 days from today.";
+    }
+
+    return $result;
+}
 ?>

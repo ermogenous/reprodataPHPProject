@@ -17,9 +17,12 @@ $db->admin_title = "AInsurance Policy Installments";
 if ($_GET['action'] == 'calculate' && $_GET['pid'] != '') {
     $inst = new Installments($_GET['pid']);
     $db->start_transaction();
-    $inst->updateInstallmentsAmountAndCommission();
+    if ($inst->updateInstallmentsAmountAndCommission() == true) {
+        $db->generateAlertSuccess('Amounts/Commissions Updated');
+    } else {
+        $db->generateAlertError($inst->errorDescription);
+    }
     $db->commit_transaction();
-    $db->generateAlertSuccess('Amounts/Commissions Updated');
 } else if ($_GET['action'] == 'clearall' && $_GET['pid'] != '') {
     $db->start_transaction();
     $inst = new Installments($_GET['pid']);
@@ -88,32 +91,34 @@ if ($_GET['pid'] > 0) {
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12" style="height: 25px;"></div>
-                <div class="col-3">
-                    <input type="button" value="Calculate Premium" class="btn btn-primary"
-                           onclick="calculatePremium();">
-                </div>
-                <div class="col-2">
-                    <input type="button" value="Clear All" class="btn btn-danger" onclick="clearAll();">
-                </div>
-                <div class="col-2"></div>
-                <div class="col-1"></div>
-                <div class="col-2"></div>
-                <div class="col-2"></div>
-                <div class="col-2"></div>
-                <script>
-                    function calculatePremium() {
-                        if (confirm('Are you sure you want to calculate? This will replace existing installments amount')) {
-                            window.location.assign('?pid=<?php echo $_GET['pid'];?>&action=calculate');
+                <?php if ($policy->policyData['inapol_status'] == 'Oustanding') { ?>
+                    <div class="col-3">
+                        <input type="button" value="Calculate Premium" class="btn btn-primary"
+                               onclick="calculatePremium();">
+                    </div>
+                    <div class="col-2">
+                        <input type="button" value="Clear All" class="btn btn-danger" onclick="clearAll();">
+                    </div>
+                    <div class="col-2"></div>
+                    <div class="col-1"></div>
+                    <div class="col-2"></div>
+                    <div class="col-2"></div>
+                    <div class="col-2"></div>
+                    <script>
+                        function calculatePremium() {
+                            if (confirm('Are you sure you want to calculate? This will replace existing installments amount')) {
+                                window.location.assign('?pid=<?php echo $_GET['pid'];?>&action=calculate');
+                            }
                         }
-                    }
 
-                    function clearAll() {
-                        if (confirm('Are you sure you want to delete all installments?')) {
-                            window.location.assign('?pid=<?php echo $_GET['pid'];?>&action=clearall');
+                        function clearAll() {
+                            if (confirm('Are you sure you want to delete all installments?')) {
+                                window.location.assign('?pid=<?php echo $_GET['pid'];?>&action=clearall');
+                            }
                         }
-                    }
 
-                </script>
+                    </script>
+                <?php } ?>
             </div>
             <div class="row">
                 <div class="col-12">
@@ -129,9 +134,11 @@ if ($_GET['pid'] > 0) {
                                 <th scope="col"><?php $table->display_order_links('Commission', 'inapi_commission_amount'); ?></th>
                                 <th scope="col"><?php $table->display_order_links('Status', 'inapi_paid_status'); ?></th>
                                 <th scope="col">
-                                    <a href="installment_modify.php?pid=<?php echo $_GET['pid'] ?>">
-                                        <i class="fas fa-plus-circle"></i>
-                                    </a>
+                                    <?php if ($policy->policyData['inapol_status'] == 'Oustanding') { ?>
+                                        <a href="installment_modify.php?pid=<?php echo $_GET['pid'] ?>">
+                                            <i class="fas fa-plus-circle"></i>
+                                        </a>
+                                    <?php } ?>
                                 </th>
                             </tr>
                             </thead>
@@ -153,12 +160,14 @@ if ($_GET['pid'] > 0) {
                                     <td><?php echo $row["inapi_commission_amount"]; ?></td>
                                     <td><?php echo $row["inapi_paid_status"]; ?></td>
                                     <td>
-                                        <a href="installment_modify.php?lid=<?php echo $row["inapi_policy_installments_ID"] . "&pid=" . $_GET['pid']; ?>"><i
-                                                    class="fas fa-edit"></i></a>&nbsp
-                                        <a href="installment_delete.php?lid=<?php echo $row["inapi_policy_installments_ID"] . "&pid=" . $_GET['pid']; ?>"
-                                           onclick="ignoreEdit = true;
+                                        <?php if ($policy->policyData['inapol_status'] == 'Oustanding') { ?>
+                                            <a href="installment_modify.php?lid=<?php echo $row["inapi_policy_installments_ID"] . "&pid=" . $_GET['pid']; ?>"><i
+                                                        class="fas fa-edit"></i></a>&nbsp
+                                            <a href="installment_delete.php?lid=<?php echo $row["inapi_policy_installments_ID"] . "&pid=" . $_GET['pid']; ?>"
+                                               onclick="ignoreEdit = true;
                                return confirm('Are you sure you want to delete this policy installment?');"><i
-                                                    class="fas fa-minus-circle"></i></a>
+                                                        class="fas fa-minus-circle"></i></a>
+                                        <?php } ?>
                                     </td>
                                 </tr>
                                 <?php
@@ -167,7 +176,7 @@ if ($_GET['pid'] > 0) {
                             <tr>
                                 <td colspan="2" class="text-right"><b>Total:</b></td>
                                 <td><b><?php echo $amountSum; ?></b></td>
-                                <td><b><?php echo $paidSum;?></b></td>
+                                <td><b><?php echo $paidSum; ?></b></td>
                                 <td><b><?php echo $commSum; ?></b></td>
                                 <td></td>
                             </tr>
@@ -177,49 +186,51 @@ if ($_GET['pid'] > 0) {
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-12" style="height: 25px;"></div>
-                <div class="col-4">
-                    Generate Recursive Installments
+            <?php if ($policy->policyData['inapol_status'] == 'Oustanding') { ?>
+                <div class="row">
+                    <div class="col-12" style="height: 25px;"></div>
+                    <div class="col-4">
+                        Generate Recursive Installments
+                    </div>
+                    <div class="col-2">
+                        <select name="genRescursiveAmount" id="genRescursiveAmount"
+                                class="form-control">
+                            <?php
+                            for ($i = 1; $i <= 12; $i++) {
+                                ?>
+                                <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+                            <?php } ?>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <input type="button" value="Generate" class="btn btn-secondary"
+                               onclick="generateRecursive(<?php echo $_GET['pid']; ?>);">
+                    </div>
                 </div>
-                <div class="col-2">
-                    <select name="genRescursiveAmount" id="genRescursiveAmount"
-                            class="form-control">
-                        <?php
-                        for ($i = 1; $i <= 12; $i++) {
-                            ?>
-                            <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
-                        <?php } ?>
-                    </select>
+                <div class="row">
+                    <div class="col-12" style="height: 15px;"></div>
                 </div>
-                <div class="col-6">
-                    <input type="button" value="Generate" class="btn btn-secondary"
-                           onclick="generateRecursive(<?php echo $_GET['pid']; ?>);">
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12" style="height: 15px;"></div>
-            </div>
-            <div class="row">
+                <div class="row">
 
-                <div class="col-4">
-                    Generate Divided Installments
-                </div>
-                <div class="col-3">
-                    <select name="genDividedAmount" id="genDividedAmount"
-                            class="form-control">
-                        <option value="12">Monthly - 12</option>
-                        <option value="4">Quarterly - 4</option>
-                        <option value="2">Semi-YEarly - 2</option>
-                        <option value="1">Yearly - 1</option>
-                    </select>
-                </div>
-                <div class="col-5">
-                    <input type="button" value="Generate" class="btn btn-secondary"
-                           onclick="generateDivided(<?php echo $_GET['pid']; ?>);">
-                </div>
+                    <div class="col-4">
+                        Generate Divided Installments
+                    </div>
+                    <div class="col-3">
+                        <select name="genDividedAmount" id="genDividedAmount"
+                                class="form-control">
+                            <option value="12">Monthly - 12</option>
+                            <option value="4">Quarterly - 4</option>
+                            <option value="2">Semi-YEarly - 2</option>
+                            <option value="1">Yearly - 1</option>
+                        </select>
+                    </div>
+                    <div class="col-5">
+                        <input type="button" value="Generate" class="btn btn-secondary"
+                               onclick="generateDivided(<?php echo $_GET['pid']; ?>);">
+                    </div>
 
-            </div>
+                </div>
+            <?php } ?>
         </div>
 
         <?php
@@ -248,7 +259,9 @@ if ($_GET['pid'] > 0) {
 
         $(document).ready(function () {
             let fixedPx = 400;
-            let totalPx = fixedPx + (<?php echo $totalLines;?> * 60);
+            let totalPx = fixedPx + (<?php echo $totalLines;?> * 60
+        )
+            ;
             $('#installmentsTab', window.parent.document).height(totalPx + 'px');
         });
 

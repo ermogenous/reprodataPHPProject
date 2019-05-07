@@ -56,7 +56,21 @@ $table->generate_data();
                         </thead>
                         <tbody>
                         <?php
-                        while ($row = $table->fetch_data()) { ?>
+                        while ($row = $table->fetch_data()) { 
+                            //check if a batch status has been changed
+                            if ($row['lcsdb_used_tests'] >= $row["lcsdb_max_tests"]) {
+                                $row["lcsdb_status"] = 'Completed';
+                                $newData['status'] = 'Completed';
+                                $db->db_tool_update_row('lcs_disc_batch',
+                                    $newData,
+                                    'lcsdb_disc_batch_ID = '.$row['lcsdb_disc_batch_ID'],
+                                    $row['lcsdb_disc_batch_ID'],
+                                    '',
+                                    'execute',
+                                    'lcsdb_');
+                            }
+                            
+                            ?>
                             <tr>
                                 <th scope="row"
                                     class="<?php echo getTestColor($row['lcsdb_status']); ?>"><?php echo $row["lcsdb_disc_batch_ID"]; ?></th>

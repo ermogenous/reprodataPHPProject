@@ -6,8 +6,8 @@ function getQuotationHTML($quotationID)
     $quotationData = $db->query_fetch('SELECT * FROM oqt_quotations WHERE oqq_quotations_ID = ' . $quotationID);
 
 //section 1 ========================================================================================================================================SECTION 1
-    $sect1 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $_GET["quotation"] . " AND oqqit_items_ID = 1");
-    $sect2 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $_GET["quotation"] . " AND oqqit_items_ID = 2");
+    $sect1 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $quotationID . " AND oqqit_items_ID = 1");
+    $sect2 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $quotationID . " AND oqqit_items_ID = 2");
 
     //find the package
     $pack1Html = '<input type="checkbox">';
@@ -224,7 +224,8 @@ function getQuotationHTML($quotationID)
         <br>
         <br>
         <br>
-        Policyholder Signature / Υπογραφή Συμβαλλόμενου ____________________________________________ Date / Ημερομηνία _____________________________
+        Policyholder Signature / Υπογραφή Συμβαλλόμενου ____________________________________________ 
+        Date / Ημερομηνία: '.$db->convert_date_format($quotationData['oqq_effective_date'],'yyyy-mm-dd', 'dd/mm/yyyy',1,1).' 
     </div>
     
     

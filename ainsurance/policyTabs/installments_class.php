@@ -34,32 +34,47 @@ Class Installments
     {
         global $db;
 
-        $perInst = bcdiv(($this->totalPolicyPremium / $this->totalInstallments), 1, 2);
-        $instSum = 0;
-        //create array with each one installment
-        for ($i = 0; $i < $this->totalInstallments; $i++) {
-            $instAmount[$i] = $perInst;
-            $instSum += $perInst;
+        if ($this->policyData['inapol_status'] == 'Outstanding') {
+            $perInst = bcdiv(($this->totalPolicyPremium / $this->totalInstallments), 1, 2);
+            $instSum = 0;
+            //create array with each one installment
+            for ($i = 0; $i < $this->totalInstallments; $i++) {
+                $instAmount[$i] = $perInst;
+                $instSum += $perInst;
+            }
+
+            //if there is a diff then add it to the first installment
+            if ($instSum < $this->totalPolicyPremium) {
+                $instAmount[0] += $this->totalPolicyPremium - $instSum;
+            }
+
+            //now calculate the commissions.
+            $perInstComm = bcdiv(($this->policyCommission / $this->totalInstallments), 1, 2);
+            $commSum = 0;
+            for ($i = 0; $i < $this->totalInstallments; $i++) {
+                $commAmount[$i] = $perInstComm;
+                $commSum += $perInstComm;
+            }
+            //if there is a diff then add it to the first installment
+            if ($commSum < $this->policyCommission) {
+                $commAmount[0] += $this->policyCommission - $commSum;
+            }
+
+            $this->updateInstallments($instAmount, $commAmount);
+
+        }
+        else {
+            //policy not outstanding
+            $this->error = true;
+            $this->errorDescription = 'Policy not Outstanding. Cannot calculate premium.';
         }
 
-        //if there is a diff then add it to the first installment
-        if ($instSum < $this->totalPolicyPremium) {
-            $instAmount[0] += $this->totalPolicyPremium - $instSum;
+        if ($this->error == true){
+            return false;
         }
-
-        //now calculate the commissions.
-        $perInstComm = bcdiv(($this->policyCommission / $this->totalInstallments), 1, 2);
-        $commSum = 0;
-        for ($i = 0; $i < $this->totalInstallments; $i++) {
-            $commAmount[$i] = $perInstComm;
-            $commSum += $perInstComm;
+        else {
+            return true;
         }
-        //if there is a diff then add it to the first installment
-        if ($commSum < $this->policyCommission) {
-            $commAmount[0] += $this->policyCommission - $commSum;
-        }
-
-        $this->updateInstallments($instAmount, $commAmount);
 
     }
 

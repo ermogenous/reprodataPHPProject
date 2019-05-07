@@ -129,17 +129,15 @@ $db->show_header();
 
                     </div>
 
-                    </script>
                     <div class="form-group row">
-                    <label for= "fld_insurance_company_ID" class="col-sm-2 col-form-label">
-                        Company
-                    </label>
-                    <div class="col-sm-4">
-                        <select name="fld_insurance_company_ID" id="fld_insurance_company_ID"
-                            class="form-control"
-                            onchange="loadPolicyTypes();">
+                        <label for="fld_insurance_company_ID" class="col-sm-2 col-form-label">
+                            Company
+                        </label>
+                        <div class ="col-sm-4">
+                            <select name="fld_insurance_company_ID" id="fld_insurance_company_ID"
+                                class="form-control" onchange="loadPolicyTypes();">
                         <?php if ($_GET['lid'] > 0) {?>
-                            <option value = "<?php echo $data['inainc_insurance_company_ID'];?>" >
+                            <option value="<?php echo $data['inainc_insurance_company_ID'];?>">
                         <?php echo $data['inainc_name']; ?>
                             </option>
                         <?php }//if ?>
@@ -153,31 +151,30 @@ $db->show_header();
                                 'invalidText' => 'Must select Company'
                             ]);
                         ?>
-                        < script >
+                        <script>
 
                         function loadInsuranceCompanies(clear = true) {
                             let agentSelected = $('#fld_agent_ID').val();
 
                             if (agentSelected > 0) {
                                 Rx.Observable.fromPromise($.get("../agents/agents_api.php?section=agent_commission_types_insurance_companies&agent=" + agentSelected))
-                                    .subscribe((response) =>
-                                {
-                                    data = response;
-                            },
-                                () =>{}
-                            ,
-                                () =>
-                                {
-                                    if (clear == true) {
-                                        clearDropDown('fld_insurance_company_ID');
-                                        loadDropDown('fld_insurance_company_ID', data);
-                                    } else {
-                                        loadDropDown('fld_insurance_company_ID', data);
-                                        loadPolicyTypes(false);
-                                    }
+                                    .subscribe((response) => {
+                                            data = response;
+                                        },
+                                        () => {
+                                        }
+                                        ,
+                                        () => {
+                                            if (clear == true) {
+                                                clearDropDown('fld_insurance_company_ID');
+                                                loadDropDown('fld_insurance_company_ID', data);
+                                            } else {
+                                                loadDropDown('fld_insurance_company_ID', data);
+                                                loadPolicyTypes(false);
+                                            }
 
-                                }
-                            )
+                                        }
+                                    )
                                 ;
                             }
                         }
@@ -215,23 +212,20 @@ $db->show_header();
                     if (agentSelected > 0 && insuranceCompanySelected > 0) {
                         Rx.Observable.fromPromise($.get("../agents/agents_api.php?section=agent_commission_types_policy_types&agent="
                             + agentSelected + '&inscompany=' + insuranceCompanySelected))
-                            .subscribe((response)=>
-                        {
-                            data = response;
-                        console.log(data);
-                    },
-                        ()=>
-                        {
-                        }
-                    ,
-                        ()=>
-                        {
-                            if (clear == true) {
-                                clearDropDown('fld_type_code');
-                            }
-                            loadDropDown('fld_type_code', data);
-                        }
-                    )
+                            .subscribe((response) => {
+                                    data = response;
+                                    console.log(data);
+                                },
+                                () => {
+                                }
+                                ,
+                                () => {
+                                    if (clear == true) {
+                                        clearDropDown('fld_type_code');
+                                    }
+                                    loadDropDown('fld_type_code', data);
+                                }
+                            )
                         ;
                     }
                 }

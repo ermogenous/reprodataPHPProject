@@ -83,7 +83,7 @@ class dynamicQuotation
             $this->errorDescription = $customResult['errorDescription'];
 
             if ($this->error == true) {
-                $this->errorDescription .= '<b>Must fix errors before activating.</b>';
+                $this->errorDescription .= '<br><b>Must fix errors before activating.</b>';
             }
 
         }
@@ -105,6 +105,7 @@ class dynamicQuotation
     {
         global $db;
         if ($this->checkForActivation() == true) {
+
             $newData['status'] = 'Active';
             $newData['effective_date'] = date('Y-m-d G:i:s');
             $newData['number'] = $this->issueNumber();
@@ -257,6 +258,7 @@ class dynamicQuotation
                 $mpdf = new \Mpdf\Mpdf([
                     'default_font' => 'dejavusans'
                 ]);
+
                 $mpdf->WriteHTML($html);
                 $filename = date('YmdGisu').".pdf";
                 $mpdf->Output($main['local_url'].'/send_auto_emails/attachment_files/'.$filename, \Mpdf\Output\Destination::FILE);

@@ -177,12 +177,21 @@ class send_auto_emails
             $attachFile = explode(PHP_EOL, $this->data['sae_attachment_files']);
             foreach ($attachFile as $value) {
                 $split = explode('||', $value);
-                if ($mail->addAttachment('attachment_files/'.$split[0],$split[1])) {
-                    $this->messages[] = "Adding Attachment File - " . $split[0] . " " . $split[1] . " added succesfully";
-                } else {
-                    $this->messages[] = "Error adding Attachment File - " . $split[0] . " " . $split[1];
-                    $this->error_messages .= "\nError Attachment File - " . $split[0] . " " . $split[1];
+                //$file = $main['local_url'].'/send_auto_emailss/attachment_files/'.$split[0];
+                $file = '../send_auto_emails/attachment_files/'.$split[0];
+                if (is_file($file)){
+                    if ($mail->addAttachment($file,$split[1])) {
+                        $this->messages[] = "Adding Attachment File - " . $split[0] . " " . $split[1] . " added succesfully";
+                    } else {
+                        $this->messages[] = "Error adding Attachment File - " . $split[0] . " " . $split[1];
+                        $this->error_messages .= "\nError Attachment File - " . $split[0] . " " . $split[1];
+                    }
                 }
+                else {
+                    $this->messages[] = "Error adding Attachment File Cannot find file - " . $split[0] . " " . $split[1];
+                    $this->error_messages .= "\nError Attachment File Cannot find file - " . $split[0] . " " . $split[1];
+                }
+
             }
             //$mail->addAttachment($main["local_url"] . '/' . $this->data['sae_attachment_file']);         // Add attachments
             //$mail->addAttachment('/tmp/image.jpg', 'new.jpg');    // Optional name
