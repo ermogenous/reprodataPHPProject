@@ -324,6 +324,21 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="form-group row">
+                        <label for="fld_enable_search_autofill" class="col-sm-4 col-form-label">Enable Search Autofill Client</label>
+                        <div class="col-sm-8">
+                            <select name="fld_enable_search_autofill" id="fld_enable_search_autofill"
+                                    class="form-control">
+                                <option value="1" <?php if ($data["oqqt_enable_search_autofill"] == '1') echo "selected=\"selected\""; ?>>
+                                    Enable
+                                </option>
+                                <option value="0" <?php if ($data["oqqt_enable_search_autofill"] == '0') echo "selected=\"selected\""; ?>>
+                                    Disable
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
                         <label for="fld_quotation_number_prefix" class="col-sm-4 col-form-label">Number Prefix</label>
                         <div class="col-sm-8">
                             <input name="fld_quotation_number_prefix" type="text" id="fld_quotation_number_prefix"
@@ -463,6 +478,17 @@ $formValidator = new customFormValidator();
                                     <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
                                            id="fld_added_field_extra_details" name="fld_added_field_extra_details"
                                         <?php if ($data['oqqt_added_field_extra_details'] == 1) echo 'checked'; ?>>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label for="fld_added_field_mobile" class="col-sm-5 col-form-label">
+                                    Mobile:
+                                </label>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                           id="fld_added_field_mobile" name="fld_added_field_mobile"
+                                        <?php if ($data['oqqt_added_field_mobile'] == 1) echo 'checked'; ?>>
                                 </div>
                             </div>
                         </div>

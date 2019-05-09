@@ -30,7 +30,6 @@ $table->extra_select_section = ", (oqq_fees + oqq_stamps + oqq_premium)as clo_to
 
 //set the filter in session
 if ($_POST['filter'] == 'Filter'){
-    echo "Creating filters in session";
     $_SESSION['dyqt_filter'] = true;
     $_SESSION['dyqt_filter_user'] = $_POST['filter_user_selected'];
     $_SESSION['dyqt_filter_number'] = $_POST['flt_number'];
@@ -41,7 +40,6 @@ if ($_POST['filter'] == 'Filter'){
     $_SESSION['dyqt_filter_deleted'] = $_POST['fltDeleted'];
 }
 if ($_POST['filter_clear'] == 'Clear'){
-    echo "Clearing filters in session";
     unset($_SESSION['dyqt_filter']);
     unset($_SESSION['dyqt_filter_user']);
     unset($_SESSION['dyqt_filter_number']);
@@ -57,6 +55,27 @@ if ($_SESSION['dyqt_filter']) {
     $table->extras = '1=1';
     if ($_SESSION['dyqt_filter_number'] != ''){
         $table->extras .= " AND oqq_number LIKE '%".$_SESSION['dyqt_filter_number']."%'";
+    }
+
+    $statusFilterNum = 0;
+    ($_SESSION['dyqt_filter_active'] == 1)? $statusFilter[] = 'Active' : '';
+    ($_SESSION['dyqt_filter_outstanding'] == 1)? $statusFilter[] = 'Outstanding' : '';
+    ($_SESSION['dyqt_filter_approved'] == 1)? $statusFilter[] = 'Approved' : '';
+    ($_SESSION['dyqt_filter_pending'] == 1)? $statusFilter[] = 'Pending' : '';
+    ($_SESSION['dyqt_filter_deleted'] == 1)? $statusFilter[] = 'Deleted' : '';
+    //prepare the status filter
+    $i=0;
+    if (is_array($statusFilter)) {
+        foreach ($statusFilter as $value) {
+            $i++;
+            if ($i > 1) {
+                $filterSql .= ",";
+            }
+            $filterSql .= "'" . $value . "'";
+        }
+        if ($i > 0) {
+            $table->extras .= " AND oqq_status IN (" . $filterSql . ")";
+        }
     }
 }
 
@@ -80,7 +99,6 @@ if ($db->user_data["usr_user_rights"] == 0) {
 
 
 $table->generate_data();
-echo $db->prepare_text_as_html($table->sql);
 
 $db->admin_on_load = "show_price();";
 $db->show_header();
@@ -158,7 +176,7 @@ if ($_GET["price_id"] != "") {
                                     </div>
                                     <div class="col-7">
                                         <input type="text" class="form-control"
-                                               id="flt_number" name="flt_number" value="">
+                                               id="flt_number" name="flt_number" value="<?php echo $_SESSION['dyqt_filter_number'];?>">
                                     </div>
                                 </div>
                             </div>
@@ -172,27 +190,27 @@ if ($_GET["price_id"] != "") {
                             <div class="col-12 form-inline">
                                 <div class=" custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input"
-                                           id="fltActive" name="fltActive" value="1">
+                                           id="fltActive" name="fltActive" value="1" <?php if ($_SESSION['dyqt_filter_active'] == 1) echo 'checked';?>>
                                     <label for="fltActive" class="custom-control-label">Active</label>
                                 </div>&nbsp;&nbsp;
                                 <div class=" custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input" id="fltOutstanding"
-                                           name="fltOutstanding" value="1">
+                                           name="fltOutstanding" value="1" <?php if ($_SESSION['dyqt_filter_outstanding'] == 1) echo 'checked';?>>
                                     <label for="fltOutstanding" class="custom-control-label">Outstanding</label>
                                 </div>&nbsp;&nbsp;
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input" id="fltApproved"
-                                           name="fltApproved" value="1">
+                                           name="fltApproved" value="1" <?php if ($_SESSION['dyqt_filter_approved'] == 1) echo 'checked';?>>
                                     <label for="fltApproved" class="custom-control-label">Approved</label>
                                 </div>&nbsp;&nbsp;
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input" id="fltPending"
-                                           name="fltPending" value="1">
+                                           name="fltPending" value="1" <?php if ($_SESSION['dyqt_filter_pending'] == 1) echo 'checked';?>>
                                     <label for="fltPending" class="custom-control-label">Pending</label>
                                 </div>&nbsp;&nbsp;
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input" id="fltDeleted"
-                                           name="fltDeleted" value="1">
+                                           name="fltDeleted" value="1" <?php if ($_SESSION['dyqt_filter_deleted'] == 1) echo 'checked';?>>
                                     <label for="fltDeleted" class="custom-control-label">Deleted</label>
                                 </div>
                             </div>

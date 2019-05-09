@@ -12,37 +12,110 @@ function mc_shipment_details_3()
     ?>
 
     <div class="form-group row">
-        <label for="3_oqqit_rate_1" class="col-sm-4 col-form-label">
-            <?php show_quotation_text("Type of Shipment", "Type of Shipment"); ?>
+        <label for="3_oqqit_rate_4" class="col-sm-4 col-form-label">
+            <?php show_quotation_text("Commodity", "Commodity"); ?>
         </label>
         <div class="col-sm-8">
-            <select name="3_oqqit_rate_1" id="3_oqqit_rate_1"
+            <select name="3_oqqit_rate_4" id="3_oqqit_rate_4"
                     class="form-control">
                 <option value=""></option>
-                <option value="Incomplete" <?php if ($qitem_data['oqqit_rate_1'] == 'Incomplete') echo 'selected'; ?>>
-                    <?php show_quotation_text("Incomplete", "Incomplete"); ?>
+                <option value="General Cargo & Merchandise" <?php if ($qitem_data['oqqit_rate_4'] == 'General Cargo & Merchandise') echo 'selected'; ?>>
+                    General Cargo & Merchandise
                 </option>
-                <option value="Template" <?php if ($qitem_data['oqqit_rate_1'] == 'Template') echo 'selected'; ?>>
-                    <?php show_quotation_text("Template", "Template"); ?>
+                <option value="New/Used Vehicles" <?php if ($qitem_data['oqqit_rate_4'] == 'New/Used Vehicles') echo 'selected'; ?>>
+                    New/Used Vehicles
                 </option>
-                <option value="Quote" <?php if ($qitem_data['oqqit_rate_1'] == 'Quote') echo 'selected'; ?>>
-                    <?php show_quotation_text("Quote", "Quote"); ?>
+                <option value="Machinery" <?php if ($qitem_data['oqqit_rate_4'] == 'Machinery') echo 'selected'; ?>>
+                    Machinery
                 </option>
-                <option value="Booked/Confirmed/Bound" <?php if ($qitem_data['oqqit_rate_1'] == 'Booked/Confirmed/Bound') echo 'selected'; ?>>
-                    <?php show_quotation_text("Booked/Confirmed/Bound", "Booked/Confirmed/Bound"); ?>
+                <option value="Temp. Controlled Cargo other than meat" <?php if ($qitem_data['oqqit_rate_4'] == 'Temp. Controlled Cargo other than meat') echo 'selected'; ?>>
+                    Temp. Controlled Cargo other than meat
+                </option>
+                <option value="Temp. Controlled Cargo Meat" <?php if ($qitem_data['oqqit_rate_4'] == 'Temp. Controlled Cargo Meat') echo 'selected'; ?>>
+                    Temp. Controlled Cargo Meat
+                </option>
+                <option value="Special Cover Mobile Phones, Electronic Equipment" <?php if ($qitem_data['oqqit_rate_4'] == 'Special Cover Mobile Phones, Electronic Equipment') echo 'selected'; ?>>
+                    Special Cover Mobile Phones, Electronic Equipment
+                </option>
+                <option value="Personal Effects professionally packed" <?php if ($qitem_data['oqqit_rate_4'] == 'Personal Effects professionally packed') echo 'selected'; ?>>
+                    Personal Effects professionally packed
+                </option>
+                <option value="Personal Effects owner packed" <?php if ($qitem_data['oqqit_rate_4'] == 'Personal Effects owner packed') echo 'selected'; ?>>
+                    Personal Effects owner packed
+                </option>
+                <option value="Other" <?php if ($qitem_data['oqqit_rate_4'] == 'Other') echo 'selected'; ?>>
+                    Other [Requires Approval]
                 </option>
             </select>
             <?php
             $formValidator->addField(
                 [
-                    'fieldName' => '2_oqqit_rate_1',
+                    'fieldName' => '3_oqqit_rate_4',
                     'fieldDataType' => 'select',
                     'required' => true,
-                    'invalidText' => show_quotation_text("Επιλέξτε Type of Shipment.", "Must select Type of Shipment", 'Return')
+                    'invalidText' => show_quotation_text("Επιλέξτε Commodity.", "Must select Commodity", 'Return')
                 ]);
             ?>
+            <script>
+                function Approval3_oqqit_rate_4() {
+
+                    console.log('executed');
+
+                    let result = [];
+                    if ($('#3_oqqit_rate_4').val() == 'Other') {
+                        result['result'] = 1;
+                        result['info'] = 'Commodity: Requires Approval';
+                    }
+                    else {
+                        result['result'] = 0;
+                        result['info'] = '';
+                    }
+                    return result;
+                }
+
+            </script>
         </div>
     </div>
+
+
+    <?php
+    //remove type of shipment
+    if (1 == 2) {
+        ?>
+        <div class="form-group row">
+            <label for="3_oqqit_rate_1" class="col-sm-4 col-form-label">
+                <?php show_quotation_text("Type of Shipment", "Type of Shipment"); ?>
+            </label>
+            <div class="col-sm-8">
+                <select name="3_oqqit_rate_1" id="3_oqqit_rate_1"
+                        class="form-control">
+                    <option value=""></option>
+                    <option value="Incomplete" <?php if ($qitem_data['oqqit_rate_1'] == 'Incomplete') echo 'selected'; ?>>
+                        <?php show_quotation_text("Incomplete", "Incomplete"); ?>
+                    </option>
+                    <option value="Template" <?php if ($qitem_data['oqqit_rate_1'] == 'Template') echo 'selected'; ?>>
+                        <?php show_quotation_text("Template", "Template"); ?>
+                    </option>
+                    <option value="Quote" <?php if ($qitem_data['oqqit_rate_1'] == 'Quote') echo 'selected'; ?>>
+                        <?php show_quotation_text("Quote", "Quote"); ?>
+                    </option>
+                    <option value="Booked/Confirmed/Bound" <?php if ($qitem_data['oqqit_rate_1'] == 'Booked/Confirmed/Bound') echo 'selected'; ?>>
+                        <?php show_quotation_text("Booked/Confirmed/Bound", "Booked/Confirmed/Bound"); ?>
+                    </option>
+                </select>
+                <?php
+                $formValidator->addField(
+                    [
+                        'fieldName' => '2_oqqit_rate_1',
+                        'fieldDataType' => 'select',
+                        'required' => true,
+                        'invalidText' => show_quotation_text("Επιλέξτε Type of Shipment.", "Must select Type of Shipment", 'Return')
+                    ]);
+                ?>
+            </div>
+        </div>
+    <?php } ?>
+
 
     <div class="form-group row">
         <label for="3_oqqit_rate_2" class="col-sm-4 col-form-label">
@@ -94,53 +167,6 @@ function mc_shipment_details_3()
         </div>
     </div>
 
-    <div class="form-group row">
-        <label for="3_oqqit_rate_4" class="col-sm-4 col-form-label">
-            <?php show_quotation_text("Commodity", "Commodity"); ?>
-        </label>
-        <div class="col-sm-8">
-            <select name="3_oqqit_rate_4" id="3_oqqit_rate_4"
-                    class="form-control">
-                <option value=""></option>
-                <option value="General Cargo & Merchandise" <?php if ($qitem_data['oqqit_rate_4'] == 'General Cargo & Merchandise') echo 'selected'; ?>>
-                    General Cargo & Merchandise
-                </option>
-                <option value="New/Used Vehicles" <?php if ($qitem_data['oqqit_rate_4'] == 'New/Used Vehicles') echo 'selected'; ?>>
-                    New/Used Vehicles
-                </option>
-                <option value="Machinery" <?php if ($qitem_data['oqqit_rate_4'] == 'Machinery') echo 'selected'; ?>>
-                    Machinery
-                </option>
-                <option value="Temp. Controlled Cargo other than meat" <?php if ($qitem_data['oqqit_rate_4'] == 'Temp. Controlled Cargo other than meat') echo 'selected'; ?>>
-                    Temp. Controlled Cargo other than meat
-                </option>
-                <option value="Temp. Controlled Cargo Meat" <?php if ($qitem_data['oqqit_rate_4'] == 'Temp. Controlled Cargo Meat') echo 'selected'; ?>>
-                    Temp. Controlled Cargo Meat
-                </option>
-                <option value="Special Cover Mobile Phones, Electronic Equipment" <?php if ($qitem_data['oqqit_rate_4'] == 'Special Cover Mobile Phones, Electronic Equipment') echo 'selected'; ?>>
-                    Special Cover Mobile Phones, Electronic Equipment
-                </option>
-                <option value="Personal Effects professionally packed" <?php if ($qitem_data['oqqit_rate_4'] == 'Personal Effects professionally packed') echo 'selected'; ?>>
-                    Personal Effects professionally packed
-                </option>
-                <option value="Personal Effects owner packed" <?php if ($qitem_data['oqqit_rate_4'] == 'Personal Effects owner packed') echo 'selected'; ?>>
-                    Personal Effects owner packed
-                </option>
-                <option value="Other" <?php if ($qitem_data['oqqit_rate_4'] == 'Other') echo 'selected'; ?>>
-                    Other
-                </option>
-            </select>
-            <?php
-            $formValidator->addField(
-                [
-                    'fieldName' => '3_oqqit_rate_4',
-                    'fieldDataType' => 'select',
-                    'required' => true,
-                    'invalidText' => show_quotation_text("Επιλέξτε Commodity.", "Must select Commodity", 'Return')
-                ]);
-            ?>
-        </div>
-    </div>
 
     <div class="form-group row">
         <label for="3_oqqit_rate_6" class="col-sm-4 col-form-label">
@@ -274,13 +300,16 @@ function mc_shipment_details_3()
                 $result = $db->query($sql);
                 while ($country = $db->fetch_assoc($result)) {
                     $reffered = '';
-                    if ($country['cde_option_value'] == 'Reject'){
+                    if ($country['cde_option_value'] == 'Reject') {
                         $reffered = ' - <b>Country Not Allowed</b>';
+                    }
+                    else if ($country['cde_option_value'] == 'Approval') {
+                        $reffered = ' - <b>Country Needs Approval</b>';
                     }
                     ?>
                     <option value="<?php echo $country['cde_code_ID']; ?>"
                         <?php if ($qitem_data['oqqit_rate_10'] == $country['cde_code_ID']) echo 'selected'; ?>>
-                        <?php echo $country['cde_value'].$reffered; ?>
+                        <?php echo $country['cde_value'] . $reffered; ?>
                     </option>
                 <?php } ?>
             </select>
@@ -292,7 +321,15 @@ function mc_shipment_details_3()
                     'required' => true,
                     'invalidText' => show_quotation_text("Επιλέξτε Country of Origin.", "Must select Country of Origin", 'Return')
                 ]);
+            $jsCode = activate_custom_validation('',true);
             ?>
+            <script>
+                function Approval3_oqqit_rate_10(){
+                    var result = {"result":"0", "info":""};
+                    <?php echo $jsCode['origin'];?>
+                    return result;
+                }
+            </script>
         </div>
     </div>
 
@@ -309,13 +346,16 @@ function mc_shipment_details_3()
                 $result = $db->query($sql);
                 while ($country = $db->fetch_assoc($result)) {
                     $reffered = '';
-                    if ($country['cde_option_value'] == 'Reject'){
+                    if ($country['cde_option_value'] == 'Reject') {
                         $reffered = ' - <b>Country Not Allowed</b>';
+                    }
+                    else if ($country['cde_option_value'] == 'Approval') {
+                        $reffered = ' - <b>Country Needs Approval</b>';
                     }
                     ?>
                     <option value="<?php echo $country['cde_code_ID']; ?>"
                         <?php if ($qitem_data['oqqit_rate_11'] == $country['cde_code_ID']) echo 'selected'; ?>>
-                        <?php echo $country['cde_value'].$reffered; ?>
+                        <?php echo $country['cde_value'] . $reffered; ?>
                     </option>
                 <?php } ?>
             </select>
@@ -328,6 +368,13 @@ function mc_shipment_details_3()
                     'invalidText' => show_quotation_text("Επιλέξτε Via Country.", "Must select Via Country", 'Return')
                 ]);
             ?>
+            <script>
+                function Approval3_oqqit_rate_11(){
+                    var result = {"result":"0", "info":""};
+                    <?php echo $jsCode['via'];?>
+                    return result;
+                }
+            </script>
         </div>
     </div>
 
@@ -344,13 +391,16 @@ function mc_shipment_details_3()
                 $result = $db->query($sql);
                 while ($country = $db->fetch_assoc($result)) {
                     $reffered = '';
-                    if ($country['cde_option_value'] == 'Reject'){
+                    if ($country['cde_option_value'] == 'Reject') {
                         $reffered = ' - <b>Country Not Allowed</b>';
+                    }
+                    else if ($country['cde_option_value'] == 'Approval') {
+                        $reffered = ' - <b>Country Needs Approval</b>';
                     }
                     ?>
                     <option value="<?php echo $country['cde_code_ID']; ?>"
                         <?php if ($qitem_data['oqqit_rate_12'] == $country['cde_code_ID']) echo 'selected'; ?>>
-                        <?php echo $country['cde_value'].$reffered; ?>
+                        <?php echo $country['cde_value'] . $reffered; ?>
                     </option>
                 <?php } ?>
             </select>
@@ -363,9 +413,15 @@ function mc_shipment_details_3()
                     'invalidText' => show_quotation_text("Επιλέξτε Destination Country.", "Must select Destination Country", 'Return')
                 ]);
             ?>
+            <script>
+                function Approval3_oqqit_rate_12(){
+                    var result = {"result":"0", "info":""};
+                    <?php echo $jsCode['destination'];?>
+                    return result;
+                }
+            </script>
         </div>
     </div>
-
 
 
     <?php
@@ -445,7 +501,7 @@ function mc_cargo_details_4()
                 [
                     'fieldName' => '4_oqqit_rate_3',
                     'fieldDataType' => 'text',
-                    'required' => true,
+                    'required' => false,
                     'invalidText' => show_quotation_text("Συμπληρώστε Letter of Credit Conditions.", "Must Fill Letter of Credit Conditions", 'Return')
                 ]);
             ?>
@@ -460,101 +516,149 @@ function insured_amount_custom_rates($array, $values, $quotation_id)
     return $array;
 }
 
-function activate_custom_validation($data){
+function activate_custom_validation($data, $returnJS = false)
+{
     global $db;
-    
+
     $result['error'] = false;
     $result['errorDescription'] = '';
 
 
-    //get item 3 data
-    $sql = 'SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = '.$data['oqq_quotations_ID'].' AND oqqit_items_ID = 3';
-    $item3 = $db->query_fetch($sql);
 
-    if ($item3['oqqit_rate_10'] == '' || $item3['oqqit_rate_11'] == '' || $item3['oqqit_rate_12'] == ''){
-        $result['error'] = true;
-        $result['errorDescription'] = 'Missing data';
+    if ($returnJS == false) {
+        //get item 3 data
+        $sql = 'SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = ' . $data['oqq_quotations_ID'] . ' AND oqqit_items_ID = 3';
+        $item3 = $db->query_fetch($sql);
+
+        if ($item3['oqqit_rate_10'] == '' || $item3['oqqit_rate_11'] == '' || $item3['oqqit_rate_12'] == '') {
+            $result['error'] = true;
+            $result['errorDescription'] = 'Missing data';
+            return $result;
+        }
+
+
+        //get all 3 countries from codes
+        $countriesResult = $db->query("
+        SELECT * FROM codes WHERE cde_type = 'Countries' AND (
+            cde_code_ID = " . $item3['oqqit_rate_10'] . " OR
+            cde_code_ID = " . $item3['oqqit_rate_11'] . " OR
+            cde_code_ID = " . $item3['oqqit_rate_12'] . " 
+        )");
+        while ($country = $db->fetch_assoc($countriesResult)) {
+            $countries[$country['cde_code_ID']] = $country;
+        }
+
+        //check origin country
+        $originCountryID = $item3['oqqit_rate_10'];
+        if ($countries[$originCountryID]['cde_option_value'] == 'Reject') {
+            $result['error'] = true;
+            $result['errorDescription'] = 'Origin Country: ' . $countries[$originCountryID]['cde_value'] . " Cannot be used.<br>";
+
+        }
+
+
+        //check via country
+        $viaCountryID = $item3['oqqit_rate_11'];
+        if ($countries[$viaCountryID]['cde_option_value'] == 'Reject') {
+            $result['error'] = true;
+            $result['errorDescription'] .= 'Via Country: ' . $countries[$viaCountryID]['cde_value'] . " Cannot be used.<br>";
+        }
+
+        //check destination country
+        $destinationCountryID = $item3['oqqit_rate_12'];
+        if ($countries[$destinationCountryID]['cde_option_value'] == 'Reject') {
+            $result['error'] = true;
+            $result['errorDescription'] .= 'Destination Country: ' . $countries[$destinationCountryID]['cde_value'] . " Cannot be used.<br>";
+        }
+
+
+
+
         return $result;
     }
+    else {
+        $sql = "SELECT * FROM codes WHERE cde_type = 'Countries' AND cde_option_value IN ('Approval','Reject')";
+        $result = $db->query($sql);
+        $approvalList = '';
+        $rejectList = '';
+        $jsCheck = [];
+        while ($row = $db->fetch_assoc($result)){
+            $approvalList .= "'".$row['cde_code_ID']."',";
+        }
+        $approvalList = $db->remove_last_char($approvalList);
+        $approvalList = "[".$approvalList."]";
 
+        $jsCheck['origin'] = "
+        if (".$approvalList.".indexOf($('#3_oqqit_rate_10').val()) >= 0)
+        {
+            result['result'] = 1;
+            result['info'] = 'Country of Origin: Needs approval.';
+        }";
+        $jsCheck['via'] = "
+        if (".$approvalList.".indexOf($('#3_oqqit_rate_11').val()) >= 0)
+        {
+            result['result'] = 1;
+            result['info'] = 'Via Country: Needs approval.';
+        }";
+        $jsCheck['destination'] = "
+        if (".$approvalList.".indexOf($('#3_oqqit_rate_12').val()) >= 0)
+        {
+            result['result'] = 1;
+            result['info'] = 'Destination Country: Needs approval.';
+        }
+        ";
 
-    //get all 3 countries from codes
-    $countriesResult = $db->query("
-        SELECT * FROM codes WHERE cde_type = 'Countries' AND (
-            cde_code_ID = ".$item3['oqqit_rate_10']." OR
-            cde_code_ID = ".$item3['oqqit_rate_11']." OR
-            cde_code_ID = ".$item3['oqqit_rate_12']." 
-        )");
-    while ($country = $db->fetch_assoc($countriesResult)){
-        $countries[$country['cde_code_ID']] = $country;
+        return $jsCheck;
     }
 
-    //check origin country
-    $originCountryID = $item3['oqqit_rate_10'];
-    if ($countries[$originCountryID]['cde_option_value'] == 'Reject'){
-        $result['error'] = true;
-        $result['errorDescription'] = 'Origin Country: '.$countries[$originCountryID]['cde_value']." Cannot be used.<br>";
-    }
-
-
-    //check via country
-    $viaCountryID = $item3['oqqit_rate_11'];
-    if ($countries[$viaCountryID]['cde_option_value'] == 'Reject'){
-        $result['error'] = true;
-        $result['errorDescription'] .= 'Via Country: '.$countries[$viaCountryID]['cde_value']." Cannot be used.<br>";
-    }
-
-    //check destination country
-    $destinationCountryID = $item3['oqqit_rate_12'];
-    if ($countries[$destinationCountryID]['cde_option_value'] == 'Reject'){
-        $result['error'] = true;
-        $result['errorDescription'] .= 'Destination Country: '.$countries[$destinationCountryID]['cde_value']." Cannot be used.<br>";
-    }
-
-
-    return $result;
 }
 
-function customCheckForApproval($data){
+function customCheckForApproval($data)
+{
     global $db;
 
     $result['error'] = false;
     $result['errorDescription'] = '';
 
     //get item 3 data
-    $item3 = $db->query_fetch('SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = '.$data['oqq_quotations_ID'].' AND oqqit_items_ID = 3');
+    $item3 = $db->query_fetch('SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = ' . $data['oqq_quotations_ID'] . ' AND oqqit_items_ID = 3');
 
     //get all 3 countries from codes
     $countriesResult = $db->query("
         SELECT * FROM codes WHERE cde_type = 'Countries' AND (
-            cde_code_ID = ".$item3['oqqit_rate_10']." OR
-            cde_code_ID = ".$item3['oqqit_rate_11']." OR
-            cde_code_ID = ".$item3['oqqit_rate_12']." 
+            cde_code_ID = " . $item3['oqqit_rate_10'] . " OR
+            cde_code_ID = " . $item3['oqqit_rate_11'] . " OR
+            cde_code_ID = " . $item3['oqqit_rate_12'] . " 
         )");
-    while ($country = $db->fetch_assoc($countriesResult)){
+    while ($country = $db->fetch_assoc($countriesResult)) {
         $countries[$country['cde_code_ID']] = $country;
     }
 
     //check origin country
     $originCountryID = $item3['oqqit_rate_10'];
-    if ($countries[$originCountryID]['cde_option_value'] == 'Approval'){
+    if ($countries[$originCountryID]['cde_option_value'] == 'Approval') {
         $result['error'] = true;
-        $result['errorDescription'] = 'Origin Country: '.$countries[$originCountryID]['cde_value']." Needs Approval.<br>";
+        $result['errorDescription'] = 'Origin Country: ' . $countries[$originCountryID]['cde_value'] . " Needs Approval.<br>";
     }
 
 
     //check via country
     $viaCountryID = $item3['oqqit_rate_11'];
-    if ($countries[$viaCountryID]['cde_option_value'] == 'Approval'){
+    if ($countries[$viaCountryID]['cde_option_value'] == 'Approval') {
         $result['error'] = true;
-        $result['errorDescription'] .= 'Via Country: '.$countries[$viaCountryID]['cde_value']." Needs Approval.<br>";
+        $result['errorDescription'] .= 'Via Country: ' . $countries[$viaCountryID]['cde_value'] . " Needs Approval.<br>";
     }
 
     //check destination country
     $destinationCountryID = $item3['oqqit_rate_12'];
-    if ($countries[$destinationCountryID]['cde_option_value'] == 'Approval'){
+    if ($countries[$destinationCountryID]['cde_option_value'] == 'Approval') {
         $result['error'] = true;
-        $result['errorDescription'] .= 'Destination Country: '.$countries[$destinationCountryID]['cde_value']." Needs Approval.<br>";
+        $result['errorDescription'] .= 'Destination Country: ' . $countries[$destinationCountryID]['cde_value'] . " Needs Approval.<br>";
+    }
+
+    if ($item3['oqqit_rate_4'] == 'Other') {
+        $result['error'] = true;
+        $result['errorDescription'] .= 'Commodity Other Needs Approval.<br>';
     }
 
     return $result;

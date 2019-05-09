@@ -33,10 +33,10 @@ CONCAT(cst_work_tel_1, ' ', cst_work_tel_2, ' ', cst_fax, ' ', cst_mobile_1, ' '
         $data[] = $row;
     }
 
-    $db->update_log_file_custom($sql, 'Transaction API:none GET:'.print_r($_GET,true));
+    $db->update_log_file_custom($sql, 'Customers API:none GET:'.print_r($_GET,true));
 }
 else {
-    $db->update_log_file_custom('NONE', 'Transaction API:none GET:'.print_r($_GET,true));
+    $db->update_log_file_custom('NONE', 'Customers API:none GET:'.print_r($_GET,true));
 }
 
 

@@ -119,7 +119,7 @@ $db->show_header();
                     <div class="col-2 text-center">
                         <a href="#">
                             <i class="fas fa-lock fa-5x"
-                                <?php if ($quote->quotationData()['oqq_status'] == 'Outstanding') { ?>
+                                <?php if ($quote->quotationData()['oqq_status'] == 'Outstanding' || $quote->quotationData()['oqq_status'] == 'Approved') { ?>
                                     onclick="
                                             if (confirm('Are you sure you want to activate this <?php echo $quote->getQuotationType();?>?')){
                                                 window.location.assign('quotations_show.php?action=activate&lid=<?php echo $data["oqq_quotations_ID"]; ?>')
