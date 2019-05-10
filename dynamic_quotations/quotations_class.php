@@ -287,8 +287,8 @@ class dynamicQuotation
             $newData['status'] = 'Delete';
             $db->db_tool_update_row('oqt_quotation_approvals',
                 $newData,
-                "oqqp_quotation_permission_ID = " . $row['oqqp_quotation_permission_ID'],
-                $row['oqqp_quotation_permission_ID'],
+                "oqqp_quotation_approval_ID = " . $row['oqqp_quotation_approval_ID'],
+                $row['oqqp_quotation_approval_ID'],
                 '',
                 'execute',
                 'oqqp_');
@@ -297,6 +297,7 @@ class dynamicQuotation
         $appData['quotation_ID'] = $this->quotationID;
         $appData['status'] = 'Pending';
         $appData['description'] = $description;
+
         $db->db_tool_insert_row('oqt_quotation_approvals', $appData, '', 0, 'oqqp_');
 
     }

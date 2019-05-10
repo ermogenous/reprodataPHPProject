@@ -326,7 +326,12 @@ function mc_shipment_details_3()
             <script>
                 function Approval3_oqqit_rate_10(){
                     var result = {"result":"0", "info":""};
-                    <?php echo $jsCode['origin'];?>
+                    <?php echo $jsCode['origin']['approval'];?>
+                    return result;
+                }
+                function Reject3_oqqit_rate_10(){
+                    var result = {"result":"0", "info":""};
+                    <?php echo $jsCode['origin']['reject'];?>
                     return result;
                 }
             </script>
@@ -371,7 +376,12 @@ function mc_shipment_details_3()
             <script>
                 function Approval3_oqqit_rate_11(){
                     var result = {"result":"0", "info":""};
-                    <?php echo $jsCode['via'];?>
+                    <?php echo $jsCode['via']['approval'];?>
+                    return result;
+                }
+                function Reject3_oqqit_rate_11(){
+                    var result = {"result":"0", "info":""};
+                    <?php echo $jsCode['via']['reject'];?>
                     return result;
                 }
             </script>
@@ -416,7 +426,12 @@ function mc_shipment_details_3()
             <script>
                 function Approval3_oqqit_rate_12(){
                     var result = {"result":"0", "info":""};
-                    <?php echo $jsCode['destination'];?>
+                    <?php echo $jsCode['destination']['approval'];?>
+                    return result;
+                }
+                function Reject3_oqqit_rate_12(){
+                    var result = {"result":"0", "info":""};
+                    <?php echo $jsCode['destination']['reject'];?>
                     return result;
                 }
             </script>
@@ -583,25 +598,53 @@ function activate_custom_validation($data, $returnJS = false)
         $rejectList = '';
         $jsCheck = [];
         while ($row = $db->fetch_assoc($result)){
-            $approvalList .= "'".$row['cde_code_ID']."',";
+            if ($row['cde_option_value'] == 'Approval') {
+                $approvalList .= "'" . $row['cde_code_ID'] . "',";
+            }
+            if ($row['cde_option_value'] == 'Reject'){
+                $rejectList .= "'" . $row['cde_code_ID'] . "',";
+            }
         }
         $approvalList = $db->remove_last_char($approvalList);
         $approvalList = "[".$approvalList."]";
 
-        $jsCheck['origin'] = "
+        $rejectList = $db->remove_last_char($rejectList);
+        $rejectList = "[".$rejectList."]";
+
+        $jsCheck['origin']['approval'] = "
         if (".$approvalList.".indexOf($('#3_oqqit_rate_10').val()) >= 0)
         {
             result['result'] = 1;
             result['info'] = 'Country of Origin: Needs approval.';
         }";
-        $jsCheck['via'] = "
+        $jsCheck['via']['approval'] = "
         if (".$approvalList.".indexOf($('#3_oqqit_rate_11').val()) >= 0)
         {
             result['result'] = 1;
             result['info'] = 'Via Country: Needs approval.';
         }";
-        $jsCheck['destination'] = "
+        $jsCheck['destination']['approval'] = "
         if (".$approvalList.".indexOf($('#3_oqqit_rate_12').val()) >= 0)
+        {
+            result['result'] = 1;
+            result['info'] = 'Destination Country: Needs approval.';
+        }
+        ";
+
+        $jsCheck['origin']['reject'] = "
+        if (".$rejectList.".indexOf($('#3_oqqit_rate_10').val()) >= 0)
+        {
+            result['result'] = 1;
+            result['info'] = 'Country of Origin:' + $('#3_oqqit_rate_10 option:selected').text() + '';
+        }";
+        $jsCheck['via']['reject'] = "
+        if (".$rejectList.".indexOf($('#3_oqqit_rate_11').val()) >= 0)
+        {
+            result['result'] = 1;
+            result['info'] = 'Via Country: Needs approval.';
+        }";
+        $jsCheck['destination']['reject'] = "
+        if (".$rejectList.".indexOf($('#3_oqqit_rate_12').val()) >= 0)
         {
             result['result'] = 1;
             result['info'] = 'Destination Country: Needs approval.';

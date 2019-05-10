@@ -167,6 +167,22 @@ $formValidator->setFormName('myForm');
 if ($quote->quotationData()['oqq_status'] != 'Outstanding' && $_GET['quotation'] > 0) {
     $formValidator->disableForm();
 }
+$formValidator->addCustomCode("
+    if ($('#warningDivSection').html() != '' && FormErrorFound == false){
+        if (confirm('Warnings Found. Are you sure you want to continue?')){
+            
+        }
+        else {
+            FormErrorFound = true;  
+        }
+    }
+    
+    if ($('#alertDivSection').html() != '' && FormErrorFound == false){
+        alert('Error Found. Cannot Proceed');
+        FormErrorFound = true;  
+    }
+    
+");
 
 
 ?>
@@ -572,7 +588,9 @@ if ($quote->quotationData()['oqq_status'] != 'Outstanding' && $_GET['quotation']
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-12 alert alert-warning text-center" id="alertsDivSection"
+                    <div class="col-12 alert alert-warning text-center" id="warningDivSection"
+                         style="display: none"></div>
+                    <div class="col-12 alert alert-danger text-center" id="alertDivSection"
                          style="display: none"></div>
                 </div>
 
@@ -582,24 +600,37 @@ if ($quote->quotationData()['oqq_status'] != 'Outstanding' && $_GET['quotation']
 </div>
 
 <script>
-    var allAlerts = Object;
+    var allWarning = Object;
+    var allAlert = Object;
+    function addNewWarning(warning, warningID) {
+
+        allWarning[warningID] = warning;
+        showWarning();
+    }
     function addNewAlert(alert, alertID) {
 
-        allAlerts[alertID] = alert;
-        showAlerts();
+        allAlert[alertID] = alert;
+        showAlert();
+    }
+
+    function removeWarning(warningID){
+        if (allWarning[warningID] != '') {
+            allWarning[warningID] = '';
+        }
+        showWarning();
     }
 
     function removeAlert(alertID){
-        if (allAlerts[alertID] != '') {
-            allAlerts[alertID] = '';
+        if (allAlert[alertID] != '') {
+            allAlert[alertID] = '';
         }
-        showAlerts();
+        showAlert();
     }
 
-    function showAlerts() {
+    function showWarning() {
         let allHtml = 'Warning! - ';
         let i = 0;
-        $.each(allAlerts ,function( key, value ) {
+        $.each(allWarning ,function( key, value ) {
             if (value != '') {
                 i++;
                 if (i > 1) {
@@ -609,37 +640,70 @@ if ($quote->quotationData()['oqq_status'] != 'Outstanding' && $_GET['quotation']
             }
         });
         if (i>0) {
-            $('#alertsDivSection').show();
-            $('#alertsDivSection').html(allHtml);
+            $('#warningDivSection').show();
+            $('#warningDivSection').html(allHtml);
         }
         else {
-            $('#alertsDivSection').hide();
+            $('#warningDivSection').hide();
+            $('#warningDivSection').html('');
+        }
+    }
+
+    function showAlert() {
+        let allHtml = 'Alert! - ';
+        let i = 0;
+        $.each(allAlert ,function( key, value ) {
+            if (value != '') {
+                i++;
+                if (i > 1) {
+                    allHtml += '<br>';
+                }
+                allHtml += value;
+            }
+        });
+        if (i>0) {
+            $('#alertDivSection').show();
+            $('#alertDivSection').html(allHtml);
+        }
+        else {
+            $('#alertDivSection').hide();
+            $('#alertDivSection').html('');
         }
     }
 
     //check if a function named Approval[fieldID] exists. If does then executes the function and gets the result
-    //if in the result[result] is equal to 0 then issue alert.
+    //if in the result[result] is equal to 0 then issue warning.
     $("#myForm :input").change(function() {
+        updateWarnings($(this)[0]['id']);
         updateAlerts($(this)[0]['id']);
     });
-    function updateAlerts(fieldID){
-
-        console.log('Checking-> Approval' + fieldID);
+    function updateWarnings(fieldID){
 
         var result = [];
         var functionString = 'if (typeof Approval'+fieldID+' === "function") {result = Approval'+ fieldID +'();}';
-//console.log(functionString);
         eval(functionString);
-        console.log(result);
+        if (result['result'] == 1){
+            addNewWarning(result['info'],fieldID);
+        }
+        else {
+            removeWarning(fieldID);
+        }
+    }
+
+    //checks if function Reject[fieldID] exists and executes and gets the result
+    //if in the result[result] is equal to 0 then issue alert.
+    function updateAlerts(fieldID){
+
+        var result = [];
+        var functionString = 'if (typeof Reject'+fieldID+' === "function") {result = Reject'+ fieldID +'();}';
+        eval(functionString);
         if (result['result'] == 1){
             addNewAlert(result['info'],fieldID);
         }
         else {
             removeAlert(fieldID);
         }
-
     }
-
 
 
 
