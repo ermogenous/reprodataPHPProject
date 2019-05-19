@@ -12,13 +12,21 @@ function getQuotationHTML($quotationID)
 
     $quotationData = $db->query_fetch('SELECT * FROM oqt_quotations WHERE oqq_quotations_ID = ' . $quotationID);
 
+    //underwriter data
+    $underwriterData = $db->query_fetch('SELECT * FROM oqt_quotations_underwriters WHERE oqun_user_ID = '.$db->user_data['usr_users_ID']);
+
     //get items data
     $sect1 = $db->query_fetch("
       SELECT 
         *,
         (SELECT cde_value FROM codes WHERE oqqit_rate_10 = cde_code_ID)as clo_country_from,
         (SELECT cde_value FROM codes WHERE oqqit_rate_11 = cde_code_ID)as clo_country_via,
-        (SELECT cde_value FROM codes WHERE oqqit_rate_12 = cde_code_ID)as clo_country_to
+        (SELECT cde_value FROM codes WHERE oqqit_rate_12 = cde_code_ID)as clo_country_to,
+        
+        (SELECT cde_option_value FROM codes WHERE oqqit_rate_10 = cde_code_ID)as clo_country_from_type,
+        (SELECT cde_option_value FROM codes WHERE oqqit_rate_11 = cde_code_ID)as clo_country_via_type,
+        (SELECT cde_option_value FROM codes WHERE oqqit_rate_12 = cde_code_ID)as clo_country_to_type
+        
         FROM 
         oqt_quotations_items 
         WHERE oqqit_quotations_ID = " . $quotationID . " AND oqqit_items_ID = 3");
@@ -67,6 +75,70 @@ function getQuotationHTML($quotationID)
             $draftImage = '';
         }
 
+        //find approvals to show in pdf
+        $approvalFromCountry = '';
+        $approvalViaCountry = '';
+        $approvalToCountry = '';
+        $approvalCommodity= '';
+        if ($quotationData['oqq_status'] == 'Pending'){
+            $approvalHtml = ' [<span style="color: red; background: lightgrey;">Approval</span>]';
+
+            //origin/from country
+            if ($sect1['clo_country_from_type'] == 'Approval'){
+                $approvalFromCountry = $approvalHtml;
+            }
+            //via country
+            if ($sect1['clo_country_via_type'] == 'Approval'){
+                $approvalViaCountry = $approvalHtml;
+            }
+            //to country
+            if ($sect1['clo_country_to_type'] == 'Approval'){
+                $approvalToCountry = $approvalHtml;
+            }
+
+            //commodity
+            if ($sect1['oqqit_rate_4'] == 'Other'){
+                $approvalCommodity = $approvalHtml;
+            }
+
+        }
+
+        //underwriter open cover number
+        $underwriterOpenCoverNumber = '';
+        if ($underwriterData['oqun_open_cover_number'] != ''){
+            $underwriterOpenCoverNumber = "Open Cover Number:".$underwriterData['oqun_open_cover_number'];
+        }
+
+        //find excess
+        $excess = '';
+        if ($sect1['oqqit_rate_4'] == 'General Cargo & Merchandise'){
+            $excess = $underwriterData['oqun_excess_general_cargo'];
+        }
+        else if ($sect1['oqqit_rate_4'] == 'New/Used Vehicles'){
+            $excess = $underwriterData['oqun_excess_vehicles'];
+        }
+        else if ($sect1['oqqit_rate_4'] == 'Machinery'){
+            $excess = $underwriterData['oqun_excess_machinery'];
+        }
+        else if ($sect1['oqqit_rate_4'] == 'Temp. Controlled Cargo other than meat'){
+            $excess = $underwriterData['oqun_excess_temp_no_meat'];
+        }
+        else if ($sect1['oqqit_rate_4'] == 'Temp. Controlled Cargo Meat'){
+            $excess = $underwriterData['oqun_excess_temp_meat'];
+        }
+        else if ($sect1['oqqit_rate_4'] == 'Special Cover Mobile Phones, Electronic Equipment'){
+            $excess = $underwriterData['oqun_excess_special_cover'];
+        }
+        else if ($sect1['oqqit_rate_4'] == 'Personal Effects professionally packed'){
+            $excess = $underwriterData['oqun_excess_pro_packed'];
+        }
+        else if ($sect1['oqqit_rate_4'] == 'Personal Effects owner packed'){
+            $excess = $underwriterData['oqun_excess_owner_packed'];
+        }
+        else if ($sect1['oqqit_rate_4'] == 'Other'){
+            $excess = $underwriterData['oqun_excess_other'];
+        }
+
         $html .= '
 <div style="font-family: Tahoma;">
 
@@ -89,7 +161,7 @@ function getQuotationHTML($quotationID)
         </tr>
         <tr>
             <td colspan="3" align="center"><b>
-                <span style="font-size: 17px;">CERIFICATE OF INSURANCE<br></span>'.$certificateNumber.'
+                <span style="font-size: 17px;">CERIFICATE OF INSURANCE<br></span>'.$certificateNumber.' '.$underwriterOpenCoverNumber.'
             </b></td>
         </tr>
         <tr>
@@ -112,12 +184,20 @@ function getQuotationHTML($quotationID)
             <td colspan="3">
                 <table width="100%">
                     <tr>
-                        <td width="12%">Conveyance:</td>
-                        <td width="21%">' . $sect1['oqqit_rate_6'] . '</td>
-                        <td width="16%">From:</td>
-                        <td width="17%">' . $sect1['clo_country_from'] . '</td>
-                        <td width="16%"></td>
-                        <td></td>
+                        <td width="10%">Conveyance:</td>
+                        <td width="28%">' . $sect1['oqqit_rate_6'] . '</td>
+                        <td width="6%">From:</td>
+                        <td width="28%">' . $sect1['clo_country_from'] . $approvalFromCountry. '</td>
+                        <td width="18%"></td>
+                        <td width=""></td>
+                    </tr>
+                    <tr>
+                       <td>Via</td>
+                       <td>' . $sect1['clo_country_via'] . $approvalViaCountry . '</td>
+                       <td>To</td>
+                       <td>' . $sect1['clo_country_to'] . $approvalToCountry . '</td>
+                       <td>Insured Value/Currency</td>
+                       <td>' . $sect1['oqqit_rate_3']."/".$sect1['oqqit_rate_2'] . '</td>
                     </tr>
                 </table>
             </td>
@@ -125,14 +205,7 @@ function getQuotationHTML($quotationID)
         <tr>
             <td colspan="3">
                 <table width="100%">
-                    <tr>
-                       <td width="12%">Via</td>
-                       <td width="21%">' . $sect1['clo_country_via'] . '</td>
-                       <td width="16%">To</td>
-                       <td width="17%">' . $sect1['clo_country_to'] . '</td>
-                       <td width="16%">Insured Value/Currency</td>
-                       <td>' . $sect1['oqqit_rate_3']."/".$sect1['oqqit_rate_2'] . '</td>
-                    </tr>
+                    
                 </table>
             </td>
         </tr>
@@ -145,12 +218,14 @@ function getQuotationHTML($quotationID)
             <td colspan="3" height="270px" valign="top">
                 <table width="100%">
                     <tr>
-                        <td width="50%">
+                        <td width="50%" valign="top">
                             <b>Marks and Numbers</b><br><br>
-                            ' . $sect2['oqqit_rate_2'] . '
+                            ' . $sect2['oqqit_rate_2'] . '<br><br><br>
+                            <strong>Supplier</strong><br>
+                            ' . $sect2['oqqit_rate_5'] . '
                         </td>
-                        <td width="50%">
-                            <b>Goods Insured</b><br><br>
+                        <td width="50%" valign="top">
+                            <b>Goods Insured - (as per bill of landing)</b><br><br>
                             ' . $sect2['oqqit_rate_1'] . '
                         </td>
                     </tr>
@@ -162,21 +237,8 @@ function getQuotationHTML($quotationID)
         </tr>
         <tr>
             <td colspan="3" height="270px" valign="top">
-            
-            
-                <table width="100%">
-                    <tr>
-                        <td width="50%">
-                            <b>Conditions of Insurance</b><br><br>
-                            <???????>
-                        </td>
-                        <td width="50%">
-                            <b>Supplier</b><br><br>
-                            ' . $sect2['oqqit_rate_5'] . '
-                        </td>
-                    </tr>
-                </table>
-            
+                <b>Conditions of Insurance '.$approvalCommodity.'</b><br><br>
+                ' . getConditionsOfInsurance($sect1['oqqit_rate_4']) . '<br>Excess:'.$excess.'
             </td>
             
         </tr>
@@ -555,6 +617,215 @@ function getQuotationHTML($quotationID)
     }
 
     return $html;
+
+}
+
+function getConditionsOfInsurance($commodity){
+    if ($commodity == 'General Cargo & Merchandise'){
+        return '<strong>General Cargo - Shipments by Sea, Air or Land</strong>
+        <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009. and/or Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009 as applicable.
+        <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009 and/or Institute War Clauses (Air Cargo) (excluding sendings by Post) CL388 dated 01.01.2009 as applicable.
+        <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009 and/ or Institute Strikes Clauses (Cargo) (Air Cargo) CL389 dated 01.01.2009 as applicable. 
+        <br>Institute Classification Clause CL354 dated 1.1.01.
+        <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical & Electromagnetic Weapons Exclusion Clause CL370 dated 10/11/03.
+        <br>Institute Cyber Attack Exclusion Clause CL380 dated 10/11/03.
+        <br>Termination of Transit Clause (Terrorism).
+        <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
+        <br>Including transhipment, barge and lightering risks whether customary or otherwise.
+        <br>Subject also to Additional Conditions as attached.
+        ';
+    }
+
+    if ($commodity == 'New/Used Vehicles'){
+        return '
+        <strong>Automobiles, Motorcycles & Caravans – New Used, Second Hand</strong>
+        Institute Cargo Clauses “A” CL382 dated 01.01.2009.
+        Institute War Clauses (Cargo) CL385 dated 01.01.2009.
+        Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009.
+        Institute Classification Clause CL354 dated 1.1.01.
+        Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10/11/03.
+        Institute Cyber Attack Exclusion Clause CL380 dated 10/11/03.
+        Termination of Transit Clause (Terrorism).
+        Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
+        Institute Replacement Clause CL372 dated 01.12.2008 or Second-hand Replacement Clause as attached as applicable.
+        Including transhipment, barge and lightering risks whether customary or otherwise.
+        Subject also to Additional Conditions as attached.
+        Subject to a Certificate of Condition defined as: A document stating the condition of the vehicle at the time the vehicle enters the custody of the freight forwarder or steamship company noting all defects agreed by both the freight forwarder and the owner of the vehicle and signed at the same time.
+        Subject also to Automobile & Motorcycle Additional Conditions as follows:
+        
+        Additional Exclusions:
+        - Excluding the risks of scratching, denting, chipping, bruising, marring, staining.
+        - Excluding loss of or damage due to mechanical, electrical or electronic derangement unless there is evidence of external damage to the vehicle.
+        - Excluding loss or damage arising out of climatic or atmospheric conditions or extremes of temperature or freezing of coolant.
+        - Excluding rusting, oxidisation & discolouration unless caused by an insured peril.
+        - Excluding loss or damage to accessories or portable equipment unless declared prior to shipment.
+        - Excluding theft or pilferage of Audio / Visual and/or GPS equipment unless stolen with the vehicle.
+        - Excluding loss or damage whilst under own power, except whilst being loaded or unloaded from the carrying conveyance or container.
+        - Excluding loss or damage arising from climatic or atmospheric conditions or extremes of temperature or freezing of coolant, and/or frost damage.
+        - Excluding damages, injury or liabilities to any third party whatsoever.
+        - Excluding any claim recoverable under a policy of Motor Insurance.
+        - Excluding the risks of confiscation & seizure.
+    ';
+    }
+
+    if ($commodity == 'Machinery'){
+        return '
+        <strong>Machinery etc. - Shipments by Sea, Air or Land</strong>
+        <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009. and/or Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009 as applicable.
+        <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009 and/or Institute War Clauses (Air Cargo) (excluding sendings by Post) CL388 dated 01.01.2009 as applicable.
+        <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009 and/ or Institute Strikes Clauses (Cargo) (Air Cargo) CL389 dated 01.01.2009 as applicable. 
+        <br>Institute Classification Clause CL354 dated 1.1.01.
+        <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical & Electromagnetic Weapons Exclusion Clause CL370 dated 10/11/03.
+        <br>Institute Cyber Attack Exclusion Clause CL380 dated 10/11/03.
+        <br>Termination of Transit Clause (Terrorism).
+        <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
+        <br>Institute Replacement Clause CL372 dated 01.12.2008 or Second-hand Replacement Clause as attached as applicable.
+        <br>Excluding Electrical and Mechanical derangement unless caused by a peril insured against.
+        <br>Excluding rusting, oxidisation & discolouration unless caused by an insured peril.
+        <br>Including transhipment, barge and lightering risks whether customary or otherwise.
+        <br>Subject also to Additional Conditions as attached.
+        ';
+    }
+
+    if ($commodity == 'Temp. Controlled Cargo other than meat'){
+        return '
+        <strong>Shipments by Sea or Land of Refrigerated or Temperature Controlled Cargoes, other than Meat</strong>
+        <br>Institute Frozen / Chilled Food Clauses (A) – 24 Hour Breakdown Cl. 423 01.03.2017
+        <br>Strikes Clause (Frozen Chilled Food) CL. 424 01.03.2017 
+        <br>Institute War Clauses (Cargo) CL385 1.1.09.
+        <br>Institute Classification Clause CL354 dated 1.1.01.
+        <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10/11/03.
+        <br>Institute Cyber Attack Exclusion Clause CL380 dated 10/11/03.
+        <br>Termination of Transit Clause (Terrorism).
+        <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
+        <br>Including transhipment, barge and lightering risks whether customary or otherwise.
+        <br>Subject also to Additional Conditions as attached.
+        ';
+    }
+
+    if ($commodity == 'Temp. Controlled Cargo Meat'){
+        return '
+        <strong>Shipments by Sea or Land of Refrigerated or Temperature Controlled Cargoes of Meat</strong>
+        <br>Institute Frozen / Chilled Meat Clauses (A) – 24 Hour Breakdown Cl. 426 01.03.2017
+        <br>Duration Clause 8.1.2 to apply. w/h to w/h or Duration Clause 8.1.3 to apply. fob
+        <br>Strikes Clause (Frozen Chilled Meat) CL. 428 01.03.2017 
+        <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009
+        <br>Institute Classification Clause CL354 dated 1.1.01.
+        <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10/11/03.
+        <br>Institute Cyber Attack Exclusion Clause CL380 dated 10/11/03.
+        <br>Termination of Transit Clause (Terrorism).
+        <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
+        <br>Including transhipment, barge and lightering risks whether customary or otherwise.
+        <br>Subject also to Additional Conditions as attached.
+        ';
+    }
+
+    if ($commodity == 'Special Cover Mobile Phones, Electronic Equipment'){
+        return '
+        <strong>Special Cargo, Electronic Equipment, Mobile Phones, Tablets</strong> 
+        <br>Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 1.1.09.
+        <br>Institute War Clauses (Air cargo) (excluding sendings by Post) CL388 1.1.09.
+        <br>Institute Strikes Clauses (Air cargo) CL389 1.1.09.
+        <br>Institute Classification Clause CL354 dated 1.1.01.
+        <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10/11/03.
+        <br>Institute Cyber Attack Exclusion Clause CL380 dated 10/11/03.
+        <br>Termination of Transit Clause (Terrorism).
+        <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
+        <br>Excluding loss of or damage due to mechanical, electrical or electronic derangement 
+        <br>Excluding mysterious disappearance.
+        <br>Warranted pallets are shrink wrapped and the contents obscured from view.
+        ';
+    }
+
+    if ($commodity == 'Personal Effects professionally packed'){
+        return '
+        <strong>Household Goods & Personal Effects – Professional packed  (Refer)</strong>
+        Institute Cargo Clauses “A” CL382 dated 01.01.2009.
+        Institute War Clauses (Cargo) CL385 dated 01.01.2009.
+        Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009.
+        Institute Classification Clause CL354 dated 1.1.01.
+        Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10/11/03.
+        Institute Cyber Attack Exclusion Clause CL380 dated 10/11/03.
+        Termination of Transit Clause (Terrorism).
+        Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
+        Including transhipment, barge and lightering risks whether customary or otherwise.
+        Subject also to Additional Conditions as attached.
+        Subject also to Household Goods & Personal Effects Additional Conditions as follows:
+        (a) Average Clause
+        This Policy is subject to the condition of average, that is to say, if the property covered by this Insurance shall at the time of loss be of greater value than the sum insured hereby the Assured shall only be entitled to recover hereunder such proportion of the said loss as the sum insured by this Policy bears to the total value of the said property.
+        
+        (b) Pairs and Sets Clause
+        Where any insured item consists of articles in a pair or set this Policy is not to pay more than the value of any particular part or parts which may be lost without reference to any special value which such article or articles may have as part of such pair or set, nor more than a proportionate part of such pair or set.
+        
+        (c) Depreciation
+        Underwriters’ liability is restricted to the reasonable cost of repair and no claim is to attach hereto for depreciation consequent thereon.
+        
+        (d) Mechanical and Electrical Derangement
+        Excluding loss of or damage due to mechanical, electrical or electronic derangement unless there is evidence of external damage to the insured item or its packing.
+        
+        (e) Moth, Vermin, Wear & Tear
+        Excluding loss or damage due to moth, vermin, wear, tear and gradual deterioration.
+        
+        (f) Climatic Conditions Clause
+        Excluding loss or damage by climatic or atmospheric conditions or extremes of temperature.
+        
+        (g) Professional Packing
+        Excluding losses arising as a result of goods not having been professionally packed.
+        
+        (h) Excluded Goods
+        Excluding loss of or damage to furs valued over €200, or any cash, notes, stamps, deeds, tickets, travellers’ cheques, jewellery, watches, or similar valuable articles other than as declared and agreed herein.
+        
+        (i) Itemised Inventory
+        Subject to valued, itemised inventory to be lodged with Freight Forwarder prior to shipment.
+        ';
+    }
+
+    if ($commodity == 'Personal Effects owner packed'){
+        return '
+        <strong>Household Goods & Personal Effects – Owner Packed/ Unprofessional Packer (Refer)</strong>
+        Institute Cargo Clauses “A” CL382 dated 01.01.2009.
+        Institute War Clauses (Cargo) CL385 dated 01.01.2009.
+        Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009.
+        Institute Classification Clause CL354 dated 1.1.01.
+        Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10/11/03.
+        Institute Cyber Attack Exclusion Clause CL380 dated 10/11/03.
+        Termination of Transit Clause (Terrorism).
+        Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
+        Including transhipment, barge and lightering risks whether customary or otherwise.
+        Subject also to Additional Conditions as attached.
+        Subject also to Household Goods & Personal Effects Additional Conditions as follows:
+        Average Clause
+        This Policy is subject to the condition of average, that is to say, if the property covered by this Insurance shall at the time of loss be of greater value than the sum insured hereby the Assured shall only be entitled to recover hereunder such proportion of the said loss as the sum insured by this Policy bears to the total value of the said property.
+        
+        Pairs and Sets Clause
+        Where any insured item consists of articles in a pair or set this Policy is not to pay more than the value of any particular part or parts which may be lost without reference to any special value which such article or articles may have as part of such pair or set, nor more than a proportionate part of such pair or set.
+        
+        Depreciation
+        Underwriters’ liability is restricted to the reasonable cost of repair and no claim is to attach hereto for depreciation consequent thereon.
+        
+        Mechanical and Electrical Derangement
+        Excluding loss of or damage due to mechanical, electrical or electronic derangement unless there is evidence of external damage to the insured item or its packing.
+        
+        Moth, Vermin, Wear & Tear
+        Excluding loss or damage due to moth, vermin, wear, tear and gradual deterioration.
+        
+        Climatic Conditions Clause
+        Excluding loss or damage by climatic or atmospheric conditions or extremes of temperature.
+        
+        Owner Packed Effects
+        Excluding breakage, scratching, denting, clipping, staining of owner’s packed effects, including trunks, suitcases and the like. Also excluding claims for the missing items unless a valued of list of contents is supplied by owner prior to commencement of transit.
+        
+        Excluded Goods
+        Excluding loss of or damage to furs valued over USD200, or any cash, notes, stamps, deeds, tickets, travellers’ cheques, jewellery, watches, or similar valuable articles other than as declared and agreed herein.
+        
+        Itemised Inventory
+        Subject to valued, itemised inventory to be lodged with Freight Forwarder prior to shipment.
+        ';
+    }
+
+    if ($commodity == 'Other'){
+        return 'Refer';
+    }
 
 }
 

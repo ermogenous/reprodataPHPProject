@@ -14,6 +14,7 @@ class customFormValidator
     private $fieldCode = '';
     private $needIsDateFunction = false;
     private $needCompare2DatesFunction = false;
+    private $needEmailValidationFunction = false;
     private $customCode = [];
 
     private $disableForm = false;
@@ -33,7 +34,7 @@ class customFormValidator
     function addField(array $fieldData)
     {
         //fieldName:string
-        //fieldDataType: text/number/date/age/radio/select
+        //fieldDataType: text/number/date/age/radio/select/email
         //required: true/false
         //enableDatePicker: true/false ->when true it will echo the script required for the datepicker. jqueryUi must already exists.
         //datePickerValue: the value date to be inserted on creation
@@ -53,6 +54,10 @@ class customFormValidator
 
         $this->echoInvalidText($fieldData);
 
+    }
+
+    public function addCustomCode($code){
+        $this->customCode[] = $code;
     }
 
     public function disableForm(){
@@ -254,10 +259,23 @@ class customFormValidator
             ";
         }
 
+        //Email Validation
+        if ($fieldData['fieldDataType'] == 'email' && $fieldData['validateEmail'] == true){
+            $this->needEmailValidationFunction = true;
+            $return .= "
+                if (validateEmail($('#" . $fieldData['fieldName'] . "').val())) {
+                    $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
+                    $('#" . $fieldData['fieldName'] . "').removeClass('is-invalid');
+                }
+                else {
+                    $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
+                    $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
+                    FormErrorFound = true;
+                }
+            ";
+        }
+
         return $return;
-    }
-    public function addCustomCode($code){
-        $this->customCode[] = $code;
     }
 
     private function getCustomCode()
@@ -372,6 +390,14 @@ class customFormValidator
         }
 
             ";
+        }
+        if ($this->needEmailValidationFunction == true){
+            echo '
+            function validateEmail($email) {
+                var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
+                return emailReg.test( $email );
+            }
+            ';
         }
         if ($this->disableForm == true){
             echo '

@@ -90,6 +90,20 @@ function template_header()
                         </div>
                     </li>
 
+                    <!-- MY USERS -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-user-friends"></i>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="<?php echo $main["site_url"]; ?>/my_users/users.php"><i
+                                        class="fas fa-eye"></i> View Users</a>
+                            <a class="dropdown-item" href="<?php echo $main["site_url"]; ?>/my_users/users_modify.php"><i
+                                        class="fas fa-plus-circle"></i> New User</a>
+                        </div>
+                    </li>
+
                     <!-- USERS -->
                     <?php if ($db->user_data["usr_user_rights"] == 0) { ?>
                         <li class="nav-item dropdown">

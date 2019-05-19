@@ -101,7 +101,8 @@ $db->show_header();
                             <i class="far fa-file-pdf fa-5x"
                                 <?php
                                 if ($quote->quotationData()['oqq_status'] == 'Active' ||
-                                    ($quote->quotationData()['oqq_status'] == 'Outstanding' && $quote->quotationData()['oqqt_allow_print_outstanding'] == 1)) { ?>
+                                    ( ($quote->quotationData()['oqq_status'] == 'Outstanding' || $quote->quotationData()['oqq_status'] == 'Pending')
+                                        && $quote->quotationData()['oqqt_allow_print_outstanding'] == 1)) { ?>
                                     onclick="window.open('quotation_print.php?quotation=<?php echo $data["oqq_quotations_ID"]; ?>&pdf=1','_blank')"
                                 <?php } ?>
                             >

@@ -325,7 +325,11 @@ if ($_GET["price_id"] != "") {
                                                    onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this quotation?');"><i
                                                             class="fas fa-minus-circle"></i></a>&nbsp
                                             <?php } ?>
-                                            <?php if ($row['oqq_status'] == 'Active') { ?>
+                                            <?php if ($row['oqq_status'] == 'Active' ||
+                                                (
+                                                ($row['oqq_status'] == 'Outstanding' || $row['oqq_status'] == 'Pending') && $row['oqqt_allow_print_outstanding'] == 1
+                                                )
+                                            ) { ?>
                                                 <a target="_blank"
                                                    href="quotation_print.php?quotation=<?php echo $row["oqq_quotations_ID"]; ?>&pdf=1"
                                                    onclick="ignoreEdit = true;">

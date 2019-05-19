@@ -93,49 +93,56 @@ if ($_POST["action"] == "save") {
     //check if change language and new quotation
     if ($_POST["change_language"] == '1' && $_GET["quotation"] == "") {
         //do nothing
-    } else {
-        $db->start_transaction();
-        $quotation_id = insert_quotation_data_to_db($_POST["quotation"], $_POST["quotation_type"]);
+    }
+    else {
+        if ($quote->quotationData()['oqit_status'] == 'Outstanding' || $db->user_data['usr_user_rights'] <= 1) {
+            $db->start_transaction();
+            $quotation_id = insert_quotation_data_to_db($_POST["quotation"], $_POST["quotation_type"]);
 
-        $items_res = $db->query($items_sql);
-        while ($item = $db->fetch_assoc($items_res)) {
+            $items_res = $db->query($items_sql);
+            while ($item = $db->fetch_assoc($items_res)) {
 
-            $quot_ID = insert_item_data_to_db($quotation_type_data, $quotation_id, $item["oqit_items_ID"]);
+                $quot_ID = insert_item_data_to_db($quotation_type_data, $quotation_id, $item["oqit_items_ID"]);
 
-        }//all items
+            }//all items
 
-        //update the quotations price
-        //ge thte result in an array 'premium' 'fees' 'stamps'
-        $premium_result = quotation_price_calculation($quotation_id);
-        $sql = "UPDATE oqt_quotations SET 
+            //update the quotations price
+            //ge thte result in an array 'premium' 'fees' 'stamps'
+            $premium_result = quotation_price_calculation($quotation_id);
+            $sql = "UPDATE oqt_quotations SET 
 		oqq_fees = " . $premium_result["fees"] . " , 
 		oqq_stamps = " . $premium_result["stamps"] . " , 
 		oqq_premium = " . $premium_result["premium"] . ",
 		oqq_custom_premium1 = '" . $premium_result["custom_premium1"] . "',
 		oqq_custom_premium2 = '" . $premium_result["custom_premium2"] . "',
 		oqq_detail_price_array = '" . $premium_result["detailed_result"] . "' WHERE oqq_quotations_ID = " . $quotation_id;
-        $db->query($sql);
+            $db->query($sql);
 
-        //check for approval
-        $quote = new dynamicQuotation($quotation_id);
-        if ($quote->checkForApproval() == false) {
-            if ($quote->errorType == 'warning') {
-                $db->generateSessionAlertWarning($quote->errorDescription);
-            } else {
-                $db->generateSessionAlertError($quote->errorDescription);
+            //check for approval
+            $quote = new dynamicQuotation($quotation_id);
+            if ($quote->checkForApproval() == false) {
+                if ($quote->errorType == 'warning') {
+                    $db->generateSessionAlertWarning($quote->errorDescription);
+                } else {
+                    $db->generateSessionAlertError($quote->errorDescription);
+                }
             }
-        }
 
-        $db->commit_transaction();
+            $db->commit_transaction();
 
-        //no need to redirect if is language change.
-        if ($_POST["change_language"] != "1") {
-            if ($_POST["save_and_print"] == 1) {
-                header("Location: " . $quotation_type_data["oqqt_print_layout"] . "?quotation=" . $quotation_id);
-            } else {
-                header("Location: quotations_show.php?lid=" . $quotation_id);
+            //no need to redirect if is language change.
+            if ($_POST["change_language"] != "1") {
+                if ($_POST["save_and_print"] == 1) {
+                    header("Location: " . $quotation_type_data["oqqt_print_layout"] . "?quotation=" . $quotation_id);
+                } else {
+                    header("Location: quotations_show.php?lid=" . $quotation_id);
+                }
+                exit();
             }
-            exit();
+        }//if outstanding
+        //not allowed to update
+        else{
+            $db->generateAlertError('Not Outstanding. Not allowed to Modify.');
         }
 
     }//if change language and not new quotation
@@ -164,8 +171,17 @@ $db->show_header();
 include('../scripts/form_validator_class.php');
 $formValidator = new customFormValidator();
 $formValidator->setFormName('myForm');
+$allowEdit = true;
+$allowEditAdvanced = false;
 if ($quote->quotationData()['oqq_status'] != 'Outstanding' && $_GET['quotation'] > 0) {
-    $formValidator->disableForm();
+    //allow in case administrator/advanced user
+    if ($db->user_data['usr_user_rights'] >= 2) {
+        $allowEdit = false;
+        $formValidator->disableForm();
+    }
+    else {
+        $allowEditAdvanced = true;
+    }
 }
 $formValidator->addCustomCode("
     if ($('#warningDivSection').html() != '' && FormErrorFound == false){
@@ -211,9 +227,14 @@ $formValidator->addCustomCode("
             <form name="myForm" id="myForm" method="post" action=""
                 <?php $formValidator->echoFormParameters(); ?>>
 
-                <?php if ($_GET['quotation'] > 0 && $quote->quotationData()['oqq_status'] != 'Outstanding') { ?>
+                <?php if ($allowEdit == true) { ?>
                     <div class="alert alert-warning">
                         <?php echo $quote->getQuotationType() . " is " . $quote->quotationData()['oqq_status'] . " Cannot modify"; ?>
+                    </div>
+                <?php } ?>
+                <?php if ($allowEditAdvanced == true) { ?>
+                    <div class="alert alert-success">
+                        <?php echo "Advanced User. Allowed to Modify."; ?>
                     </div>
                 <?php } ?>
                 <div class="alert alert-success text-center">
@@ -579,7 +600,7 @@ $formValidator->addCustomCode("
                         -->
                         <div class="btn btn-secondary" onclick="window.location.assign('quotations.php')">Back</div>
                         <input name="save_and_print" id="save_and_print" type="hidden" value="0"/>
-                        <?php if ($quote->quotationData()['oqq_status'] == 'Outstanding' || $_GET['quotation'] == '') { ?>
+                        <?php if ($allowEdit == true) { ?>
                             <input type="submit" value="Save Quotation"
                                    class="btn btn-secondary"
                                    onclick="document.getElementById('save_and_print').value = 0;">

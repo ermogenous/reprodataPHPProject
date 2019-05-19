@@ -184,7 +184,7 @@ function mff_insured_details_1()
 
 function mff_insurance_period_2()
 {
-    global $db, $items_data, $qitem_data, $formValidator;
+    global $db, $items_data, $qitem_data, $formValidator, $allowEditAdvanced;
     ?>
 
     <div class="form-group row">
@@ -204,7 +204,7 @@ function mff_insurance_period_2()
                     'required' => true,
                     'enableDatePicker' => true,
                     'datePickerValue' => $db->convert_date_format($qitem_data["oqqit_date_1"], 'yyyy-mm-dd', 'dd/mm/yyyy'),
-                    'dateMinDate' => date('d/m/Y'),
+                    'dateMinDate' => ($allowEditAdvanced == true)? '01/01/2000' : date('d/m/Y'),
                     'dateMaxDate' => date('d/m/Y',mktime(0,0,0,date('m'), (date('d') + 45), date('Y') )),
                     'invalidText' => show_quotation_text("Λάθος Ημερομηνία", "Wrong Date",'Return')
                 ]);

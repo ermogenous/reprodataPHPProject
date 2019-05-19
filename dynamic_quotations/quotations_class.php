@@ -147,6 +147,15 @@ class dynamicQuotation
             //if approval is found then change the status of the policy to Pending.
             if ($needApproval == true) {
                 $newData['status'] = 'Pending';
+                $this->quotationData['oqq_status'] = 'Pending';
+                //success sending the approval email
+                if ($this->sendApprovalEmail()){
+
+                }
+                //failure sending the email.
+                else {
+
+                }
                 $db->db_tool_update_row('oqt_quotations', $newData,
                     'oqq_quotations_ID = ' . $this->quotationID, $this->quotationID, '', 'execute', 'oqq_');
 
@@ -163,6 +172,103 @@ class dynamicQuotation
         } else {
             return true;
         }
+    }
+
+    private function sendApprovalEmail(){
+        global $db,$main;
+        include_once('../send_auto_emails/send_auto_emails_class.php');
+
+        //check if status = pending
+        if ($this->quotationData['oqq_status'] == 'Pending'){
+
+            //check parameters if send mail is enabled
+            if ($this->quotationData['oqqt_approval_send_mail'] != '') {
+
+                $autoEmail = new createNewAutoEmail();
+                $dataArray['email_to'] = $this->quotationData['oqqt_approval_send_mail'];
+
+                $dataArray['email_subject'] = $this->quotationData['oqqt_approval_send_mail_subject'];
+                $dataArray['email_cc'] = $this->quotationData['oqqt_approval_send_mail_cc'];
+                $dataArray['email_bcc'] = $this->quotationData['oqqt_approval_send_mail_bcc'];
+                $dataArray['email_body'] = $this->quotationData['oqqt_approval_send_mail_body'];
+                $dataArray['type'] = $this->getQuotationType();
+                $dataArray['primary_serial'] = $this->quotationID;
+                $dataArray['primary_label'] = $this->getQuotationType() . " SERIAL";
+                $dataArray['secondary_serial'] = '';
+                $dataArray['secondary_label'] = '';
+                $dataArray['user_ID'] = $this->quotationData['oqq_users_ID'];
+                //file attachment filename
+                $attachment_file_name = $this->quotationData['oqqt_approval_attach_print_filename'];
+
+
+                //fix the subject/body with the ReplaceCodes
+                //[QTID]
+                $dataArray['email_subject'] = str_replace('[QTID]', $this->quotationData['oqq_quotations_ID'], $dataArray['email_subject']);
+                $dataArray['email_body'] = str_replace('[QTID]', $this->quotationData['oqq_quotations_ID'], $dataArray['email_body']);
+                $attachment_file_name = str_replace('[QTID]', $this->quotationData['oqq_quotations_ID'], $attachment_file_name);
+
+
+                //[QTNUMBER]
+                $dataArray['email_subject'] = str_replace('[QTNUMBER]', $this->quotationData['oqq_number'], $dataArray['email_subject']);
+                $dataArray['email_body'] = str_replace('[QTNUMBER]', $this->quotationData['oqq_number'], $dataArray['email_body']);
+                $attachment_file_name = str_replace('[QTNUMBER]', $this->quotationData['oqq_number'], $attachment_file_name);
+
+                //[QTLINK]
+                $link = $main["site_url"]."/dynamic_quotations/quotations_modify.php?quotation_type=".$this->quotationData['oqq_quotations_type_ID']."&quotation=".$this->quotationData['oqq_quotations_ID'];
+                $dataArray['email_subject'] = str_replace('[QTLINK]', $link, $dataArray['email_subject']);
+                $dataArray['email_body'] = str_replace('[QTLINK]', $link, $dataArray['email_body']);
+
+                //[USERNAME]
+                $dataArray['email_subject'] = str_replace('[USERSNAME]', $this->quotationData['usr_name'], $dataArray['email_subject']);
+                $dataArray['email_body'] = str_replace('[USERSNAME]', $this->quotationData['usr_name'], $dataArray['email_body']);
+                $attachment_file_name = str_replace('[USERSNAME]', $this->quotationData['usr_name'], $attachment_file_name);
+
+                //[PDFLINK]
+                $link = $main["site_url"]."/dynamic_quotations/quotation_print.php?quotation=".$this->quotationData['oqq_quotations_ID']."&pdf=1";
+                $dataArray['email_subject'] = str_replace('[PDFLINK]', $link, $dataArray['email_subject']);
+                $dataArray['email_body'] = str_replace('[PDFLINK]', $link, $dataArray['email_body']);
+
+                //file attachment
+                if ($this->quotationData['oqqt_approval_attach_print_filename'] != ''){
+                    //get the pdf data
+                    include($this->quotationData['oqqt_print_layout']);
+                    require_once '../vendor/autoload.php';
+                    $html = getQuotationHTML($this->quotationID);
+                    $mpdf = new \Mpdf\Mpdf([
+                        'default_font' => 'dejavusans'
+                    ]);
+
+                    $mpdf->WriteHTML($html);
+                    $filename = date('YmdGisu').".pdf";
+                    $mpdf->Output($main['local_url'].'/send_auto_emails/attachment_files/'.$filename, \Mpdf\Output\Destination::FILE);
+                    $dataArray['attachment_files'] = $filename."||".$attachment_file_name;
+                }
+
+                //create the record
+                $autoEmailID = $autoEmail->addData($dataArray);
+                //send the email
+                $email = new send_auto_emails($autoEmailID);
+                $email->send_email();
+                if ($email->count_errors > 0){
+                    $this->errorDescription = 'There was an error sending the email. You can manually resend the email in auto emails.';
+                    $this->error = true;
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
+            else {
+                return true;
+            }
+
+        }
+        else {
+            $this->errorDescription = 'Not Pending. Cannot send approval email.';
+            $this->error = true;
+            return false;
+        }
+
     }
     
     private function issueNumber(){

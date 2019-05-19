@@ -163,6 +163,175 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
 
+                    <div class="form-group row">
+                        <label for="fld_open_cover_number" class="col-sm-4 col-form-label">Open Cover Number</label>
+                        <div class="col-sm-8">
+                            <input name="fld_open_cover_number" type="text" id="fld_open_cover_number"
+                                   class="form-control"
+                                   value="<?php echo $data["oqun_open_cover_number"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_open_cover_number",
+                                "fieldDataType" => "text",
+                                "required" => false,
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="fld_excess_general_cargo" class="col-sm-8 col-form-label">Excess General Cargo & Merchandise</label>
+                        <div class="col-sm-4">
+                            <input name="fld_excess_general_cargo" type="text" id="fld_excess_general_cargo"
+                                   class="form-control"
+                                   value="<?php echo $data["oqun_excess_general_cargo"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_excess_general_cargo",
+                                "fieldDataType" => "text",
+                                "required" => true,
+                                "invalidText" => "Must provide excess",
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="fld_excess_vehicles" class="col-sm-8 col-form-label">Excess New/Used Vehicles</label>
+                        <div class="col-sm-4">
+                            <input name="fld_excess_vehicles" type="text" id="fld_excess_vehicles"
+                                   class="form-control"
+                                   value="<?php echo $data["oqun_excess_vehicles"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_excess_vehicles",
+                                "fieldDataType" => "text",
+                                "required" => true,
+                                "invalidText" => "Must provide excess",
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="fld_excess_machinery" class="col-sm-8 col-form-label">Excess Machinery</label>
+                        <div class="col-sm-4">
+                            <input name="fld_excess_machinery" type="text" id="fld_excess_machinery"
+                                   class="form-control"
+                                   value="<?php echo $data["oqun_excess_machinery"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_excess_machinery",
+                                "fieldDataType" => "text",
+                                "required" => true,
+                                "invalidText" => "Must provide excess",
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="fld_excess_temp_no_meat" class="col-sm-8 col-form-label">Excess Temp.Controlled Cargo other than meat</label>
+                        <div class="col-sm-4">
+                            <input name="fld_excess_temp_no_meat" type="text" id="fld_excess_temp_no_meat"
+                                   class="form-control"
+                                   value="<?php echo $data["oqun_excess_temp_no_meat"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_excess_temp_no_meat",
+                                "fieldDataType" => "text",
+                                "required" => true,
+                                "invalidText" => "Must provide excess",
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="fld_excess_temp_meat" class="col-sm-8 col-form-label">Excess Temp.Controlled Cargo meat</label>
+                        <div class="col-sm-4">
+                            <input name="fld_excess_temp_meat" type="text" id="fld_excess_temp_meat"
+                                   class="form-control"
+                                   value="<?php echo $data["oqun_excess_temp_meat"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_excess_temp_meat",
+                                "fieldDataType" => "text",
+                                "required" => true,
+                                "invalidText" => "Must provide excess",
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="fld_excess_special_cover" class="col-sm-8 col-form-label">Excess Special Cover Mobile Phones, Electronic Equipment</label>
+                        <div class="col-sm-4">
+                            <input name="fld_excess_special_cover" type="text" id="fld_excess_special_cover"
+                                   class="form-control"
+                                   value="<?php echo $data["oqun_excess_special_cover"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_excess_special_cover",
+                                "fieldDataType" => "text",
+                                "required" => true,
+                                "invalidText" => "Must provide excess",
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="fld_excess_pro_packed" class="col-sm-8 col-form-label">Excess Personal Effects professionally packed</label>
+                        <div class="col-sm-4">
+                            <input name="fld_excess_pro_packed" type="text" id="fld_excess_pro_packed"
+                                   class="form-control"
+                                   value="<?php echo $data["oqun_excess_pro_packed"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_excess_pro_packed",
+                                "fieldDataType" => "text",
+                                "required" => true,
+                                "invalidText" => "Must provide excess",
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="fld_excess_owner_packed" class="col-sm-8 col-form-label">Excess Personal Effects owner packed</label>
+                        <div class="col-sm-4">
+                            <input name="fld_excess_owner_packed" type="text" id="fld_excess_owner_packed"
+                                   class="form-control"
+                                   value="<?php echo $data["oqun_excess_owner_packed"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_excess_owner_packed",
+                                "fieldDataType" => "text",
+                                "required" => true,
+                                "invalidText" => "Must provide excess",
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="fld_excess_other" class="col-sm-8 col-form-label">Excess Other</label>
+                        <div class="col-sm-4">
+                            <input name="fld_excess_other" type="text" id="fld_excess_other"
+                                   class="form-control"
+                                   value="<?php echo $data["oqun_excess_other"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_excess_other",
+                                "fieldDataType" => "text",
+                                "required" => true,
+                                "invalidText" => "Must provide excess",
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+
                     <!-- BUTTONS -->
                     <div class="form-group row">
                         <label for="name" class="col-sm-4 col-form-label"></label>
