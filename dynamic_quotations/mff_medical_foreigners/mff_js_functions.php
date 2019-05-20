@@ -23,7 +23,7 @@ function js_function_on_load() {
 }
 var insuredAge;
 function showInsuredAge(){
-    let fromDate = $('#2_oqqit_date_1').val();
+    let fromDate = $('#starting_date').val();
     let toDate = $('#1_oqqit_date_1').val();
 
     if (isDate(fromDate) && isDate(toDate)) {

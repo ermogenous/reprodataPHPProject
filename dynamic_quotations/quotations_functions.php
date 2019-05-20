@@ -33,7 +33,9 @@ oqq_insureds_contact_person = '" . addslashes($_POST["insureds_contact_person"])
 oqq_insureds_postal_code = '" . addslashes($_POST["insureds_postal_code"]) . "',
 oqq_situation_address = '" . addslashes($_POST["situation_address"]) . "',
 oqq_situation_postal_code = '" . addslashes($_POST["situation_postal_code"]) . "',
-oqq_extra_details = '" . addslashes($_POST["situations_extra_details"]) . "' ";
+oqq_extra_details = '" . addslashes($_POST["situations_extra_details"]) . "',
+oqq_starting_date = '".addslashes($db->convert_date_format($_POST['starting_date'],'dd/mm/yyyy','yyyy-mm-dd'))."',
+oqq_expiry_date = '".addslashes($db->convert_date_format($_POST['expiry_date'],'dd/mm/yyyy','yyyy-mm-dd'))."'";
     $sql .= $sql2;
 
 //echo $sql."<hr>";

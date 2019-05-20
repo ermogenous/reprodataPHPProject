@@ -227,7 +227,7 @@ $formValidator->addCustomCode("
             <form name="myForm" id="myForm" method="post" action=""
                 <?php $formValidator->echoFormParameters(); ?>>
 
-                <?php if ($allowEdit == true) { ?>
+                <?php if ($allowEdit == false) { ?>
                     <div class="alert alert-warning">
                         <?php echo $quote->getQuotationType() . " is " . $quote->quotationData()['oqq_status'] . " Cannot modify"; ?>
                     </div>
