@@ -305,6 +305,13 @@ class dynamicQuotation
         }
     }
 
+    public function makeRenewal(){
+        global $db;
+
+
+
+    }
+
     private function sendEmail()
     {
         global $db,$main;
