@@ -82,6 +82,9 @@ class Main
 //encryption
     public $encryptionKey;
 
+    //scripts
+    public $enabled_jquery_ui;
+
 //login 1 -> normal permissions.
 //login 0 does not login but all else works.
 //login -1 ignores the settings. this is to use superclass with a database that does not have the settings table.

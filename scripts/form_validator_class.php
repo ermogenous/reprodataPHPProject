@@ -56,15 +56,18 @@ class customFormValidator
 
     }
 
-    public function addCustomCode($code){
+    public function addCustomCode($code)
+    {
         $this->customCode[] = $code;
     }
 
-    public function disableForm(){
+    public function disableForm()
+    {
         $this->disableForm = true;
     }
 
-    public function setFormName($name){
+    public function setFormName($name)
+    {
         $this->formName = $name;
     }
 
@@ -113,6 +116,11 @@ class customFormValidator
 
     private function echoDatePickerScriptCode($fieldData)
     {
+        global $db;
+        //check if jquery_ui is enabled
+        if ($db->enabled_jquery_ui != 'yes'){
+            echo '<div class="alert alert-danger">For date picker to work needs Jquery UI</div>';
+        }
 
         if ($fieldData['fieldDataType'] == 'date' && $fieldData['enableDatePicker'] == true) {
             echo '
@@ -133,15 +141,15 @@ class customFormValidator
         global $db;
 
         //check if variables or strings
-        if (substr($fieldData['dateMinDate'],0,3) != "$('" && $fieldData['dateMinDate'] != ''){
-            $fieldData['dateMinDate'] = "'".$fieldData['dateMinDate']."'";
+        if (substr($fieldData['dateMinDate'], 0, 3) != "$('" && $fieldData['dateMinDate'] != '') {
+            $fieldData['dateMinDate'] = "'" . $fieldData['dateMinDate'] . "'";
         }
-        if (substr($fieldData['dateMaxDate'],0,3) != "$('" && $fieldData['dateMaxDate'] != ''){
-            $fieldData['dateMaxDate'] = "'".$fieldData['dateMaxDate']."'";
+        if (substr($fieldData['dateMaxDate'], 0, 3) != "$('" && $fieldData['dateMaxDate'] != '') {
+            $fieldData['dateMaxDate'] = "'" . $fieldData['dateMaxDate'] . "'";
         }
 
 
-        $return = "FieldsErrors['".$fieldData['fieldName']."'] = [];";
+        $return = "FieldsErrors['" . $fieldData['fieldName'] . "'] = [];";
         if ($fieldData['required'] == true) {
 
             //requiredAddedCustomCode
@@ -167,8 +175,7 @@ class customFormValidator
                 $('#" . $fieldData['fieldName'] . "-invalid-text').hide();
             }
             ";
-            }
-            //For other
+            } //For other
             else {
                 $return .= "
             if ($('#" . $fieldData['fieldName'] . "').val() == '' " . $requiredAddedCustomCode . "){
@@ -205,31 +212,31 @@ class customFormValidator
             ";
         }
         //DATE MINIMUM DATE
-        if ($fieldData['fieldDataType'] == 'date' && $fieldData['dateMinDate'] != ''){
+        if ($fieldData['fieldDataType'] == 'date' && $fieldData['dateMinDate'] != '') {
             $this->needCompare2DatesFunction = true;
             $return .= "
-                if ($('#" . $fieldData['fieldName'] . "').val() != '' && compare2Dates($('#" . $fieldData['fieldName'] . "').val(),".$fieldData['dateMinDate'].") == 2 ){
+                if ($('#" . $fieldData['fieldName'] . "').val() != '' && compare2Dates($('#" . $fieldData['fieldName'] . "').val()," . $fieldData['dateMinDate'] . ") == 2 ){
                     $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                     $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                     FormErrorFound = true;
-                    FieldsErrors['".$fieldData['fieldName']."']['dateMin'] = false;
+                    FieldsErrors['" . $fieldData['fieldName'] . "']['dateMin'] = false;
                 }
                 else {
                     //if is-invalid already exists then another check hit. do not make as valid.
                     if ($('#" . $fieldData['fieldName'] . "').hasClass('is-invalid') != true){
                         $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
                         $('#" . $fieldData['fieldName'] . "').removeClass('is-invalid');
-                        FieldsErrors['".$fieldData['fieldName']."']['dateMin'] = true;
+                        FieldsErrors['" . $fieldData['fieldName'] . "']['dateMin'] = true;
                     }
                     
                 }
             ";
         }
         //DATE MAXIMUM DATE
-        if ($fieldData['fieldDataType'] == 'date' && $fieldData['dateMaxDate'] != ''){
+        if ($fieldData['fieldDataType'] == 'date' && $fieldData['dateMaxDate'] != '') {
             $this->needCompare2DatesFunction = true;
             $return .= "
-                if ( $('#" . $fieldData['fieldName'] . "').val() != '' && compare2Dates($('#" . $fieldData['fieldName'] . "').val(), ".$fieldData['dateMaxDate'].") == 1 ){
+                if ( $('#" . $fieldData['fieldName'] . "').val() != '' && compare2Dates($('#" . $fieldData['fieldName'] . "').val(), " . $fieldData['dateMaxDate'] . ") == 1 ){
                     $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                     $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                     FormErrorFound = true;
@@ -243,7 +250,7 @@ class customFormValidator
                 }
             ";
         }
-        
+
         //NUMBER added check if valid number
         if ($fieldData['fieldDataType'] == 'number') {
             $return .= "
@@ -260,7 +267,7 @@ class customFormValidator
         }
 
         //Email Validation
-        if ($fieldData['fieldDataType'] == 'email' && $fieldData['validateEmail'] == true){
+        if ($fieldData['fieldDataType'] == 'email' && $fieldData['validateEmail'] == true) {
             $this->needEmailValidationFunction = true;
             $return .= "
                 if (validateEmail($('#" . $fieldData['fieldName'] . "').val())) {
@@ -281,8 +288,8 @@ class customFormValidator
     private function getCustomCode()
     {
         $customCode = '';
-        foreach($this->customCode as $code){
-            $customCode .= $code."\n";
+        foreach ($this->customCode as $code) {
+            $customCode .= $code . "\n";
         }
 
         return $customCode;
@@ -366,7 +373,7 @@ class customFormValidator
         }
         ";
         }
-        if ($this->needCompare2DatesFunction == true){
+        if ($this->needCompare2DatesFunction == true) {
             echo "
         function compare2Dates(date1,date2){
 
@@ -391,7 +398,7 @@ class customFormValidator
 
             ";
         }
-        if ($this->needEmailValidationFunction == true){
+        if ($this->needEmailValidationFunction == true) {
             echo '
             function validateEmail($email) {
                 var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
@@ -399,16 +406,15 @@ class customFormValidator
             }
             ';
         }
-        if ($this->disableForm == true){
+        if ($this->disableForm == true) {
             echo '
-            $("#'.$this->formName.' :input").prop("disabled", true);
+            $("#' . $this->formName . ' :input").prop("disabled", true);
             ';
             echo '';
         }
         echo "</script>";
 
     }
-
 
 
 }
