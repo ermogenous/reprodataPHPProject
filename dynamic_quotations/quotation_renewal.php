@@ -95,6 +95,7 @@ $db->show_header();
                                     'fieldDataType' => 'date',
                                     'required' => true,
                                     'enableDatePicker' => true,
+                                    'dateMinDate' => "",
                                     'invalidText' => 'Enter expiry date'
                                 ]);
                             ?>
