@@ -423,6 +423,23 @@ $formValidator = new customFormValidator();
 
                             <!--ON ACTIVE TAB DATA-->
 
+                            <div class="form-group row">
+                                <label for="fld_enable_renewal" class="col-sm-4 col-form-label">Enable Renewal</label>
+                                <div class="col-sm-8">
+                                    <input type="checkbox" value="1" class="form-control"  style="margin-top: 12px;"
+                                           id="fld_enable_renewal" name="fld_enable_renewal"
+                                        <?php if ($data['oqqt_enable_renewal'] == 1) echo "checked";?>>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="fld_renewal_issue_new_number" class="col-sm-4 col-form-label">On Renewal Issue New Number?</label>
+                                <div class="col-sm-8">
+                                    <input type="checkbox" value="1" class="form-control"  style="margin-top: 12px;"
+                                           id="fld_renewal_issue_new_number" name="fld_renewal_issue_new_number"
+                                        <?php if ($data['oqqt_renewal_issue_new_number'] == 1) echo "checked";?>>
+                                </div>
+                            </div>
 
                             <div class="row" style="height: 25px;"></div>
                             <div class="form-group row">

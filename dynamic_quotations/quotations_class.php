@@ -108,7 +108,22 @@ class dynamicQuotation
 
             $newData['status'] = 'Active';
             $newData['effective_date'] = date('Y-m-d G:i:s');
-            $newData['number'] = $this->issueNumber();
+
+            //check if renewal and if to issue new number or not
+            if ($this->quotationData['oqq_replacing_ID'] > 0){
+                if ($this->quotationData['oqqt_renewal_issue_new_number'] == 1){
+                    $newData['number'] = $this->issueNumber();
+                }
+                else {
+                    //not issue new number
+                }
+            }
+            //all other except renewals.
+            else {
+                $newData['number'] = $this->issueNumber();
+            }
+
+
 
             //update the data of the current object
             $this->quotationData['oqq_status'] = $newData['status'];
@@ -305,10 +320,83 @@ class dynamicQuotation
         }
     }
 
-    public function makeRenewal(){
+    //renews a quotation. Starting date one day after the expiry of the previous. Expiry is by parameter
+    public function makeRenewal($newExpiry){
         global $db;
 
+        //echo "Renewing with new expiry ".$newExpiry;
 
+        if ($this->quotationData['oqq_status'] != 'Active'){
+            $this->error = true;
+            $this->errorDescription = 'Only active can be renewed';
+            return false;
+        }
+        if ($this->quotationData['oqq_replaced_by_ID'] > 0){
+            $this->error = true;
+            $this->errorDescription = 'Already being renewed';
+            return false;
+        }
+
+        //get the new starting date. One day after previous expiry
+        $expiryDate = $this->quotationData['oqq_expiry_date'];
+        $expiryDate = explode(' ',$expiryDate);
+        $expiryDate = explode('-', $expiryDate[0]);
+        $newStartingDate = date('Y-m-d', mktime(0, 0, 0, $expiryDate[1], ($expiryDate[2] + 1), $expiryDate[0]));
+        $newExpiry = explode("/",$newExpiry);
+        $newExpiryDate = $newExpiry[2]."-".$newExpiry[1]."-".$newExpiry[0];
+
+        //create the quotation. Only the quotation data
+        $newData = [];
+        foreach($this->quotationData as $name => $value){
+            $prefix = substr($name,0,4);
+            if ($prefix == 'oqq_'){
+                $newData[substr($name,4)] = $value;
+            }
+        }
+        unset($newData['created_date_time']);
+        unset($newData['created_by']);
+        unset($newData['last_update_date_time']);
+        unset($newData['last_update_by']);
+        unset($newData['quotations_ID']);
+        if ($this->quotationData['oqqt_renewal_issue_new_number'] == 1){
+            $newData['number'] = '';
+            //echo "here";
+        }
+
+        //exit();
+
+        $newData['detail_price_array'] = '';
+        $newData['starting_date'] = $newStartingDate;
+        $newData['expiry_date'] = $newExpiryDate;
+        $newData['status'] = 'Outstanding';
+        $newData['replacing_ID'] = $this->quotationID;
+
+        $newID = $db->db_tool_insert_row('oqt_quotations', $newData,'',1, 'oqq_');
+
+        //update current quotation
+        $currentNewData['replaced_by_ID'] = $newID;
+        $db->db_tool_update_row('oqt_quotations', $currentNewData, 'oqq_quotations_ID = '.$this->quotationID, $this->quotationID, '', 'execute','oqq_');
+
+        //insert the quotation items
+        $sql = 'SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = '.$this->quotationID.' ORDER BY oqqit_quotations_items_ID ASC ';
+        $result = $db->query($sql);
+        while($row = $db->fetch_assoc($result)){
+            $itemNewData = $row;
+
+            //clean data
+            unset($itemNewData['oqqit_quotations_items_ID']);
+            unset($itemNewData['oqqit_created_date_time']);
+            unset($itemNewData['oqqit_created_by']);
+            unset($itemNewData['oqqit_last_update_date_time']);
+            unset($itemNewData['oqqit_last_update_by']);
+            $itemNewData['oqqit_quotations_ID'] = $newID;
+
+            $db->db_tool_insert_row('oqt_quotations_items', $itemNewData,'', 0, '');
+        }
+
+        echo "New quotations ID ".$newID;
+
+        return true;
 
     }
 

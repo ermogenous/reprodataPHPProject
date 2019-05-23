@@ -289,6 +289,11 @@ if ($_GET["price_id"] != "") {
                                 <?php
                                 $i = 0;
                                 while ($row = $table->fetch_data()) {
+                                    //check for renewal icon
+                                    $showRenewal = false;
+                                    if ($row['oqqt_enable_renewal'] == 1 && $row['oqq_status'] == 'Active' && $row['oqq_replaced_by_ID'] < 1) {
+                                        $showRenewal = true;
+                                    }
                                     $i++;
                                     ?>
                                     <tr onclick="editLine(<?php echo $row["oqq_quotations_type_ID"] . "," . $row["oqq_quotations_ID"] . ",'" . $row['oqq_status'] . "'"; ?>);"
@@ -344,6 +349,13 @@ if ($_GET["price_id"] != "") {
                                                 </a>
                                             <?php } ?>
 
+                                            <?php if ($showRenewal == true) { ?>
+                                                <a href="#">
+                                                    <i class="fas fa-retweet"
+                                                       onclick="renewQuotation(<?php echo $row["oqq_quotations_ID"]; ?>);"></i>
+                                                </a>
+                                            <?php } ?>
+
 
                                         </td>
                                     </tr>
@@ -391,6 +403,13 @@ if ($_GET["price_id"] != "") {
             ignoreEdit = true;
             if (confirm('Are you sure you want to activate this?')) {
                 window.location.assign('quotations.php?lid=' + id + '&action=activate')
+            }
+        }
+
+        function renewQuotation(id){
+            ignoreEdit = true;
+            if (confirm('Are you sure you want to renew this?')) {
+                window.location.assign('quotation_renewal.php?lid=' + id);
             }
         }
     </script>
