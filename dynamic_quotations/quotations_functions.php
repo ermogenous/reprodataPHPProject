@@ -38,7 +38,7 @@ oqq_starting_date = '".addslashes($db->convert_date_format($_POST['starting_date
 oqq_expiry_date = '".addslashes($db->convert_date_format($_POST['expiry_date'],'dd/mm/yyyy','yyyy-mm-dd'))."'";
     $sql .= $sql2;
 
-//echo $sql."<hr>";
+    //echo $sql."<hr>";exit();
     $db->query($sql);
 
     if ($quotation_id == "")

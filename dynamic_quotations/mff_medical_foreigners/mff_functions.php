@@ -191,15 +191,16 @@ function mff_insurance_period_2()
         <div class="col-sm-3">
             <input name="starting_date" type="text" id="starting_date"
                    class="form-control text-center" onchange="changeStartingDate()"
+                   <?php if ($q_data['oqq_replacing_ID'] > 0) echo "readonly";?>
                 <?php $formValidator->echoDateFieldFormatTag(); ?>
-                   value="">
+                   value="<?php echo $db->convert_date_format($q_data["oqq_starting_date"], 'yyyy-mm-dd', 'dd/mm/yyyy',1,0);?>">
             <?php
             $formValidator->addField(
                 [
                     'fieldName' => 'starting_date',
                     'fieldDataType' => 'date',
                     'required' => true,
-                    'enableDatePicker' => true,
+                    'enableDatePicker' => ($q_data['oqq_replacing_ID'] > 0)? false :true,
                     'datePickerValue' => $db->convert_date_format($q_data["oqq_starting_date"], 'yyyy-mm-dd', 'dd/mm/yyyy',1,0),
                     'dateMinDate' => ($allowEditAdvanced == true) ? '01/01/2000' : date('d/m/Y'),
                     'dateMaxDate' => date('d/m/Y', mktime(0, 0, 0, date('m'), (date('d') + 45), date('Y'))),
@@ -611,26 +612,30 @@ function activate_custom_validation($quotationData)
     $result['errorDescription'] = '';
 
     //get item data
-    $sect2 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $quotationData['oqq_quotations_ID'] . " AND oqqit_items_ID = 2");
+    //$sect2 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $quotationData['oqq_quotations_ID'] . " AND oqqit_items_ID = 2");
 
-    $startDate = $sect2['oqqit_date_1'];
-    $expirydate = $sect2['oqqit_date_2'];
-    $startDateSplit = explode('-', $startDate);
-    $expirydateSplit = explode('-', $expirydate);
+    $startDate = $quotationData['oqq_starting_date'];
+    $expiryDate = $quotationData['oqq_expiry_date'];
+
+    $startDateSplit = explode(' ', $startDate);
+    $expiryDateSplit = explode(' ', $expiryDate);
+    $startDateSplit = explode('-', $startDateSplit[0]);
+    $expiryDateSplit = explode('-', $expiryDateSplit[0]);
+
     //convert to number for easier manipulation
     $startDate = ($startDateSplit[0] * 10000) + ($startDateSplit[1] * 100) + $startDateSplit[2];
-    $expirydate = ($expirydateSplit[0] * 10000) + ($expirydateSplit[1] * 100) + $expirydateSplit[2];
+    $expiryDate = ($expiryDateSplit[0] * 10000) + ($expiryDateSplit[1] * 100) + $expiryDateSplit[2];
     $today = (date('Y') * 10000) + (date('m') * 100) + date('d');
     $days45 = date('Y-m-d', mktime(0, 0, 0, date('m'), (date('d') + 45), date('Y')));
-    $days45Split = explode('/', $days45);
-    $days45 = ($days45[0] * 10000) + ($days45[1] * 100) + $days45[2];
+    $days45Split = explode('-', $days45);
+    $days45 = ($days45Split[0] * 10000) + ($days45Split[1] * 100) + $days45Split[2];
     //1. if startdate is before today
     if ($startDate < $today) {
         $result['error'] = true;
         $result['errorDescription'] = "Starting Date cannot be before today.";
     }
     //2. Expiry cannot be before starting
-    if ($expirydate < $startDate) {
+    if ($expiryDate < $startDate) {
         $result['error'] = true;
         $result['errorDescription'] = "Expiry date cannot be before starting date.";
     }
@@ -640,6 +645,7 @@ function activate_custom_validation($quotationData)
         $result['errorDescription'] = "Starting Date cannot be more than 45 days from today.";
     }
 
+    //echo $today." ".$startDate." ".$expiryDate." ".$days45;    exit();
     return $result;
 }
 

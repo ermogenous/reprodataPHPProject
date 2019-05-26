@@ -43,7 +43,7 @@ class customFormValidator
         //dateMinDate : compares the 2 dates and if lower than min date then error
         //dateMaxDate : compares the 2 dates and if higher than max date then error
         if ($fieldData['fieldName'] == '') {
-            echo "Must provide fieldName in newField ";
+            echo "<div class='alert alert-danger'>Must provide fieldName in newField</div>";
             exit();
         }
 
@@ -117,12 +117,15 @@ class customFormValidator
     private function echoDatePickerScriptCode($fieldData)
     {
         global $db;
-        //check if jquery_ui is enabled
-        if ($db->enabled_jquery_ui != 'yes'){
-            echo '<div class="alert alert-danger">For date picker to work needs Jquery UI</div>';
-        }
+
 
         if ($fieldData['fieldDataType'] == 'date' && $fieldData['enableDatePicker'] == true) {
+            //check if jquery_ui is enabled
+            if ($db->enabled_jquery_ui != 'yes'){
+                echo '<div class="alert alert-danger">For date picker to work needs Jquery UI</div>';
+            }
+
+
             echo '
         <script>
         $(function () {
