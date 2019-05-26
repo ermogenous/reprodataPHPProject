@@ -52,7 +52,8 @@ $formValidator = new customFormValidator();
     <div class="row">
         <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
         <div class="col-lg-6 col-md-6 col-xs-12 col-sm-12">
-            <form name="myForm" id="myForm" method="post" action="" onsubmit="">
+            <form name="myForm" id="myForm" method="post"
+                <?php $formValidator->echoFormParameters();?>>
                 <div class="alert alert-dark text-center">
                     <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
                         &nbsp;Vitamin</b>
@@ -62,8 +63,7 @@ $formValidator = new customFormValidator();
                     <label for="fld_active" class="col-sm-4 col-form-label">Active</label>
                     <div class="col-sm-8">
                         <select name="fld_active" id="fld_active"
-                                class="form-control"
-                                required>
+                                class="form-control">
                             <option value="1" <?php if ($data['vit_active'] == 1) echo 'selected';?>>Active</option>
                             <option value="0" <?php if ($data['vit_active'] == 0) echo 'selected';?>>In-active</option>
                         </select>
@@ -84,8 +84,37 @@ $formValidator = new customFormValidator();
                     <div class="col-sm-8">
                         <input name="fld_code" type="text" id="fld_code"
                                class="form-control"
-                               value="<?php echo $data["vit_code"]; ?>"
-                               required>
+                               value="<?php echo $data["vit_code"]; ?>">
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'fld_code',
+                                'fieldDataType' => 'text',
+                                'required' => true,
+                                'invalidText' => 'Enter Code'
+                            ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="fld_type" class="col-sm-4 col-form-label">Type</label>
+                    <div class="col-sm-8">
+                        <select name="fld_type" id="fld_type"
+                                class="form-control">
+                            <option value="Vitamin" <?php if ($data['vit_type'] == 'Vitamin') echo 'selected';?>>Vitamin</option>
+                            <option value="Mineral" <?php if ($data['vit_type'] == 'Mineral') echo 'selected';?>>Mineral</option>
+                            <option value="Supplement" <?php if ($data['vit_type'] == 'Supplement') echo 'selected';?>>Supplement</option>
+                        </select>
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'fld_type',
+                                'fieldDataType' => 'select',
+                                'required' => true,
+                                'invalidText' => 'Select Type'
+                            ]);
+                        ?>
                     </div>
                 </div>
 
@@ -94,8 +123,16 @@ $formValidator = new customFormValidator();
                     <div class="col-sm-8">
                         <input name="fld_name" type="text" id="fld_name"
                                class="form-control"
-                               value="<?php echo $data["vit_name"]; ?>"
-                               required>
+                               value="<?php echo $data["vit_name"]; ?>">
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'fld_name',
+                                'fieldDataType' => 'text',
+                                'required' => true,
+                                'invalidText' => 'Enter Name'
+                            ]);
+                        ?>
                     </div>
                 </div>
 
@@ -105,9 +142,163 @@ $formValidator = new customFormValidator();
                         <input name="fld_description" type="text" id="fld_description"
                                class="form-control"
                                value="<?php echo $data["vit_description"]; ?>">
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'fld_description',
+                                'fieldDataType' => 'text',
+                                'required' => true,
+                                'invalidText' => 'Enter Description'
+                            ]);
+                        ?>
                     </div>
                 </div>
 
+                <div class="form-group row">
+                    <label for="fld_bottle_size" class="col-sm-4 col-form-label">Bottle Size</label>
+                    <div class="col-sm-8">
+                        <select name="fld_bottle_size" id="fld_bottle_size"
+                                class="form-control">
+                            <option value="Small" <?php if ($data['vit_bottle_size'] == 'Small') echo 'selected';?>>Small</option>
+                            <option value="Large" <?php if ($data['vit_bottle_size'] == 'Large') echo 'selected';?>>Large</option>
+                        </select>
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'fld_bottle_size',
+                                'fieldDataType' => 'select',
+                                'required' => true,
+                                'invalidText' => 'Select Bottle Size'
+                            ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="fld_quantity" class="col-sm-4 col-form-label">Quantity In Bottle</label>
+                    <div class="col-sm-8">
+                        <input name="fld_quantity" type="text" id="fld_quantity"
+                               class="form-control"
+                               value="<?php echo $data["vit_quantity"]; ?>">
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'fld_quantity',
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidText' => 'Enter Quantity in Bottle'
+                            ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="fld_cost_quantity" class="col-sm-4 col-form-label">Cost Quantity</label>
+                    <div class="col-sm-8">
+                        <input name="fld_cost_quantity" type="text" id="fld_cost_quantity"
+                               class="form-control"
+                               value="<?php echo $data["vit_cost_quantity"]; ?>">
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'fld_cost_quantity',
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidText' => 'Enter Cost Quantity'
+                            ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="fld_cost_wholesale" class="col-sm-4 col-form-label">Cost Wholesale GBP</label>
+                    <div class="col-sm-8">
+                        <input name="fld_cost_wholesale" type="text" id="fld_cost_wholesale"
+                               class="form-control"
+                               value="<?php echo $data["vit_cost_wholesale"]; ?>">
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'fld_cost_wholesale',
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidText' => 'Enter Cost Wholesale'
+                            ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="fld_cost_retail" class="col-sm-4 col-form-label">Cost Retail GBP</label>
+                    <div class="col-sm-8">
+                        <input name="fld_cost_retail" type="text" id="fld_cost_retail"
+                               class="form-control"
+                               value="<?php echo $data["vit_cost_retail"]; ?>">
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'fld_cost_retail',
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidText' => 'Enter Cost Retail'
+                            ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="fld_super_wholesale" class="col-sm-4 col-form-label">Super Wholesale</label>
+                    <div class="col-sm-8">
+                        <input name="fld_super_wholesale" type="text" id="fld_super_wholesale"
+                               class="form-control"
+                               value="<?php echo $data["vit_super_wholesale"]; ?>">
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'fld_super_wholesale',
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidText' => 'Enter Super Wholesale valid number'
+                            ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="fld_wholesale" class="col-sm-4 col-form-label">WholeSale</label>
+                    <div class="col-sm-8">
+                        <input name="fld_wholesale" type="text" id="fld_wholesale"
+                               class="form-control"
+                               value="<?php echo $data["vit_wholesale"]; ?>">
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'fld_wholesale',
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidText' => 'Enter Wholesale valid number'
+                            ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="fld_retail" class="col-sm-4 col-form-label">Retail</label>
+                    <div class="col-sm-8">
+                        <input name="fld_retail" type="text" id="fld_retail"
+                               class="form-control"
+                               value="<?php echo $data["vit_retail"]; ?>">
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'fld_retail',
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidText' => 'Enter Retail valid number'
+                            ]);
+                        ?>
+                    </div>
+                </div>
 
 
                 <div class="form-group row">
