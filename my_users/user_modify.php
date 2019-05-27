@@ -41,8 +41,8 @@ if ($_POST["action"] == "insert") {
 
     $db->working_section = 'Check max users on user insert';
     $totalUsers = $db->query_fetch('SELECT COUNT(*)as clo_total_users FROM users WHERE usr_active = 1');
-    if ($totalUsers['clo_total_users'] >= $db->decrypt($db->get_setting('user_max_user_accounts'))){
-        $db->generateAlertError('Reached max capacity of users. Contact Administrator');
+    if ($totalUsers['clo_total_users'] > $db->decrypt($db->get_setting('user_max_user_accounts'))){
+        $db->generateAlertError('Reached max capacity of users['.$totalUsers['clo_total_users'].' of '.$db->decrypt($db->get_setting('user_max_user_accounts')).']  Contact Administrator');
     }
     else {
         $db->working_section = 'My Users Modify';
@@ -191,7 +191,7 @@ $db->show_header();
                             "fieldName" => "fld_email",
                             "fieldDataType" => "email",
                             "validateEmail" => true,
-                            "required" => true,
+                            "required" => false,
                             "invalidText" => "Enter Email",
                         ]);
                         ?>

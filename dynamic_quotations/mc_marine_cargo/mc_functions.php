@@ -12,6 +12,41 @@ function mc_shipment_details_3()
     ?>
 
     <div class="form-group row">
+        <label for="3_oqqit_rate_9" class="col-sm-4 col-form-label">
+            <?php show_quotation_text("Conditions Of Insurance", "Conditions Of Insurance"); ?>
+        </label>
+        <div class="col-sm-8">
+            <div class="container custom-control-inline">
+                <div class="input-group">
+                    <div class="input-group-text">
+                        <input type="radio" id="3_oqqit_rate_13" name="3_oqqit_rate_13" value="Clause A" class="form-control"
+                        <?php if ($qitem_data['oqqit_rate_13'] == 'Clause A') echo 'checked';?>>
+                    </div>
+                    &nbsp;Institute Clause A
+                </div>
+
+                <div class="input-group">
+                    <div class="input-group-text">
+                        <input type="radio" id="3_oqqit_rate_13" name="3_oqqit_rate_13" value="Clause B" class="form-control"
+                            <?php if ($qitem_data['oqqit_rate_13'] == 'Clause B') echo 'checked';?>>
+                    </div>
+                    &nbsp;Institute Clause B
+                </div>
+            </div>
+
+            <?php
+            $formValidator->addField(
+                [
+                    'fieldName' => '3_oqqit_rate_13',
+                    'fieldDataType' => 'radio',
+                    'required' => true,
+                    'invalidText' => show_quotation_text("Επιλέξτε Conditions Of Insurance.", "Must select Conditions Of Insurance", 'Return')
+                ]);
+            ?>
+        </div>
+    </div>
+
+    <div class="form-group row">
         <label for="3_oqqit_rate_4" class="col-sm-4 col-form-label">
             <?php show_quotation_text("Commodity", "Commodity"); ?>
         </label>
@@ -302,8 +337,7 @@ function mc_shipment_details_3()
                     $reffered = '';
                     if ($country['cde_option_value'] == 'Reject') {
                         $reffered = ' - <b>Country Not Allowed</b>';
-                    }
-                    else if ($country['cde_option_value'] == 'Approval') {
+                    } else if ($country['cde_option_value'] == 'Approval') {
                         $reffered = ' - <b>Country Needs Approval</b>';
                     }
                     ?>
@@ -321,16 +355,17 @@ function mc_shipment_details_3()
                     'required' => true,
                     'invalidText' => show_quotation_text("Επιλέξτε Country of Origin.", "Must select Country of Origin", 'Return')
                 ]);
-            $jsCode = activate_custom_validation('',true);
+            $jsCode = activate_custom_validation('', true);
             ?>
             <script>
-                function Approval3_oqqit_rate_10(){
-                    var result = {"result":"0", "info":""};
+                function Approval3_oqqit_rate_10() {
+                    var result = {"result": "0", "info": ""};
                     <?php echo $jsCode['origin']['approval'];?>
                     return result;
                 }
-                function Reject3_oqqit_rate_10(){
-                    var result = {"result":"0", "info":""};
+
+                function Reject3_oqqit_rate_10() {
+                    var result = {"result": "0", "info": ""};
                     <?php echo $jsCode['origin']['reject'];?>
                     return result;
                 }
@@ -353,8 +388,7 @@ function mc_shipment_details_3()
                     $reffered = '';
                     if ($country['cde_option_value'] == 'Reject') {
                         $reffered = ' - <b>Country Not Allowed</b>';
-                    }
-                    else if ($country['cde_option_value'] == 'Approval') {
+                    } else if ($country['cde_option_value'] == 'Approval') {
                         $reffered = ' - <b>Country Needs Approval</b>';
                     }
                     ?>
@@ -374,13 +408,14 @@ function mc_shipment_details_3()
                 ]);
             ?>
             <script>
-                function Approval3_oqqit_rate_11(){
-                    var result = {"result":"0", "info":""};
+                function Approval3_oqqit_rate_11() {
+                    var result = {"result": "0", "info": ""};
                     <?php echo $jsCode['via']['approval'];?>
                     return result;
                 }
-                function Reject3_oqqit_rate_11(){
-                    var result = {"result":"0", "info":""};
+
+                function Reject3_oqqit_rate_11() {
+                    var result = {"result": "0", "info": ""};
                     <?php echo $jsCode['via']['reject'];?>
                     return result;
                 }
@@ -403,8 +438,7 @@ function mc_shipment_details_3()
                     $reffered = '';
                     if ($country['cde_option_value'] == 'Reject') {
                         $reffered = ' - <b>Country Not Allowed</b>';
-                    }
-                    else if ($country['cde_option_value'] == 'Approval') {
+                    } else if ($country['cde_option_value'] == 'Approval') {
                         $reffered = ' - <b>Country Needs Approval</b>';
                     }
                     ?>
@@ -424,13 +458,14 @@ function mc_shipment_details_3()
                 ]);
             ?>
             <script>
-                function Approval3_oqqit_rate_12(){
-                    var result = {"result":"0", "info":""};
+                function Approval3_oqqit_rate_12() {
+                    var result = {"result": "0", "info": ""};
                     <?php echo $jsCode['destination']['approval'];?>
                     return result;
                 }
-                function Reject3_oqqit_rate_12(){
-                    var result = {"result":"0", "info":""};
+
+                function Reject3_oqqit_rate_12() {
+                    var result = {"result": "0", "info": ""};
                     <?php echo $jsCode['destination']['reject'];?>
                     return result;
                 }
@@ -539,7 +574,6 @@ function activate_custom_validation($data, $returnJS = false)
     $result['errorDescription'] = '';
 
 
-
     if ($returnJS == false) {
         //get item 3 data
         $sql = 'SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = ' . $data['oqq_quotations_ID'] . ' AND oqqit_items_ID = 3';
@@ -587,44 +621,41 @@ function activate_custom_validation($data, $returnJS = false)
         }
 
 
-
-
         return $result;
-    }
-    else {
+    } else {
         $sql = "SELECT * FROM codes WHERE cde_type = 'Countries' AND cde_option_value IN ('Approval','Reject')";
         $result = $db->query($sql);
         $approvalList = '';
         $rejectList = '';
         $jsCheck = [];
-        while ($row = $db->fetch_assoc($result)){
+        while ($row = $db->fetch_assoc($result)) {
             if ($row['cde_option_value'] == 'Approval') {
                 $approvalList .= "'" . $row['cde_code_ID'] . "',";
             }
-            if ($row['cde_option_value'] == 'Reject'){
+            if ($row['cde_option_value'] == 'Reject') {
                 $rejectList .= "'" . $row['cde_code_ID'] . "',";
             }
         }
         $approvalList = $db->remove_last_char($approvalList);
-        $approvalList = "[".$approvalList."]";
+        $approvalList = "[" . $approvalList . "]";
 
         $rejectList = $db->remove_last_char($rejectList);
-        $rejectList = "[".$rejectList."]";
+        $rejectList = "[" . $rejectList . "]";
 
         $jsCheck['origin']['approval'] = "
-        if (".$approvalList.".indexOf($('#3_oqqit_rate_10').val()) >= 0)
+        if (" . $approvalList . ".indexOf($('#3_oqqit_rate_10').val()) >= 0)
         {
             result['result'] = 1;
             result['info'] = 'Country of Origin: Needs approval.';
         }";
         $jsCheck['via']['approval'] = "
-        if (".$approvalList.".indexOf($('#3_oqqit_rate_11').val()) >= 0)
+        if (" . $approvalList . ".indexOf($('#3_oqqit_rate_11').val()) >= 0)
         {
             result['result'] = 1;
             result['info'] = 'Via Country: Needs approval.';
         }";
         $jsCheck['destination']['approval'] = "
-        if (".$approvalList.".indexOf($('#3_oqqit_rate_12').val()) >= 0)
+        if (" . $approvalList . ".indexOf($('#3_oqqit_rate_12').val()) >= 0)
         {
             result['result'] = 1;
             result['info'] = 'Destination Country: Needs approval.';
@@ -632,19 +663,19 @@ function activate_custom_validation($data, $returnJS = false)
         ";
 
         $jsCheck['origin']['reject'] = "
-        if (".$rejectList.".indexOf($('#3_oqqit_rate_10').val()) >= 0)
+        if (" . $rejectList . ".indexOf($('#3_oqqit_rate_10').val()) >= 0)
         {
             result['result'] = 1;
             result['info'] = 'Country of Origin:' + $('#3_oqqit_rate_10 option:selected').text() + '';
         }";
         $jsCheck['via']['reject'] = "
-        if (".$rejectList.".indexOf($('#3_oqqit_rate_11').val()) >= 0)
+        if (" . $rejectList . ".indexOf($('#3_oqqit_rate_11').val()) >= 0)
         {
             result['result'] = 1;
             result['info'] = 'Via Country: Needs approval.';
         }";
         $jsCheck['destination']['reject'] = "
-        if (".$rejectList.".indexOf($('#3_oqqit_rate_12').val()) >= 0)
+        if (" . $rejectList . ".indexOf($('#3_oqqit_rate_12').val()) >= 0)
         {
             result['result'] = 1;
             result['info'] = 'Destination Country: Needs approval.';

@@ -270,7 +270,7 @@ class Main
                 $_SESSION["failed_login_attempt"]++;
                 $_SESSION["failed_login_attempt_last_time"] = date("d-m-Y G:i:s");
 
-                header("Location:" . $this->settings["site_url"] . "/index.php?error=User not found.Please login.&action=logout");
+                header("Location:" . $this->settings["site_url"] . "/login.php?error=User not found.Please login.&action=logout");
                 exit();
             }
             //check if the user has the appropriate persmission.
@@ -360,7 +360,7 @@ class Main
                     //check login attempts.
                     $_SESSION["failed_login_attempt"]++;
                     $_SESSION["failed_login_attempt_last_time"] = date("d-m-Y G:i:s");
-                    header("Location: " . $this->settings["site_url"] . "/index.php?error=IP Blocked&action=logout");
+                    header("Location: " . $this->settings["site_url"] . "/login.php?error=IP Blocked&action=logout");
                     exit();
                 }
 
@@ -370,7 +370,7 @@ class Main
                     //check login attempts.
                     $_SESSION["failed_login_attempt"]++;
                     $_SESSION["failed_login_attempt_last_time"] = date("d-m-Y G:i:s");
-                    header("Location: " . $this->settings["site_url"] . "/index.php?error=IP not found&action=logout");
+                    header("Location: " . $this->settings["site_url"] . "/login.php?error=IP not found&action=logout");
                     exit();
                 }
                 //echo $_SERVER['REMOTE_ADDR'];

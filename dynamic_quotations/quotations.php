@@ -49,10 +49,10 @@ if ($_POST['filter_clear'] == 'Clear'){
     unset($_SESSION['dyqt_filter_pending']);
     unset($_SESSION['dyqt_filter_deleted']);
 }
-
+$table->extras = '1=1';
 //if filter
 if ($_SESSION['dyqt_filter']) {
-    $table->extras = '1=1';
+
     if ($_SESSION['dyqt_filter_number'] != ''){
         $table->extras .= " AND oqq_number LIKE '%".$_SESSION['dyqt_filter_number']."%'";
     }

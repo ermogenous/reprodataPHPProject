@@ -7,7 +7,7 @@ $db = new Main(0);
 
 //unset ($_SESSION);
 
-if ($db->get_setting("under_construction") == 1 && $_SERVER['REMOTE_ADDR'] != '81.4.137.26') {
+if ($db->get_setting("under_construction") == 1) {
 	echo "<div align=\"center\">Website is under construction. <br> Please try again in a few moments.</div>";
 	exit();
 }
@@ -35,23 +35,31 @@ if ($_POST["action"] == "login") {
 		$result = $db->query($sql);
 		if ($db->num_rows($result) > 0) {
 			$row = $db->fetch_assoc($result);
-			$_SESSION[$main["environment"]."_admin_username"] = $_POST["username"];
-			$_SESSION[$main["environment"]."_admin_password"] = $_POST["password"];
+
+			//check if active
+            if ($row['usr_active'] == 1) {
+
+                $_SESSION[$main["environment"] . "_admin_username"] = $_POST["username"];
+                $_SESSION[$main["environment"] . "_admin_password"] = $_POST["password"];
 
 
-			if ($_GET["goto"] == 1) {
-				header("Location: ".$_GET["gotourl"]);
-				exit();
-			}
-			if ($_SESSION["prev_url"] != "") {
-				$loc = $_SESSION["prev_url"];
-			}
-			else {
-				$loc = "home.php?";
-			}
+                if ($_GET["goto"] == 1) {
+                    header("Location: " . $_GET["gotourl"]);
+                    exit();
+                }
+                if ($_SESSION["prev_url"] != "") {
+                    $loc = $_SESSION["prev_url"];
+                } else {
+                    $loc = "home.php?";
+                }
 
-			header("Location: ".$loc);
-			exit();
+                header("Location: " . $loc);
+                exit();
+            }
+            else {
+                //user inactive/suspended
+                $_GET['error'] = 'You account is suspended. Please contact the administrator.';
+            }
 		}//if correct
 		else {
 			$_SESSION["failed_login_attempt"]++;
@@ -67,10 +75,16 @@ if ($_POST["action"] == "login") {
 
 }//login user
 $db->show_header();
-?>
 
-<div align="center"><?php echo $_GET["error"];?></div>
-<?php
+if ($_GET['error'] != '') {
+    ?>
+    <div class="container">
+        <div class="row col-12 alert alert-danger">
+            <?php echo $_GET["error"]; ?>
+        </div>
+    </div>
+    <?php
+}
 if ($db->check_persistent_logins() == 0) {
 ?>
 

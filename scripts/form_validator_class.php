@@ -276,11 +276,13 @@ class customFormValidator
                 if (validateEmail($('#" . $fieldData['fieldName'] . "').val())) {
                     $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
                     $('#" . $fieldData['fieldName'] . "').removeClass('is-invalid');
+                    //console.log('valid email');
                 }
                 else {
                     $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                     $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                     FormErrorFound = true;
+                    //console.log('Invalid email');
                 }
             ";
         }

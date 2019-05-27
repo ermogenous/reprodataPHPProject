@@ -18,7 +18,7 @@ $db->show_header();
                 View Quotations Types
             </button>
         </div>
-        <div class="col-2 text-left">
+        <div class="col-3 text-left">
             <button class="btn btn-primary" onclick="window.location.assign('items.php')">
                 View Quotations Items
             </button>

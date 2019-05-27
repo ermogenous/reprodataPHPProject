@@ -96,13 +96,13 @@ $db->show_empty_header();
                             required>
                         <option value=""></option>
                         <?php
-                        $ptResult = $db->query("SELECT * FROM ina_policy_types WHERE inpot_status = 'Active' ORDER BY inpot_name ASC");
+                        $ptResult = $db->query("SELECT * FROM ina_policy_types WHERE inapot_status = 'Active' ORDER BY inapot_name ASC");
                         while ($pt = $db->fetch_assoc($ptResult)) {
 
                             ?>
-                            <option value="<?php echo $pt['inpot_policy_type_ID']; ?>"
-                                <?php if ($pt['inpot_policy_type_ID'] == $data['agcmt_policy_type_ID']) echo 'selected'; ?>>
-                                <?php echo $pt['inpot_name']; ?>
+                            <option value="<?php echo $pt['inapot_policy_type_ID']; ?>"
+                                <?php if ($pt['inapot_policy_type_ID'] == $data['agcmt_policy_type_ID']) echo 'selected'; ?>>
+                                <?php echo $pt['inapot_name']; ?>
                             </option>
                         <?php } ?>
                     </select>

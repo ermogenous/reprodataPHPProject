@@ -31,60 +31,70 @@ if ($_GET['section'] == 'agent_commission_types_insurance_companies') {
         $data[] = $row;
     }
 
-    $db->update_log_file_custom($sql, 'Insurance Companies From commission Types API:none GET:'.print_r($_GET,true));
+    $db->update_log_file_custom($sql, 'Insurance Companies From commission Types API:agent_commission_types_insurance_companies GET:'.print_r($_GET,true));
 }
 else if ($_GET['section'] == 'agent_commission_types_policy_types') {
 
+    //get the underwriter to see which types are available
     $sql = "SELECT
             *
             FROM
             ina_underwriters
-            JOIN ina_underwriter_companies ON inaund_underwriter_ID = inaunc_underwriter_ID
-            JOIN ina_insurance_companies ON inaunc_insurance_company_ID = inainc_insurance_company_ID
             WHERE
-            inaund_user_ID = '".$_GET['agent']."'
-            AND inainc_insurance_company_ID = ".$_GET['inscompany']."
-            
-	        LIMIT 0,25";
-
+            inaund_user_ID = '".$_GET['agent']."'";
     $undData = $db->query_fetch($sql);
-    if ($undData['inainc_use_motor'] == 1) {
+
+    //print_r($undData);
+
+    //bring the insurance company to see which types ara available
+    $sql = "SELECT
+            *
+            FROM
+            ina_insurance_companies
+            JOIN ina_underwriter_companies ON inaunc_insurance_company_ID = inainc_insurance_company_ID
+            WHERE
+            inainc_insurance_company_ID = '".$_GET['inscompany']."'
+            AND inaunc_underwriter_ID = '".$_GET['agent']."'";
+    $compData = $db->query_fetch($sql);
+    //print_r($compData);
+
+    if ($undData['inaund_use_motor'] == 1 && $compData['inainc_use_motor']) {
         $newData['value'] = 'Motor';
         $newData['label'] = 'Motor';
         $data[] = $newData;
     }
-    if ($undData['inainc_use_fire'] == 1) {
+    if ($undData['inaund_use_fire'] == 1 && $compData['inainc_use_fire']) {
         $newData['value'] = 'Fire';
         $newData['label'] = 'Fire';
         $data[] = $newData;
     }
-    if ($undData['inainc_use_pa'] == 1) {
+    if ($undData['inaund_use_pa'] == 1 && $compData['inainc_use_pa']) {
         $newData['value'] = 'PA';
         $newData['label'] = 'Personal Accident';
         $data[] = $newData;
     }
-    if ($undData['inainc_use_el'] == 1) {
+    if ($undData['inaund_use_el'] == 1 && $compData['inainc_use_el']) {
         $newData['value'] = 'EL';
         $newData['label'] = 'Employers Liability';
         $data[] = $newData;
     }
-    if ($undData['inainc_use_pi'] == 1) {
+    if ($undData['inaund_use_pi'] == 1 && $compData['inainc_use_pi']) {
         $newData['value'] = 'PI';
         $newData['label'] = 'Professional Indemnity';
         $data[] = $newData;
     }
-    if ($undData['inainc_use_pl'] == 1) {
+    if ($undData['inaund_use_pl'] == 1 && $compData['inainc_use_pl']) {
         $newData['value'] = 'PL';
         $newData['label'] = 'Public Liability';
         $data[] = $newData;
     }
-    if ($undData['inainc_use_medical'] == 1) {
+    if ($undData['inaund_use_medical'] == 1 && $compData['inainc_use_medicals']) {
         $newData['value'] = 'Medical';
         $newData['label'] = 'Medical';
         $data[] = $newData;
     }
 
-    $db->update_log_file_custom($sql, 'Insurance Companies From commission Types API:none GET:'.print_r($_GET,true));
+    $db->update_log_file_custom($sql, 'Insurance Companies From commission Types API:agent_commission_types_policy_types GET:'.print_r($_GET,true));
 }
 else {
     $db->update_log_file_custom('NONE', 'Insurance Companies From commission Types API:none GET:'.print_r($_GET,true));

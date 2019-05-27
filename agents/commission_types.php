@@ -22,7 +22,7 @@ $db->show_empty_header();
 
 $table = new draw_table('agent_commission_types', 'agcmt_agent_insurance_type_ID', 'ASC');
 $table->extra_from_section .= ' JOIN ina_insurance_companies ON inainc_insurance_company_ID = agcmt_insurance_company_ID';
-$table->extra_from_section .= ' JOIN ina_policy_types ON inpot_policy_type_ID = agcmt_policy_type_ID';
+$table->extra_from_section .= ' JOIN ina_policy_types ON inapot_policy_type_ID = agcmt_policy_type_ID';
 
 $table->extras = 'agcmt_agent_ID = ' . $_GET['aid'];
 
@@ -41,7 +41,7 @@ $table->generate_data();
                     <th scope="col"><?php $table->display_order_links('ID', 'agcmt_agent_insurance_type_ID'); ?></th>
                     <th scope="col"><?php $table->display_order_links('Status', 'agcmt_status'); ?></th>
                     <th scope="col"><?php $table->display_order_links('Ins.Company', 'inainc_name'); ?></th>
-                    <th scope="col"><?php $table->display_order_links('Policy Type', 'inpot_name'); ?></th>
+                    <th scope="col"><?php $table->display_order_links('Policy Type', 'inapot_name'); ?></th>
                     <th scope="col">
                         <a href="commission_type_modify.php?aid=<?php echo $_GET['aid']; ?>">
                             <i class="fas fa-plus-circle"></i>
@@ -57,7 +57,7 @@ $table->generate_data();
                         <th scope="row"><?php echo $row["agcmt_agent_insurance_type_ID"]; ?></th>
                         <td><?php echo $row["agcmt_status"]; ?></td>
                         <td><?php echo $row["inainc_name"]; ?></td>
-                        <td><?php echo $row["inpot_name"]; ?></td>
+                        <td><?php echo $row["inapot_name"]; ?></td>
                         <td>
                             <a href="commission_type_modify.php?lid=<?php echo $row["agcmt_agent_insurance_type_ID"] . '&aid=' . $_GET['aid']; ?>"><i
                                         class="fas fa-edit"></i></a>&nbsp
