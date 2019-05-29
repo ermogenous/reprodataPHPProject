@@ -18,6 +18,7 @@ class customFormValidator
     private $customCode = [];
 
     private $disableForm = false;
+    private $disableFormExceptions = [];
     private $formName = 'myForm';
 
 
@@ -61,9 +62,11 @@ class customFormValidator
         $this->customCode[] = $code;
     }
 
-    public function disableForm()
+    //$exceptions[] = exceptions. Example -> $exceptions[] = 'buttons'
+    public function disableForm($exceptions = [])
     {
         $this->disableForm = true;
+        $this->disableFormExceptions = $exceptions;
     }
 
     public function setFormName($name)
@@ -415,7 +418,18 @@ class customFormValidator
             echo '
             $("#' . $this->formName . ' :input").prop("disabled", true);
             ';
-            echo '';
+
+            //find the exceptions
+            foreach ($this->disableFormExceptions as $value){
+                if ($value == 'buttons'){
+                    echo '
+                    $("#' . $this->formName . ' :button").prop("disabled", false);
+                    ';
+                }
+            }
+
+
+
         }
         echo "</script>";
 

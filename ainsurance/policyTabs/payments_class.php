@@ -13,6 +13,7 @@ class PolicyPayment
     public $paymentData;
     public $error = false;
     public $errorDescription = '';
+    private $policyID;
 
     function __construct($paymentID)
     {
@@ -23,6 +24,7 @@ class PolicyPayment
             JOIN ina_policies ON inapp_policy_ID = inapol_policy_ID
             WHERE inapp_policy_payment_ID = ' . $paymentID);
         $this->paymentID = $paymentID;
+        $this->policyID = $this->paymentData['inapp_policy_ID'];
 
     }
 
@@ -48,8 +50,7 @@ class PolicyPayment
 
     }
 
-    public function postPayment()
-    {
+    public function postPayment(){
         global $db;
 
         if ($this->paymentData['inapol_status'] != 'Active'){
@@ -66,12 +67,19 @@ class PolicyPayment
             $this->errorDescription = 'Payment ID is empty';
         }
 
+        //only the first outstanding can be applied
+        $minPaymentID = $db->query_fetch("SELECT MIN(inapp_policy_payment_ID)as clo_min FROM ina_policy_payments WHERE inapp_policy_ID = ".$this->policyID." AND inapp_status = 'Outstanding'");
+        if ($minPaymentID['clo_min'] != $this->paymentID){
+            $this->error = true;
+            $this->errorDescription = 'Only the first outstanding payment can be applied';
+        }
+
         if ($this->error == true) {
             return false;
         }
 
         //if no error proceed to post
-        //loop into all installments
+        //loop into all installments which are unpaid or partial
         $sql = 'SELECT * FROM ina_policy_installments 
                 WHERE inapi_policy_ID = ' . $this->paymentData['inapp_policy_ID'] . "
                 AND inapi_paid_status IN ('UnPaid', 'Partial')
@@ -83,56 +91,64 @@ class PolicyPayment
             return false;
         }
 
-        $amountToAllocate = $this->paymentData['inapp_amount'] - $this->paymentData['inapp_allocated_amount'];
-        $commissionToAllocate = $this->paymentData['inapp_commission_amount'] - $this->paymentData['inapp_allocated_commission'];
+        //init
+        $amountToAllocate = $this->paymentData['inapp_amount'];
         $totalAllocatedAmount = 0;
         $totalAllocatedCommission = 0;
 
+        //loop into all installments one by one order by date asc
         while ($installment = $db->fetch_assoc($result)) {
 
-            //if amount is equal with the installment
             //print_r($installment);
-            //echo "<br><br>";
+            //echo "Installment:".$installment['inapi_policy_installments_ID']."\n";
+            //echo "Start - Amount to allocate:".$amountToAllocate."\n\n";
+
 
             //check if is any remaining amount to allocate
             if ($amountToAllocate > 0) {
 
-                if ($amountToAllocate >= $installment['inapi_amount']) {
+                $installmentRemainingAmount = ($installment['inapi_amount'] - $installment['inapi_paid_amount']);
+                //if the amount to allocate is more than installment then do full paid
+                if ($amountToAllocate >=  $installmentRemainingAmount) {
+
 
                     //subtract the amount from remaining
                     $newData['paid_amount'] = $installment['inapi_amount'];
                     $newData['paid_status'] = 'Paid';
-                    $amountToAllocate -= $installment['inapi_amount'];
-                    $totalAllocatedAmount += $installment['inapi_amount'];
+                    $amountToAllocate -= $installmentRemainingAmount;
+                    $totalAllocatedAmount += $installmentRemainingAmount;
+                    //also full paid the commission
+                    $newData['paid_commission_amount'] = $installment['inapi_commission_amount'];
+                    $totalAllocatedCommission += $installment['inapi_commission_amount'] - $installment['inapi_paid_commission_amount'];
 
-                } else if ($amountToAllocate < $installment['inapi_amount']) {
+                    //if the amount to allocate is lower then proceed to partial paid.
+                } else if ($amountToAllocate < $installmentRemainingAmount) {
 
-                    $newData['paid_amount'] = $amountToAllocate;
+                    $newData['paid_amount'] = $amountToAllocate + $installment['inapi_paid_amount'];
                     $newData['paid_status'] = 'Partial';
+
+                    //commission paid analogy of the payment.
+                    //first find the analogy of the commission.
+                    // (total comm - paid comm) / (total amount - paid amount)
+                    $analogy = ($installment['inapi_commission_amount'] - $installment['inapi_paid_commission_amount']) /  ($installment['inapi_amount'] - $installment['inapi_paid_amount']);
+                    $newData['paid_commission_amount'] = round(($amountToAllocate * $analogy),2) + $installment['inapi_paid_commission_amount'] ;
+                    $totalAllocatedCommission += round(($amountToAllocate * $analogy),2);
+                    //verify that the paid commission is not more than the total comm.
+                    if ($newData['paid_commission_amount'] > $installment['inapi_commission_amount']){
+                        $newData['paid_commission_amount'] = $installment['inapi_commission_amount'];
+                    }
+
                     $totalAllocatedAmount += $amountToAllocate;
                     $amountToAllocate -= $amountToAllocate;
 
                 }
 
-                $newData['paid_commission_amount'] = 0;
-                if ($commissionToAllocate > 0) {
-
-                    if ($commissionToAllocate >= $installment['inapi_commission_amount']) {
-                        $newData['paid_commission_amount'] = $installment['inapi_commission_amount'];
-                        $totalAllocatedCommission += $installment['inapi_commission_amount'];
-                        $commissionToAllocate -= $installment['inapi_commission_amount'];
-                    } else if ($commissionToAllocate < $installment['inapi_commission_amount']) {
-                        $newData['paid_commission_amount'] = $commissionToAllocate;
-                        $totalAllocatedCommission += $commissionToAllocate;
-                        $commissionToAllocate -= $commissionToAllocate;
-                    }
-                }
-
+                //update the installment with the new data.
                 $db->db_tool_update_row('ina_policy_installments', $newData,
                     'inapi_policy_installments_ID = ' . $installment['inapi_policy_installments_ID'],
                     $installment['inapi_policy_installments_ID'], '', 'execute', 'inapi_');
 
-                //insert line
+                //insert line into the ina_policy_payments_lines for future rolling back
                 $lineData['policy_payment_ID'] = $this->paymentID;
                 $lineData['policy_installment_ID'] = $installment['inapi_policy_installments_ID'];
                 $lineData['previous_paid_amount'] = $installment['inapi_paid_amount'];
@@ -144,24 +160,36 @@ class PolicyPayment
                 $db->db_tool_insert_row('ina_policy_payments_lines', $lineData, '', 0, 'inappl_', 'execute');
 
 
-            }
-        }
+
+            }//if amount to allocate > 0
 
 
+
+            //echo "End - Amount to allocate:".$amountToAllocate."\n\n\n\n\n-------------------------------------";
+        }//while in all the installments
+
+        //echo "Total Allocated amount:".$totalAllocatedAmount." Payment amount:".$this->paymentData['inapp_amount'];
         if ($totalAllocatedAmount == $this->paymentData['inapp_amount']) {
             $payNewData['status'] = 'Applied';
             $payNewData['allocated_amount'] = $totalAllocatedAmount;
             $payNewData['allocated_commission'] = $totalAllocatedCommission;
+            $db->db_tool_update_row('ina_policy_payments', $payNewData,
+                'inapp_policy_payment_ID = ' . $this->paymentID, $this->paymentID,
+                '', 'execute', 'inapp_');
+            return true;
+
         } else if ($totalAllocatedAmount < $this->paymentData['inapp_amount']) {
             $payNewData['status'] = 'Incomplete';
             $payNewData['allocated_amount'] = $totalAllocatedAmount;
             $payNewData['allocated_commission'] = $totalAllocatedCommission;
+            $db->generateAlertError('Error');
+            $db->rollback_transaction();
+            return false;
+
         }
-        $db->db_tool_update_row('ina_policy_payments', $payNewData,
-            'inapp_policy_payment_ID = ' . $this->paymentID, $this->paymentID,
-            '', 'execute', 'inapp_');
-        return true;
+
     }
+
 
     function reversePostPayment()
     {
@@ -172,6 +200,14 @@ class PolicyPayment
             $this->error = true;
             $this->errorDescription = 'Must be applied to reverse';
         }
+
+        //check if its the last applied payment
+        $maxPaymentID = $db->query_fetch("SELECT MAX(inapp_policy_payment_ID)as clo_max FROM ina_policy_payments WHERE inapp_policy_ID = ".$this->policyID." AND inapp_status = 'Applied'");
+        if ($maxPaymentID['clo_max'] != $this->paymentID){
+            $this->error = true;
+            $this->errorDescription = 'Can only reverse the last applied payment.';
+        }
+
 
         if ($this->error == true) {
             return false;

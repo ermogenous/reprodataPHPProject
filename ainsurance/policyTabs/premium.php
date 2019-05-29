@@ -33,7 +33,7 @@ $db->show_empty_header();
 
 include('../../scripts/form_validator_class.php');
 $formValidator = new customFormValidator();
-if ($policy->policyData['inapol_status'] != 'Oustanding'){
+if ($policy->policyData['inapol_status'] != 'Outstanding'){
     $formValidator->disableForm();
 }
 
@@ -143,9 +143,9 @@ if ($policy->policyData['inapol_status'] != 'Oustanding'){
                     </div>
 
                     <div class="form-group row">
-                        <div class="col-sm-6 col-form-label"></div>
+                        <div class="col-sm-5 col-form-label"></div>
 
-                        <label for="fld_mif" class="col-sm-3 col-form-label alert alert-success">Policy Gross Premium</label>
+                        <label class="col-sm-4 col-form-label alert alert-success">Policy Gross Premium</label>
                         <div class="col-sm-3 text-center alert alert-success" id="grossPremium"></div>
                     </div>
 

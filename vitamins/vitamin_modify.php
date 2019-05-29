@@ -300,6 +300,22 @@ $formValidator = new customFormValidator();
                     </div>
                 </div>
 
+                <div class="form-group row">
+                    <label for="fld_market_prices" class="col-sm-4 col-form-label">Market Prices</label>
+                    <div class="col-sm-8">
+                        <textarea name="fld_market_prices" id="fld_market_prices"
+                                  class="form-control"><?php echo $data["vit_market_prices"]; ?></textarea>
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'fld_market_prices',
+                                'fieldDataType' => 'text',
+                                'required' => false
+                            ]);
+                        ?>
+                    </div>
+                </div>
+
 
                 <div class="form-group row">
                     <label for="name" class="col-sm-4 col-form-label"></label>

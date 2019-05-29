@@ -91,7 +91,7 @@ class Policy
             return 'Vehicles';
         }
         else if ($this->policyData['inapol_type_code'] == 'Fire') {
-            return 'Risk Location';
+            return 'RiskLocation';
         }
     }
 

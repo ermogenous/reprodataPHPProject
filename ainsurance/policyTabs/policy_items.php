@@ -9,6 +9,7 @@
 
 include("../../include/main.php");
 include("../../include/tables.php");
+include("../policy_class.php");
 
 $db = new Main(1, 'UTF-8');
 $db->admin_title = "AInsurance Policy Items";
@@ -23,8 +24,9 @@ if ($_GET['pid'] > 0) {
     $table->extras .= 'inapit_policy_ID = ' . $_GET['pid'];
 
     $table->generate_data();
-//echo $table->sql;
-//echo $_GET['type'];
+
+    $policy = new Policy($_GET['pid']);
+
     ?>
 
 
@@ -82,12 +84,20 @@ if ($_GET['pid'] > 0) {
                                 <td><?php echo $row["inapit_excess"]; ?></td>
                                 <td><?php echo $row["inapit_premium"]; ?></td>
                                 <td>
-                                    <a href="policy_item_modify.php?lid=<?php echo $row["inapit_policy_item_ID"] . "&pid=" . $_GET['pid'] . "&type=" . $_GET['type']; ?>"><i
-                                                class="fas fa-edit"></i></a>&nbsp
-                                    <a href="policy_item_delete.php?lid=<?php echo $row["inapit_policy_item_ID"] . "&pid=" . $_GET['pid'] . "&type=" . $_GET['type']; ?>"
-                                       onclick="ignoreEdit = true;
-                               return confirm('Are you sure you want to delete this policy item?');"><i
-                                                class="fas fa-minus-circle"></i></a>
+
+                                    <?php
+                                    if ($policy->policyData['inapol_status'] == 'Oustanding') {
+                                        ?>
+                                        <a href="policy_item_modify.php?lid=<?php echo $row["inapit_policy_item_ID"] . "&pid=" . $_GET['pid'] . "&type=" . $_GET['type']; ?>"><i
+                                                    class="fas fa-edit"></i></a>&nbsp
+                                        <a href="policy_item_delete.php?lid=<?php echo $row["inapit_policy_item_ID"] . "&pid=" . $_GET['pid'] . "&type=" . $_GET['type']; ?>"
+                                           onclick="ignoreEdit = true;
+                                            return confirm('Are you sure you want to delete this policy item?');"><i
+                                                    class="fas fa-minus-circle"></i></a>
+                                    <?php }else { ?>
+                                        <a href="policy_item_modify.php?lid=<?php echo $row["inapit_policy_item_ID"] . "&pid=" . $_GET['pid'] . "&type=" . $_GET['type']; ?>"><i
+                                                    class="fas fa-eye"></i></a>&nbsp
+                                    <?php } ?>
                                 </td>
                             </tr>
                             <?php
@@ -116,7 +126,9 @@ if ($_GET['pid'] > 0) {
 
 
             let fixedPx = 100;
-            let totalPx = fixedPx + (<?php echo $totalLines;?> * 60);
+            let totalPx = fixedPx + (<?php echo $totalLines;?> * 60
+        )
+            ;
             $('#policyItemsTab', window.parent.document).height(totalPx + 'px');
 
         });

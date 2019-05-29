@@ -75,7 +75,8 @@ if ($_GET['pid'] > 0) {
                                 <th scope="col"><?php $table->display_order_links('ID', 'inapp_policy_payment_ID'); ?></th>
                                 <th scope="col"><?php $table->display_order_links('Date', 'inapp_payment_date'); ?></th>
                                 <th scope="col"><?php $table->display_order_links('Amount', 'inapp_amount'); ?></th>
-                                <th scope="col"><?php $table->display_order_links('Commission', 'inapp_commission_amount'); ?></th>
+                                <th scope="col"><?php $table->display_order_links('All.Amount', 'inapp_allocated_amount'); ?></th>
+                                <th scope="col"><?php $table->display_order_links('All.Commission', 'inapp_allocated_commission'); ?></th>
                                 <th scope="col"><?php $table->display_order_links('Status', 'inapp_status'); ?></th>
                                 <th scope="col">
                                     <a href="payment_modify.php?pid=<?php echo $_GET['pid'] . "&type=" . $_GET['type']; ?>">
@@ -87,6 +88,8 @@ if ($_GET['pid'] > 0) {
                             <tbody>
                             <?php
                             $totalLines = 0;
+                            $maxPaymentID = $db->query_fetch("SELECT MAX(inapp_policy_payment_ID)as clo_max FROM ina_policy_payments WHERE inapp_policy_ID = ".$_GET['pid']." AND inapp_status = 'Applied'");
+                            $minPaymentID = $db->query_fetch("SELECT MIN(inapp_policy_payment_ID)as clo_min FROM ina_policy_payments WHERE inapp_policy_ID = ".$_GET['pid']." AND inapp_status = 'Outstanding'");
                             while ($row = $table->fetch_data()) {
                                 $totalLines++;
                                 ?>
@@ -94,7 +97,8 @@ if ($_GET['pid'] > 0) {
                                     <th scope="row"><?php echo $row["inapp_policy_payment_ID"]; ?></th>
                                     <td><?php echo $row["inapp_payment_date"]; ?></td>
                                     <td><?php echo $row["inapp_amount"]; ?></td>
-                                    <td><?php echo $row["inapp_commission_amount"]; ?></td>
+                                    <td><?php echo $row["inapp_allocated_amount"]; ?></td>
+                                    <td><?php echo $row["inapp_allocated_commission"]; ?></td>
                                     <td><?php echo $row["inapp_status"]; ?></td>
                                     <td>
                                         <a href="payment_modify.php?lid=<?php echo $row["inapp_policy_payment_ID"] . "&pid=" . $_GET['pid']; ?>"><i
@@ -107,14 +111,14 @@ if ($_GET['pid'] > 0) {
                                return confirm('Are you sure you want to delete this policy payment?');"><i
                                                         class="fas fa-minus-circle"></i></a>
                                         <?php }
-                                        if ($row['inapp_status'] == 'Outstanding') { ?>
+                                        if ($row['inapp_status'] == 'Outstanding' && $row['inapp_policy_payment_ID'] == $minPaymentID['clo_min']) { ?>
                                             &nbsp
                                             <a href="payments.php?lid=<?php echo $row["inapp_policy_payment_ID"] . "&pid=" . $_GET['pid'] . "&action=apply"; ?>"
                                                onclick="ignoreEdit = true;
                                return confirm('Are you sure you want to apply this policy payment?');"><i
                                                         class="fas fa-fast-forward"></i></a>
                                         <?php }
-                                        if ($row['inapp_status'] == 'Applied') { ?>
+                                        if ($row['inapp_status'] == 'Applied' && $row['inapp_policy_payment_ID'] == $maxPaymentID['clo_max']) { ?>
                                             &nbsp
                                             <a href="payments.php?lid=<?php echo $row["inapp_policy_payment_ID"] . "&pid=" . $_GET['pid'] . "&action=reverse"; ?>"
                                                onclick="ignoreEdit = true;

@@ -8,6 +8,7 @@
 
 include("../../include/main.php");
 include("installments_class.php");
+include('../policy_class.php');
 $db = new Main();
 $db->admin_title = "AInsurance Policy Payment Modify";
 
@@ -46,7 +47,7 @@ if ($_POST["action"] == "insert") {
     $db->commit_transaction();
 
     if ($_POST['sub-action'] == 'exit') {
-        header("Location: payments.php?pid=" . $_POST['pid'] );
+        header("Location: payments.php?pid=" . $_POST['pid']);
         exit();
     } else {
         $_GET['lid'] = $_POST['lid'];
@@ -66,10 +67,18 @@ if ($_GET["lid"] != "") {
 } else {
     $data['inapp_payment_date'] = date('Y-m-d');
 }
-
+//$policy = new Policy($_GET['pid']);
 $db->enable_jquery_ui();
 $db->enable_rxjs_lite();
 $db->show_empty_header();
+
+include('../../scripts/form_validator_class.php');
+$formValidator = new customFormValidator();
+if ($data['inapp_status'] != 'Outstanding' && $data['inapp_status'] != '') {
+    $formValidator->disableForm(
+        array('buttons')
+    );
+}
 
 ?>
     <div class="container-fluid">
@@ -80,7 +89,8 @@ $db->show_empty_header();
         </div>
         <div class="row">
             <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12">
-                <form name="myForm" id="myForm" method="post" action="" onsubmit="" class="needs-validation" novalidate="">
+                <form name="myForm" id="myForm" method="post"
+                    <?php $formValidator->echoFormParameters(); ?>>
                     <div class="alert alert-dark text-center">
                         <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
                             &nbsp;Payment</b>
@@ -88,12 +98,11 @@ $db->show_empty_header();
 
 
                     <div class="form-group row">
-                        <label for="fld_payment_date" class="col-sm-2 col-form-label">Payment Date</label>
-                        <div class="col-sm-2">
+                        <label for="fld_payment_date" class="col-sm-3 col-form-label">Payment Date</label>
+                        <div class="col-sm-3">
                             <input name="fld_payment_date" type="text" id="fld_payment_date"
                                    class="form-control"
-                                   value="<?php echo $data['inapp_payment_date'];?>"
-                                   required>
+                                   value="<?php echo $data['inapp_payment_date']; ?>">
                             <script>
                                 $(function () {
                                     $("#fld_payment_date").datepicker();
@@ -104,19 +113,11 @@ $db->show_empty_header();
                             </script>
                         </div>
 
-                        <label for="fld_amount" class="col-sm-2 col-form-label">Amount</label>
-                        <div class="col-sm-2">
+                        <label for="fld_amount" class="col-sm-3 col-form-label">Amount</label>
+                        <div class="col-sm-3">
                             <input type="text" id="fld_amount" name="fld_amount"
                                    class="form-control"
-                                   value="<?php echo $data['inapp_amount'];?>"
-                                   required>
-                        </div>
-                        <label for="fld_commission_amount" class="col-sm-2 col-form-label">Commission</label>
-                        <div class="col-sm-2">
-                            <input type="text" id="fld_commission_amount" name="fld_commission_amount"
-                                   class="form-control"
-                                   value="<?php echo $data['inapp_commission_amount'];?>"
-                                   required>
+                                   value="<?php echo $data['inapp_amount']; ?>">
                         </div>
                     </div>
 
@@ -130,10 +131,10 @@ $db->show_empty_header();
                             <input name="pid" type="hidden" id="pid" value="<?php echo $_GET["pid"]; ?>">
                             <input type="button" value="Back" class="btn btn-secondary" name="BtnBack" id="BtnBack"
                                    onclick="window.location.assign('payments.php?pid=<?php echo $_GET['pid']; ?>')">
-                            <input type="button" name="Save" id="Save"
+                            <input type="submit" name="Save" id="Save"
                                    value="Save"
                                    class="btn btn-secondary" onclick="submitForm('save')">
-                            <input type="button" name="Submit" id="Submit"
+                            <input type="submit" name="Submit" id="Submit"
                                    value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Payment"
                                    class="btn btn-secondary" onclick="submitForm('exit')">
                             <input type="hidden" name="sub-action" id="sub-action" value="">
@@ -146,20 +147,11 @@ $db->show_empty_header();
     </div>
     <script>
         function submitForm(action) {
-            frm = document.getElementById('myForm');
-            if (frm.checkValidity() === false) {
-
-            }
-            else {
-                $('#sub-action').val(action);
-                document.getElementById('Submit').disabled = true
-                document.getElementById('Save').disabled = true
-                document.getElementById('BtnBack').disabled = true
-                $('#myForm').submit();
-            }
+            $('#sub-action').val(action);
         }
         $('#paymentsTab', window.parent.document).height(200 + 'px');
     </script>
 <?php
+$formValidator->output();
 $db->show_empty_footer();
 ?>

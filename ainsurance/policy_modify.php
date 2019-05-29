@@ -49,8 +49,10 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_starting_date'] = $db->convert_date_format($_POST['fld_starting_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $_POST['fld_expiry_date'] = $db->convert_date_format($_POST['fld_expiry_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
 
-    $db->db_tool_update_row('ina_policies', $_POST, "`inapol_policy_ID` = " . $_POST["lid"],
-        $_POST["lid"], 'fld_', 'execute', 'inapol_');
+    if ($policy->policyData['inapol_status'] == 'Outstanding') {
+        $db->db_tool_update_row('ina_policies', $_POST, "`inapol_policy_ID` = " . $_POST["lid"],
+            $_POST["lid"], 'fld_', 'execute', 'inapol_');
+    }
 
     if ($_POST['sub-action'] == 'exit') {
         header("Location: policies.php");
@@ -73,7 +75,7 @@ if ($_GET["lid"] != "") {
     $data = $db->query_fetch($sql);
     $policy = new Policy($_GET['lid']);
     if ($policy->policyData['inapol_status'] != 'Outstanding') {
-        $formValidator->disableForm();
+        $formValidator->disableForm(array('buttons'));
     }
 } else {
 

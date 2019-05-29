@@ -91,7 +91,7 @@ if ($_GET['pid'] > 0) {
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12" style="height: 25px;"></div>
-                <?php if ($policy->policyData['inapol_status'] == 'Oustanding') { ?>
+                <?php if ($policy->policyData['inapol_status'] == 'Outstanding') { ?>
                     <div class="col-3">
                         <input type="button" value="Calculate Premium" class="btn btn-primary"
                                onclick="calculatePremium();">
@@ -131,10 +131,10 @@ if ($_GET['pid'] > 0) {
                                 <th scope="col"><?php $table->display_order_links('Doc.Date', 'inapi_document_date'); ?></th>
                                 <th scope="col"><?php $table->display_order_links('Amount', 'inapi_amount'); ?></th>
                                 <th scope="col"><?php $table->display_order_links('Paid', 'inapi_paid_amount'); ?></th>
-                                <th scope="col"><?php $table->display_order_links('Commission', 'inapi_commission_amount'); ?></th>
+                                <th scope="col"><?php $table->display_order_links('Commission/Paid', 'inapi_commission_amount'); ?></th>
                                 <th scope="col"><?php $table->display_order_links('Status', 'inapi_paid_status'); ?></th>
                                 <th scope="col">
-                                    <?php if ($policy->policyData['inapol_status'] == 'Oustanding') { ?>
+                                    <?php if ($policy->policyData['inapol_status'] == 'Outstanding') { ?>
                                         <a href="installment_modify.php?pid=<?php echo $_GET['pid'] ?>">
                                             <i class="fas fa-plus-circle"></i>
                                         </a>
@@ -151,16 +151,17 @@ if ($_GET['pid'] > 0) {
                                 $amountSum += $row["inapi_amount"];
                                 $commSum += $row["inapi_commission_amount"];
                                 $paidSum += $row["inapi_paid_amount"];
+                                $commPaidSum += $row['inapi_paid_commission_amount'];
                                 ?>
                                 <tr onclick="editLine(<?php echo $row["inapi_policy_installments_ID"] . "," . $_GET['pid'] . ",'" . $_GET['type'] . "'"; ?>);">
                                     <th scope="row"><?php echo $row["inapi_policy_installments_ID"]; ?></th>
                                     <td><?php echo $db->convert_date_format($row["inapi_document_date"], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?></td>
                                     <td><?php echo $row["inapi_amount"]; ?></td>
                                     <td><?php echo $row["inapi_paid_amount"]; ?></td>
-                                    <td><?php echo $row["inapi_commission_amount"]; ?></td>
+                                    <td><?php echo $row["inapi_commission_amount"]."/".$row['inapi_paid_commission_amount']; ?></td>
                                     <td><?php echo $row["inapi_paid_status"]; ?></td>
                                     <td>
-                                        <?php if ($policy->policyData['inapol_status'] == 'Oustanding') { ?>
+                                        <?php if ($policy->policyData['inapol_status'] == 'Outstanding') { ?>
                                             <a href="installment_modify.php?lid=<?php echo $row["inapi_policy_installments_ID"] . "&pid=" . $_GET['pid']; ?>"><i
                                                         class="fas fa-edit"></i></a>&nbsp
                                             <a href="installment_delete.php?lid=<?php echo $row["inapi_policy_installments_ID"] . "&pid=" . $_GET['pid']; ?>"
@@ -177,7 +178,7 @@ if ($_GET['pid'] > 0) {
                                 <td colspan="2" class="text-right"><b>Total:</b></td>
                                 <td><b><?php echo $amountSum; ?></b></td>
                                 <td><b><?php echo $paidSum; ?></b></td>
-                                <td><b><?php echo $commSum; ?></b></td>
+                                <td><b><?php echo $commSum."/".$commPaidSum; ?></b></td>
                                 <td></td>
                             </tr>
 
@@ -186,7 +187,7 @@ if ($_GET['pid'] > 0) {
                     </div>
                 </div>
             </div>
-            <?php if ($policy->policyData['inapol_status'] == 'Oustanding') { ?>
+            <?php if ($policy->policyData['inapol_status'] == 'Outstanding') { ?>
                 <div class="row">
                     <div class="col-12" style="height: 25px;"></div>
                     <div class="col-4">
@@ -252,9 +253,11 @@ if ($_GET['pid'] > 0) {
         var ignoreEdit = false;
 
         function editLine(id, pid, type) {
+            <?php if ($policy->policyData['inapol_status'] == 'Outstanding') { ?>
             if (ignoreEdit === false) {
                 window.location.assign('installment_modify.php?lid=' + id + '&pid=' + pid);
             }
+            <?php } ?>
         }
 
         $(document).ready(function () {
