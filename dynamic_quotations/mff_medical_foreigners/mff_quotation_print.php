@@ -228,7 +228,29 @@ function getQuotationHTML($quotationID)
         Date / Ημερομηνία: '.$db->convert_date_format($quotationData['oqq_effective_date'],'yyyy-mm-dd', 'dd/mm/yyyy',1,1).' 
     </div>
     
+    <div style="font-size: 10px;">
+        <table style="font-size: 10px;" width="90%">
+            <tr>
+                <td width="50%">
+                    <b>Signed By / Υπογράφτηκε από:</b>
+                </td>
+                <td width="50%" align="right">
+                    <b>Issued By / Εκδόθηκε από:</b>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <img src="images/santamas_signature.png" width="200">
+                </td>
+                <td align="right">
+                    <img src="images/full_stamp.png" width="120">
+                </td>
+            </tr>
+        </table>
     
+    
+    
+    </div>
     <div style="height: 100px"></div>
     <div style="font-size: 8px; width: 900px; text-align: center;">
         Kemter Insurance Agencies Sub-Agencies and Consultants Ltd<br>

@@ -30,6 +30,7 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
     $main["admin_email"] = 'micacca@gmail.com';
     $main["admin_email_name"] = 'Ermogenous Michael';
     //smtp email settings
+    $main['smtp_use_smtp'] = false;
     $main['smtp_email_from'] = 'agentscyprus@gmail.com';
     $main['smtp_email_from_name'] = 'Kemter Insurance Agencies Sub-Agencies &amp; Consultants, Limassol - Cyprus';
     $main['smtp_email_reply'] = 'agentscyprus@gmail.com';

@@ -95,9 +95,10 @@ if ($_POST["action"] == "save") {
         //do nothing
     }
     else {
-        if ($quote->quotationData()['oqit_status'] == 'Outstanding' || $db->user_data['usr_user_rights'] <= 1) {
+        if ($quote->quotationData()['oqit_status'] == 'Outstanding' || $db->user_data['usr_user_rights'] <= 1 || $_POST['lid'] == '') {
             $db->start_transaction();
             $quotation_id = insert_quotation_data_to_db($_POST["quotation"], $_POST["quotation_type"]);
+
 
             $items_res = $db->query($items_sql);
             while ($item = $db->fetch_assoc($items_res)) {

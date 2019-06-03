@@ -80,26 +80,26 @@ if ($_SESSION['dyqt_filter']) {
 }
 
 
-if ($db->user_data["usr_user_rights"] == 0) {
+if ($db->user_data["usr_user_rights"] <= 2) {
 
-    if ($_SESSION["quotations_user_filter"] == "") {
-        //$_SESSION["quotations_user_filter"] = $db->user_data["usr_users_ID"];
-    }
+    if ($_SESSION["dyqt_filter_user"] != '' && $_SESSION["dyqt_filter_user"] != 'ALL') {
 
-    if ($_POST["filter_user_action"] == "change") {
-        //$_SESSION["quotations_user_filter"] = $_POST["filter_user_selected"];
+        $table->extras .= " AND oqq_users_ID = " . $_SESSION["dyqt_filter_user"];
     }
-
-    if ($_SESSION["quotations_user_filter"] != '0') {
-        //$table->extras .= " oqq_users_ID = " . $_SESSION["quotations_user_filter"];
+    else if ($_SESSION["dyqt_filter_user"] == 'ALL'){
+        //no filter
     }
-} else {
+    else {
+        $table->extras .= " AND oqq_users_ID = " . $db->user_data["usr_users_ID"];
+    }
+}
+else {
     $table->extras .= " AND oqq_users_ID = " . $db->user_data["usr_users_ID"];
 }
 
 
 $table->generate_data();
-
+//echo $table->sql;
 $db->admin_on_load = "show_price();";
 $db->show_header();
 
@@ -154,11 +154,12 @@ if ($_GET["price_id"] != "") {
                     <form action="" method="post">
 
                         <div class="row">
+                            <?php if ($db->user_data['usr_user_rights'] <= 2) { ?>
                             <div class="col-4">
                                 <input name="filter_user_action" id="filter_user_action" type="hidden" value="change"/>
                                 <select name="filter_user_selected" id="filter_user_selected"
                                         class="form-control">
-                                    <option value="0">ALL</option>
+                                    <option value="ALL">ALL</option>
                                     <?php
                                     $all_users = $db->query("SELECT * FROM users ORDER BY usr_name ASC");
                                     while ($user_info = $db->fetch_assoc($all_users)) {
@@ -169,6 +170,7 @@ if ($_GET["price_id"] != "") {
                                     ?>
                                 </select>
                             </div>
+                            <?php } ?>
                             <div class="col-4">
                                 <div class="row">
                                     <div class="col-5">

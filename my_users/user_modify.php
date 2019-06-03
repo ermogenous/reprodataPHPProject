@@ -59,6 +59,14 @@ if ($_GET["lid"] != "") {
     $db->working_section = 'My Users Get data';
     $sql = "SELECT * FROM `users` WHERE `usr_users_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
+
+    //check if the user is allowed to modify this user.
+    if ($db->user_data['usr_user_rights'] > $data['usr_user_rights']){
+        header("Location: users.php");
+        exit();
+    }
+
+
 }
 else {
     $data['usr_active'] = 1;
@@ -66,6 +74,8 @@ else {
 
 include('../scripts/form_validator_class.php');
 $formValidator = new customFormValidator();
+
+//echo $db->encrypt('21');
 
 $db->show_header();
 ?>

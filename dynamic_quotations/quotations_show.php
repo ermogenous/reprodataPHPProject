@@ -30,6 +30,12 @@ if ($_GET['action'] == 'activate' && $_GET['lid'] > 0) {
     $db->start_transaction();
     if ($quote->activate() == true) {
         $db->generateSessionAlertSuccess($quote->getQuotationType() . " activated successfully");
+
+        //check if the email was sent
+        if ($quote->error == true){
+            $db->generateSessionAlertError('Activated! Error sending the email. Please check in AutoEmails.');
+        }
+
     } else {
         if ($quote->errorType == 'warning') {
             $db->generateSessionAlertWarning($quote->errorDescription);

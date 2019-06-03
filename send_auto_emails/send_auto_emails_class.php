@@ -97,15 +97,23 @@ class send_auto_emails
 
         //$mail->SMTPDebug = 3;//true echos all steps           // Enable verbose debug output
         $mail->CharSet = $main['smtp_charSet'];
-        $mail->isSMTP();                                        // Set mailer to use SMTP
-        $mail->Host = $main['smtp_host'];       // Specify main and backup SMTP servers
-        $this->messages[] = 'Added Host: '.$main['smtp_host'];
 
-        $mail->SMTPAuth = $main['smtp_enable_authentication'];                                // Enable SMTP authentication
-        $mail->Username = $main['smtp_username'];                 // SMTP username
-        $mail->Password = $main['smtp_password'];                           // SMTP password
-        $mail->SMTPSecure = $main['smtp_secure'];                            // Enable TLS encryption, `ssl` also accepted
-        $mail->Port = $main['smtp_port'];
+        if ($main['smtp_use_smtp'] == true) {
+            $mail->isSMTP();                                        // Set mailer to use SMTP
+            $mail->Host = $main['smtp_host'];       // Specify main and backup SMTP servers
+            $this->messages[] = 'Added Host: '.$main['smtp_host'];
+
+            $mail->SMTPAuth = $main['smtp_enable_authentication'];                                // Enable SMTP authentication
+            $mail->Username = $main['smtp_username'];                 // SMTP username
+            $mail->Password = $main['smtp_password'];                           // SMTP password
+            $mail->SMTPSecure = $main['smtp_secure'];                            // Enable TLS encryption, `ssl` also accepted
+            $mail->Port = $main['smtp_port'];
+        }
+        else {
+
+        }
+
+
 
         $mail->isHTML(true);
         $split = explode('||',$this->data["sae_email_from"]);
@@ -207,6 +215,18 @@ class send_auto_emails
 
         //$mail->AltBody = 'This is the body in plain text for non-HTML mail clients';
 
+        try {
+            $mail->send();
+            $this->update_email_result(1, 'Message has been sent ' . $mail->ErrorInfo);
+            $this->messages[] = "Email Send success";
+        }
+        catch (Exception $e) {
+            $this->messages[] = "Error sending email: Error message: " . $mail->ErrorInfo;
+            $this->update_email_result(-1, 'Message could not be sent. ' . $mail->ErrorInfo);
+            $this->count_errors++;
+        }
+
+        /*
         if (!$mail->send()) {
             $this->messages[] = "Error sending email: Error message: " . $mail->ErrorInfo;
             $this->update_email_result(-1, 'Message could not be sent. ' . $mail->ErrorInfo);
@@ -215,6 +235,7 @@ class send_auto_emails
             $this->update_email_result(1, 'Message has been sent ' . $mail->ErrorInfo);
             $this->messages[] = "Email Send success";
         }
+        */
     }
 
     public function update_email_result($result, $result_description)

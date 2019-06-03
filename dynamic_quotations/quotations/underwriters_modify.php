@@ -130,6 +130,14 @@ $formValidator = new customFormValidator();
                                     Inactive
                                 </option>
                             </select>
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_status",
+                                "fieldDataType" => "select",
+                                "required" => true,
+                                "invalidText" => "Select Status",
+                            ]);
+                            ?>
                         </div>
                     </div>
 
