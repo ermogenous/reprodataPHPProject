@@ -126,6 +126,7 @@ if ($_GET['search_code'] == 'search') {
                     <?php } ?>
                     </tbody>
                 </table>
+                <?php echo $table->show_per_page_links();?>
             </div>
         </div>
         <div class="col-lg-2"></div>

@@ -68,12 +68,16 @@ if ($_GET["lid"] != "") {
 
 
 $db->show_header();
+
+include('../scripts/form_validator_class.php');
+$formValidator = new customFormValidator();
 ?>
 <div class="container">
     <div class="row">
         <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
         <div class="col-lg-6 col-md-6 col-xs-12 col-sm-12">
-            <form name="myForm" id="myForm" method="post" action="" onsubmit="">
+            <form name="myForm" id="myForm" method="post"
+                <?php $formValidator->echoFormParameters(); ?>>
                 <div class="alert alert-dark text-center">
                     <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
                         &nbsp;Code</b>
@@ -84,7 +88,6 @@ $db->show_header();
                     <div class="col-sm-8">
                         <select name="fld_type" id="fld_type"
                                 class="form-control"
-                                required
                             <?php if ($_GET['lid'] != '') echo 'disabled'; ?>>
                             <option value="code" <?php if ($data['cde_type'] == 'code') echo 'selected'; ?>>Code
                             </option>
@@ -100,6 +103,14 @@ $db->show_header();
                                 </option>
                             <?php } ?>
                         </select>
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_type",
+                            "fieldDataType" => "select",
+                            "required" => false,
+                            "invalidText" => "Select Code Type",
+                        ]);
+                        ?>
                     </div>
                 </div>
 
@@ -107,8 +118,7 @@ $db->show_header();
                     <label for="fld_status" class="col-sm-4 col-form-label">Status</label>
                     <div class="col-sm-8">
                         <select name="fld_status" id="fld_status"
-                                class="form-control"
-                                required>
+                                class="form-control">
                             <option value="Active" <?php if ($data['cde_status'] == 'Active') echo 'selected'; ?>>
                                 Active
                             </option>
@@ -116,6 +126,14 @@ $db->show_header();
                                 In-Active
                             </option>
                         </select>
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_status",
+                            "fieldDataType" => "select",
+                            "required" => true,
+                            "invalidText" => "Select Status",
+                        ]);
+                        ?>
                     </div>
                 </div>
 
@@ -128,8 +146,15 @@ $db->show_header();
                         <div class="col-sm-8">
                             <input name="fld_table_field" type="text" id="fld_table_field"
                                    class="form-control"
-                                   value="<?php echo $data["cde_table_field"]; ?>"
-                                   required>
+                                   value="<?php echo $data["cde_table_field"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_table_field",
+                                "fieldDataType" => "text",
+                                "required" => false,
+                                "invalidText" => "Must fill",
+                            ]);
+                            ?>
                         </div>
                     </div>
 
@@ -140,6 +165,14 @@ $db->show_header();
                             <input name="fld_table_field2" type="text" id="fld_table_field2"
                                    class="form-control"
                                    value="<?php echo $data["cde_table_field2"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_table_field2",
+                                "fieldDataType" => "text",
+                                "required" => false,
+                                "invalidText" => "Must fill",
+                            ]);
+                            ?>
                         </div>
                     </div>
 
@@ -150,6 +183,14 @@ $db->show_header();
                             <input name="fld_table_field3" type="text" id="fld_table_field3"
                                    class="form-control"
                                    value="<?php echo $data["cde_table_field3"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_table_field3",
+                                "fieldDataType" => "select",
+                                "required" => false,
+                                "invalidText" => "Must fill",
+                            ]);
+                            ?>
                         </div>
                     </div>
                     <?php
@@ -161,8 +202,15 @@ $db->show_header();
                         <div class="col-sm-8">
                             <input name="fld_value" type="text" id="fld_value"
                                    class="form-control"
-                                   value="<?php echo $data["cde_value"]; ?>"
-                                   required>
+                                   value="<?php echo $data["cde_value"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_value",
+                                "fieldDataType" => "text",
+                                "required" => true,
+                                "invalidText" => "Must fill",
+                            ]);
+                            ?>
                         </div>
                     </div>
                 <?php
@@ -176,6 +224,14 @@ $db->show_header();
                             <input name="fld_value_label" type="text" id="fld_value_label"
                                    class="form-control"
                                    value="<?php echo $data["cde_value_label"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_value_label",
+                                "fieldDataType" => "text",
+                                "required" => false,
+                                "invalidText" => "Must fill",
+                            ]);
+                            ?>
 
                         </div>
                     </div>
@@ -193,6 +249,14 @@ $db->show_header();
                             <input name="fld_option_value" type="text" id="fld_option_value"
                                    class="form-control"
                                    value="<?php echo $data["cde_option_value"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_option_value",
+                                "fieldDataType" => "text",
+                                "required" => false,
+                                "invalidText" => "Must fill",
+                            ]);
+                            ?>
                             Separate by #
 
                         </div>
@@ -206,6 +270,14 @@ $db->show_header();
                             <input name="fld_option_label" type="text" id="fld_option_label"
                                    class="form-control"
                                    value="<?php echo $data["cde_option_label"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_option_label",
+                                "fieldDataType" => "text",
+                                "required" => false,
+                                "invalidText" => "Must fill",
+                            ]);
+                            ?>
 
                         </div>
                     </div>
@@ -222,6 +294,14 @@ $db->show_header();
                             <input name="fld_option_value_2" type="text" id="fld_option_value_2"
                                    class="form-control"
                                    value="<?php echo $data["cde_option_value_2"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_option_value_2",
+                                "fieldDataType" => "text",
+                                "required" => false,
+                                "invalidText" => "Must fill",
+                            ]);
+                            ?>
                             Separate by #
 
                         </div>
@@ -235,6 +315,14 @@ $db->show_header();
                             <input name="fld_option_label_2" type="text" id="fld_option_label_2"
                                    class="form-control"
                                    value="<?php echo $data["cde_option_label_2"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_option_label_2",
+                                "fieldDataType" => "text",
+                                "required" => false,
+                                "invalidText" => "Must fill",
+                            ]);
+                            ?>
 
                         </div>
                     </div>
@@ -246,6 +334,14 @@ $db->show_header();
                 <?php } else { ?>
                     <input type="hidden" name="fld_value_label" id="fld_value_label"
                            value="<?php echo $codeLabels['cde_value_label']; ?>">
+                    <?php
+                    $formValidator->addField([
+                        "fieldName" => "fld_value_label",
+                        "fieldDataType" => "text",
+                        "required" => false,
+                        "invalidText" => "Must fill",
+                    ]);
+                    ?>
                 <?php } ?>
 
 
@@ -258,11 +354,27 @@ $db->show_header();
                             <input name="fld_value_label_2" type="text" id="fld_value_label_2"
                                    class="form-control"
                                    value="<?php echo $data["cde_value_label_2"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_value_label_2",
+                                "fieldDataType" => "select",
+                                "required" => false,
+                                "invalidText" => "Must fill",
+                            ]);
+                            ?>
                         </div>
                     </div>
                 <?php } else { ?>
                     <input type="hidden" name="fld_value_label_2" id="fld_value_label_2"
                            value="<?php echo $codeLabels['cde_value_label_2']; ?>">
+                    <?php
+                    $formValidator->addField([
+                        "fieldName" => "fld_value_label_2",
+                        "fieldDataType" => "select",
+                        "required" => false,
+                        "invalidText" => "Must fill",
+                    ]);
+                    ?>
                 <?php }
                 if ($codeLabels['cde_value_label_2'] != '') {
                     ?>
@@ -273,6 +385,14 @@ $db->show_header();
                             <input name="fld_value_2" type="text" id="fld_value_2"
                                    class="form-control"
                                    value="<?php echo $data["cde_value_2"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_value_2",
+                                "fieldDataType" => "select",
+                                "required" => false,
+                                "invalidText" => "Must fill",
+                            ]);
+                            ?>
                         </div>
                     </div>
                 <?php }
@@ -292,6 +412,14 @@ $db->show_header();
                                     <option value="<?php echo $value; ?>" <?php if ($value == $data['cde_option_value']) echo 'selected'; ?>><?php echo $value; ?></option>
                                 <?php } ?>
                             </select>
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_option_value",
+                                "fieldDataType" => "select",
+                                "required" => false,
+                                "invalidText" => "Must Select",
+                            ]);
+                            ?>
                         </div>
                     </div>
                 <?php }
@@ -313,6 +441,14 @@ $db->show_header();
                                     <option value="<?php echo $value; ?>" <?php if ($value == $data['cde_option_value_2']) echo 'selected'; ?>><?php echo $value; ?></option>
                                 <?php } ?>
                             </select>
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_option_value_2",
+                                "fieldDataType" => "select",
+                                "required" => false,
+                                "invalidText" => "Must select",
+                            ]);
+                            ?>
                         </div>
                     </div>
                 <?php } ?>
@@ -328,8 +464,7 @@ $db->show_header();
                                value="<?php echo $_GET['codeSelection']; ?>">
                         <input type="button" value="Back" class="btn btn-secondary"
                                onclick="window.location.assign('codes.php?type=<?php echo $_GET['codeSelection']; ?>&search_code=search')">
-                        <input type="submit" name="Submit" id="Submit" value="Save Code" class="btn btn-secondary"
-                               onclick="submitForm()">
+                        <input type="submit" name="Submit" id="Submit" value="Save Code" class="btn btn-secondary">
                     </div>
                 </div>
 
@@ -338,17 +473,7 @@ $db->show_header();
         <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
     </div>
 </div>
-<script>
-    function submitForm() {
-        frm = document.getElementById('myForm');
-        if (frm.checkValidity() === false) {
-
-        }
-        else {
-            document.getElementById('Submit').disabled = true
-        }
-    }
-</script>
 <?php
+$formValidator->output();
 $db->show_footer();
 ?>

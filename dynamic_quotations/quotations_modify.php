@@ -487,6 +487,37 @@ $formValidator->addCustomCode("
                         </div>
                     </div>
 
+                    <?php
+                    if ($quotation_type_data['oqqt_added_field_city'] == 1) { ?>
+                        <div class="form-group row">
+                            <label for="insureds_city" class="col-sm-4 col-form-label">
+                                <?php show_quotation_text("Πόλη", "City"); ?>
+                            </label>
+                            <div class="col-sm-8">
+
+                                <select name="insureds_city" id="insureds_city"
+                                        class="form-control">
+                                    <option value=""></option>
+                                    <option value="Λεμεσός"    <?php if ($q_data['oqq_insureds_city'] == 'Λεμεσός' || $q_data['oqq_insureds_city'] == 'Limassol') echo "selected";?>><?php show_quotation_text("Λεμεσός", "Limassol");?></option>
+                                    <option value="Λευκωσία"   <?php if ($q_data['oqq_insureds_city'] == 'Λευκωσία' || $q_data['oqq_insureds_city'] == 'Nicosia') echo "selected";?>><?php show_quotation_text("Λευκωσία", "Nicosia");?></option>
+                                    <option value="Λάρνακα"    <?php if ($q_data['oqq_insureds_city'] == 'Λάρνακα' || $q_data['oqq_insureds_city'] == 'Larnaka') echo "selected";?>><?php show_quotation_text("Λάρνακα", "Larnaka");?></option>
+                                    <option value="Πάφος"      <?php if ($q_data['oqq_insureds_city'] == 'Πάφος' || $q_data['oqq_insureds_city'] == 'Paphos') echo "selected";?>><?php show_quotation_text("Πάφος", "Paphos");?></option>
+                                    <option value="Αμμόχωστος" <?php if ($q_data['oqq_insureds_city'] == 'Αμμόχωστος' || $q_data['oqq_insureds_city'] == 'Famagusta') echo "selected";?>><?php show_quotation_text("Αμμόχωστος", "Famagusta");?></option>
+                                    <option value="Κερύνεια"   <?php if ($q_data['oqq_insureds_city'] == 'Κερύνεια' || $q_data['oqq_insureds_city'] == 'Kyrenia') echo "selected";?>><?php show_quotation_text("Κερύνεια", "Kyrenia");?></option>
+                                </select>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'insureds_city',
+                                        'fieldDataType' => 'select',
+                                        'required' => true,
+                                        'invalidText' => show_quotation_text("Επιλέξατε Πόλη.", "Must Select City", 'Return')
+                                    ]);
+                                ?>
+                            </div>
+                        </div>
+                    <?php } ?>
+
                     <div class="form-group row">
                         <label for="insureds_postal_code" class="col-sm-4 col-form-label">
                             <?php show_quotation_text("Ταχ.Κωδ.", "Postal Code"); ?>

@@ -83,8 +83,8 @@ if ($_GET['action'] == 'sendLinkEmail') {
         $mail->isSMTP();                                      // Set mailer to use SMTP
         $mail->Host = 'smtp.gmail.com';  // Specify main and backup SMTP servers
         $mail->SMTPAuth = true;                               // Enable SMTP authentication
-        $mail->Username = 'agentscyprus@gmail.com';                 // SMTP username
-        $mail->Password = 'cqlnjxaqbnhruwjt';                           // SMTP password
+        $mail->Username = $main['smtp_username'];                 // SMTP username
+        $mail->Password = $main['smtp_password'];                           // SMTP password
         $mail->SMTPSecure = 'tls';                            // Enable TLS encryption, `ssl` also accepted
         $mail->Port = 587;
 

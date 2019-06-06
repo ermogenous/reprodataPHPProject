@@ -67,7 +67,8 @@ if ($_GET["lid"] != "") {
 } else {
     $data['inapp_payment_date'] = date('Y-m-d');
 }
-//$policy = new Policy($_GET['pid']);
+$policy = new Policy($_GET['pid']);
+print_r($policy);
 $db->enable_jquery_ui();
 $db->enable_rxjs_lite();
 $db->show_empty_header();
@@ -149,7 +150,7 @@ if ($data['inapp_status'] != 'Outstanding' && $data['inapp_status'] != '') {
         function submitForm(action) {
             $('#sub-action').val(action);
         }
-        $('#paymentsTab', window.parent.document).height(200 + 'px');
+        $('#paymentsTab', window.parent.document).height(400 + 'px');
     </script>
 <?php
 $formValidator->output();

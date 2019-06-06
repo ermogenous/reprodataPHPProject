@@ -139,6 +139,8 @@ function getQuotationHTML($quotationID)
             $excess = $underwriterData['oqun_excess_other'];
         }
 
+        $conditionsOfInsurance = getConditionsOfInsurance($sect1['oqqit_rate_4']);
+
         $html .= '
 <div style="font-family: Tahoma;">
 
@@ -238,7 +240,7 @@ function getQuotationHTML($quotationID)
         <tr>
             <td colspan="3" height="270px" valign="top">
                 <b>Conditions of Insurance '.$approvalCommodity.'</b><br><br>
-                ' . getConditionsOfInsurance($sect1['oqqit_rate_4']) . '<br>Excess:'.$excess.'
+                ' . $conditionsOfInsurance[0] . '<br>Excess:'.$excess.'
             </td>
             
         </tr>
@@ -255,7 +257,7 @@ function getQuotationHTML($quotationID)
                 _____________<??????????>______________ 
                 on surrender of this Certificate
                 </b><br><br><br><br>
-                <br><br><br><br>
+                
             </td>
         </tr>
 
@@ -267,7 +269,8 @@ function getQuotationHTML($quotationID)
                 </b>
             </td>
             <td colspan="2" align="right"><b>
-                Signed:______________________________________________
+                Signed:
+                <img src="images/stamp_signature.png" width="180">
                 </b>
             </td>
         </tr>
@@ -299,13 +302,14 @@ function getQuotationHTML($quotationID)
                 <table>
                     <tr>
                         <td width="15%"></td>
-                        <td>
+                        <td width="55%">
                             Kemter Insurance Agencies Sub-Agencies and Consultants Ltd<br>
                             Akinita Ieras Mitropolis <br>
                             Block B\', Office 112 <br>
                             3040 Limassol <br>
                             Cyprus <br>
-                            <br>
+                        </td>
+                        <td>
                             Tel. : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+357 25 755 952 <br>
                             Fax. : &nbsp;&nbsp;&nbsp;&nbsp;+357 25 755 953 <br>
                             E-mail: &nbsp;&nbsp;<u>claims@kemterinsurance.com</u>
@@ -612,8 +616,23 @@ function getQuotationHTML($quotationID)
 </div>
     
 </div>
-
 ';
+        if ($conditionsOfInsurance[1] != ''){
+            $html .= '
+            <hr style="page-break-after: always; color: white;">
+            <div style="font-size: 10px;">
+            Page 3:<br>
+            </div>
+            <div style="font-size: 10px;" align="center">
+                <b>Conditions Of Insurance:</b><br>
+            </div>
+            <br>
+            <div style="font-size: 10px;">
+                '.$conditionsOfInsurance[1].'
+            </div>
+            ';
+
+        }
     }
 
     return $html;
@@ -622,7 +641,7 @@ function getQuotationHTML($quotationID)
 
 function getConditionsOfInsurance($commodity){
     if ($commodity == 'General Cargo & Merchandise'){
-        return '<strong>General Cargo - Shipments by Sea, Air or Land</strong>
+        $return[0] = '<strong>General Cargo - Shipments by Sea, Air or Land</strong>
         <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009. and/or Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009 as applicable.
         <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009 and/or Institute War Clauses (Air Cargo) (excluding sendings by Post) CL388 dated 01.01.2009 as applicable.
         <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009 and/ or Institute Strikes Clauses (Cargo) (Air Cargo) CL389 dated 01.01.2009 as applicable. 
@@ -637,39 +656,42 @@ function getConditionsOfInsurance($commodity){
     }
 
     if ($commodity == 'New/Used Vehicles'){
-        return '
+        $return[0] = '
         <strong>Automobiles, Motorcycles & Caravans – New Used, Second Hand</strong>
-        Institute Cargo Clauses “A” CL382 dated 01.01.2009.
-        Institute War Clauses (Cargo) CL385 dated 01.01.2009.
-        Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009.
-        Institute Classification Clause CL354 dated 1.1.01.
-        Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10/11/03.
-        Institute Cyber Attack Exclusion Clause CL380 dated 10/11/03.
-        Termination of Transit Clause (Terrorism).
-        Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
-        Institute Replacement Clause CL372 dated 01.12.2008 or Second-hand Replacement Clause as attached as applicable.
-        Including transhipment, barge and lightering risks whether customary or otherwise.
-        Subject also to Additional Conditions as attached.
-        Subject to a Certificate of Condition defined as: A document stating the condition of the vehicle at the time the vehicle enters the custody of the freight forwarder or steamship company noting all defects agreed by both the freight forwarder and the owner of the vehicle and signed at the same time.
-        Subject also to Automobile & Motorcycle Additional Conditions as follows:
+        <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009.
+        <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009.
+        <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009.
+        <br>Institute Classification Clause CL354 dated 1.1.01.
+        <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10/11/03.
+        <br>Institute Cyber Attack Exclusion Clause CL380 dated 10/11/03.
+        <br>Termination of Transit Clause (Terrorism).
+        <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
+        <br>Institute Replacement Clause CL372 dated 01.12.2008 or Second-hand Replacement Clause as attached as applicable.
+        <br>Including transhipment, barge and lightering risks whether customary or otherwise.
+        <br>Subject also to Additional Conditions as on page 3.';
         
-        Additional Exclusions:
-        - Excluding the risks of scratching, denting, chipping, bruising, marring, staining.
-        - Excluding loss of or damage due to mechanical, electrical or electronic derangement unless there is evidence of external damage to the vehicle.
-        - Excluding loss or damage arising out of climatic or atmospheric conditions or extremes of temperature or freezing of coolant.
-        - Excluding rusting, oxidisation & discolouration unless caused by an insured peril.
-        - Excluding loss or damage to accessories or portable equipment unless declared prior to shipment.
-        - Excluding theft or pilferage of Audio / Visual and/or GPS equipment unless stolen with the vehicle.
-        - Excluding loss or damage whilst under own power, except whilst being loaded or unloaded from the carrying conveyance or container.
-        - Excluding loss or damage arising from climatic or atmospheric conditions or extremes of temperature or freezing of coolant, and/or frost damage.
-        - Excluding damages, injury or liabilities to any third party whatsoever.
-        - Excluding any claim recoverable under a policy of Motor Insurance.
-        - Excluding the risks of confiscation & seizure.
+        $return[1] = ' 
+        <br>Subject to a Certificate of Condition defined as: A document stating the condition of the vehicle at the time the vehicle enters the custody of the freight forwarder or steamship company noting all defects agreed by both the freight forwarder and the owner of the vehicle and signed at the same time.
+        <br>Subject also to Automobile & Motorcycle Additional Conditions as follows:
+        <br>
+        <br>Additional Exclusions:
+        <br>- Excluding the risks of scratching, denting, chipping, bruising, marring, staining.
+        <br>- Excluding loss of or damage due to mechanical, electrical or electronic derangement unless there is evidence of external damage to the vehicle.
+        <br>- Excluding loss or damage arising out of climatic or atmospheric conditions or extremes of temperature or freezing of coolant.
+        <br>- Excluding rusting, oxidisation & discolouration unless caused by an insured peril.
+        <br>- Excluding loss or damage to accessories or portable equipment unless declared prior to shipment.
+        <br>- Excluding theft or pilferage of Audio / Visual and/or GPS equipment unless stolen with the vehicle.
+        <br>- Excluding loss or damage whilst under own power, except whilst being loaded or unloaded from the carrying conveyance or container.
+        <br>- Excluding loss or damage arising from climatic or atmospheric conditions or extremes of temperature or freezing of coolant, and/or frost damage.
+        <br>- Excluding damages, injury or liabilities to any third party whatsoever.
+        <br>- Excluding any claim recoverable under a policy of Motor Insurance.
+        <br>- Excluding the risks of confiscation & seizure.
+        <div style="height: 600px;"></div>
     ';
     }
 
     if ($commodity == 'Machinery'){
-        return '
+        $return[0] = '
         <strong>Machinery etc. - Shipments by Sea, Air or Land</strong>
         <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009. and/or Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009 as applicable.
         <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009 and/or Institute War Clauses (Air Cargo) (excluding sendings by Post) CL388 dated 01.01.2009 as applicable.
@@ -688,7 +710,7 @@ function getConditionsOfInsurance($commodity){
     }
 
     if ($commodity == 'Temp. Controlled Cargo other than meat'){
-        return '
+        $return[0] = '
         <strong>Shipments by Sea or Land of Refrigerated or Temperature Controlled Cargoes, other than Meat</strong>
         <br>Institute Frozen / Chilled Food Clauses (A) – 24 Hour Breakdown Cl. 423 01.03.2017
         <br>Strikes Clause (Frozen Chilled Food) CL. 424 01.03.2017 
@@ -704,7 +726,7 @@ function getConditionsOfInsurance($commodity){
     }
 
     if ($commodity == 'Temp. Controlled Cargo Meat'){
-        return '
+        $return[0] = '
         <strong>Shipments by Sea or Land of Refrigerated or Temperature Controlled Cargoes of Meat</strong>
         <br>Institute Frozen / Chilled Meat Clauses (A) – 24 Hour Breakdown Cl. 426 01.03.2017
         <br>Duration Clause 8.1.2 to apply. w/h to w/h or Duration Clause 8.1.3 to apply. fob
@@ -721,7 +743,7 @@ function getConditionsOfInsurance($commodity){
     }
 
     if ($commodity == 'Special Cover Mobile Phones, Electronic Equipment'){
-        return '
+        $return[0] = '
         <strong>Special Cargo, Electronic Equipment, Mobile Phones, Tablets</strong> 
         <br>Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 1.1.09.
         <br>Institute War Clauses (Air cargo) (excluding sendings by Post) CL388 1.1.09.
@@ -738,94 +760,102 @@ function getConditionsOfInsurance($commodity){
     }
 
     if ($commodity == 'Personal Effects professionally packed'){
-        return '
+        $return[0] = '
         <strong>Household Goods & Personal Effects – Professional packed  (Refer)</strong>
-        Institute Cargo Clauses “A” CL382 dated 01.01.2009.
-        Institute War Clauses (Cargo) CL385 dated 01.01.2009.
-        Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009.
-        Institute Classification Clause CL354 dated 1.1.01.
-        Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10/11/03.
-        Institute Cyber Attack Exclusion Clause CL380 dated 10/11/03.
-        Termination of Transit Clause (Terrorism).
-        Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
-        Including transhipment, barge and lightering risks whether customary or otherwise.
-        Subject also to Additional Conditions as attached.
-        Subject also to Household Goods & Personal Effects Additional Conditions as follows:
-        (a) Average Clause
-        This Policy is subject to the condition of average, that is to say, if the property covered by this Insurance shall at the time of loss be of greater value than the sum insured hereby the Assured shall only be entitled to recover hereunder such proportion of the said loss as the sum insured by this Policy bears to the total value of the said property.
-        
-        (b) Pairs and Sets Clause
-        Where any insured item consists of articles in a pair or set this Policy is not to pay more than the value of any particular part or parts which may be lost without reference to any special value which such article or articles may have as part of such pair or set, nor more than a proportionate part of such pair or set.
-        
-        (c) Depreciation
-        Underwriters’ liability is restricted to the reasonable cost of repair and no claim is to attach hereto for depreciation consequent thereon.
-        
-        (d) Mechanical and Electrical Derangement
-        Excluding loss of or damage due to mechanical, electrical or electronic derangement unless there is evidence of external damage to the insured item or its packing.
-        
-        (e) Moth, Vermin, Wear & Tear
-        Excluding loss or damage due to moth, vermin, wear, tear and gradual deterioration.
-        
-        (f) Climatic Conditions Clause
-        Excluding loss or damage by climatic or atmospheric conditions or extremes of temperature.
-        
-        (g) Professional Packing
-        Excluding losses arising as a result of goods not having been professionally packed.
-        
-        (h) Excluded Goods
-        Excluding loss of or damage to furs valued over €200, or any cash, notes, stamps, deeds, tickets, travellers’ cheques, jewellery, watches, or similar valuable articles other than as declared and agreed herein.
-        
-        (i) Itemised Inventory
-        Subject to valued, itemised inventory to be lodged with Freight Forwarder prior to shipment.
+        <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009.
+        <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009.
+        <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009.
+        <br>Institute Classification Clause CL354 dated 1.1.01.
+        <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10/11/03.
+        <br>Institute Cyber Attack Exclusion Clause CL380 dated 10/11/03.
+        <br>Termination of Transit Clause (Terrorism).
+        <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
+        <br>Including transhipment, barge and lightering risks whether customary or otherwise.
+        <br>Subject also to Additional Conditions as on page 3.';
+
+        $return[1] = '
+        <br>Subject also to Household Goods & Personal Effects Additional Conditions as follows:
+        <br>(a) Average Clause
+        <br>This Policy is subject to the condition of average, that is to say, if the property covered by this Insurance shall at the time of loss be of greater value than the sum insured hereby the Assured shall only be entitled to recover hereunder such proportion of the said loss as the sum insured by this Policy bears to the total value of the said property.
+        <br>
+        <br>(b) Pairs and Sets Clause
+        <br>Where any insured item consists of articles in a pair or set this Policy is not to pay more than the value of any particular part or parts which may be lost without reference to any special value which such article or articles may have as part of such pair or set, nor more than a proportionate part of such pair or set.
+        <br>        
+        <br>(c) Depreciation
+        <br>Underwriters’ liability is restricted to the reasonable cost of repair and no claim is to attach hereto for depreciation consequent thereon.
+        <br>
+        <br>(d) Mechanical and Electrical Derangement
+        <br>Excluding loss of or damage due to mechanical, electrical or electronic derangement unless there is evidence of external damage to the insured item or its packing.
+        <br>
+        <br>(e) Moth, Vermin, Wear & Tear
+        <br>Excluding loss or damage due to moth, vermin, wear, tear and gradual deterioration.
+        <br>
+        <br>(f) Climatic Conditions Clause
+        <br>Excluding loss or damage by climatic or atmospheric conditions or extremes of temperature.
+        <br>
+        <br>(g) Professional Packing
+        <br>Excluding losses arising as a result of goods not having been professionally packed.
+        <br>
+        <br>(h) Excluded Goods
+        <br>Excluding loss of or damage to furs valued over €200, or any cash, notes, stamps, deeds, tickets, travellers’ cheques, jewellery, watches, or similar valuable articles other than as declared and agreed herein.
+        <br>
+        <br>(i) Itemised Inventory
+        <br>Subject to valued, itemised inventory to be lodged with Freight Forwarder prior to shipment.
+        <div style="height: 400px;"></div>
         ';
     }
 
     if ($commodity == 'Personal Effects owner packed'){
-        return '
+        $return[0] = '
         <strong>Household Goods & Personal Effects – Owner Packed/ Unprofessional Packer (Refer)</strong>
-        Institute Cargo Clauses “A” CL382 dated 01.01.2009.
-        Institute War Clauses (Cargo) CL385 dated 01.01.2009.
-        Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009.
-        Institute Classification Clause CL354 dated 1.1.01.
-        Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10/11/03.
-        Institute Cyber Attack Exclusion Clause CL380 dated 10/11/03.
-        Termination of Transit Clause (Terrorism).
-        Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
-        Including transhipment, barge and lightering risks whether customary or otherwise.
-        Subject also to Additional Conditions as attached.
-        Subject also to Household Goods & Personal Effects Additional Conditions as follows:
-        Average Clause
-        This Policy is subject to the condition of average, that is to say, if the property covered by this Insurance shall at the time of loss be of greater value than the sum insured hereby the Assured shall only be entitled to recover hereunder such proportion of the said loss as the sum insured by this Policy bears to the total value of the said property.
-        
-        Pairs and Sets Clause
-        Where any insured item consists of articles in a pair or set this Policy is not to pay more than the value of any particular part or parts which may be lost without reference to any special value which such article or articles may have as part of such pair or set, nor more than a proportionate part of such pair or set.
-        
-        Depreciation
-        Underwriters’ liability is restricted to the reasonable cost of repair and no claim is to attach hereto for depreciation consequent thereon.
-        
-        Mechanical and Electrical Derangement
-        Excluding loss of or damage due to mechanical, electrical or electronic derangement unless there is evidence of external damage to the insured item or its packing.
-        
-        Moth, Vermin, Wear & Tear
-        Excluding loss or damage due to moth, vermin, wear, tear and gradual deterioration.
-        
-        Climatic Conditions Clause
-        Excluding loss or damage by climatic or atmospheric conditions or extremes of temperature.
-        
-        Owner Packed Effects
-        Excluding breakage, scratching, denting, clipping, staining of owner’s packed effects, including trunks, suitcases and the like. Also excluding claims for the missing items unless a valued of list of contents is supplied by owner prior to commencement of transit.
-        
-        Excluded Goods
-        Excluding loss of or damage to furs valued over USD200, or any cash, notes, stamps, deeds, tickets, travellers’ cheques, jewellery, watches, or similar valuable articles other than as declared and agreed herein.
-        
-        Itemised Inventory
-        Subject to valued, itemised inventory to be lodged with Freight Forwarder prior to shipment.
+        <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009.
+        <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009.
+        <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009.
+        <br>Institute Classification Clause CL354 dated 1.1.01.
+        <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10/11/03.
+        <br>Institute Cyber Attack Exclusion Clause CL380 dated 10/11/03.
+        <br>Termination of Transit Clause (Terrorism).
+        <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
+        <br>Including transhipment, barge and lightering risks whether customary or otherwise.
+        <br>Subject also to Additional Conditions as on page 3.';
+
+        $return[1] = '
+        <br>Subject also to Household Goods & Personal Effects Additional Conditions as follows:
+        <br>Average Clause
+        <br>This Policy is subject to the condition of average, that is to say, if the property covered by this Insurance shall at the time of loss be of greater value than the sum insured hereby the Assured shall only be entitled to recover hereunder such proportion of the said loss as the sum insured by this Policy bears to the total value of the said property.
+        <br>
+        <br>Pairs and Sets Clause
+        <br>Where any insured item consists of articles in a pair or set this Policy is not to pay more than the value of any particular part or parts which may be lost without reference to any special value which such article or articles may have as part of such pair or set, nor more than a proportionate part of such pair or set.
+        <br>
+        <br>Depreciation
+        <br>Underwriters’ liability is restricted to the reasonable cost of repair and no claim is to attach hereto for depreciation consequent thereon.
+        <br>
+        <br>Mechanical and Electrical Derangement
+        <br>Excluding loss of or damage due to mechanical, electrical or electronic derangement unless there is evidence of external damage to the insured item or its packing.
+        <br>
+        <br>Moth, Vermin, Wear & Tear
+        <br>Excluding loss or damage due to moth, vermin, wear, tear and gradual deterioration.
+        <br>
+        <br>Climatic Conditions Clause
+        <br>Excluding loss or damage by climatic or atmospheric conditions or extremes of temperature.
+        <br>
+        <br>Owner Packed Effects
+        <br>Excluding breakage, scratching, denting, clipping, staining of owner’s packed effects, including trunks, suitcases and the like. Also excluding claims for the missing items unless a valued of list of contents is supplied by owner prior to commencement of transit.
+        <br>
+        <br>Excluded Goods
+        <br>Excluding loss of or damage to furs valued over USD200, or any cash, notes, stamps, deeds, tickets, travellers’ cheques, jewellery, watches, or similar valuable articles other than as declared and agreed herein.
+        <br>
+        <br>Itemised Inventory
+        <br>Subject to valued, itemised inventory to be lodged with Freight Forwarder prior to shipment.
+        <div style="height: 400px;"></div>
         ';
     }
 
     if ($commodity == 'Other'){
-        return 'Refer';
+        $return[0] = 'Refer';
     }
+
+    return $return;
 
 }
 

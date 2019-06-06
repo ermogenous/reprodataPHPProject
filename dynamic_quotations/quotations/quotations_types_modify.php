@@ -639,6 +639,18 @@ $formValidator = new customFormValidator();
                                                 <?php if ($data['oqqt_added_field_mobile'] == 1) echo 'checked'; ?>>
                                         </div>
                                     </div>
+
+                                    <div class="row">
+                                        <label for="fld_added_field_city" class="col-sm-5 col-form-label">
+                                            City:
+                                        </label>
+                                        <div class="col-sm-1">
+                                            <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                                   id="fld_added_field_city" name="fld_added_field_city"
+                                                <?php if ($data['oqqt_added_field_city'] == 1) echo 'checked'; ?>>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
 

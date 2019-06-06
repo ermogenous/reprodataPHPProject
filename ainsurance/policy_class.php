@@ -225,6 +225,61 @@ class Policy
         return false;
     }
 
+    /**
+     * returns array with
+     * ['totalAmount'] = total amount
+     * ['totalPaid'] = total amount paid
+     * ['totalCommission'] = total commission
+     * ['totalCommissionPaid'] = total commission paid
+     * ['unpaidInstallment'] = how many unpaid/partial(Not paid) installment/s exists
+     * ['paymentTotalAmount'] =
+     * ['paymentTotalCommission'] =
+     * ['paymentTotalAllocated'] =
+     * ['paymentTotalAllocatedCommission'] =
+     * ['paymentTotalUnPosted'] = true/false how many un posted payments exists
+     */
+    public function getInstallmentsInfo(){
+        global $db;
+
+        //get installment information
+        $installmentData = $db->query_fetch("SELECT
+        SUM(inapi_amount)as clo_total_amount,
+        SUM(inapi_paid_amount)as clo_total_paid_amount,
+        SUM(inapi_commission_amount)as clo_total_commission_amount,
+        SUM(inapi_paid_commission_amount)as clo_total_paid_commission_amount,
+        SUM(IF(inapi_paid_status != 'Paid',1,0))as clo_unpaid_total
+        FROM
+        ina_policy_installments
+        WHERE
+        inapi_policy_ID = ".$this->policyID);
+
+        $return['totalAmount'] = $installmentData['clo_total_amount'];
+        $return['totalPaid'] = $installmentData['clo_total_paid_amount'];
+        $return['totalCommission'] = $installmentData['clo_total_commission_amount'];
+        $return['totalCommissionPaid'] = $installmentData['clo_total_paid_commission_amount'];
+        $return['unpaidInstallment'] = $installmentData['clo_unpaid_total'];
+
+        //get payments information
+        $paymentData = $db->query_fetch("SELECT
+        SUM(inapp_amount)as clo_total_amount,
+        SUM(inapp_commission_amount)as clo_total_commission,
+        SUM(inapp_allocated_amount)as clo_total_allocated,
+        SUM(inapp_allocated_commission)as clo_total_allocated_commission,
+        SUM(IF(inapp_status != 'Posted',1,0))as clo_unposted_total
+        FROM
+        ina_policy_payments
+        WHERE
+        inapp_policy_ID = ".$this->policyID);
+
+        $return['paymentTotalAmount'] = $paymentData['clo_total_amount'];
+        $return['paymentTotalCommission'] = $paymentData['clo_total_commission'];
+        $return['paymentTotalAllocated'] = $paymentData['clo_total_allocated'];
+        $return['paymentTotalAllocatedCommission'] = $paymentData['clo_total_allocated_commission'];
+        $return['paymentTotalUnPosted'] = $paymentData['clo_unposted_total'];
+
+        return $return;
+    }
+
 
 }
 

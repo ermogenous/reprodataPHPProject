@@ -27,10 +27,10 @@ function mc_shipment_details_3()
 
                 <div class="input-group">
                     <div class="input-group-text">
-                        <input type="radio" id="3_oqqit_rate_13" name="3_oqqit_rate_13" value="Clause B" class="form-control"
-                            <?php if ($qitem_data['oqqit_rate_13'] == 'Clause B') echo 'checked';?>>
+                        <input type="radio" id="3_oqqit_rate_13" name="3_oqqit_rate_13" value="Clause C" class="form-control"
+                            <?php if ($qitem_data['oqqit_rate_13'] == 'Clause C') echo 'checked';?>>
                     </div>
-                    &nbsp;Institute Clause B
+                    &nbsp;Institute Clause C
                 </div>
             </div>
 

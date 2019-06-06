@@ -51,16 +51,29 @@ function mff_insured_details_1()
             <?php show_quotation_text("Επάγγελμα", "Occupation"); ?>
         </label>
         <div class="col-sm-8">
-            <input name="1_oqqit_rate_3" type="text" id="1_oqqit_rate_3"
-                   class="form-control"
-                   value="<?php echo $qitem_data["oqqit_rate_3"]; ?>">
+
+
+            <select name="1_oqqit_rate_3" id="1_oqqit_rate_3"
+                    class="form-control">
+                <option value=""></option>
+                <?php
+                $sql = "SELECT * FROM codes WHERE cde_type = 'Occupations' ORDER BY cde_option_value ASC, cde_value ASC";
+                $result = $db->query($sql);
+                while ($occupation = $db->fetch_assoc($result)) {
+                    ?>
+                    <option value="<?php echo $occupation['cde_code_ID']; ?>"
+                        <?php if ($qitem_data['oqqit_rate_3'] == $occupation['cde_code_ID']) echo 'selected'; ?>>
+                        <?php echo $occupation['cde_value']; ?>
+                    </option>
+                <?php } ?>
+            </select>
             <?php
             $formValidator->addField(
                 [
                     'fieldName' => '1_oqqit_rate_3',
-                    'fieldDataType' => 'text',
+                    'fieldDataType' => 'select',
                     'required' => true,
-                    'invalidText' => show_quotation_text("Συμπληρώστε το Επάγγελμα.", "Must Enter Occupation", 'Return')
+                    'invalidText' => show_quotation_text("Επιλέξατε το Επάγγελμα.", "Must Enter Occupation", 'Return')
                 ]);
             ?>
         </div>
@@ -119,7 +132,7 @@ function mff_insured_details_1()
                     'fieldName' => '1_oqqit_rate_5',
                     'fieldDataType' => 'select',
                     'required' => true,
-                    'invalidText' => show_quotation_text("Συμπληρώστε την Χώρα.", "Must Enter Country", 'Return')
+                    'invalidText' => show_quotation_text("Επιλέξατε την Χώρα.", "Must Select Country", 'Return')
                 ]);
             ?>
         </div>
@@ -561,9 +574,9 @@ function mff_insurance_period_2()
         <label for="2_oqqit_insured_amount_3" class="col-5">
             <?php show_quotation_text("Αριθμό Μητρώου Εργοδότη", "Social Security Insurance Number"); ?>
         </label>
-        <div class="col-7">
+        <div class="col-2">
             <input name="2_oqqit_rate_3" type="text" id="2_oqqit_rate_3"
-                   class="form-control"
+                   class="form-control" maxlength="4"
                    value="<?php echo $qitem_data["oqqit_rate_3"]; ?>">
             <?php
             $formValidator->addField(
@@ -572,7 +585,37 @@ function mff_insurance_period_2()
                     'fieldDataType' => 'text',
                     'required' => true,
                     'requiredAddedCustomCode' => "&& $('#2_oqqit_insured_amount_2').val() == '1'",
-                    'invalidText' => show_quotation_text("Συμπληρώστε Αριθμό Μητρώου Εργοδότη.", "Must Enter Social Security Insurance Number", 'Return')
+                    'invalidText' => show_quotation_text("Συμπληρώστε.", "Must Enter", 'Return')
+                ]);
+            ?>
+        </div>/
+        <div class="col-1">
+            <input name="2_oqqit_rate_4" type="text" id="2_oqqit_rate_4"
+                   class="form-control" maxlength="1"
+                   value="<?php echo $qitem_data["oqqit_rate_4"]; ?>">
+            <?php
+            $formValidator->addField(
+                [
+                    'fieldName' => '2_oqqit_rate_4',
+                    'fieldDataType' => 'text',
+                    'required' => true,
+                    'requiredAddedCustomCode' => "&& $('#2_oqqit_insured_amount_2').val() == '1'",
+                    'invalidText' => show_quotation_text("Συμπληρώστε.", "Must Enter", 'Return')
+                ]);
+            ?>
+        </div>/
+        <div class="col-2">
+            <input name="2_oqqit_rate_5" type="text" id="2_oqqit_rate_5"
+                   class="form-control" maxlength="4"
+                   value="<?php echo $qitem_data["oqqit_rate_5"]; ?>">
+            <?php
+            $formValidator->addField(
+                [
+                    'fieldName' => '2_oqqit_rate_5',
+                    'fieldDataType' => 'text',
+                    'required' => true,
+                    'requiredAddedCustomCode' => "&& $('#2_oqqit_insured_amount_2').val() == '1'",
+                    'invalidText' => show_quotation_text("Συμπληρώστε.", "Must Enter", 'Return')
                 ]);
             ?>
         </div>

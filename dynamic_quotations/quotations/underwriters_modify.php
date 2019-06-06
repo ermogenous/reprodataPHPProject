@@ -147,6 +147,17 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
 
+                    <div class="row">
+                        <label for="fld_allow_mff" class="col-sm-5 col-form-label">
+                            Allow Medical For Foreigners
+                        </label>
+                        <div class="col-sm-1">
+                            <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                   id="fld_allow_mff" name="fld_allow_mff"
+                                <?php if ($data['oqun_allow_mff'] == 1) echo 'checked'; ?>>
+                        </div>
+                    </div>
+
                     <div class="form-group row">
                         <label for="fld_mf_age_restriction" class="col-sm-4 col-form-label">Age limit Inclusive</label>
                         <div class="col-sm-8">
@@ -168,6 +179,17 @@ $formValidator = new customFormValidator();
                     <div class="row alert alert-success text-center">
                         <div class="col-12">
                             <b>Marine Cargo</b>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label for="fld_allow_mc" class="col-sm-5 col-form-label">
+                            Allow Marine Cargo
+                        </label>
+                        <div class="col-sm-1">
+                            <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                   id="fld_allow_mc" name="fld_allow_mc"
+                                <?php if ($data['oqun_allow_mc'] == 1) echo 'checked'; ?>>
                         </div>
                     </div>
 

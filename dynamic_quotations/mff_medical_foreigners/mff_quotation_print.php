@@ -6,7 +6,10 @@ function getQuotationHTML($quotationID)
     $quotationData = $db->query_fetch('SELECT * FROM oqt_quotations WHERE oqq_quotations_ID = ' . $quotationID);
 
 //section 1 ========================================================================================================================================SECTION 1
-    $sect1 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $quotationID . " AND oqqit_items_ID = 1");
+    $sect1 = $db->query_fetch("SELECT *
+                                        ,(SELECT cde_value FROM codes WHERE cde_code_ID = oqqit_rate_5)as clo_insured_country
+                                        ,(SELECT cde_value FROM codes WHERE cde_code_ID = oqqit_rate_3)as clo_insured_occupation
+                                        FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $quotationID . " AND oqqit_items_ID = 1");
     $sect2 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $quotationID . " AND oqqit_items_ID = 2");
 
     //find the package
@@ -27,7 +30,7 @@ function getQuotationHTML($quotationID)
     $socialSecurity = '';
     if ($sect2['oqqit_insured_amount_2'] == 1){
         $elPackage = '<input type="checkbox" checked="checked">';
-        $socialSecurity = $sect2['oqqit_rate_3'];
+        $socialSecurity = $sect2['oqqit_rate_3']."/".$sect2['oqqit_rate_4']."/".$sect2['oqqit_rate_5'];
     }
 
     //certificate number
@@ -35,11 +38,15 @@ function getQuotationHTML($quotationID)
         $certificateNumber = 'DRAFT';
         $draft = 'DRAFT';
         $draftImage = 'background-image:url(' . $main['site_url'] . '/dynamic_quotations/images/draft.gif);';
+        $signature = '';
+        $stamp = '';
     }
     else {
         $certificateNumber = $quotationData['oqq_number'];
         $draft = '';
         $draftImage = '';
+        $signature = '<img src="images/santamas_signature_200.png" width="200">';
+        $stamp = '<img src="images/full_stamp_signature.png" width="140">';
     }
 
     $html = '
@@ -47,7 +54,7 @@ function getQuotationHTML($quotationID)
 .tableTdBorder td{
     border:1px solid #000000;
     padding:5px;
-    font-size: 10px;
+    font-size: 12px;
     font-family: Tahoma;
 }
 
@@ -63,7 +70,7 @@ function getQuotationHTML($quotationID)
             <td colspan="3" align="center"><b>PROPOSAL & EVIDENCE OF INSURANCE / ΠΡΟΤΑΣΗ & ΑΠΟΔΕΙΞΗ ΑΣΦΑΛΙΣΗΣ</b></td>
         </tr>
     </table>
-    <br>
+    
     <table class="tableTdBorder" width="900" cellpadding="0" cellspacing="0">
         <tr>
             <td width="270">
@@ -79,19 +86,19 @@ function getQuotationHTML($quotationID)
         </tr>
         <tr>
             <td rowspan="2">Address / Διεύθυνση</td>        
-            <td colspan="4">' . $quotationData['oqq_situation_address'] . '</td>        
+            <td colspan="4"> ' . $quotationData['oqq_insureds_address'] . '</td>        
         </tr>
         <tr>
             <td width="100">City / Πόλη</td>
-            <td width="170">' . $quotationData['oqq_insureds_id'] . '</td>
-            <td width="100">Post Code Κώδικας</td>
+            <td width="170">' . $quotationData['oqq_insureds_city'] . '</td>
+            <td width="130">Post Code / Κώδικας</td>
             <td>' . $quotationData['oqq_insureds_postal_code'] . '</td>
         </tr>
         <tr>
             <td>Home Telephone Number / Τηλέφωνο Οικίας</td>        
             <td colspan="2">' . $quotationData['oqq_insureds_tel'] . '</td>        
             <td>Mobile Number  Αριθμός Κινητού</td>        
-            <td>' . $quotationData['oqq_insureds_tel'] . '</td>        
+            <td>' . $quotationData['oqq_insureds_mobile'] . '</td>        
         </tr>
      </table>
      <div style="height: 5px;"></div>
@@ -103,14 +110,14 @@ function getQuotationHTML($quotationID)
         <tr>
             <td>Place of Usual Business<br>Τόπος Συνήθους Εργασίας</td>        
             <td width="270">' . $sect1['oqqit_rate_2'] . '</td>        
-            <td width="100">Occupation / Επάγγελμα</td>        
-            <td width="">' . $sect1['oqqit_rate_3'] . '</td>
+            <td width="130">Occupation / Επάγγελμα</td>        
+            <td width="">' . $sect1['clo_insured_occupation'] . '</td>
         </tr>
         <tr>
             <td>Passport Number / Αριθμός Διαβατηρίου</td>        
             <td>' . $sect1['oqqit_rate_4'] . '</td>
             <td>Country / Χώρα</td>        
-            <td>' . $sect1['oqqit_rate_5'] . '</td>
+            <td>' . $sect1['clo_insured_country'] . '</td>
         </tr>
         <tr>
             <td>Date of Birth / Ημερομηνία Γέννησης</td>        
@@ -126,9 +133,9 @@ function getQuotationHTML($quotationID)
         <tr>
             <td width="30%">Period of Insurance / Περίοδος Ασφάλισης</td>
             <td width="100">From / Από</td>
-            <td width="170">'.$db->convert_date_format($sect2['oqqit_date_1'], 'yyyy-mm-dd', 'dd/mm/yyyy').'</td>
-            <td width="100">Το / Μέχρι</td>
-            <td>'.$db->convert_date_format($sect2['oqqit_date_2'], 'yyyy-mm-dd', 'dd/mm/yyyy').'</td>
+            <td width="170">'.$db->convert_date_format($quotationData['oqq_starting_date'], 'yyyy-mm-dd', 'dd/mm/yyyy',1,0).'</td>
+            <td width="130">Το / Μέχρι</td>
+            <td>'.$db->convert_date_format($quotationData['oqq_expiry_date'], 'yyyy-mm-dd', 'dd/mm/yyyy',1,0).'</td>
         </tr>
     </table>
     
@@ -152,9 +159,11 @@ function getQuotationHTML($quotationID)
                 <br>
                 &bull; &nbsp;&nbsp; Per in-hospital treatment/ Για Ενδονοσοκομειακή Περίθαλψη<br> 
                 &bull; &nbsp;&nbsp; Per period of insurance and per person / Κατά περίοδο ασφάλισης και κατά άτομο<br>
-                <br>
-                <b>1a. &nbsp;&nbsp; Hospitalization</b> (Room & Board) per day / <b>ΗΜΕΡΗΣΙΑ ΝΟΣΗΛΕΙΑ</b> (Δωμάτιο & Τροφή) για κάθε μέρα<br>
-                <b>1b. &nbsp;&nbsp; Hospitalization</b> (Room & Board) per day Intensive Care / <b>ΗΜΕΡΗΣΙΑ ΝΟΣΗΛΕΙΑ</b> (Δωμάτιο & Τροφή) για κάθε μέρα σε μονάδα Εντατικής Παρακολούθησης
+                
+                <b>1a. Hospitalization</b> (Room & Board) per day 
+                <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>ΗΜΕΡΗΣΙΑ ΝΟΣΗΛΕΙΑ</b> (Δωμάτιο & Τροφή) για κάθε μέρα<br>
+                <b>1b. Hospitalization</b> (Room & Board) per day Intensive Care 
+                <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>ΗΜΕΡΗΣΙΑ ΝΟΣΗΛΕΙΑ</b> (Δωμάτιο & Τροφή) για κάθε μέρα σε μονάδα Εντατικής Παρακολούθησης
             </td>
             <td align="center" valign="top">Euro/€<br><br>8.600<br>13.700<br><br>70<br>175</td>
             <td align="center" valign="top">Euro/€<br><br>8.600<br>13.700<br><br>70<br>175</td>
@@ -167,23 +176,23 @@ function getQuotationHTML($quotationID)
             ΑΝΩΤΑΤΟ ΠΟΣΟ ΚΑΤΑ ΑΣΘΕΝΕΙΑ Ή ΑΤΥΧΗΜΑ ΕΚΤΟΣ ΝΟΣΟΚΟΜΕΙΟΥ</b><br>
             &bull; &nbsp;&nbsp; Per Out-hospital treatment / Για Εξωνοσοκομειακή Περίθαλψη<br>
             &bull; &nbsp;&nbsp; Per period of insurance and per person / Κατά περίοδο ασφάλισης και κατά άτομο<br>
-            <br>
+
             <b>2a.    MAXIMUM AMOUNT PER DOCTOR’S VISIT / ΑΝΩΤΑΤΟ ΠΟΣΟ ΚΑΤΑ ΙΑΤΡΙΚΗ ΕΠΙΣΚΕΨΗ</b>
             </td>
-            <td align="center" valign="top"><br><br>685<br>1.750<br><br>20</td>
-            <td align="center" valign="top"><br><br>---<br>---<br><br>---</td>
-            <td align="center" valign="top"><br><br>1.000<br>2.500<br><br>50</td>
+            <td align="center" valign="top"><br>685<br>1.750<br><br>20</td>
+            <td align="center" valign="top"><br>---<br>---<br><br>---</td>
+            <td align="center" valign="top"><br>1.000<br>2.500<br><br>50</td>
         </tr>
         <tr>
             <td style="border-right: 0px solid;" valign="top"><b>3.</b></td>
             <td style="border-left: 0px solid;">
-            <b>MATERNITY COVER (Normal or Caesarean Section) / ΩΦΕΛΗΜΑ ΤΟΚΕΤΟΥ (Φυσιολογικός ή με καισαρική τομή)</b><br>
+            <b>MATERNITY COVER (Normal or Caesarean Section)<br>ΩΦΕΛΗΜΑ ΤΟΚΕΤΟΥ (Φυσιολογικός ή με καισαρική τομή)</b><br>
             Maximum limit up to / Ανώτατο όριο μέχρι:<br>
             The benefit is payable only if delivery takes place at least 10 months from the commencement of cover or inclusion of the Insured Person in the Policy. Το ωφέλημα είναι πληρωτέο νοουμένου ότι ο τοκετός γίνεται τουλάχιστον 10 μήνες μετά την έναρξη του Ασφαλιστηρίου ή την ένταξη του Ασφαλισμένου Προσώπου στο Ασφαλιστήριο
             </td>
-            <td align="center" valign="top"><br>515</td>
-            <td align="center" valign="top"><br>515</td>
-            <td align="center" valign="top"><br>800</td>
+            <td align="center" valign="top"><br><br>515</td>
+            <td align="center" valign="top"><br><br>515</td>
+            <td align="center" valign="top"><br><br>800</td>
         </tr>
         <tr>
             <td style="border-right: 0px solid;"><b>4.</b></td>
@@ -202,64 +211,61 @@ function getQuotationHTML($quotationID)
             <td align="center">'.$pack3Html.'</td>
         </tr>
     </table>
-    <br><br>
+    <div style="height: 7px;"></div>
     <div style="font-size: 10px; width: 900px; text-align: justify;">
         This <b>Schedule of Benefits</b> forms an integral part of <b>Medical Insurance Policy KMIPW 11 2017</b> This Policy will be renewed for an 
         additional period with the same terms and conditions that exist at the time of renewal subject to the premium being prepaid. 
         / <b>Ο Πίνακας Παροχών</b> αποτελεί αναπόσπαστο μέρος του <b>Ασφαλιστηρίου Ιατροφαρμακευτικής Περίθαλψης KMIPW 11 2017</b> Το Ασφαλιστήριο 
         θα ανανεωθεί αυτόματα για ακόμη μια ασφαλιστική περίοδο με τους όρους και τις προϋποθέσεις που θα ισχύουν κατά την ημερομηνία 
         ανανέωσης του και νοουμένου ότι το ασφάλιστρο ανανέωσης θα προπληρωθεί.<br>
-        <br>
+        <div style="height: 7px;"></div>
         Co-insurance / Συνασφάλιση : Up to 65 years of age / Μέχρι 65 ετών &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10% on all Claims / 10% σε όλες τις απαιτήσεις<br>
-        <br>
-        <br>
+        <div style="height: 7px;"></div>
     </div>
     <div style="font-size: 10px; width: 900px; text-align: left">
         Employers Liability Coverage / Κάλυψη Ευθύνη Εργοδότη: '.$elPackage.'
-        <br>
-        Social Security Insurance Number / Αριθμό Μητρώου Εργοδότη: '.$socialSecurity.'
-        <br>
+        &nbsp;&nbsp;
+        Employer’s Registration Number / Αριθμό Μητρώου Εργοδότη: '.$socialSecurity.'
         <br>
         <br>
         <br>
         <br>
         Policyholder Signature / Υπογραφή Συμβαλλόμενου ____________________________________________ 
-        Date / Ημερομηνία: '.$db->convert_date_format($quotationData['oqq_effective_date'],'yyyy-mm-dd', 'dd/mm/yyyy',1,1).' 
+        Date / Ημερομηνία: ________________________
     </div>
-    
+ 
     <div style="font-size: 10px;">
-        <table style="font-size: 10px;" width="90%">
+        <table style="font-size: 10px;" width="100%">
             <tr>
-                <td width="50%">
+                <td width="60%">
                     <b>Signed By / Υπογράφτηκε από:</b>
                 </td>
-                <td width="50%" align="right">
+                <td width="40%" align="center">
                     <b>Issued By / Εκδόθηκε από:</b>
                 </td>
             </tr>
             <tr>
                 <td>
-                    <img src="images/santamas_signature.png" width="200">
+                '.$signature.$draft.'
+                <br>
+                <br>
+                Γιάννος Σανταμάς<br>
+                Director / Διευθυντής<br>
+                Kemter Insurance Agencies, Sub-Agencies and Consultants Ltd<br>
+                Authorised Coverholder at Lloyd`s '.$draft.'
                 </td>
-                <td align="right">
-                    <img src="images/full_stamp.png" width="120">
+                <td align="center">
+                    '.$stamp.$draft.'<br><br>
+                    Issue Date / Ημερομηνία Έκδοσης: <br>'.$db->convert_date_format($quotationData['oqq_effective_date'],'yyyy-mm-dd', 'dd/mm/yyyy',1,1).'
                 </td>
             </tr>
         </table>
-    
-    
-    
     </div>
-    <div style="height: 100px"></div>
-    <div style="font-size: 8px; width: 900px; text-align: center;">
-        Kemter Insurance Agencies Sub-Agencies and Consultants Ltd<br>
-        Αθηνών 82, Ακίνητα Ιεράς Μητρόπολης, Πολυκατοικία B’, Γραφείο 112-113, 3040 Λεμεσός<br>
-        T.K. 53538, Λεμεσός 3303 / P.O. Box . 53538, Limassol 3303<br>
-        Tel.: 25 755 954 / Τηλ.: 25 755 954 / Fax.: 25 755 953 / Φαξ.: 25 755 953<br>
-        Email: kemter@kemterinsurance.com<br>
-        '.$draft.'
+    <div style="font-size: 10px;" align="center">
+        P.O.Box 53538, 3033 Limassol Tel.:+357 25755952 Fax: +357 25755953 E-mail: kemter@kemterinsurance.com
     </div>
+        
  </div>
     ';
 
