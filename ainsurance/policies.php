@@ -56,23 +56,35 @@ $db->show_header();
                             <td>
                                 <input type="hidden" id="myLineID" name="myLineID" value="<?php echo $row["inapol_policy_ID"]; ?>">
                                 <?php if ($row['inapol_status'] == 'Outstanding') { ?>
-                                    <a href="policy_modify.php?lid=<?php echo $row["inapol_policy_ID"]; ?>"><i class="fas fa-edit"></i></a>&nbsp
+                                    <a href="policy_modify.php?lid=<?php echo $row["inapol_policy_ID"]; ?>">
+                                        <i class="fas fa-edit" title="Modify"></i>
+                                    </a>&nbsp
                                     <a href="policy_delete.php?lid=<?php echo $row["inapol_policy_ID"]; ?>"
-                                       onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this policy?');"><i class="fas fa-minus-circle"></i></a>&nbsp
+                                       onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this policy?');">
+                                        <i class="fas fa-minus-circle" title="Delete"></i>
+                                    </a>&nbsp
                                     <a href="policy_change_status.php?lid=<?php echo $row["inapol_policy_ID"]; ?>"><i
-                                                class="fas fa-lock"></i></a>&nbsp
+                                                class="fas fa-lock" title="Activate"></i></a>&nbsp
                                 <?php }
                                 if ($row['inapol_status'] == 'Active') { ?>
                                     <a href="policy_modify.php?lid=<?php echo $row["inapol_policy_ID"]; ?>"><i
-                                                class="fas fa-eye"></i></a>&nbsp
+                                                class="fas fa-eye" title="View"></i></a>&nbsp
                                 <?php }
                                 if ($row['inapol_status'] == 'Cancelled' || $row['inapol_status'] == 'Deleted') { ?>
                                     <a href="policy_modify.php?lid=<?php echo $row["inapol_policy_ID"]; ?>"><i
-                                                class="fas fa-eye"></i></a>&nbsp
+                                                class="fas fa-eye" title="View"></i>
+                                    </a>&nbsp
                                 <?php }
                                 if ($row['inapol_status'] == 'Active' && $row['inapol_replaced_by_ID'] == '') { ?>
                                 <a href="policy_renewal.php?pid=<?php echo $row["inapol_policy_ID"]; ?>">
-                                    <i class="fas fa-retweet"></i></a>&nbsp
+                                    <i class="fas fa-retweet" title="Review"></i>
+                                </a>&nbsp
+                                <?php } ?>
+                                <?php
+                                if ($row['inapol_status'] == 'Active' && $row['inapol_replaced_by_ID'] == '') { ?>
+                                    <a href="policy_endorsement.php?pid=<?php echo $row["inapol_policy_ID"]; ?>">
+                                        <i class="fas fa-wrench" title="Endorse"></i>
+                                    </a>&nbsp
                                 <?php } ?>
                             </td>
                         </tr>

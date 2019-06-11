@@ -48,7 +48,7 @@ if ($_GET['section'] == 'quotations_search_autofill') {
         $data[] = $row;
     }
 
-    $db->update_log_file_custom($sql, 'Quotations API:none GET:'.print_r($_GET,true));
+    $db->update_log_file_custom($sql, 'Quotations API:quotations_search_autofill GET:'.print_r($_GET,true));
 }
 else {
     $db->update_log_file_custom('NONE', 'Quotations API:none GET:'.print_r($_GET,true));

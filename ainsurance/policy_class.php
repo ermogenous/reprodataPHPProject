@@ -357,6 +357,107 @@ class Policy
     }
 
     /**
+     * @param $endorsementDate 'dd/mm/yyyy'
+     * @param $premium 'the new premium -+'
+     * @return bool
+     */
+    public function endorsePolicy($endorsementDate,$premium){
+        if ($this->policyData['inapol_status'] != 'Active'){
+            $this->error = true;
+            $this->errorDescription = 'Policy must be active to Endorse';
+            return false;
+        }
+        if ($this->policyData['inapol_replaced_by_ID'] > 0){
+            $this->error = true;
+            $this->errorDescription = 'This policy is already being replaced. Find the last phase to endorse.';
+            return false;
+        }
+
+        //$this->makeEndorsement($endorsementDate,$premium);
+
+        if ($this->error == true){
+            return false;
+        }
+        else {
+            return true;
+        }
+
+    }
+
+    private function makeEndorsement($endorsementDate,$premium){
+        global $db;
+
+        $db->start_transaction();
+
+        //load the new data
+        foreach($this->policyData as $name => $value){
+            if (substr($name,0,7) == 'inapol_'){
+                $newData[$name] = $value;
+            }
+        }
+        $newStartingDateParts = explode('/',$endorsementDate);
+        $newData['inapol_starting_date'] = $newStartingDateParts[2]."-".$newStartingDateParts[1]."-".$newStartingDateParts[0];
+        $newData['inapol_status'] = 'Outstanding';
+        $newData['inapol_process_status'] = 'Endorsement';
+        //$newData['inapol_premium'] = 'Renewal';
+        //$newData['inapol_mif'] = 'Renewal';
+        //$newData['inapol_commission'] = 'Renewal';
+        //$newData['inapol_fees'] = 'Renewal';
+        //$newData['inapol_stamps'] = 'Renewal';
+        $newData['inapol_replacing_ID'] = $this->policyID;
+
+        unset($newData['inapol_created_date_time']);
+        unset($newData['inapol_created_by']);
+        unset($newData['inapol_last_update_date_time']);
+        unset($newData['inapol_last_update_by']);
+        unset($newData['inapol_replaced_by_ID']);
+        unset($newData['inapol_policy_ID']);
+
+        //create the record in db
+        //echo "Create policy<br>\n";
+        //print_r($newData);
+        $newPolicyID = $db->db_tool_insert_row('ina_policies', $newData,'',1);
+        //update the current
+        //echo "Update Current<br>\n";
+        $curNewData['inapol_replaced_by_ID'] = $newPolicyID;
+        $db->db_tool_update_row('ina_policies', $curNewData, 'inapol_policy_ID = '.$this->policyID,
+            $this->policyID,'','execute','');
+
+        //create the items.
+        //get them all
+        $result = $db->query("SELECT * FROM ina_policy_items WHERE inapit_policy_ID = ".$this->policyID." ORDER BY inapit_policy_item_ID ASC");
+        while ($item = $db->fetch_assoc($result)){
+            $newItemData = $item;
+            $newItemData['inapit_policy_ID'] = $newPolicyID;
+            unset($newItemData['inapit_created_date_time']);
+            unset($newItemData['inapit_created_by']);
+            unset($newItemData['inapit_last_update_date_time']);
+            unset($newItemData['inapit_last_update_by']);
+            unset($newItemData['inapit_policy_item_ID']);
+            echo "Create Item<br>\n";
+            $db->db_tool_insert_row('ina_policy_items', $newItemData, '');
+        }
+        //echo "Create Installments<br>\n";
+        //create the installments
+        include('policyTabs/installments_class.php');
+        $installments = new Installments($newPolicyID);
+        if ($installments->generateInstallmentsRenewal() == false){
+            $this->error = true;
+            $this->errorDescription = $installments->errorDescription;
+            $db->rollback_transaction();
+            return false;
+        }
+        else {
+            $installments->updateInstallmentsAmountAndCommission();
+        }
+        //if all ok commit
+        $db->commit_transaction();
+        return true;
+
+
+    }
+
+    /**
      * returns array with
      * ['totalAmount'] = total amount
      * ['totalPaid'] = total amount paid

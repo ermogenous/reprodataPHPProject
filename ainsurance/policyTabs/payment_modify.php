@@ -128,11 +128,33 @@ if ($data['inapp_status'] != 'Outstanding' && $data['inapp_status'] != '') {
                         <label for="fld_amount" class="col-sm-3 col-form-label">Amount</label>
                         <div class="col-sm-3">
                             <input type="text" id="fld_amount" name="fld_amount"
-                                   class="form-control"
+                                   class="form-control" onkeyup="validateAmount();"
                                    value="<?php echo $data['inapp_amount']; ?>">
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-6"></div>
+                        <div class="col-6 alert alert-danger" id="amountMore" style="display: none;">Cannot use amount more than the remaining.</div>
+                    </div>
+
+                    <script>
+                        function validateAmount(){
+                            let amount = $('#fld_amount').val();
+                            if (amount > <?php echo $premiumInfo['paymentTotalUnpaid']; ?>){
+                                $('#amountMore').show();
+                                $('#Save').attr("disabled", true);
+                                $('#Submit').attr("disabled", true);
+                            }
+                            else {
+                                $('#amountMore').hide();
+                                $('#Save').attr("disabled", false);
+                                $('#Submit').attr("disabled", false);
+                            }
+                        }
+                    </script>
+
+                    <div class="row" style="height: 20px;"></div>
                     <!-- BUTTONS -->
                     <div class="form-group row">
                         <label for="name" class="col-sm-4 col-form-label"></label>

@@ -509,6 +509,14 @@ $formValidator = new customFormValidator();
                                 </div>
                             </div>
 
+                            <div class="form-group row">
+                                <label for="fld_enable_cancellation" class="col-sm-4 col-form-label">Enable Cencellation</label>
+                                <div class="col-sm-8">
+                                    <input type="checkbox" value="1" class="form-control"  style="margin-top: 12px;"
+                                           id="fld_enable_cancellation" name="fld_enable_cancellation"
+                                        <?php if ($data['oqqt_enable_cancellation'] == 1) echo "checked";?>>
+                                </div>
+                            </div>
 
 
 

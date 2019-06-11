@@ -229,7 +229,7 @@ $db->show_header();
                                         + agentSelected + '&inscompany=' + insuranceCompanySelected))
                                         .subscribe((response) => {
                                                 data = response;
-                                                console.log(data);
+                                                //console.log(data);
                                             },
                                             () => {
                                             }
@@ -590,7 +590,7 @@ $db->show_header();
             );
             $(data).each(function (index, value) {
 
-                    console.log(value['value'] + ' -> ' + value['label']);
+                    //console.log(value['value'] + ' -> ' + value['label']);
 
                     $('#' + dropDownName).append(
                         '<option value="' + value['value'] + '">' + value['label'] + '</option>'
@@ -601,7 +601,7 @@ $db->show_header();
 
         $(document).ready(function () {
             <?php if ($_GET['lid'] > 0){ ?>
-            console.log('loading companies');
+            //console.log('loading companies');
             loadInsuranceCompanies(false);
 
             <?php } ?>

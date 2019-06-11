@@ -306,11 +306,9 @@ $formValidator->addCustomCode("
                                     ]);
                                 ?>
                                 &nbsp;
-                                <i class="fas fa-spinner" id="client_search_autofill_loading"
-                                   style="display: none;"></i>
+                                <i class="fas fa-spinner" id="client_search_autofill_loading" style="display: none;"></i>
                                 <i class="fas fa-check" id="client_search_autofill_found" style="display: none;"></i>
-                                <i class="fas fa-times" id="client_search_autofill_not_found"
-                                   style="display: none;"></i>
+                                <i class="fas fa-times" id="client_search_autofill_not_found" style="display: none;"></i>
                             </div>
                             <script>
                                 $('#search_name').focusout(
@@ -334,12 +332,14 @@ $formValidator->addCustomCode("
                                     },
                                     focus: function (event, ui) {
                                         $('#customerSelect').val(ui.item.label);
+                                        //console.log('Focus event');
                                         return false;
                                     },
                                     search: function (event, ui) {
                                         $('#client_search_autofill_loading').show();
                                         $('#client_search_autofill_found').hide();
                                         $('#client_search_autofill_not_found').hide();
+                                        //console.log('Search event');
                                     },
                                     response: function (event, ui) {
                                         $('#client_search_autofill_loading').hide();

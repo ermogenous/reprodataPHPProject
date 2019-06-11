@@ -28,6 +28,7 @@ class dynamicQuotation
           oqt_quotations
           JOIN oqt_quotations_types ON oqq_quotations_type_ID = oqqt_quotations_types_ID
           LEFT OUTER JOIN users ON usr_users_ID = oqq_users_ID
+          LEFT OUTER JOIN oqt_quotations_underwriters ON oqun_user_ID = usr_users_ID
           WHERE oqq_quotations_ID = ' . $this->quotationID);
 
             //include function for this quotation type
@@ -500,6 +501,29 @@ class dynamicQuotation
         $appData['description'] = $description;
 
         $db->db_tool_insert_row('oqt_quotation_approvals', $appData, '', 0, 'oqqp_');
+
+    }
+
+    public function cancelQuotation(){
+        global $db;
+
+        if ($this->quotationData['oqqt_enable_cancellation'] != 1){
+            $this->error = true;
+            $this->errorDescription = 'Cannot cancel from this quotation type. Check quotation types settings.';
+            return false;
+        }
+
+        if ($this->quotationData['oqq_status'] != 'Active'){
+            $this->error = true;
+            $this->errorDescription = 'Must be active to cancel this '.$this->getQuotationType();
+            return false;
+        }
+
+        $newData['status'] = 'Cancelled';
+        $db->db_tool_update_row('oqt_quotations', $newData, 'oqq_quotations_ID = '.$this->quotationID,
+            $this->quotationID,'','execute','oqq_');
+
+        return true;
 
     }
 

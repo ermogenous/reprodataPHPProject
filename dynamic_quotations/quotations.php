@@ -23,14 +23,15 @@ if ($_GET['action'] == 'activate' && $_GET['lid'] > 0) {
 
 }
 
-$underwriter = $db->query_fetch('SELECT * FROM oqt_quotations_underwriters WHERE oqun_user_ID = '.$db->user_data['usr_users_ID']);
+$underwriter = $db->query_fetch('SELECT * FROM oqt_quotations_underwriters WHERE oqun_user_ID = ' . $db->user_data['usr_users_ID']);
 
 $table = new draw_table('oqt_quotations', 'oqq_quotations_ID', 'DESC');
 $table->extra_from_section = " JOIN `oqt_quotations_types` ON oqqt_quotations_types_ID = oqq_quotations_type_ID ";
+$table->extra_from_section .= " JOIN users ON usr_users_ID = oqq_users_ID";
 $table->extra_select_section = ", (oqq_fees + oqq_stamps + oqq_premium)as clo_total_price";
 
 //set the filter in session
-if ($_POST['filter'] == 'Filter'){
+if ($_POST['filter'] == 'Filter') {
     $_SESSION['dyqt_filter'] = true;
     $_SESSION['dyqt_filter_user'] = $_POST['filter_user_selected'];
     $_SESSION['dyqt_filter_number'] = $_POST['flt_number'];
@@ -40,7 +41,7 @@ if ($_POST['filter'] == 'Filter'){
     $_SESSION['dyqt_filter_pending'] = $_POST['fltPending'];
     $_SESSION['dyqt_filter_deleted'] = $_POST['fltDeleted'];
 }
-if ($_POST['filter_clear'] == 'Clear'){
+if ($_POST['filter_clear'] == 'Clear') {
     unset($_SESSION['dyqt_filter']);
     unset($_SESSION['dyqt_filter_user']);
     unset($_SESSION['dyqt_filter_number']);
@@ -54,18 +55,18 @@ $table->extras = '1=1';
 //if filter
 if ($_SESSION['dyqt_filter']) {
 
-    if ($_SESSION['dyqt_filter_number'] != ''){
-        $table->extras .= " AND oqq_number LIKE '%".$_SESSION['dyqt_filter_number']."%'";
+    if ($_SESSION['dyqt_filter_number'] != '') {
+        $table->extras .= " AND oqq_number LIKE '%" . $_SESSION['dyqt_filter_number'] . "%'";
     }
 
     $statusFilterNum = 0;
-    ($_SESSION['dyqt_filter_active'] == 1)? $statusFilter[] = 'Active' : '';
-    ($_SESSION['dyqt_filter_outstanding'] == 1)? $statusFilter[] = 'Outstanding' : '';
-    ($_SESSION['dyqt_filter_approved'] == 1)? $statusFilter[] = 'Approved' : '';
-    ($_SESSION['dyqt_filter_pending'] == 1)? $statusFilter[] = 'Pending' : '';
-    ($_SESSION['dyqt_filter_deleted'] == 1)? $statusFilter[] = 'Deleted' : '';
+    ($_SESSION['dyqt_filter_active'] == 1) ? $statusFilter[] = 'Active' : '';
+    ($_SESSION['dyqt_filter_outstanding'] == 1) ? $statusFilter[] = 'Outstanding' : '';
+    ($_SESSION['dyqt_filter_approved'] == 1) ? $statusFilter[] = 'Approved' : '';
+    ($_SESSION['dyqt_filter_pending'] == 1) ? $statusFilter[] = 'Pending' : '';
+    ($_SESSION['dyqt_filter_deleted'] == 1) ? $statusFilter[] = 'Deleted' : '';
     //prepare the status filter
-    $i=0;
+    $i = 0;
     if (is_array($statusFilter)) {
         foreach ($statusFilter as $value) {
             $i++;
@@ -86,15 +87,12 @@ if ($db->user_data["usr_user_rights"] <= 2) {
     if ($_SESSION["dyqt_filter_user"] != '' && $_SESSION["dyqt_filter_user"] != 'ALL') {
 
         $table->extras .= " AND oqq_users_ID = " . $_SESSION["dyqt_filter_user"];
-    }
-    else if ($_SESSION["dyqt_filter_user"] == 'ALL'){
+    } else if ($_SESSION["dyqt_filter_user"] == 'ALL') {
         //no filter
-    }
-    else {
+    } else {
         $table->extras .= " AND oqq_users_ID = " . $db->user_data["usr_users_ID"];
     }
-}
-else {
+} else {
     $table->extras .= " AND oqq_users_ID = " . $db->user_data["usr_users_ID"];
 }
 
@@ -156,21 +154,22 @@ if ($_GET["price_id"] != "") {
 
                         <div class="row">
                             <?php if ($db->user_data['usr_user_rights'] <= 2) { ?>
-                            <div class="col-4">
-                                <input name="filter_user_action" id="filter_user_action" type="hidden" value="change"/>
-                                <select name="filter_user_selected" id="filter_user_selected"
-                                        class="form-control">
-                                    <option value="ALL">ALL</option>
-                                    <?php
-                                    $all_users = $db->query("SELECT * FROM users ORDER BY usr_name ASC");
-                                    while ($user_info = $db->fetch_assoc($all_users)) {
-                                        ?>
-                                        <option value="<?php echo $user_info["usr_users_ID"]; ?>" <?php if ($_SESSION["quotations_user_filter"] == $user_info["usr_users_ID"]) { ?> selected="selected" <?php } ?>><?php echo $user_info["usr_name"]; ?></option>
+                                <div class="col-4">
+                                    <input name="filter_user_action" id="filter_user_action" type="hidden"
+                                           value="change"/>
+                                    <select name="filter_user_selected" id="filter_user_selected"
+                                            class="form-control">
+                                        <option value="ALL">ALL</option>
                                         <?php
-                                    }
-                                    ?>
-                                </select>
-                            </div>
+                                        $all_users = $db->query("SELECT * FROM users ORDER BY usr_name ASC");
+                                        while ($user_info = $db->fetch_assoc($all_users)) {
+                                            ?>
+                                            <option value="<?php echo $user_info["usr_users_ID"]; ?>" <?php if ($_SESSION["quotations_user_filter"] == $user_info["usr_users_ID"]) { ?> selected="selected" <?php } ?>><?php echo $user_info["usr_name"]; ?></option>
+                                            <?php
+                                        }
+                                        ?>
+                                    </select>
+                                </div>
                             <?php } ?>
                             <div class="col-4">
                                 <div class="row">
@@ -179,7 +178,8 @@ if ($_GET["price_id"] != "") {
                                     </div>
                                     <div class="col-7">
                                         <input type="text" class="form-control"
-                                               id="flt_number" name="flt_number" value="<?php echo $_SESSION['dyqt_filter_number'];?>">
+                                               id="flt_number" name="flt_number"
+                                               value="<?php echo $_SESSION['dyqt_filter_number']; ?>">
                                     </div>
                                 </div>
                             </div>
@@ -193,27 +193,32 @@ if ($_GET["price_id"] != "") {
                             <div class="col-12 form-inline">
                                 <div class=" custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input"
-                                           id="fltActive" name="fltActive" value="1" <?php if ($_SESSION['dyqt_filter_active'] == 1) echo 'checked';?>>
+                                           id="fltActive" name="fltActive"
+                                           value="1" <?php if ($_SESSION['dyqt_filter_active'] == 1) echo 'checked'; ?>>
                                     <label for="fltActive" class="custom-control-label">Active</label>
                                 </div>&nbsp;&nbsp;
                                 <div class=" custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input" id="fltOutstanding"
-                                           name="fltOutstanding" value="1" <?php if ($_SESSION['dyqt_filter_outstanding'] == 1) echo 'checked';?>>
+                                           name="fltOutstanding"
+                                           value="1" <?php if ($_SESSION['dyqt_filter_outstanding'] == 1) echo 'checked'; ?>>
                                     <label for="fltOutstanding" class="custom-control-label">Outstanding</label>
                                 </div>&nbsp;&nbsp;
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input" id="fltApproved"
-                                           name="fltApproved" value="1" <?php if ($_SESSION['dyqt_filter_approved'] == 1) echo 'checked';?>>
+                                           name="fltApproved"
+                                           value="1" <?php if ($_SESSION['dyqt_filter_approved'] == 1) echo 'checked'; ?>>
                                     <label for="fltApproved" class="custom-control-label">Approved</label>
                                 </div>&nbsp;&nbsp;
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input" id="fltPending"
-                                           name="fltPending" value="1" <?php if ($_SESSION['dyqt_filter_pending'] == 1) echo 'checked';?>>
+                                           name="fltPending"
+                                           value="1" <?php if ($_SESSION['dyqt_filter_pending'] == 1) echo 'checked'; ?>>
                                     <label for="fltPending" class="custom-control-label">Pending</label>
                                 </div>&nbsp;&nbsp;
                                 <div class="custom-control custom-checkbox">
                                     <input type="checkbox" class="custom-control-input" id="fltDeleted"
-                                           name="fltDeleted" value="1" <?php if ($_SESSION['dyqt_filter_deleted'] == 1) echo 'checked';?>>
+                                           name="fltDeleted"
+                                           value="1" <?php if ($_SESSION['dyqt_filter_deleted'] == 1) echo 'checked'; ?>>
                                     <label for="fltDeleted" class="custom-control-label">Deleted</label>
                                 </div>
                             </div>
@@ -232,7 +237,7 @@ if ($_GET["price_id"] != "") {
                                 $result = $db->query($sql);
                                 while ($row_qt = $db->fetch_assoc($result)) {
                                     if ($row_qt["oqqt_allowed_user_groups"] == "" || strpos($row_qt["oqqt_allowed_user_groups"], $db->user_data["usg_group_name"] . ",") !== false) {
-                                        if (strpos($underwriter['oqun_allow_quotations'],'#'.$row_qt["oqqt_quotations_types_ID"].'-1#') !== false) {
+                                        if (strpos($underwriter['oqun_allow_quotations'], '#' . $row_qt["oqqt_quotations_types_ID"] . '-1#') !== false) {
                                             ?>
                                             <option value="<?php echo $row_qt["oqqt_quotations_types_ID"]; ?>"><?php echo $row_qt["oqqt_name"]; ?></option>
                                             <?php
@@ -282,6 +287,9 @@ if ($_GET["price_id"] != "") {
                                 <thead>
                                 <tr class="alert alert-success">
                                     <th scope="col"><?php $table->display_order_links('ID', 'oqq_quotations_ID'); ?></th>
+                                    <?php if ($db->user_data['usr_user_rights'] <= 3) { ?>
+                                        <th scope="col"><?php $table->display_order_links('Agent', 'usr_name'); ?></th>
+                                    <?php } ?>
                                     <th scope="col"><?php $table->display_order_links('Number', 'oqq_number'); ?></th>
                                     <th scope="col"><?php $table->display_order_links('Name', 'oqq_insureds_name'); ?></th>
                                     <th scope="col"><?php $table->display_order_links('Type', 'oqqt_name'); ?></th>
@@ -302,7 +310,10 @@ if ($_GET["price_id"] != "") {
                                     $i++;
                                     ?>
                                     <tr onclick="editLine(<?php echo $row["oqq_quotations_type_ID"] . "," . $row["oqq_quotations_ID"] . ",'" . $row['oqq_status'] . "'"; ?>);"
-                                        class="<?php if ($row['oqq_status'] == 'Deleted') echo 'alert alert-danger'; ?>">
+                                        class="<?php
+                                        if ($row['oqq_status'] == 'Deleted') echo 'alert alert-danger';
+                                        if ($row['oqq_status'] == 'Cancelled') echo 'alert alert-danger';
+                                        ?>">
                                         <th scope="row">
 
                                             <?php if ($db->user_data["usr_user_rights"] <= 2) { ?>
@@ -313,6 +324,9 @@ if ($_GET["price_id"] != "") {
                                                 echo $row["oqq_quotations_ID"];
                                                 if ($db->user_data["usr_user_rights"] <= 2) { ?></a><?php } ?>
                                         </th>
+                                        <?php if ($db->user_data['usr_user_rights'] <= 3) { ?>
+                                            <td><?php echo $row["usr_name"]; ?></td>
+                                        <?php }?>
                                         <td><?php echo $row["oqq_number"]; ?></td>
                                         <td>
                                             <?php echo $row["oqq_insureds_name"]; ?>
@@ -337,8 +351,11 @@ if ($_GET["price_id"] != "") {
                                             <?php } ?>
                                             <?php if ($row['oqq_status'] == 'Active' ||
                                                 (
-                                                ($row['oqq_status'] == 'Outstanding' || $row['oqq_status'] == 'Pending') && $row['oqqt_allow_print_outstanding'] == 1
-                                                )
+                                                    ($row['oqq_status'] == 'Outstanding'
+                                                        || $row['oqq_status'] == 'Pending')
+                                                    && $row['oqqt_allow_print_outstanding'] == 1
+                                                ) || $row['oqq_status'] == 'Cancelled'
+
                                             ) { ?>
                                                 <a target="_blank"
                                                    href="quotation_print.php?quotation=<?php echo $row["oqq_quotations_ID"]; ?>&pdf=1"
@@ -358,6 +375,12 @@ if ($_GET["price_id"] != "") {
                                                 <a href="#">
                                                     <i class="fas fa-retweet"
                                                        onclick="renewQuotation(<?php echo $row["oqq_quotations_ID"]; ?>);"></i>
+                                                </a>
+                                            <?php } ?>
+
+                                            <?php if ($row['oqq_status'] == 'Active' && $db->user_data['usr_user_rights'] <= 2 && $row['oqqt_enable_cancellation'] == 1) { ?>
+                                                <a href="quotation_cancellation.php?lid=<?php echo $row['oqq_quotations_ID']; ?>">
+                                                    <i class="fas fa-times-circle"></i>
                                                 </a>
                                             <?php } ?>
 
@@ -411,7 +434,7 @@ if ($_GET["price_id"] != "") {
             }
         }
 
-        function renewQuotation(id){
+        function renewQuotation(id) {
             ignoreEdit = true;
             if (confirm('Are you sure you want to renew this?')) {
                 window.location.assign('quotation_renewal.php?lid=' + id);
