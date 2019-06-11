@@ -154,6 +154,7 @@ function mff_insured_details_1()
                     'fieldDataType' => 'date',
                     'required' => true,
                     'enableDatePicker' => true,
+                    'dateMaxDate' => date('d/m/Y', mktime(0, 0, 0, date('m'), (date('d') - 45), date('Y'))),
                     'datePickerValue' => $db->convert_date_format($qitem_data["oqqit_date_1"], 'yyyy-mm-dd', 'dd/mm/yyyy'),
                     'invalidText' => show_quotation_text("Συμπληρώστε την Ημερομηνία Γέννησης.", "Must Enter Date of Birth", 'Return')
                 ]);
@@ -219,6 +220,7 @@ function mff_insurance_period_2()
                     'dateMaxDate' => date('d/m/Y', mktime(0, 0, 0, date('m'), (date('d') + 45), date('Y'))),
                     'invalidText' => show_quotation_text("Λάθος Ημερομηνία", "Wrong Date", 'Return')
                 ]);
+            //echo date('d/m/Y', mktime(0, 0, 0, date('m'), (date('d') + 45), date('Y')));
             ?>
         </div>
         <label for="expiry_date" class="col-sm-1 col-form-label">
@@ -252,6 +254,7 @@ function mff_insurance_period_2()
             function changeStartingDate() {
                 //when the starting date is changed then reset the expiry.
                 $('#expiry_date').val('');
+                showInsuredAge();
             }
 
             function setExpiryDate(months) {

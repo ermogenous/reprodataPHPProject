@@ -6,14 +6,11 @@
  * Time: 11:53 ΠΜ
  */
 
-
 include("../include/main.php");
 include("../include/tables.php");
 
 $db = new Main(1, 'UTF-8');
 $db->admin_title = "AInsurance Policies";
-
-$db->show_header();
 
 $table = new draw_table('ina_policies', 'inapol_policy_ID', 'ASC');
 $table->extra_from_section .= 'JOIN ina_insurance_companies ON inapol_insurance_company_ID = inainc_insurance_company_ID';
@@ -21,6 +18,7 @@ $table->extra_from_section .= ' JOIN customers ON cst_customer_ID = inapol_custo
 
 $table->generate_data();
 
+$db->show_header();
 ?>
 
 
@@ -64,13 +62,17 @@ $table->generate_data();
                                     <a href="policy_change_status.php?lid=<?php echo $row["inapol_policy_ID"]; ?>"><i
                                                 class="fas fa-lock"></i></a>&nbsp
                                 <?php }
-                                if ($row['ínapol_status'] == 'Active') { ?>
+                                if ($row['inapol_status'] == 'Active') { ?>
                                     <a href="policy_modify.php?lid=<?php echo $row["inapol_policy_ID"]; ?>"><i
                                                 class="fas fa-eye"></i></a>&nbsp
                                 <?php }
-                                if ($row['ínapol_status'] == 'Cancelled' || $row['inapol_status'] == 'Deleted') { ?>
+                                if ($row['inapol_status'] == 'Cancelled' || $row['inapol_status'] == 'Deleted') { ?>
                                     <a href="policy_modify.php?lid=<?php echo $row["inapol_policy_ID"]; ?>"><i
                                                 class="fas fa-eye"></i></a>&nbsp
+                                <?php }
+                                if ($row['inapol_status'] == 'Active' && $row['inapol_replaced_by_ID'] == '') { ?>
+                                <a href="policy_renewal.php?pid=<?php echo $row["inapol_policy_ID"]; ?>">
+                                    <i class="fas fa-retweet"></i></a>&nbsp
                                 <?php } ?>
                             </td>
                         </tr>

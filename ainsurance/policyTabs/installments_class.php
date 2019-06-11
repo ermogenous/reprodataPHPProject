@@ -130,6 +130,7 @@ Class Installments
 
                 for ($i = 0; $i < $amount; $i++) {
                     $date = date('Y-m-d', mktime(0, 0, 0, ($startingDate[1] + $i), $startingDate[2], $startingDate[0]));
+                    $data['installment_type'] = 'Recursive';
                     $data['document_date'] = $date;
                     $data['insert_date'] = date('Y-m-d');
                     $data['policy_ID'] = $this->policyID;
@@ -177,6 +178,7 @@ Class Installments
                     for ($i = 0; $i < $amount; $i++) {
                         $date = date('Y-m-d', mktime(0, 0, 0, ($startingDate[1] + $i), $startingDate[2], $startingDate[0]));
                         $data['document_date'] = $date;
+                        $data['installment_type'] = 'Divided';
                         $data['insert_date'] = date('Y-m-d');
                         $data['policy_ID'] = $this->policyID;
                         $data['paid_status'] = 'UnPaid';
@@ -257,6 +259,35 @@ Class Installments
         $instResult = $db->query('SELECT * FROM ina_policy_installments WHERE inapi_policy_ID = ' . $this->policyID);
         $this->totalInstallments = $db->num_rows($instResult);
         return $newId;
+
+    }
+
+    //creates installments based on the previous phase.
+    public function generateInstallmentsRenewal(){
+        global $db;
+        //get the installments of the previous phase.
+        $previousType = $db->query_fetch('
+        SELECT inapi_installment_type, COUNT(*)as clo_total_installments FROM ina_policy_installments 
+        WHERE inapi_policy_ID = '.$this->policyData['inapol_replacing_ID']." GROUP BY inapi_installment_type");
+
+        if ($previousType['inapi_installment_type'] == 'Divided'){
+            $this->generateDividedInstallments($previousType['clo_total_installments']);
+        }
+        else if ($previousType['inapi_installment_type'] == 'Recursive'){
+            $this->generateRecursiveInstallments($previousType['clo_total_installments']);
+        }
+        else {
+            $this->error = true;
+            $this->errorDescription = 'Installments are not divided or recursive';
+        }
+
+
+        if ($this->error == true){
+            return false;
+        }
+        else {
+            return true;
+        }
 
     }
 

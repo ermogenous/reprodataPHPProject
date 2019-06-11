@@ -129,248 +129,272 @@ $db->show_header();
                             ?>
                         </div>
 
+                        <div class="col-6">
+                            <?php if ($data['inapol_replacing_ID'] > 0) { ?>
+                                <a href="policy_modify.php?lid=<?php echo $data['inapol_replacing_ID']; ?>">
+                                    <i class="fas fa-angle-double-left"></i>&nbsp;
+                                </a>
+                            <?php }
+                            if ($data['inapol_replaced_by_ID'] > 0) { ?>
+                                <a href="policy_modify.php?lid=<?php echo $data['inapol_replaced_by_ID']; ?>">
+                                    <i class="fas fa-angle-double-right"></i>
+                                </a>
+                            <?php } ?>
+
+                        </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="fld_insurance_company_ID" class="col-sm-2 col-form-label">
                             Company
                         </label>
-                        <div class ="col-sm-4">
+                        <div class="col-sm-4">
                             <select name="fld_insurance_company_ID" id="fld_insurance_company_ID"
-                                class="form-control" onchange="loadPolicyTypes();">
-                        <?php if ($_GET['lid'] > 0) {?>
-                            <option value="<?php echo $data['inainc_insurance_company_ID'];?>">
-                        <?php echo $data['inainc_name']; ?>
-                            </option>
-                        <?php }//if ?>
-                        </select>
-                        <?php
-                        $formValidator->addField(
-                            [
-                                'fieldName' => 'fld_insurance_company_ID',
-                                'fieldDataType' => 'select',
-                                'required' => true,
-                                'invalidText' => 'Must select Company'
-                            ]);
-                        ?>
-                        <script>
+                                    class="form-control" onchange="loadPolicyTypes();">
+                                <?php if ($_GET['lid'] > 0) { ?>
+                                    <option value="<?php echo $data['inainc_insurance_company_ID']; ?>">
+                                        <?php echo $data['inainc_name']; ?>
+                                    </option>
+                                <?php }//if ?>
+                            </select>
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_insurance_company_ID',
+                                    'fieldDataType' => 'select',
+                                    'required' => true,
+                                    'invalidText' => 'Must select Company'
+                                ]);
+                            ?>
+                            <script>
 
-                        function loadInsuranceCompanies(clear = true) {
-                            let agentSelected = $('#fld_agent_ID').val();
+                                function loadInsuranceCompanies(clear = true) {
+                                    let agentSelected = $('#fld_agent_ID').val();
 
-                            if (agentSelected > 0) {
-                                Rx.Observable.fromPromise($.get("../agents/agents_api.php?section=agent_commission_types_insurance_companies&agent=" + agentSelected))
-                                    .subscribe((response) => {
-                                            data = response;
-                                        },
-                                        () => {
-                                        }
-                                        ,
-                                        () => {
-                                            if (clear == true) {
-                                                clearDropDown('fld_insurance_company_ID');
-                                                loadDropDown('fld_insurance_company_ID', data);
-                                            } else {
-                                                loadDropDown('fld_insurance_company_ID', data);
-                                                loadPolicyTypes(false);
-                                            }
+                                    if (agentSelected > 0) {
+                                        Rx.Observable.fromPromise($.get("../agents/agents_api.php?section=agent_commission_types_insurance_companies&agent=" + agentSelected))
+                                            .subscribe((response) => {
+                                                    data = response;
+                                                },
+                                                () => {
+                                                }
+                                                ,
+                                                () => {
+                                                    if (clear == true) {
+                                                        clearDropDown('fld_insurance_company_ID');
+                                                        loadDropDown('fld_insurance_company_ID', data);
+                                                    } else {
+                                                        loadDropDown('fld_insurance_company_ID', data);
+                                                        loadPolicyTypes(false);
+                                                    }
 
-                                        }
-                                    )
-                                ;
-                            }
-                        }
-
-                    </script>
-            </div>
-
-            <label for="fld_type_code" class="col-sm-2 col-form-label">Type</label>
-            <div class="col-sm-4">
-                <select name="fld_type_code" id="fld_type_code"
-                        class="form-control"
-                        onchange="insuranceTypeChange()">
-                    <?php if ($_GET['lid'] > 0) { ?>
-                        <option value="<?php echo $data['inapol_type_code']; ?>">
-                            <?php echo $data['inapol_type_code']; ?>
-                        </option>
-                    <?php }//if ?>
-                </select>
-                <?php
-                $formValidator->addField(
-                    [
-                        'fieldName' => 'fld_type_code',
-                        'fieldDataType' => 'select',
-                        'required' => true,
-                        'invalidText' => 'Must select Type'
-                    ]);
-                ?>
-            </div>
-            <script>
-                function loadPolicyTypes(clear = true) {
-
-                    let agentSelected = $('#fld_agent_ID').val();
-                    let insuranceCompanySelected = $('#fld_insurance_company_ID').val();
-
-                    if (agentSelected > 0 && insuranceCompanySelected > 0) {
-                        Rx.Observable.fromPromise($.get("../agents/agents_api.php?section=agent_commission_types_policy_types&agent="
-                            + agentSelected + '&inscompany=' + insuranceCompanySelected))
-                            .subscribe((response) => {
-                                    data = response;
-                                    console.log(data);
-                                },
-                                () => {
-                                }
-                                ,
-                                () => {
-                                    if (clear == true) {
-                                        clearDropDown('fld_type_code');
+                                                }
+                                            )
+                                        ;
                                     }
-                                    loadDropDown('fld_type_code', data);
                                 }
-                            )
-                        ;
-                    }
-                }
-            </script>
 
-        </div>
+                            </script>
+                        </div>
 
-        <div class="form-group row">
-            <label for="customerSelect" class="col-sm-2 col-form-label">Customer</label>
-            <div class="col-sm-4">
-                <input name="customerSelect" type="text" id="customerSelect"
-                       class="form-control"
-                       value="<?php echo $data["cst_name"] . " " . $data['cst_surname']; ?>">
-                <?php
-                $formValidator->addField(
-                    [
-                        'fieldName' => 'customerSelect',
-                        'fieldDataType' => 'text',
-                        'required' => true,
-                        'invalidText' => 'Must select Customer'
-                    ]);
-                ?>
-                <input name="fld_customer_ID" id="fld_customer_ID" type="hidden"
-                       value="<?php echo $data['cst_customer_ID']; ?>">
-                <script>
-                    $('#customerSelect').autocomplete({
-                        source: '../customers/customers_api.php?section=customers',
-                        delay: 500,
-                        minLength: 2,
-                        messages: {
-                            noResults: '',
-                            results: function () {
-                                //console.log('customer auto');
+                        <label for="fld_type_code" class="col-sm-2 col-form-label">Type</label>
+                        <div class="col-sm-4">
+                            <select name="fld_type_code" id="fld_type_code"
+                                    class="form-control"
+                                    onchange="insuranceTypeChange()">
+                                <?php if ($_GET['lid'] > 0) { ?>
+                                    <option value="<?php echo $data['inapol_type_code']; ?>">
+                                        <?php echo $data['inapol_type_code']; ?>
+                                    </option>
+                                <?php }//if ?>
+                            </select>
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_type_code',
+                                    'fieldDataType' => 'select',
+                                    'required' => true,
+                                    'invalidText' => 'Must select Type'
+                                ]);
+                            ?>
+                        </div>
+                        <script>
+                            function loadPolicyTypes(clear = true) {
+
+                                let agentSelected = $('#fld_agent_ID').val();
+                                let insuranceCompanySelected = $('#fld_insurance_company_ID').val();
+
+                                if (agentSelected > 0 && insuranceCompanySelected > 0) {
+                                    Rx.Observable.fromPromise($.get("../agents/agents_api.php?section=agent_commission_types_policy_types&agent="
+                                        + agentSelected + '&inscompany=' + insuranceCompanySelected))
+                                        .subscribe((response) => {
+                                                data = response;
+                                                console.log(data);
+                                            },
+                                            () => {
+                                            }
+                                            ,
+                                            () => {
+                                                if (clear == true) {
+                                                    clearDropDown('fld_type_code');
+                                                }
+                                                loadDropDown('fld_type_code', data);
+                                            }
+                                        )
+                                    ;
+                                }
                             }
-                        },
-                        focus: function (event, ui) {
-                            $('#customerSelect').val(ui.item.label);
-                            return false;
-                        },
-                        select: function (event, ui) {
-                            $('#customerSelect').val(ui.item.label);
-                            $('#fld_customer_ID').val(ui.item.value);
+                        </script>
 
-                            $('#cus_number').html(ui.item.value);
-                            $('#cus_id').html(ui.item.identity_card);
-                            $('#cus_work_tel').html(ui.item.work_tel);
-                            $('#cus_mobile').html(ui.item.mobile);
-                            return false;
-                        }
+                    </div>
 
-                    });
-                </script>
-            </div>
+                    <div class="form-group row">
+                        <label for="customerSelect" class="col-sm-2 col-form-label">Customer</label>
+                        <div class="col-sm-4">
+                            <input name="customerSelect" type="text" id="customerSelect"
+                                   class="form-control"
+                                   value="<?php echo $data["cst_name"] . " " . $data['cst_surname']; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'customerSelect',
+                                    'fieldDataType' => 'text',
+                                    'required' => true,
+                                    'invalidText' => 'Must select Customer'
+                                ]);
+                            ?>
+                            <input name="fld_customer_ID" id="fld_customer_ID" type="hidden"
+                                   value="<?php echo $data['cst_customer_ID']; ?>">
+                            <script>
+                                $('#customerSelect').autocomplete({
+                                    source: '../customers/customers_api.php?section=customers',
+                                    delay: 500,
+                                    minLength: 2,
+                                    messages: {
+                                        noResults: '',
+                                        results: function () {
+                                            //console.log('customer auto');
+                                        }
+                                    },
+                                    focus: function (event, ui) {
+                                        $('#customerSelect').val(ui.item.label);
+                                        return false;
+                                    },
+                                    select: function (event, ui) {
+                                        $('#customerSelect').val(ui.item.label);
+                                        $('#fld_customer_ID').val(ui.item.value);
 
-            <label for="fld_policy_number" class="col-sm-3 col-form-label">Policy Number</label>
-            <div class="col-sm-3">
-                <input name="fld_policy_number" type="text" id="fld_policy_number"
-                       class="form-control"
-                       value="<?php echo $data["inapol_policy_number"]; ?>">
-                <?php
-                $formValidator->addField(
-                    [
-                        'fieldName' => 'fld_policy_number',
-                        'fieldDataType' => 'text',
-                        'required' => true,
-                        'invalidText' => 'Must enter Policy Number'
-                    ]);
-                ?>
-            </div>
-        </div>
+                                        $('#cus_number').html(ui.item.value);
+                                        $('#cus_id').html(ui.item.identity_card);
+                                        $('#cus_work_tel').html(ui.item.work_tel);
+                                        $('#cus_mobile').html(ui.item.mobile);
+                                        return false;
+                                    }
 
-        <div class="form-group row">
-            <div class="col-sm-6 text-center">
-                <b>#</b><span id="cus_number"><?php echo $data['cst_customer_ID']; ?></span>
-                <b>ID:</b> <span id="cus_id"><?php echo $data['cst_identity_card']; ?></span>
-                <b>Tel:</b> <span id="cus_work_tel"><?php echo $data['cst_work_tel_1']; ?></span>
-                <b>Mobile:</b> <span id="cus_mobile"><?php echo $data['cst_mobile_1']; ?></span>
-            </div>
+                                });
+                            </script>
+                        </div>
 
-            <label for="fld_period_starting_date" class="col-sm-3 col-form-label">
-                Period Starting Date</label>
-            <div class="col-sm-3">
-                <input name="fld_period_starting_date" type="text" id="fld_period_starting_date"
-                       class="form-control"
-                       value="">
-                <?php
-                $formValidator->addField(
-                    [
-                        'fieldName' => 'fld_period_starting_date',
-                        'fieldDataType' => 'date',
-                        'datePickerValue' => $db->convert_date_format($data['inapol_period_starting_date'], 'yyyy-mm-dd', 'dd/mm/yyyy'),
-                        'enableDatePicker' => true,
-                        'required' => true,
-                        'invalidText' => 'Must enter Period Starting Date'
-                    ]);
-                ?>
-            </div>
-        </div>
+                        <label for="fld_policy_number" class="col-sm-3 col-form-label">Policy Number</label>
+                        <div class="col-sm-3">
+                            <input name="fld_policy_number" type="text" id="fld_policy_number"
+                                   class="form-control"
+                                   value="<?php echo $data["inapol_policy_number"]; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_policy_number',
+                                    'fieldDataType' => 'text',
+                                    'required' => true,
+                                    'invalidText' => 'Must enter Policy Number'
+                                ]);
+                            ?>
+                        </div>
+                    </div>
 
-        <div class="form-group row">
-            <label for="fld_name" class="col-sm-2 col-form-label">Status</label>
-            <div class="col-sm-2">
-                <?php echo $data['inapol_status']; ?>
+                    <div class="form-group row">
+                        <div class="col-sm-6 text-center">
+                            <b>#</b><span id="cus_number"><?php echo $data['cst_customer_ID']; ?></span>
+                            <b>ID:</b> <span id="cus_id"><?php echo $data['cst_identity_card']; ?></span>
+                            <b>Tel:</b> <span id="cus_work_tel"><?php echo $data['cst_work_tel_1']; ?></span>
+                            <b>Mobile:</b> <span id="cus_mobile"><?php echo $data['cst_mobile_1']; ?></span>
+                        </div>
 
-            </div>
-            <div class="col-sm-2">
-                <?php if ($data['inapol_status'] == 'Outstanding') { ?>
-                    <button id="changeStatus" name="changeStatus" class="form-control alert-success"
-                            type="button"
-                            onclick="window.location.assign('policy_change_status.php?lid=<?php echo $data['inapol_policy_ID']; ?>')">
-                        Activate
-                    </button>
-                <?php } ?>
-            </div>
+                        <label for="fld_period_starting_date" class="col-sm-3 col-form-label">
+                            Period Starting Date</label>
+                        <div class="col-sm-3">
+                            <input name="fld_period_starting_date" type="text" id="fld_period_starting_date"
+                                   class="form-control"
+                                   value="">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_period_starting_date',
+                                    'fieldDataType' => 'date',
+                                    'datePickerValue' => $db->convert_date_format($data['inapol_period_starting_date'], 'yyyy-mm-dd', 'dd/mm/yyyy'),
+                                    'enableDatePicker' => true,
+                                    'required' => true,
+                                    'invalidText' => 'Must enter Period Starting Date'
+                                ]);
+                            ?>
+                        </div>
+                    </div>
 
-            <label for="fld_starting_date" class="col-sm-3 col-form-label">Starting Date</label>
-            <div class="col-sm-3">
-                <input name="fld_starting_date" type="text" id="fld_starting_date"
-                       class="form-control"
-                       value="">
-                <?php
-                $formValidator->addField(
-                    [
-                        'fieldName' => 'fld_starting_date',
-                        'fieldDataType' => 'date',
-                        'datePickerValue' => $db->convert_date_format($data['inapol_starting_date'], 'yyyy-mm-dd', 'dd/mm/yyyy'),
-                        'enableDatePicker' => true,
-                        'required' => true,
-                        'invalidText' => 'Must enter Starting Date'
-                    ]);
-                ?>
-            </div>
-        </div>
+                    <div class="form-group row">
+                        <label for="fld_name" class="col-sm-2 col-form-label">Status</label>
+                        <div class="col-sm-2">
+                            <?php echo $data['inapol_status']; ?>
 
-        <div class="form-group row">
-            <label for="fld_name" class="col-sm-2 col-form-label"></label>
-            <div class="col-sm-4">
+                        </div>
+                        <div class="col-sm-2">
+                            <?php if ($data['inapol_status'] == 'Outstanding') { ?>
+                                <button id="changeStatus" name="changeStatus" class="form-control alert-success"
+                                        type="button"
+                                        onclick="window.location.assign('policy_change_status.php?lid=<?php echo $data['inapol_policy_ID']; ?>')">
+                                    Activate
+                                </button>
+                            <?php } ?>
+                        </div>
 
-            </div>
+                        <label for="fld_starting_date" class="col-sm-3 col-form-label">Starting Date</label>
+                        <div class="col-sm-3">
+                            <input name="fld_starting_date" type="text" id="fld_starting_date"
+                                   class="form-control"
+                                   value="">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_starting_date',
+                                    'fieldDataType' => 'date',
+                                    'datePickerValue' => $db->convert_date_format($data['inapol_starting_date'], 'yyyy-mm-dd', 'dd/mm/yyyy'),
+                                    'enableDatePicker' => true,
+                                    'required' => true,
+                                    'invalidText' => 'Must enter Starting Date'
+                                ]);
+                            ?>
+                        </div>
+                    </div>
 
-            <label class="col-sm-3 col-form-label">
-                Expiry Date <br>
-                <span class="main_text_smaller">
+                    <div class="form-group row">
+                        <label for="fld_process_status" class="col-sm-2 col-form-label">Process Status</label>
+                        <div class="col-sm-4">
+                            <select name="fld_process_status" id="fld_process_status"
+                                    class="form-control">
+                                <option value="New" <?php if ($data['inapol_process_status'] == 'New') echo 'selected'; ?>>
+                                    New
+                                </option>
+                                <option value="Renewal" <?php if ($data['inapol_process_status'] == 'Renewal') echo 'selected'; ?>>
+                                    Renewal
+                                </option>
+                                <option value="Endorsement" <?php if ($data['inapol_process_status'] == 'Endorsement') echo 'selected'; ?>>
+                                    Endorsement
+                                </option>
+                            </select>
+                        </div>
+
+                        <label class="col-sm-3 col-form-label">
+                            Expiry Date <br>
+                            <span class="main_text_smaller">
                                 <span style="cursor: pointer" onclick="fillExpiryDate('year',1);">1Y</span>&nbsp
                                 <span style="cursor: pointer" onclick="fillExpiryDate('month',6);">6M</span>&nbsp
                                 <span style="cursor: pointer" onclick="fillExpiryDate('month',4);">4M</span>&nbsp
@@ -378,127 +402,130 @@ $db->show_header();
                                 <span style="cursor: pointer" onclick="fillExpiryDate('month',2);">2M</span>&nbsp
                                 <span style="cursor: pointer" onclick="fillExpiryDate('month',1);">1M</span>&nbsp
                             </span>
-            </label>
-            <div class="col-sm-3">
-                <input name="fld_expiry_date" type="text" id="fld_expiry_date"
-                       class="form-control"
-                       value="">
-                <?php
-                $formValidator->addField(
-                    [
-                        'fieldName' => 'fld_expiry_date',
-                        'fieldDataType' => 'date',
-                        'datePickerValue' => $db->convert_date_format($data['inapol_expiry_date'], 'yyyy-mm-dd', 'dd/mm/yyyy'),
-                        'enableDatePicker' => true,
-                        'required' => true,
-                        'invalidText' => 'Must enter Expiry Date'
-                    ]);
-                ?>
+                        </label>
+                        <div class="col-sm-3">
+                            <input name="fld_expiry_date" type="text" id="fld_expiry_date"
+                                   class="form-control"
+                                   value="">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_expiry_date',
+                                    'fieldDataType' => 'date',
+                                    'datePickerValue' => $db->convert_date_format($data['inapol_expiry_date'], 'yyyy-mm-dd', 'dd/mm/yyyy'),
+                                    'enableDatePicker' => true,
+                                    'required' => true,
+                                    'invalidText' => 'Must enter Expiry Date'
+                                ]);
+                            ?>
+                        </div>
+                    </div>
+
+
+                    <!-- TABS -->
+                    <?php
+                    if ($_GET['lid'] > 0) {
+
+                        $policyTypesResult = $db->query('SELECT * FROM ina_policy_types WHERE inapot_status = "Active"');
+                        while ($polType = $db->fetch_assoc($policyTypesResult)) {
+                            $policyTypes[$polType['inapot_policy_type_ID']] = $polType['inapot_input_data_type'];
+                        }
+
+                        ?>
+                        <ul class="nav nav-tabs" id="myTab" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" id="items-tab" data-toggle="tab" href="#items" role="tab"
+                                   aria-controls="items" aria-selected="true">
+                                    <?php echo $policy->getTypeFullName(); ?>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" id="premium-tab" data-toggle="tab" href="#premium" role="tab"
+                                   aria-controls="premium" aria-selected="false">Premium</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" id="installments-tab" data-toggle="tab" href="#installments"
+                                   role="tab"
+                                   aria-controls="installments" aria-selected="false">Installments</a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" id="payments-tab" data-toggle="tab" href="#payments" role="tab"
+                                   aria-controls="payments" aria-selected="false">Payments</a>
+                            </li>
+                        </ul>
+                        <div class="tab-content" id="myTabContent">
+                            <div class="tab-pane fade show active" id="items" role="tabpanel"
+                                 aria-labelledby="items-tab">
+                                <iframe src="policyTabs/policy_items.php?pid=<?php echo $_GET["lid"] . "&type=" . $policy->getInputType(); ?>"
+                                        frameborder="0" id="policyItemsTab" name="policyItemsTab"
+                                        scrolling="0" width="100%" height="500"></iframe>
+                            </div>
+
+                            <div class="tab-pane fade" id="premium" role="tabpanel" aria-labelledby="premium-tab">
+                                <iframe src="policyTabs/premium.php?pid=<?php echo $_GET["lid"] . "&type=" . $policy->getInputType(); ?>"
+                                        frameborder="0" id="premiumTab" name="premiumTab"
+                                        scrolling="0" width="100%" height="400"></iframe>
+                            </div>
+
+                            <div class="tab-pane fade" id="installments" role="tabpanel"
+                                 aria-labelledby="installments-tab">
+                                <iframe src="policyTabs/installments.php?pid=<?php echo $_GET["lid"] . "&type=" . $policy->getInputType(); ?>"
+                                        frameborder="0" id="installmentsTab" name="installmentsTab"
+                                        scrolling="0" width="100%" height="600"></iframe>
+                            </div>
+
+                            <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
+                                <iframe src="policyTabs/payments.php?pid=<?php echo $_GET["lid"]; ?>"
+                                        frameborder="0" id="paymentsTab" name="paymentsTab"
+                                        scrolling="0" width="100%" height="600"></iframe>
+                            </div>
+                        </div>
+                    <?php } else { ?>
+                        <div class="row">
+                            <div class="col-12 text-center alert alert-info">
+                                <b>Create the policy to be able to proceed.</b>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12" style="height: 20px;">
+                            </div>
+                        </div>
+                    <?php } ?>
+
+                    <div class="row">
+                        <div class="col-12" style="height: 15px;"></div>
+                    </div>
+
+                    <!-- BUTTONS -->
+                    <div class="form-group row">
+                        <label for="name" class="col-sm-4 col-form-label"></label>
+                        <div class="col-sm-8">
+                            <input name="action" type="hidden" id="action"
+                                   value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
+                            <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
+                            <input type="button" value="Back" class="btn btn-secondary"
+                                   onclick="window.location.assign('policies.php')">
+
+
+                            <input type="submit" value="Save Policy"
+                                   class="btn btn-secondary" id="Save"
+                                   onclick="submitForm('save');">
+                            <input type="submit"
+                                   value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Policy"
+                                   class="btn btn-secondary" id="Submit"
+                                   onclick="submitForm('exit');">
+
+
+                            <input type="hidden" name="sub-action" id="sub-action" value="">
+                        </div>
+                    </div>
+
+                </form>
             </div>
+            <div class="col-lg-1 col-md-1 hidden-xs hidden-sm"></div>
         </div>
-
-
-        <!-- TABS -->
-        <?php
-        if ($_GET['lid'] > 0) {
-
-            $policyTypesResult = $db->query('SELECT * FROM ina_policy_types WHERE inapot_status = "Active"');
-            while ($polType = $db->fetch_assoc($policyTypesResult)) {
-                $policyTypes[$polType['inapot_policy_type_ID']] = $polType['inapot_input_data_type'];
-            }
-
-            ?>
-            <ul class="nav nav-tabs" id="myTab" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="items-tab" data-toggle="tab" href="#items" role="tab"
-                       aria-controls="items" aria-selected="true">
-                        <?php echo $policy->getTypeFullName(); ?>
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="premium-tab" data-toggle="tab" href="#premium" role="tab"
-                       aria-controls="premium" aria-selected="false">Premium</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" id="installments-tab" data-toggle="tab" href="#installments" role="tab"
-                       aria-controls="installments" aria-selected="false">Installments</a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link" id="payments-tab" data-toggle="tab" href="#payments" role="tab"
-                       aria-controls="payments" aria-selected="false">Payments</a>
-                </li>
-            </ul>
-            <div class="tab-content" id="myTabContent">
-                <div class="tab-pane fade show active" id="items" role="tabpanel"
-                     aria-labelledby="items-tab">
-                    <iframe src="policyTabs/policy_items.php?pid=<?php echo $_GET["lid"] . "&type=" . $policy->getInputType(); ?>"
-                            frameborder="0" id="policyItemsTab" name="policyItemsTab"
-                            scrolling="0" width="100%" height="500"></iframe>
-                </div>
-
-                <div class="tab-pane fade" id="premium" role="tabpanel" aria-labelledby="premium-tab">
-                    <iframe src="policyTabs/premium.php?pid=<?php echo $_GET["lid"] . "&type=" . $policy->getInputType(); ?>"
-                            frameborder="0" id="premiumTab" name="premiumTab"
-                            scrolling="0" width="100%" height="400"></iframe>
-                </div>
-
-                <div class="tab-pane fade" id="installments" role="tabpanel" aria-labelledby="installments-tab">
-                    <iframe src="policyTabs/installments.php?pid=<?php echo $_GET["lid"] . "&type=" . $policy->getInputType(); ?>"
-                            frameborder="0" id="installmentsTab" name="installmentsTab"
-                            scrolling="0" width="100%" height="600"></iframe>
-                </div>
-
-                <div class="tab-pane fade" id="payments" role="tabpanel" aria-labelledby="payments-tab">
-                    <iframe src="policyTabs/payments.php?pid=<?php echo $_GET["lid"]; ?>"
-                            frameborder="0" id="paymentsTab" name="paymentsTab"
-                            scrolling="0" width="100%" height="600"></iframe>
-                </div>
-            </div>
-        <?php } else { ?>
-            <div class="row">
-                <div class="col-12 text-center alert alert-info">
-                    <b>Create the policy to be able to proceed.</b>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-12" style="height: 20px;">
-                </div>
-            </div>
-        <?php } ?>
-
-        <div class="row">
-            <div class="col-12" style="height: 15px;"></div>
-        </div>
-
-        <!-- BUTTONS -->
-        <div class="form-group row">
-            <label for="name" class="col-sm-4 col-form-label"></label>
-            <div class="col-sm-8">
-                <input name="action" type="hidden" id="action"
-                       value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
-                <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
-                <input type="button" value="Back" class="btn btn-secondary"
-                       onclick="window.location.assign('policies.php')">
-
-
-                <input type="submit" value="Save Policy"
-                       class="btn btn-secondary" id="Save"
-                       onclick="submitForm('save');">
-                <input type="submit" value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Policy"
-                       class="btn btn-secondary" id="Submit"
-                       onclick="submitForm('exit');">
-
-
-                <input type="hidden" name="sub-action" id="sub-action" value="">
-            </div>
-        </div>
-
-        </form>
-    </div>
-    <div class="col-lg-1 col-md-1 hidden-xs hidden-sm"></div>
-    </div>
     </div>
     <script>
 

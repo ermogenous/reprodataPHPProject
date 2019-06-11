@@ -11,6 +11,11 @@ $db->include_js_file("jscripts.js");
 //$db->include_js_file("../scripts/bootstrap-3.3.7-dist/js/bootstrap.min.js");
 include("quotations_functions.php");
 include('quotations_class.php');
+$underwriter = $db->query_fetch('SELECT * FROM oqt_quotations_underwriters WHERE oqun_user_ID = '.$db->user_data['usr_users_ID']);
+if (strpos($underwriter['oqun_allow_quotations'],'#'.$_GET["quotation_type"].'-1#') === false) {
+    header('Location: quotations.php');
+    exit();
+}
 
 if ($_GET["quotation"] != "") {
     $q_data = $db->query_fetch("SELECT * FROM oqt_quotations WHERE oqq_quotations_ID = " . $_GET["quotation"]);
@@ -31,11 +36,9 @@ if ($_GET["quotation"] != "") {
 
 //first check if the user is allowed to view this quotation
 if ($_GET["quotation"] != "") {
-    if ($db->user_data["usr_users_ID"] != $q_data["oqq_users_ID"] && $db->user_data["usr_user_rights"] != 0) {
-
+    if ($db->user_data["usr_users_ID"] != $q_data["oqq_users_ID"] && $db->user_data["usr_user_rights"] >= 3) {
         header("Location: quotations.php");
         exit();
-
     }
 }//if not new quotation
 
@@ -175,11 +178,12 @@ $formValidator->setFormName('myForm');
 $allowEdit = true;
 $allowEditAdvanced = false;
 if ($quote->quotationData()['oqq_status'] != 'Outstanding' && $_GET['quotation'] > 0) {
-    //allow in case administrator/advanced user
-    if ($db->user_data['usr_user_rights'] >= 2) {
+
+    if ($db->user_data['usr_user_rights'] >= 3) {
         $allowEdit = false;
         $formValidator->disableForm();
     }
+    //allow in case administrator/advanced user
     else {
         $allowEditAdvanced = true;
     }

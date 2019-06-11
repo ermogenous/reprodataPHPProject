@@ -48,10 +48,8 @@ $table->generate_data();
                             <th scope="col"><?php $table->display_order_links('Name', 'lcsdc_name'); ?></th>
                             <th scope="col"><?php $table->display_order_links('Status', 'lcsdc_status'); ?></th>
                             <th scope="col"><?php $table->display_order_links('Process Status', 'lcsdc_process_status'); ?></th>
-                            <th scope="col">ΥΚΥ</th>
-                            <th scope="col">ΧΚΥ</th>
-                            <th scope="col">ΥΚΟΙ</th>
-                            <th scope="col">ΧΚΟΙ</th>
+                            <th scope="col"><?php $table->display_order_links('<i class="fas fa-link"></i>', 'lcsdc_process_status'); ?></th>
+                            <th scope="col"><?php $table->display_order_links('<i class="fas fa-poll"></i>', 'lcsdc_process_status'); ?></th>
                             <th scope="col">
                                 <a href="disc_modify.php?lg=tr">
                                     <i class="fas fa-plus-circle iconsHeader"></i>
@@ -71,10 +69,8 @@ $table->generate_data();
                                 <td><?php echo $row["lcsdc_name"]; ?></td>
                                 <td><?php echo $row["lcsdc_status"]; ?></td>
                                 <td><?php echo $row["lcsdc_process_status"]; ?></td>
-                                <td><?php echo $tstResults['HighDominance']; ?></td>
-                                <td><?php echo $tstResults['LowDominance']; ?></td>
-                                <td><?php echo $tstResults['HighSocial']; ?></td>
-                                <td><?php echo $tstResults['LowSocial']; ?></td>
+                                <td><?php echo $row['lcsdc_send_invites']; ?></td>
+                                <td><?php echo $row['lcsdc_send_results']; ?></td>
                                 <td>
                                     <input type="hidden" id="myLineID" name="myLineID"
                                            value="<?php echo $row["lcsdc_disc_test_ID"]; ?>">

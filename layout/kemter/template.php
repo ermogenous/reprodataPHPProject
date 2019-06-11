@@ -4,6 +4,9 @@ function template_header()
     //template used
     //https://blackrockdigital.github.io/startbootstrap-sb-admin-2/pages/index.html
     global $main, $db;
+    if ($db->user_data['usr_users_ID'] > 0) {
+        $underwriter = $db->query_fetch('SELECT * FROM oqt_quotations_underwriters WHERE oqun_user_ID = ' . $db->user_data['usr_users_ID']);
+    }
     ?>
     <!DOCTYPE html>
     <html lang="en">
@@ -71,12 +74,20 @@ function template_header()
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations.php">
                                 <i class="far fa-eye"></i> View Quotations</a>
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations_modify.php?quotation_type=1">
-                                <i class="fas fa-briefcase-medical"></i> New Medical For Foreigners</a>
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations_modify.php?quotation_type=2">
-                                <i class="fas fa-truck-moving"></i> New Marine Cargo</a>
+                            <?php
+                            if (strpos($underwriter['oqun_allow_quotations'], '#1-1#') !== false) {
+                                ?>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations_modify.php?quotation_type=1">
+                                    <i class="fas fa-briefcase-medical"></i> New Medical For Foreigners</a>
+                            <?php } ?>
+                            <?php
+                            if (strpos($underwriter['oqun_allow_quotations'], '#2-1#') !== false) {
+                                ?>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations_modify.php?quotation_type=2">
+                                    <i class="fas fa-truck-moving"></i> New Marine Cargo</a>
+                            <?php } ?>
                             <?php if ($db->user_data["usr_user_rights"] <= 2) { ?>
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/dynamic_quotations/approvals.php">
@@ -111,7 +122,7 @@ function template_header()
                                 <a class="dropdown-item" href="<?php echo $main["site_url"]; ?>/my_users/users.php"><i
                                             class="fas fa-eye"></i> View Users</a>
                                 <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/my_users/users_modify.php"><i
+                                   href="<?php echo $main["site_url"]; ?>/my_users/user_modify.php"><i
                                             class="fas fa-plus-circle"></i> New User</a>
                             </div>
                         </li>

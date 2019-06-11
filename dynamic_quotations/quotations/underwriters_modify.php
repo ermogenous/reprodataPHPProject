@@ -15,7 +15,8 @@ if ($_POST["action"] == "insert") {
     $db->working_section = 'Insert new quotations underwriter';
     $db->start_transaction();
 
-    //$_POST['fld_added_field_extra_details'] = $db->get_check_value($_POST['fld_added_field_extra_details']);
+    $_POST['fld_allow_quotations'] = '#1-'.$db->get_check_value($_POST['allow_mff'])."#";
+    $_POST['fld_allow_quotations'] .= '#2-'.$db->get_check_value($_POST['allow_mc'])."#";
 
     $db->db_tool_insert_row('oqt_quotations_underwriters', $_POST, 'fld_', 0, 'oqun_');
     $db->commit_transaction();
@@ -27,6 +28,9 @@ if ($_POST["action"] == "insert") {
     $db->check_restriction_area('update');
     $db->working_section = 'Modify quotations underwriter';
     $db->start_transaction();
+
+    $_POST['fld_allow_quotations'] = '#1-'.$db->get_check_value($_POST['allow_mff'])."#";
+    $_POST['fld_allow_quotations'] .= '#2-'.$db->get_check_value($_POST['allow_mc'])."#";
 
     //in case of change user
     //check if this user has quotations. if yes do not allow change
@@ -148,13 +152,13 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="row">
-                        <label for="fld_allow_mff" class="col-sm-5 col-form-label">
+                        <label for="allow_mff" class="col-sm-5 col-form-label">
                             Allow Medical For Foreigners
                         </label>
                         <div class="col-sm-1">
                             <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
-                                   id="fld_allow_mff" name="fld_allow_mff"
-                                <?php if ($data['oqun_allow_mff'] == 1) echo 'checked'; ?>>
+                                   id="allow_mff" name="allow_mff"
+                                <?php if (strpos($data['oqun_allow_quotations'],'#1-1#') !== false) echo 'checked'; ?>>
                         </div>
                     </div>
 
@@ -183,13 +187,13 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="row">
-                        <label for="fld_allow_mc" class="col-sm-5 col-form-label">
+                        <label for="allow_mc" class="col-sm-5 col-form-label">
                             Allow Marine Cargo
                         </label>
                         <div class="col-sm-1">
                             <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
-                                   id="fld_allow_mc" name="fld_allow_mc"
-                                <?php if ($data['oqun_allow_mc'] == 1) echo 'checked'; ?>>
+                                   id="allow_mc" name="allow_mc"
+                                <?php if (strpos($data['oqun_allow_quotations'],'#2-1#') !== false) echo 'checked'; ?>>
                         </div>
                     </div>
 

@@ -240,7 +240,8 @@ class Main
         }
     }
 
-    public function setDebugMode(){
+    public function setDebugMode()
+    {
         $this->debugMode = true;
     }
 
@@ -584,9 +585,9 @@ class Main
             $this->db_all_queries .= $sql . '&nbsp;&nbsp;' . $more_info . "<HR>";
         } else {
             $result = mysqli_query($this->db_handle, $sql)
-                or die(
-                    $this->error($sql . "<hr>" . $this->db_handle->error)
-                );
+            or die(
+            $this->error($sql . "<hr>" . $this->db_handle->error)
+            );
             if ($this->db_handle->errno != 0) {
                 $this->error($sql . "<hr>" . $this->db_handle->error);
             }
@@ -598,8 +599,8 @@ class Main
             }
 
             //if debug mode echo the sql
-            if ($this->debugMode == true){
-                echo $sql."\n<br><hr>";
+            if ($this->debugMode == true) {
+                echo $sql . "\n<br><hr>";
             }
 
         }
@@ -1298,7 +1299,7 @@ class Main
         }
 
         //if no one is logged in then use 0
-        if ($this->user_data['usr_users_ID'] == ''){
+        if ($this->user_data['usr_users_ID'] == '') {
             $this->user_data['usr_users_ID'] = 0;
         }
 
@@ -1392,7 +1393,7 @@ class Main
         //check if the fields exists in the db
 
         //if no one is logged in then use 0
-        if ($this->user_data['usr_users_ID'] == ''){
+        if ($this->user_data['usr_users_ID'] == '') {
             $this->user_data['usr_users_ID'] = 0;
         }
 
@@ -1962,6 +1963,103 @@ class Main
     public function decodeGetValues($string)
     {
         return hexdec($string);
+    }
+
+    public function dateDiff($a, $b,$format='dd/mm/yyyy')
+    {
+        if ($format == 'yyyy-mm-dd'){
+            $a = $this->convert_date_format($a, 'yyyy-mm-dd', 'dd/mm/yyyy');
+            $b = $this->convert_date_format($b, 'yyyy-mm-dd', 'dd/mm/yyyy');
+        }
+        $aParts = explode('/', $a);
+        $bParts = explode('/', $b);
+        $dateA = new DateTime('@'.mktime(0,0,0,$aParts[1], $aParts[0],$aParts[2]));
+        $dateB = new DateTime('@'.mktime(0,0,0,$bParts[1], $bParts[0],$bParts[2]));
+        $diff = $dateB->diff($dateA);
+        return $diff;
+    }
+
+    //provide date and months and will generate the next expiry date. Can be used for policies
+    public function getNewExpiryDate($curDate, $months, $format = 'dd/mm/yyyy')
+    {
+        //echo $curDate."\n\n";
+        if ($format == 'yyyy-mm-dd'){
+            $curDate = $this->convert_date_format($curDate, 'yyyy-mm-dd', 'dd/mm/yyyy');
+        }
+        $newMonth = 0;
+        $newDay = 0;
+        $newYear = 0;
+        $curDay = 0;
+        $curMonth = 0;
+        $curYear = 0;
+        if ($curDate != '') {
+
+            //split the current date;
+            $split = explode('/', $curDate);
+            $curDay = $split[0];
+            $curMonth = $split[1];
+            $curYear = $split[2];
+
+            //first add the months
+            $newMonth = ($curMonth * 1) + $months;
+            //update the rest of the fields
+            $newDay = ($curDay * 1) - 1;
+            $newYear = $curYear;
+
+
+            //check the month if need to change year
+            if ($newMonth > 12) {
+                //first update the year
+                $newYear++;
+                $newMonth = $newMonth - 12;
+            }
+
+
+            $isLeap = (($newYear % 4 == 0) && ($newYear % 100 != 0)) || ($newYear % 400 == 0);
+
+            //check the day. if 0 then need to go back one day and one month
+            if ($newDay == 0) {
+                //first fix the month
+                $newMonth--;
+                //check if the month now is 0
+                if ($newMonth == 0) {
+                    $newMonth = 12;
+                    $newYear--;
+                }
+                //now set the day to 31
+                $newDay = 31;
+            }
+
+            //validate days 31, 30, 29
+            if ($newDay >= 28 && $newDay <= 31) {
+
+                //now check the day compared to month
+                if ($newMonth == 1 || $newMonth == 3 || $newMonth == 5 || $newMonth == 7 || $newMonth == 8 || $newMonth == 10 || $newMonth == 12) {
+                    //do nothing is already 29 or 30 or 31;
+                } else if ($newMonth == 2) {
+                    //find leap year
+                    if ($isLeap == true) {
+                        if ($newDay > 29) {
+                            $newDay = 29;
+                        }
+                    } else {
+                        if ($newDay > 28) {
+                            $newDay = 28;
+                        }
+                    }
+                } else {
+                    if ($newDay > 30) {
+                        $newDay = 30;
+                    }
+                }
+            }
+
+        }
+        $return['full'] = $newDay . '/' . $newMonth . '/' . $newYear;
+        $return['day'] = $newDay;
+        $return['month'] = $newMonth;
+        $return['year'] = $newYear;
+        return $return;
     }
 
 }//main class

@@ -83,6 +83,16 @@ if ($_POST['action'] == 'sendMail'){
         $mail->send();
         $db->generateAlertSuccess('Email has been sent');
         $mailSend = true;
+
+        //update the db
+        $newData['send_results'] = $disc->data['lcsdc_send_results'] + 1;
+        $db->db_tool_update_row('lcs_disc_test', $newData,
+            'lcsdc_disc_test_ID = '.$disc->data['lcsdc_disc_test_ID'],
+            $disc->data['lcsdc_disc_test_ID'],
+            '',
+            'execute',
+            'lcsdc_');
+
     } catch (Exception $e) {
         $db->generateAlertError('Message could not be sent. Mailer Error: '. $mail->ErrorInfo);
     }

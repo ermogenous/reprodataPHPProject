@@ -57,18 +57,18 @@ if ($_POST["action"] == "insert") {
 
 }
 
+$policy = new Policy($_GET['pid']);
+$premiumInfo = $policy->getInstallmentsInfo();
+
 if ($_GET["lid"] != "") {
     $db->working_section = 'AInsurance policy payment Get data';
     $sql = "SELECT * FROM `ina_policy_payments` 
             WHERE `inapp_policy_payment_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
-
-
 } else {
     $data['inapp_payment_date'] = date('Y-m-d');
 }
-$policy = new Policy($_GET['pid']);
-print_r($policy);
+
 $db->enable_jquery_ui();
 $db->enable_rxjs_lite();
 $db->show_empty_header();
@@ -97,6 +97,17 @@ if ($data['inapp_status'] != 'Outstanding' && $data['inapp_status'] != '') {
                             &nbsp;Payment</b>
                     </div>
 
+                    <div class="row">
+                        <div class="col-3" style="height: 35px;">Policy Total Premium</div>
+                        <div class="col-3">
+                            <?php echo $premiumInfo['totalAmount'];?>
+                        </div>
+
+                        <div class="col-3">Unpaid</div>
+                        <div class="col-3">
+                            <?php echo $premiumInfo['paymentTotalUnpaid']; ?>
+                        </div>
+                    </div>
 
                     <div class="form-group row">
                         <label for="fld_payment_date" class="col-sm-3 col-form-label">Payment Date</label>

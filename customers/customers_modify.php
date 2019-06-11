@@ -1,5 +1,6 @@
 <?php
 include("../include/main.php");
+include('insurance_balance_class.php');
 $db = new Main();
 $db->admin_title = "Customers Modify";
 
@@ -47,8 +48,9 @@ if ($_POST["action"] == "insert") {
 if ($_GET["lid"] != "") {
     $sql = "SELECT * FROM `customers` WHERE `cst_customer_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
-}
 
+}
+$balance = new aInsuranceBalance($_GET['lid']);
 $db->show_header();
 ?>
 <div class="container">
@@ -87,6 +89,12 @@ $db->show_header();
                     <div class="tab-pane fade show active" id="pills-general" role="tabpanel"
                          aria-labelledby="pills-general-tab">
 <!-- GENERAL -->
+                        <div class="row">
+                            <div class="col-4" style="height: 40px;">Balance</div>
+                            <div class="col-8">
+                                <?php echo $balance->getBalance();?>
+                            </div>
+                        </div>
                         <div class="form-group row">
                             <label for="fld_business_type_code_ID" class="col-sm-4 col-form-label">Business Type</label>
                             <div class="col-sm-8">

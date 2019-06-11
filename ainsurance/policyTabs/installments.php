@@ -179,7 +179,7 @@ if ($_GET['pid'] > 0) {
                                 <td><b><?php echo $amountSum; ?></b></td>
                                 <td><b><?php echo $paidSum; ?></b></td>
                                 <td><b><?php echo $commSum."/".$commPaidSum; ?></b></td>
-                                <td></td>
+                                <td><b>Unpaid:</b> <?php echo $amountSum - $paidSum;?></td>
                             </tr>
 
                             </tbody>

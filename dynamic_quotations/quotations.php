@@ -23,6 +23,7 @@ if ($_GET['action'] == 'activate' && $_GET['lid'] > 0) {
 
 }
 
+$underwriter = $db->query_fetch('SELECT * FROM oqt_quotations_underwriters WHERE oqun_user_ID = '.$db->user_data['usr_users_ID']);
 
 $table = new draw_table('oqt_quotations', 'oqq_quotations_ID', 'DESC');
 $table->extra_from_section = " JOIN `oqt_quotations_types` ON oqqt_quotations_types_ID = oqq_quotations_type_ID ";
@@ -231,9 +232,11 @@ if ($_GET["price_id"] != "") {
                                 $result = $db->query($sql);
                                 while ($row_qt = $db->fetch_assoc($result)) {
                                     if ($row_qt["oqqt_allowed_user_groups"] == "" || strpos($row_qt["oqqt_allowed_user_groups"], $db->user_data["usg_group_name"] . ",") !== false) {
-                                        ?>
-                                        <option value="<?php echo $row_qt["oqqt_quotations_types_ID"]; ?>"><?php echo $row_qt["oqqt_name"]; ?></option>
-                                        <?php
+                                        if (strpos($underwriter['oqun_allow_quotations'],'#'.$row_qt["oqqt_quotations_types_ID"].'-1#') !== false) {
+                                            ?>
+                                            <option value="<?php echo $row_qt["oqqt_quotations_types_ID"]; ?>"><?php echo $row_qt["oqqt_name"]; ?></option>
+                                            <?php
+                                        }
                                     }
                                 }
                                 ?>

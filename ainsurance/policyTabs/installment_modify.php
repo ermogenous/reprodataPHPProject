@@ -23,6 +23,8 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_paid_status'] = 'UnPaid';
     $_POST['fld_paid_amount'] = 0;
     $_POST['fld_insert_date'] = $db->convert_date_format($_POST['fld_insert_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
+    $_POST['fld_installment_type'] = 'Custom';
+
     $db->db_tool_insert_row('ina_policy_installments', $_POST, 'fld_', 0, 'inapi_');
 
     $db->commit_transaction();
