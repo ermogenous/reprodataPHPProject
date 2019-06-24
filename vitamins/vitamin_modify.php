@@ -376,22 +376,6 @@ $formValidator = new customFormValidator();
                     </script>
                 </div>
 
-                <div class="form-group row">
-                    <label for="fld_market_prices" class="col-sm-4 col-form-label">Market Prices</label>
-                    <div class="col-sm-8">
-                        <textarea name="fld_market_prices" id="fld_market_prices"
-                                  class="form-control"><?php echo $data["vit_market_prices"]; ?></textarea>
-                        <?php
-                        $formValidator->addField(
-                            [
-                                'fieldName' => 'fld_market_prices',
-                                'fieldDataType' => 'text',
-                                'required' => false
-                            ]);
-                        ?>
-                    </div>
-                </div>
-
                 <?php
 
                 if ($data['vit_cost_quantity'] > 0) {
@@ -422,6 +406,30 @@ $formValidator = new customFormValidator();
                     $totalCost = round(($totalCost * $rate), 2);
                 }
                 ?>
+
+                <div class="form-group row">
+                    <label for="fld_retail_one_plus_one" class="col-sm-4 col-form-label">2nd -50%</label>
+                    <div class="col-8">
+                        Cost: <?php echo ($totalCost*2);?> S.W.Sale <?php echo $data['vit_super_wholesale']*2;?>
+                        <br> Retail Final Price <?php echo $data['vit_retail'] + round(($data['vit_retail']/2),2);?>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="fld_market_prices" class="col-sm-4 col-form-label">Market Prices</label>
+                    <div class="col-sm-8">
+                        <textarea name="fld_market_prices" id="fld_market_prices"
+                                  class="form-control"><?php echo $data["vit_market_prices"]; ?></textarea>
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'fld_market_prices',
+                                'fieldDataType' => 'text',
+                                'required' => false
+                            ]);
+                        ?>
+                    </div>
+                </div>
 
                 <div class="row">
                     <div class="col-4">Total Cost</div>

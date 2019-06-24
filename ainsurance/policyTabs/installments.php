@@ -68,8 +68,11 @@ if ($_GET['action'] == 'calculate' && $_GET['pid'] != '') {
 
 if ($_GET['pid'] > 0) {
 
+    //get the policy
+    $policy = new Policy($_GET['pid']);
+
     $table = new draw_table('ina_policy_installments', 'inapi_policy_installments_ID', 'ASC');
-    $table->extras .= 'inapi_policy_ID = ' . $_GET['pid'];
+    $table->extras .= 'inapi_policy_ID = ' . $policy->policyData['inapol_installment_ID'];
 
     $table->generate_data();
 
@@ -77,6 +80,12 @@ if ($_GET['pid'] > 0) {
     if ($policy->getTotalItems() == 0) {
         $db->generateAlertError('Must Insert Vehicle First');
     }
+
+
+    //$db->start_transaction();
+    //$policy->applyEndorsementAmount();
+    //$db->rollback_transaction();
+
 
     $db->show_empty_header();
 
@@ -134,7 +143,7 @@ if ($_GET['pid'] > 0) {
                                 <th scope="col"><?php $table->display_order_links('Commission/Paid', 'inapi_commission_amount'); ?></th>
                                 <th scope="col"><?php $table->display_order_links('Status', 'inapi_paid_status'); ?></th>
                                 <th scope="col">
-                                    <?php if ($policy->policyData['inapol_status'] == 'Outstanding') { ?>
+                                    <?php if ($policy->policyData['inapol_status'] == 'Outstanding' && $policy->policyData['inapol_process_status'] != 'Endorsement') { ?>
                                         <a href="installment_modify.php?pid=<?php echo $_GET['pid'] ?>">
                                             <i class="fas fa-plus-circle"></i>
                                         </a>
@@ -144,6 +153,32 @@ if ($_GET['pid'] > 0) {
                             </thead>
                             <tbody>
                             <?php
+
+                            //if endorsement get all changes to show
+                            $unallocated = '';
+                            if ($policy->policyData['inapol_process_status'] == 'Endorsement' && $policy->policyData['inapol_status'] == 'Outstanding') {
+                                $endChanges = $policy->getSplitEndorsementAmount();
+                                foreach ($endChanges as $name => $value) {
+                                    if ($value['amount'] > 0){
+                                        $amountAddMinus[$name] .= ' <span style="color: green;">(+'.$value['amount'].")</span>";
+                                        $commAddMinus[$name] .= ' <span style="color: green;">(+'.$value['commission'].")</span>";
+                                    }
+                                    else {
+                                        $amountAddMinus[$name] .= ' <span style="color: red;">('.$value['amount'].")</span>";
+                                        $commAddMinus[$name] .= ' <span style="color: red;">('.$value['commission'].")</span>";
+                                    }
+                                }
+                                //check if unallocated entry exists
+                                if ($endChanges['unallocated']['amount'] != 0){
+                                    $unallocated = '<span style="color:red;">Unallocated Entry will be created with the amount: '.$endChanges['unallocated']['amount']."</span>";
+                                }
+                                if ($endChanges['new']['amount'] != 0 || $endChanges['new']['commission'] != 0){
+                                    $newEntry = '<br><span style="color:red;">
+                                                    New entry will be created with the Amount: '.$endChanges['new']['amount'].
+                                                    " and Commission: ".$endChanges['new']['commission']."</span>";
+                                }
+                            }
+
                             $amountSum = 0;
                             $commSum = 0;
                             while ($row = $table->fetch_data()) {
@@ -156,12 +191,12 @@ if ($_GET['pid'] > 0) {
                                 <tr onclick="editLine(<?php echo $row["inapi_policy_installments_ID"] . "," . $_GET['pid'] . ",'" . $_GET['type'] . "'"; ?>);">
                                     <th scope="row"><?php echo $row["inapi_policy_installments_ID"]; ?></th>
                                     <td><?php echo $db->convert_date_format($row["inapi_document_date"], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?></td>
-                                    <td><?php echo $row["inapi_amount"]; ?></td>
+                                    <td><?php echo $row["inapi_amount"].$amountAddMinus[$row["inapi_policy_installments_ID"]]; ?></td>
                                     <td><?php echo $row["inapi_paid_amount"]; ?></td>
-                                    <td><?php echo $row["inapi_commission_amount"]."/".$row['inapi_paid_commission_amount']; ?></td>
+                                    <td><?php echo $row["inapi_commission_amount"]."/".$row['inapi_paid_commission_amount'].$commAddMinus[$row["inapi_policy_installments_ID"]]; ?></td>
                                     <td><?php echo $row["inapi_paid_status"]; ?></td>
                                     <td>
-                                        <?php if ($policy->policyData['inapol_status'] == 'Outstanding') { ?>
+                                        <?php if ($policy->policyData['inapol_status'] == 'Outstanding' && $policy->policyData['inapol_process_status'] != 'Endorsement') { ?>
                                             <a href="installment_modify.php?lid=<?php echo $row["inapi_policy_installments_ID"] . "&pid=" . $_GET['pid']; ?>"><i
                                                         class="fas fa-edit"></i></a>&nbsp
                                             <a href="installment_delete.php?lid=<?php echo $row["inapi_policy_installments_ID"] . "&pid=" . $_GET['pid']; ?>"
@@ -189,7 +224,7 @@ if ($_GET['pid'] > 0) {
             </div>
             <?php if ($policy->policyData['inapol_status'] == 'Outstanding') { ?>
                 <div class="row">
-                    <div class="col-12" style="height: 25px;"></div>
+                    <div class="col-12"><?php echo $unallocated.$newEntry;?></div>
                     <div class="col-4">
                         Generate Recursive Installments
                     </div>
@@ -236,7 +271,12 @@ if ($_GET['pid'] > 0) {
 
         <?php
     }//if items exists
+
 }//if policy exists
+
+
+
+
 ?>
     <script>
 
@@ -253,7 +293,7 @@ if ($_GET['pid'] > 0) {
         var ignoreEdit = false;
 
         function editLine(id, pid, type) {
-            <?php if ($policy->policyData['inapol_status'] == 'Outstanding') { ?>
+            <?php if ($policy->policyData['inapol_status'] == 'Outstanding' && $policy->policyData['inapol_process_status'] != 'Endorsement') { ?>
             if (ignoreEdit === false) {
                 window.location.assign('installment_modify.php?lid=' + id + '&pid=' + pid);
             }

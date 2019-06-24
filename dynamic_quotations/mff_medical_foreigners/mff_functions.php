@@ -579,7 +579,7 @@ function mff_insurance_period_2()
         </label>
         <div class="col-2">
             <input name="2_oqqit_rate_3" type="text" id="2_oqqit_rate_3"
-                   class="form-control" maxlength="4"
+                   class="form-control" maxlength="8"
                    value="<?php echo $qitem_data["oqqit_rate_3"]; ?>">
             <?php
             $formValidator->addField(

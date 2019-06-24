@@ -10,6 +10,9 @@ if ($_POST["action"] == "insert") {
 
     $db->start_transaction();
 
+    $_POST['fld_for_user_group_ID'] = $db->user_data['usr_users_group_ID'];
+    $_POST['fld_user_ID'] = $db->user_data['usr_users_ID'];
+
     $db->db_tool_insert_row('customers', $_POST, 'fld_', 0, 'cst_');
 
     //check for basic accounts to create the customer account

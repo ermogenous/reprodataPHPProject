@@ -1507,7 +1507,7 @@ class Main
         $this->update_log_file('CUSTOM', 0, $action, 'CUSTOM', 'CUSTOM', $sql);
     }//update_log_file_custom
 
-    function convert_date_format($date, $from_format, $to_format, $date_time = 0, $return_time = 0)
+    function convert_date_format($date, $from_format = 'yyyy-mm-dd', $to_format = 'dd/mm/yyyy', $date_time = 0, $return_time = 0)
     {
 
         if ($date_time == 1) {

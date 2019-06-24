@@ -73,6 +73,7 @@ if ($_POST["action"] == "insert") {
     $group_array["fld_usg_restrict_ip"] = $_POST["restrict_ip"];
     $group_array["fld_usg_permissions"] = $permissions;
     $group_array["fld_usg_approvals"] = $_POST["approvals"];
+    $group_array["fld_usg_active"] = $_POST["active"];
     $db->db_tool_insert_row('users_groups', $group_array, 'fld_');
     fix_lines($db->insert_id());
     header("Location: groups.php");
@@ -94,6 +95,7 @@ if ($_POST["action"] == "insert") {
     $group_array["fld_usg_restrict_ip"] = $_POST["restrict_ip"];
     $group_array["fld_usg_permissions"] = $permissions;
     $group_array["fld_usg_approvals"] = $_POST["approvals"];
+    $group_array["fld_usg_active"] = $_POST["active"];
 
     $db->db_tool_update_row('users_groups', $group_array, "`usg_users_groups_ID` = " . $_POST["lid"], $_POST["lid"], 'fld_');
     fix_lines($_POST["lid"]);
@@ -135,6 +137,16 @@ $db->show_header();
                         <input name="name" type="text" id="name"
                                class="form-control"
                                value="<?php echo $data["usg_group_name"]; ?>">
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="active" class="col-sm-4 col-form-label">Active</label>
+                    <div class="col-sm-8">
+                        <select name="active" id="active" class="form-control">
+                            <option value="1" <?php if ($data['usg_active'] == 1) echo "selected";?>>Yes</option>
+                            <option value="0" <?php if ($data['usg_active'] == 0) echo "selected";?>>No</option>
+                        </select>
                     </div>
                 </div>
 

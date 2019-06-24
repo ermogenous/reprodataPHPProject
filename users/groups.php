@@ -25,6 +25,7 @@ $table->generate_data();
                     <tr>
                         <th scope="col"><?php $table->display_order_links('ID','usg_users_groups_ID');?></th>
                         <th scope="col"><?php $table->display_order_links('Name','usg_group_name');?></th>
+                        <th scope="col"><?php $table->display_order_links('Active','usg_active');?></th>
                         <th scope="col">Used By Users</th>
                         <th scope="col">
                             <a href="groups_modify.php">
@@ -42,6 +43,7 @@ $table->generate_data();
                         <tr onclick="editLine(<?php echo $row["usg_users_groups_ID"];?>);">
                             <th scope="row"><?php echo $row["usg_users_groups_ID"];?></th>
                             <td><?php echo $row["usg_group_name"];?></td>
+                            <td><?php echo $row["usg_active"];?></td>
                             <td><?php echo $used_by_users["clo_total_users"];?></td>
                             <td>
                                 <a href="groups_modify.php?lid=<?php echo $row["usg_users_groups_ID"];?>"><i class="fas fa-edit"></i></a>&nbsp

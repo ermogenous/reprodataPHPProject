@@ -96,6 +96,9 @@ function template_header()
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/policy_modify.php">
                                     <i class="far fa-calendar-alt"></i> New Policy</a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/ainsurance/unallocated/unallocated.php">
+                                    <i class="fas fa-wallet"></i> View UnAllocated</a>
                             </div>
                         </li>
                     <?php } ?>

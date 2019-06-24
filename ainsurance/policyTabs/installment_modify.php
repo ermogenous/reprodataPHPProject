@@ -69,9 +69,18 @@ if ($_GET["lid"] != "") {
             WHERE `inapi_policy_installments_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
 
-
 } else {
     $data['inapi_insert_date'] = date('Y-m-d');
+}
+
+
+//get the policy data
+$policy = new Policy($_GET['pid']);
+
+//when endorsement is not allowed to create new installments
+if ($policy->policyData['inapol_process_status'] == 'Endorsement'){
+    header("Location: installments.php?pid=" . $_GET['pid'] . "&type=" . $_GET['type']);
+    exit();
 }
 
 $db->enable_jquery_ui();

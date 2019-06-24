@@ -16,7 +16,7 @@ $db->admin_title = "AInsurance Policy Modify";
 if ($_POST["action"] == "insert") {
     $db->check_restriction_area('insert');
 
-    $_POST['fld_for_user_group_ID'] = $db->user_data['usr_users_group_ID'];
+    $_POST['fld_for_user_group_ID'] = $db->user_data['usr_users_groups_ID'];
     $_POST['fld_period_starting_date'] = $db->convert_date_format($_POST['fld_period_starting_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $_POST['fld_starting_date'] = $db->convert_date_format($_POST['fld_starting_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $_POST['fld_expiry_date'] = $db->convert_date_format($_POST['fld_expiry_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
@@ -24,6 +24,12 @@ if ($_POST["action"] == "insert") {
 
     $db->working_section = 'AInsurance Policy Insert';
     $newID = $db->db_tool_insert_row('ina_policies', $_POST, 'fld_', 1, 'inapol_');
+
+    //fix the installment ID
+    $newData['installment_ID'] = $newID;
+    $db->db_tool_update_row('ina_policies', $newData, 'inapol_policy_ID = '.$newID, $newID,
+        '','execute','inapol_');
+
     if ($_POST['sub-action'] == 'exit') {
         header("Location: policies.php");
         exit();
@@ -99,32 +105,34 @@ $db->show_header();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_agent_ID" class="col-sm-2 col-form-label">Agent</label>
+                        <label for="fld_underwriter_ID" class="col-sm-2 col-form-label">Underwriter</label>
                         <div class="col-sm-4">
-                            <select name="fld_agent_ID" id="fld_agent_ID"
+                            <select name="fld_underwriter_ID" id="fld_underwriter_ID"
                                     class="form-control"
                                     onchange="loadInsuranceCompanies();">
                                 <option value=""></option>
                                 <?php
-                                $sql = "SELECT * FROM agents
-                                        JOIN users ON usr_users_ID = agnt_user_ID
+                                $sql = "SELECT * FROM ina_underwriters
+                                        JOIN users ON usr_users_ID = inaund_user_ID
                                         JOIN users_groups ON usr_users_groups_ID = usg_users_groups_ID
-                                        WHERE usg_users_groups_ID = " . $db->user_data['usr_users_groups_ID'] . " AND agnt_status = 'Active' ORDER BY agnt_name ASC";
+                                        WHERE usg_users_groups_ID = " . $db->user_data['usr_users_groups_ID'] . " 
+                                        AND inaund_status = 'Active' 
+                                        ORDER BY usr_name ASC";
                                 $result = $db->query($sql);
-                                while ($agent = $db->fetch_assoc($result)) {
+                                while ($underwriter = $db->fetch_assoc($result)) {
                                     ?>
-                                    <option value="<?php echo $agent['agnt_agent_ID']; ?>"
-                                        <?php if ($data['inapol_agent_ID'] == $agent['agnt_agent_ID']) echo 'selected'; ?>
-                                    ><?php echo $agent['agnt_name']; ?></option>
+                                    <option value="<?php echo $underwriter['inaund_underwriter_ID']; ?>"
+                                        <?php if ($data['inapol_underwriter_ID'] == $underwriter['inaund_underwriter_ID']) echo 'selected'; ?>
+                                    ><?php echo $underwriter['usr_name']; ?></option>
                                 <?php } ?>
                             </select>
                             <?php
                             $formValidator->addField(
                                 [
-                                    'fieldName' => 'fld_agent_ID',
+                                    'fieldName' => 'fld_underwriter_ID',
                                     'fieldDataType' => 'select',
                                     'required' => true,
-                                    'invalidText' => 'Must select Agent'
+                                    'invalidText' => 'Must select Underwriter'
                                 ]);
                             ?>
                         </div>
@@ -379,16 +387,20 @@ $db->show_header();
                         <label for="fld_process_status" class="col-sm-2 col-form-label">Process Status</label>
                         <div class="col-sm-4">
                             <select name="fld_process_status" id="fld_process_status"
-                                    class="form-control">
+                                    class="form-control"
+                            <?php if ($data['inapol_replacing_ID'] > 0 || $data['inapol_replaced_by_ID'] > 0) echo "disabled";?>
+                            >
                                 <option value="New" <?php if ($data['inapol_process_status'] == 'New') echo 'selected'; ?>>
                                     New
                                 </option>
                                 <option value="Renewal" <?php if ($data['inapol_process_status'] == 'Renewal') echo 'selected'; ?>>
                                     Renewal
                                 </option>
+                                <?php if ($data['inapol_process_status'] == 'Endorsement') { ?>
                                 <option value="Endorsement" <?php if ($data['inapol_process_status'] == 'Endorsement') echo 'selected'; ?>>
                                     Endorsement
                                 </option>
+                                <?php } ?>
                             </select>
                         </div>
 

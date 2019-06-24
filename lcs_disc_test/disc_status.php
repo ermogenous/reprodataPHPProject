@@ -51,6 +51,12 @@ if ($_GET['action'] == 'completed') {
     header("Location: disc_status.php?lid=" . $_GET['lid']);
     exit();
 }
+else if ($_GET['action'] == 'linkSendPlusOne'){
+    $test = new DiscTest($_GET['lid']);
+    $newData['lcsdc_send_invites'] = $test->data['lcsdc_send_invites'] + 1;
+    $db->db_tool_update_row('lcs_disc_test', $newData, 'lcsdc_disc_test_ID = '.$test->testID, $test->testID,'','execute','');
+    $db->generateAlertSuccess('Send link increased by 1');
+}
 
 $disc = new DiscTest($_GET['lid']);
 $data = $disc->data;
@@ -314,6 +320,10 @@ $db->show_header();
                                             onclick="makeDelete();">
                                         Delete
                                     </button>
+                                    <button type="button" value="linkSend" style="width: 150px;" class="btn bgGoldColor"
+                                            onclick="linkSendPlusOne();">
+                                        Link Send +1
+                                    </button>
                                     <?php
                                 }
 
@@ -324,6 +334,7 @@ $db->show_header();
                                             onclick="sendEmail();">
                                         Send Email
                                     </button>
+
                                     <?php
                                 }
                                 ?>
@@ -389,6 +400,12 @@ $db->show_header();
 
         function sendLinkEmail() {
             window.location.assign('disc_status.php?lid=<?php echo $_GET['lid'];?>&action=sendLinkEmail');
+        }
+
+        function linkSendPlusOne() {
+            if (confirm('Are you sure you want to increase the link send by 1?')) {
+                window.location.assign('disc_status.php?lid=<?php echo $_GET['lid'];?>&action=linkSendPlusOne');
+            }
         }
 
         function goBack() {

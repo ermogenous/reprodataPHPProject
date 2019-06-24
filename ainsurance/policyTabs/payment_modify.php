@@ -18,9 +18,11 @@ if ($_POST["action"] == "insert") {
     $db->start_transaction();
 
     $db->working_section = 'AInsurance Policy Payment Insert';
+    $policy = new Policy($_POST['pid']);
 
     $_POST['fld_status'] = 'Outstanding';
     $_POST['fld_policy_ID'] = $_POST['pid'];
+    $_POST['fld_customer_ID'] = $policy->policyData['inapol_customer_ID'];
     $_POST['fld_payment_date'] = $db->convert_date_format($_POST['fld_payment_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $newId = $db->db_tool_insert_row('ina_policy_payments', $_POST, 'fld_', 1, 'inapp_');
 

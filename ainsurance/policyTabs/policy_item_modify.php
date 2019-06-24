@@ -454,7 +454,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                             ?>
                         </div>
 
-                        <?php if ($_GET['type'] == 'Vehicles') { ?>
+                        <?php if ($_GET['type'] == 'Vehicles' && 1==2) { ?>
                             <label for="fld_mif" class="col-sm-3 col-form-label">MIF</label>
                             <div class="col-sm-3">
                                 <input type="text" id="fld_mif" name="fld_mif"

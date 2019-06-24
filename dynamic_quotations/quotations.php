@@ -294,6 +294,7 @@ if ($_GET["price_id"] != "") {
                                     <th scope="col"><?php $table->display_order_links('Name', 'oqq_insureds_name'); ?></th>
                                     <th scope="col"><?php $table->display_order_links('Type', 'oqqt_name'); ?></th>
                                     <th scope="col"><?php $table->display_order_links('Status', 'oqq_status'); ?></th>
+                                    <th scope="col"><?php $table->display_order_links('Expiry', 'oqq_expiry_date'); ?></th>
                                     <th scope="col">
                                     </th>
                                 </tr>
@@ -335,6 +336,7 @@ if ($_GET["price_id"] != "") {
 
                                         <td><?php echo $row["oqqt_name"]; ?></td>
                                         <td><?php echo $row["oqq_status"]; ?></td>
+                                        <td><?php echo $db->convert_date_format($row["oqq_expiry_date"],'yyyy-mm-dd','dd/mm/yyyy',1,0); ?></td>
                                         <td>
                                             <a href="quotations_show.php?lid=<?php echo $row["oqq_quotations_ID"]; ?>">
                                                 <i class="fas fa-info-circle"></i>

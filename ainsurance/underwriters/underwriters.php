@@ -10,11 +10,11 @@ include("../../include/main.php");
 include("../../include/tables.php");
 $db = new Main();
 
-$table = new draw_table('ina_underwriters', 'inaund_underwriter_ID', 'ASC');
+$table = new draw_table('ina_underwriters', 'usg_users_groups_ID ASC,usr_name ASC', '');
 $table->extra_from_section = 'JOIN users ON usr_users_ID = inaund_user_ID';
+$table->extra_from_section .= ' JOIN users_groups ON usr_users_groups_ID = usg_users_groups_ID';
 
 $table->generate_data();
-
 
 $db->show_header();
 ?>
@@ -23,11 +23,12 @@ $db->show_header();
             <table class="table table-hover">
                 <thead>
                 <tr class="alert alert-success">
-                    <th width="51"
-                        align="center"><?php $table->display_order_links('ID', 'inaund_underwriter_ID'); ?></th>
-                    <th width="337" align="left"><?php $table->display_order_links('Name', 'usr_name'); ?></th>
-                    <th width="81" align="center"><?php $table->display_order_links('Status', 'inaund_status'); ?></th>
-                    <th colspan="2" align="center"><a href="underwriters_modify.php">New</a></th>
+                    <td align="center"><?php $table->display_order_links('ID', 'inaund_underwriter_ID'); ?></td>
+                    <td align="left"><?php $table->display_order_links('Group', 'usg_group_name'); ?></td>
+                    <td align="left"><?php $table->display_order_links('Name', 'usr_name'); ?></td>
+                    <td align="center"><?php $table->display_order_links('Status', 'inaund_status'); ?></td>
+                    <td align="center"><?php $table->display_order_links('V.Level', 'inaund_vertical_level'); ?></td>
+                    <td colspan="2" align="center"><a href="underwriters_modify.php">New</a></td>
                 </tr>
                 </thead>
                 <tbody>
@@ -36,8 +37,10 @@ $db->show_header();
                     ?>
                     <tr onclick="editLine(<?php echo $row["inaund_underwriter_ID"]; ?>);">
                         <th scope="row"><?php echo $row["inaund_underwriter_ID"]; ?></th>
+                        <td align="left"><?php echo $row["usg_group_name"]; ?></td>
                         <td align="left"><?php echo $row["usr_name"]; ?></td>
                         <td align="center"><?php echo $row["inaund_status"]; ?></td>
+                        <td align="center"><?php echo $row["inaund_vertical_level"]; ?></td>
                         <td width="59" align="center"><a
                                 href="underwriters_modify.php?lid=<?php echo $row["inaund_underwriter_ID"]; ?>">Modify</a>
                         </td>

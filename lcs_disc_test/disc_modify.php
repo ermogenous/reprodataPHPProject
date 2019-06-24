@@ -249,6 +249,9 @@ $db->show_header();
                                         <option value="Free" <?php if ($data['lcsdc_process_status'] == 'Free') echo 'selected'; ?>>
                                             Free
                                         </option>
+                                        <option value="Package" <?php if ($data['lcsdc_process_status'] == 'Free') echo 'selected'; ?>>
+                                            Package
+                                        </option>
                                     </select>
                                 </div>
                             </div>

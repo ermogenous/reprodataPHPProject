@@ -12,7 +12,7 @@ function template_header()
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Kemter Insurance Agencies Sub-Agencies &amp; Consultants, Limassol - Cyprus</title>
+        <title>Kemter Insurance Agencies Sub-Agencies &amp; Consultants, Limassol - Cyprus <?php if ($main["conf_title"] == 'KemterTest') echo "TEST";?></title>
         <LINK REL="SHORTCUT ICON" HREF="<?php echo $main["site_url"]; ?>/favicon-kemter.png">
         <link rel="stylesheet" href="<?php echo $db->admin_layout_url; ?>style.css" rel="stylesheet">
 
@@ -202,6 +202,16 @@ function template_header()
             </span>
         </div>
     </nav>
+
+    <?php if ($main["db_database"] == 'kemter_extranet_test') { ?>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12 text-center alert alert-danger">
+                <b>TEST DATABASE</b>
+            </div>
+        </div>
+    </div>
+    <?php } ?>
 
     <br>
     <?php

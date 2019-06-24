@@ -103,25 +103,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding'){
                             ?>
                         </div>
 
-                        <label for="fld_mif" class="col-sm-3 col-form-label">Policy MIF</label>
-                        <div class="col-sm-3">
-                            <input type="text" id="fld_mif" name="fld_mif"
-                                   class="form-control"
-                                   required onchange="updateGrossPremium();"
-                                   value="<?php echo $policy->policyData["inapol_mif"]; ?>">
-                            <?php
-                            $formValidator->addField(
-                                [
-                                    'fieldName' => 'fld_mif',
-                                    'fieldDataType' => 'number',
-                                    'required' => true,
-                                    'invalidText' => 'MIF is Required'
-                                ]);
-                            ?>
-                        </div>
-                    </div>
 
-                    <div class="form-group row">
                         <label for="fld_stamps" class="col-sm-3 col-form-label">Policy Stamps</label>
                         <div class="col-sm-3">
                             <input type="text" name="fld_stamps" id="fld_stamps"
@@ -138,6 +120,31 @@ if ($policy->policyData['inapol_status'] != 'Outstanding'){
                                 ]);
                             ?>
                         </div>
+
+
+                        <?php if (1==2) { ?>
+                        <label for="fld_mif" class="col-sm-3 col-form-label">Policy MIF</label>
+                        <div class="col-sm-3">
+                            <input type="text" id="fld_mif" name="fld_mif"
+                                   class="form-control"
+                                   required onchange="updateGrossPremium();"
+                                   value="<?php echo $policy->policyData["inapol_mif"]; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_mif',
+                                    'fieldDataType' => 'number',
+                                    'required' => true,
+                                    'invalidText' => 'MIF is Required'
+                                ]);
+                            ?>
+                        </div>
+                        <?php } ?>
+
+                    </div>
+
+                    <div class="form-group row">
+
 
 
                     </div>
@@ -186,10 +193,10 @@ if ($policy->policyData['inapol_status'] != 'Outstanding'){
             let premium = $('#fld_premium').val() * 1;
             let commission = $('#fld_commission').val() * 1;
             let fees = $('#fld_fees').val() * 1;
-            let mif = $('#fld_mif').val() * 1;
+            //let mif = $('#fld_mif').val() * 1;
             let stamps = $('#fld_stamps').val() * 1;
 
-            grossPremium = premium + fees + mif + stamps;
+            grossPremium = premium + fees + stamps;
 
             $('#grossPremium').html(
                 grossPremium.toFixed(2)

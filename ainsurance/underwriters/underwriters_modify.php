@@ -16,18 +16,17 @@ if ($_POST["action"] == "insert") {
     $db->start_transaction();
 
 
-
     $newID = $db->db_tool_insert_row('ina_underwriters', $_POST, 'fld_', 1, 'inaund_');
     //update companies
     //update the companies
-    foreach($_POST as $name => $value){
-        if (substr($name, 0,7) == 'inc_id_'){
+    foreach ($_POST as $name => $value) {
+        if (substr($name, 0, 7) == 'inc_id_') {
             $newData['underwriter_ID'] = $newID;
             $newData['insurance_company_ID'] = substr($name, 7);
             $newData['status'] = $value;
             $db->db_tool_insert_update_row('ina_underwriter_companies',
                 $newData,
-                'inaunc_underwriter_ID = '.$newID.' AND inaunc_insurance_company_ID = '.substr($name, 7),
+                'inaunc_underwriter_ID = ' . $newID . ' AND inaunc_insurance_company_ID = ' . substr($name, 7),
                 'inaunc_underwriter_company_ID',
                 '',
                 'inaunc_');
@@ -63,14 +62,14 @@ if ($_POST["action"] == "insert") {
         $db->db_tool_update_row('ina_underwriters', $_POST, "`inaund_underwriter_ID` = " . $_POST["lid"], $_POST["lid"],
             'fld_', 'execute', 'inaund_');
         //update the companies
-        foreach($_POST as $name => $value){
-            if (substr($name, 0,7) == 'inc_id_'){
+        foreach ($_POST as $name => $value) {
+            if (substr($name, 0, 7) == 'inc_id_') {
                 $newData['underwriter_ID'] = $_POST['lid'];
                 $newData['insurance_company_ID'] = substr($name, 7);
                 $newData['status'] = $value;
                 $db->db_tool_insert_update_row('ina_underwriter_companies',
                     $newData,
-                    'inaunc_underwriter_ID = '.$_POST['lid'].' AND inaunc_insurance_company_ID = '.substr($name, 7),
+                    'inaunc_underwriter_ID = ' . $_POST['lid'] . ' AND inaunc_insurance_company_ID = ' . substr($name, 7),
                     'inaunc_underwriter_company_ID',
                     '',
                     'inaunc_');
@@ -111,8 +110,8 @@ $formValidator = new customFormValidator();
 
 
                     <div class="form-group row">
-                        <label for="fld_user_ID" class="col-sm-4 col-form-label">User</label>
-                        <div class="col-sm-5">
+                        <label for="fld_user_ID" class="col-sm-3 col-form-label">User</label>
+                        <div class="col-sm-6">
                             <select name="fld_user_ID" id="fld_user_ID"
                                     class="form-control"
                                     required>
@@ -169,6 +168,18 @@ $formValidator = new customFormValidator();
                                 "invalidText" => "Select status",
                             ]);
                             ?>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label for="fld_user_ID" class="col-sm-3 col-form-label">Vertical Level</label>
+                        <div class="col-3">
+                            <select name="fld_vertical_level" id="fld_vertical_level"
+                                    class="form-control">
+                                <?php for ($i = 0; $i <= 10; $i++) { ?>
+                                    <option value="<?php echo $i;?>"><?php echo $i;?></option>
+                                <?php } ?>
+                            </select>
                         </div>
                     </div>
 
@@ -356,15 +367,16 @@ $formValidator = new customFormValidator();
                     $sql = "SELECT * FROM ina_insurance_companies WHERE inainc_status = 'Active' ORDER BY inainc_name ASC";
                     $result = $db->query($sql);
                     while ($row = $db->fetch_assoc($result)) {
-                        if ($undCompanies[$row['inainc_insurance_company_ID']]['inaunc_status'] == ''){
+                        if ($undCompanies[$row['inainc_insurance_company_ID']]['inaunc_status'] == '') {
                             $undCompanies[$row['inainc_insurance_company_ID']]['inaunc_status'] = 'Inactive';
                         }
                         ?>
                         <div class="row">
-                            <label for="inc_id_<?php echo $row['inainc_insurance_company_ID'];?>"
-                            class="col-sm-9"><?php echo $row['inainc_name'];?></label>
+                            <label for="inc_id_<?php echo $row['inainc_insurance_company_ID']; ?>"
+                                   class="col-sm-9"><?php echo $row['inainc_name']; ?></label>
                             <div class="col-sm-3" style="height: 45px;">
-                                <select name="inc_id_<?php echo $row['inainc_insurance_company_ID'];?>" id="inc_id_<?php echo $row['inainc_insurance_company_ID'];?>"
+                                <select name="inc_id_<?php echo $row['inainc_insurance_company_ID']; ?>"
+                                        id="inc_id_<?php echo $row['inainc_insurance_company_ID']; ?>"
                                         class="form-control"
                                         required>
                                     <option value="Active" <?php if ($undCompanies[$row['inainc_insurance_company_ID']]['inaunc_status'] == 'Active') echo "selected=\"selected\""; ?>>
@@ -376,7 +388,7 @@ $formValidator = new customFormValidator();
                                 </select>
                                 <?php
                                 $formValidator->addField([
-                                    "fieldName" => "inc_id_".$row['inainc_insurance_company_ID'],
+                                    "fieldName" => "inc_id_" . $row['inainc_insurance_company_ID'],
                                     "fieldDataType" => "select",
                                     "required" => false,
                                 ]);

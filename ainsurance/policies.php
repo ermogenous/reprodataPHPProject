@@ -8,6 +8,7 @@
 
 include("../include/main.php");
 include("../include/tables.php");
+include('policy_class.php');
 
 $db = new Main(1, 'UTF-8');
 $db->admin_title = "AInsurance Policies";
@@ -15,6 +16,9 @@ $db->admin_title = "AInsurance Policies";
 $table = new draw_table('ina_policies', 'inapol_policy_ID', 'ASC');
 $table->extra_from_section .= 'JOIN ina_insurance_companies ON inapol_insurance_company_ID = inainc_insurance_company_ID';
 $table->extra_from_section .= ' JOIN customers ON cst_customer_ID = inapol_customer_ID';
+$table->extra_from_section .= ' JOIN ina_underwriters ON inaund_underwriter_ID = inapol_underwriter_ID';
+$table->extra_from_section .= ' JOIN users ON inaund_user_ID = usr_users_ID';
+$table->extras = 'inapol_underwriter_ID '.Policy::getAgentWhereClauseSql();
 
 $table->generate_data();
 
@@ -22,19 +26,21 @@ $db->show_header();
 ?>
 
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-lg-2"></div>
-        <div class="col-lg-8">
+        <div class="col-lg-1"></div>
+        <div class="col-lg-10">
             <div class="text-center"><?php $table->show_pages_links(); ?></div>
             <div class="table-responsive">
                 <table class="table table-hover" id="myTableList">
                     <thead class="alert alert-success">
                     <tr>
                         <th scope="col"><?php $table->display_order_links('ID', 'inapol_policy_ID'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Number', 'inapol_policy_number'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Underwriter', 'usr_name'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Policy Number', 'inapol_policy_number'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Customer', 'cst_name'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Customer ID', 'cst_identity_card'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Process Status', 'inapol_process_status'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Status', 'inapol_status'); ?></th>
                         <th scope="col">
                             <a href="policy_modify.php">
@@ -49,9 +55,11 @@ $db->show_header();
                         ?>
                         <tr>
                             <th scope="row"><?php echo $row["inapol_policy_ID"]; ?></th>
+                            <td><?php echo $row["usr_name"]; ?></td>
                             <td><?php echo $row["inapol_policy_number"]; ?></td>
                             <td><?php echo $row["cst_name"]; ?></td>
                             <td><?php echo $row["cst_identity_card"]; ?></td>
+                            <td><?php echo $row["inapol_process_status"]; ?></td>
                             <td><?php echo $row["inapol_status"]; ?></td>
                             <td>
                                 <input type="hidden" id="myLineID" name="myLineID" value="<?php echo $row["inapol_policy_ID"]; ?>">
@@ -95,7 +103,7 @@ $db->show_header();
                 </table>
             </div>
         </div>
-        <div class="col-lg-2"></div>
+        <div class="col-lg-1"></div>
     </div>
 </div>
 <script>

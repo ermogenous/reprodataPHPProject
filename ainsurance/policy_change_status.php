@@ -14,13 +14,16 @@ $db->admin_title = "AInsurance Policy Change Status";
 if ($_GET['action'] == 'activate'){
     $policy = new Policy($_GET['lid']);
 
+    $db->start_transaction();
     if ($policy->activatePolicy() == true){
         $db->generateSessionAlertSuccess('Policy '.$policy->policyData['inapol_policy_number'].' activated');
+        $db->commit_transaction();
         header('Location: policies.php');
         exit();
     }
     else {
         $db->generateSessionAlertError($policy->errorDescription);
+        $db->rollback_transaction();
         header('Location: policy_change_status.php?lid='.$_GET['lid']);
         exit();
     }
@@ -29,13 +32,16 @@ if ($_GET['action'] == 'activate'){
 else if ($_GET['action'] == 'cancel'){
     $policy = new Policy($_GET['lid']);
 
+    $db->start_transaction();
     if ($policy->cancelPolicy() == true){
         $db->generateSessionAlertSuccess('Policy '.$policy->policyData['inapol_policy_number'].' cancelled');
+        $db->commit_transaction();
         header('Location: policies.php');
         exit();
     }
     else {
         $db->generateSessionAlertError($policy->errorDescription);
+        $db->rollback_transaction();
         header('Location: policy_change_status.php?lid='.$_GET['lid']);
         exit();
     }
@@ -43,13 +49,16 @@ else if ($_GET['action'] == 'cancel'){
 else if ($_GET['action'] == 'delete'){
     $policy = new Policy($_GET['lid']);
 
+    $db->start_transaction();
     if ($policy->deletePolicy() == true){
         $db->generateSessionAlertSuccess('Policy '.$policy->policyData['inapol_policy_number'].' deleted');
+        $db->commit_transaction();
         header('Location: policies.php');
         exit();
     }
     else {
         $db->generateSessionAlertError($policy->errorDescription);
+        $db->rollback_transaction();
         header('Location: policy_change_status.php?lid='.$_GET['lid']);
         exit();
     }

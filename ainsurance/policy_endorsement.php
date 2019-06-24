@@ -17,7 +17,7 @@ if ($_POST['action'] == 'endorse') {
 
     $db->working_section = 'Policy Endorsement';
     $policy = new Policy($_POST['pid']);
-    $policy->endorsePolicy();
+    $policy->endorsePolicy($_POST['fld_endorsement_date'],$_POST['fld_premium']);
     if ($policy->error == true) {
         $db->generateAlertError($policy->errorDescription);
     } else {
@@ -116,7 +116,7 @@ $formValidator = new customFormValidator();
                     <div class="row">
                         <div class="col-4">+- Premium</div>
                         <div class="col-4">
-                            <input type="text" id="fld_endorsement_date" name="fld_endorsement_date"
+                            <input type="text" id="fld_premium" name="fld_premium"
                                    class="form-control"
                                    value="">
                             <?php
@@ -124,13 +124,10 @@ $formValidator = new customFormValidator();
                             $maxValue = 0;
                             $formValidator->addField(
                                 [
-                                    'fieldName' => 'fld_endorsement_date',
-                                    'fieldDataType' => 'date',
+                                    'fieldName' => 'fld_premium',
+                                    'fieldDataType' => 'number',
                                     'required' => true,
-                                    'invalidText' => 'Enter Valid Date Between '.$minDate." and ".$maxDate,
-                                    'enableDatePicker' => true,
-                                    'dateMinDate' => $minDate,
-                                    'dateMaxDate' => $maxDate
+                                    'invalidText' => 'Enter Valid Premium Between '.$minDate." and ".$maxDate
                                 ]);
                             ?>
                         </div>
