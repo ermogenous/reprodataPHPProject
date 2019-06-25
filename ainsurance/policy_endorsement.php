@@ -12,6 +12,7 @@ include('policy_class.php');
 $db = new Main(1, 'UTF-8');
 $db->admin_title = "AInsurance Policy Endorsement";
 
+$endorsementID = 0;
 
 if ($_POST['action'] == 'endorse') {
 
@@ -22,6 +23,7 @@ if ($_POST['action'] == 'endorse') {
         $db->generateAlertError($policy->errorDescription);
     } else {
         $db->generateAlertSuccess('Policy Endorsed Successfully');
+        $endorsementID = $policy->newEndorsementID;
     }
 
     $_GET['pid'] = $_POST['pid'];
@@ -88,6 +90,22 @@ $formValidator = new customFormValidator();
                         <div class="col-8"><?php echo $db->convert_date_format($policy->policyData['inapol_expiry_date'], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?></div>
                     </div>
 
+                    <?php if ($endorsementID > 0) {?>
+                    <div class="row">
+                        <div class="col-4">View</div>
+                        <div class="col-4">
+                            <button type="button" class="btn btn-success" onclick="viewPolicy(<?php echo $endorsementID;?>);">Go To Endorsement</button>
+                        </div>
+                    </div>
+                    <script>
+                        function viewPolicy(id){
+                            window.location.assign("policy_modify.php?lid=" + id);
+                        }
+                    </script>
+                    <?php
+                    }
+                    else {
+                    ?>
                     <div class="row">
                         <div class="col-4">Endorsement Date</div>
                         <div class="col-4">
@@ -132,13 +150,18 @@ $formValidator = new customFormValidator();
                             ?>
                         </div>
                     </div>
+                    <?php } ?>
 
                     <div class="row" style="height: 10px;">
 
                     </div>
 
                     <div class="row">
-                        <div class="col-4">Proceed to Review?</div>
+                        <div class="col-4">
+                            <?php if ($_POST['action'] != 'endorse') { ?>
+                            Proceed to Review?
+                            <?php } ?>
+                        </div>
                         <div class="col-3">
                             <form method="post">
                                 <input type="button" value="Back" class="btn btn-secondary"

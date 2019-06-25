@@ -10,6 +10,9 @@ class Policy
 {
 
     public $policyID;
+    public $newEndorsementID;
+    public $newRenewalID;
+    public $newCancellationID;
     public $installmentID;
     public $policyData;
     public $totalPremium;
@@ -262,6 +265,22 @@ class Policy
                 '',
                 'execute',
                 'inapol_');
+
+            //check if is replacing other policy to set to archive.
+
+
+
+            if ($this->policyData['inapol_replacing_ID'] > 0){
+                $archNewData['status'] = 'Archived';
+                $db->db_tool_update_row('ina_policies',
+                    $archNewData,
+                    'inapol_policy_ID = ' . $this->policyData['inapol_replacing_ID'],
+                    $this->policyData['inapol_replacing_ID'],
+                    '',
+                    'execute',
+                    'inapol_');
+
+            }
         }
 
 
@@ -280,9 +299,56 @@ class Policy
         }
     }
 
-    public function cancelPolicy()
+    public function cancelPolicy($cancelDate,$premium, $fees, $commission)
     {
         global $db;
+
+        if ($this->policyData['inapol_status'] != 'Active'){
+            $this->error = true;
+            $this->errorDescription = 'Only Active policies can be cancelled.';
+            return false;
+        }
+
+        //if all ok proceed to create the new phase.
+        //load the new data
+        foreach ($this->policyData as $name => $value) {
+            if (substr($name, 0, 7) == 'inapol_') {
+                $newData[$name] = $value;
+            }
+        }
+
+        $newData['inapol_starting_date'] = $cancelDate;
+        $newData['inapol_status'] = 'Outstanding';
+        $newData['inapol_process_status'] = 'Cancellation';
+        $newData['inapol_premium'] = $premium;
+        //$newData['inapol_mif'] = 0;
+        $newData['inapol_commission'] = $commission;
+        $newData['inapol_fees'] = $fees;
+        //$newData['inapol_stamps'] = 'Renewal';
+        $newData['inapol_replacing_ID'] = $this->policyID;
+
+        unset($newData['inapol_created_date_time']);
+        unset($newData['inapol_created_by']);
+        unset($newData['inapol_last_update_date_time']);
+        unset($newData['inapol_last_update_by']);
+        unset($newData['inapol_replaced_by_ID']);
+        unset($newData['inapol_policy_ID']);
+
+        $newPolicyID = $db->db_tool_insert_row('ina_policies', $newData, '', 1);
+        $this->newCancellationID = $newPolicyID;
+
+        $instNewData['inapol_installment_ID'] = $newPolicyID;
+        $db->db_tool_update_row('ina_policies', $instNewData, 'inapol_policy_ID = ' . $newPolicyID,
+            $newPolicyID, '', 'execute', '');
+
+        //update the current
+        //echo "Update Current<br>\n";
+        $curNewData['inapol_replaced_by_ID'] = $newPolicyID;
+        $db->db_tool_update_row('ina_policies', $curNewData, 'inapol_policy_ID = ' . $this->policyID,
+            $this->policyID, '', 'execute', '');
+
+
+        $this->error = true;
         $this->errorDescription = 'Some error. Cancel function needs build';
         return false;
     }
@@ -375,6 +441,7 @@ class Policy
         //echo "Create policy<br>\n";
         //print_r($newData);
         $newPolicyID = $db->db_tool_insert_row('ina_policies', $newData, '', 1);
+        $this->newRenewalID = $newPolicyID;
         //update the installment ID
         $instNewData['inapol_installment_ID'] = $newPolicyID;
         $db->db_tool_update_row('ina_policies', $instNewData, 'inapol_policy_ID = ' . $newPolicyID,
@@ -479,6 +546,7 @@ class Policy
         //echo "Create policy<br>\n";
         //print_r($newData);
         $newPolicyID = $db->db_tool_insert_row('ina_policies', $newData, '', 1);
+        $this->newEndorsementID = $newPolicyID;
         //update the current
         //echo "Update Current<br>\n";
         $curNewData['inapol_replaced_by_ID'] = $newPolicyID;
@@ -536,13 +604,12 @@ class Policy
         }
 
         //get all the current installments amounts
-        $result = $db->query('
-                SELECT * FROM ina_policy_installments
+        $sql = "SELECT * FROM ina_policy_installments
                 WHERE
-                inapi_policy_ID = ' . $this->policyData['inapol_installment_ID'] . "
+                inapi_policy_ID = ".$this->policyData['inapol_installment_ID']."
                 AND inapi_paid_status IN ('UnPaid','Partial')
-                ORDER BY inapi_policy_installments_ID ASC
-                ");
+                ORDER BY inapi_policy_installments_ID ASC;";
+        $result = $db->query($sql);
         $totalInstallments = $db->num_rows($result);
 
         //if installments exists to split the amounts
@@ -556,7 +623,7 @@ class Policy
                 //loop into the changes.
                 foreach ($changes as $name => $value) {
                     //create the unallocated afterwards
-                    if ($name != 'unallocated') {
+                    if ($name != 'unallocated' && $name != 'new') {
                         //echo "Working ON:".$name." Val:".$value."<br>";
                         $newData['amount'] = $currentAmounts[$name]['amount'] + $value['amount'];
                         $newData['commission_amount'] = $currentAmounts[$name]['commAmount'] + $value['commission'];

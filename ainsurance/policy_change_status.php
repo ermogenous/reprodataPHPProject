@@ -18,7 +18,7 @@ if ($_GET['action'] == 'activate'){
     if ($policy->activatePolicy() == true){
         $db->generateSessionAlertSuccess('Policy '.$policy->policyData['inapol_policy_number'].' activated');
         $db->commit_transaction();
-        header('Location: policies.php');
+        header('Location: policy_change_status.php?lid='.$_GET['lid']);
         exit();
     }
     else {

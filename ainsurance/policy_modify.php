@@ -177,10 +177,9 @@ $db->show_header();
                             <script>
 
                                 function loadInsuranceCompanies(clear = true) {
-                                    let agentSelected = $('#fld_agent_ID').val();
-
+                                    let agentSelected = $('#fld_underwriter_ID').val();
                                     if (agentSelected > 0) {
-                                        Rx.Observable.fromPromise($.get("../agents/agents_api.php?section=agent_commission_types_insurance_companies&agent=" + agentSelected))
+                                        Rx.Observable.fromPromise($.get("underwriters/underwriters_api.php?section=underwriter_commission_types_insurance_companies&underwriter=" + agentSelected))
                                             .subscribe((response) => {
                                                     data = response;
                                                 },
@@ -233,7 +232,7 @@ $db->show_header();
                                 let insuranceCompanySelected = $('#fld_insurance_company_ID').val();
 
                                 if (agentSelected > 0 && insuranceCompanySelected > 0) {
-                                    Rx.Observable.fromPromise($.get("../agents/agents_api.php?section=agent_commission_types_policy_types&agent="
+                                    Rx.Observable.fromPromise($.get("underwriters/underwriters_api.php?section=agent_commission_types_policy_types&agent="
                                         + agentSelected + '&inscompany=' + insuranceCompanySelected))
                                         .subscribe((response) => {
                                                 data = response;

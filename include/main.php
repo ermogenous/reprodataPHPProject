@@ -569,7 +569,6 @@ class Main
             return false;
         }
 
-
         if ($this->system_on_test == 'yes') {
             //check if the query is a select query
             if (substr($sql, 0, 6) == 'SELECT') {
