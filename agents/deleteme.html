@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reprodata AInsurance Policy Payments</title>
+    <LINK REL="SHORTCUT ICON" HREF="http://localhost/reprodata/favicon.png">
+    <link rel="stylesheet" href="http://localhost/reprodata/layout/insurance/style.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="http://localhost/reprodata/scripts/bootstrap-4/css/bootstrap.min.css"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+          integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
+          crossorigin="anonymous">
+
+    <script src="http://localhost/reprodata/scripts/bootstrap-4/js/jquery-3.3.1.min.js"></script>
+    <!--Fall back to a local copy of jQuery if the CDN fails-->
+    <script>
+        window.jQuery || document.write('<script src="http://localhost/reprodata/scripts/bootstrap-4/js/jquery-3.3.1.min.js"><\/script>');
+    </script>
+    <!-- More Head -->
+
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-3"></div>
+        <div class="col-6">
+            <div class="alert alert-danger" role="alert">
+                <strong>Error! </strong> This payment is locked because endorsement/cancellation was activated after the payment. Permanent locked payment.                    </div>
+        </div>
+        <div class="col-3"></div>
+    </div>
+</div>
+
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12" style="height: 25px;">
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="text-center"><div align="center">1 Results. Page 1 OF 1 Goto Page - 1&nbsp;&nbsp;</div></div>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="alert alert-success">
+                    <tr>
+                        <th scope="col"><a href="?tables_current=1&tables_order=inapp_policy_payment_ID&tables_order_type=DESC&">ID</a></th>
+                        <th scope="col"><a href="?tables_current=1&tables_order=inapp_payment_date&tables_order_type=DESC&">Date</a></th>
+                        <th scope="col"><a href="?tables_current=1&tables_order=inapp_amount&tables_order_type=DESC&">Amount</a></th>
+                        <th scope="col"><a href="?tables_current=1&tables_order=inapp_allocated_amount&tables_order_type=DESC&">All.Amount</a></th>
+                        <th scope="col"><a href="?tables_current=1&tables_order=inapp_allocated_commission&tables_order_type=DESC&">All.Commission</a></th>
+                        <th scope="col"><a href="?tables_current=1&tables_order=inapp_status&tables_order_type=DESC&">Status</a></th>
+                        <th scope="col">
+                            <a href="payment_modify.php?pid=4&type=">
+                                <i class="fas fa-plus-circle"></i>
+                            </a>
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr onclick="editLine(2,4,'');">
+                        <th scope="row">2</th>
+                        <td>2019-06-28</td>
+                        <td>150.00</td>
+                        <td>150.00</td>
+                        <td>27.08</td>
+                        <td>Applied</td>
+                        <td>
+                            <a href="payment_modify.php?lid=2&pid=4"><i
+                                    class="fas fa-edit"></i></a>
+
+                            &nbsp
+                            <a href="payments.php?lid=2&pid=4&action=reverse"
+                               onclick="ignoreEdit = true;
+                               return confirm('Are you sure you want to reverse this policy payment?');"><i
+                                    class="fas fa-fast-backward"></i></a>
+
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    var ignoreEdit = false;
+
+    function editLine(id, pid, type) {
+        if (ignoreEdit === false) {
+            window.location.assign('payment_modify.php?lid=' + id + '&pid=' + pid + '&type=' + type);
+        }
+    }
+
+    //every time this page loads reload the premium tab
+    $(document).ready(function () {
+        parent.window.frames['premiumTab'].location.reload(true);
+
+
+        let fixedPx = 200;
+        let totalPx = fixedPx + (1 * 60
+            )
+        ;
+        $('#paymentsTab', window.parent.document).height(totalPx + 'px');
+        parent.window.frames['installmentsTab'].location.reload(true);
+    });
+
+
+</script>
+
+<script src="http://localhost/reprodata/scripts/bootstrap-4/js/popper.min.js"></script>
+<script src="http://localhost/reprodata/scripts/bootstrap-4/js/bootstrap.min.js"></script>
+</body>
+</html>
+    

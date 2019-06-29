@@ -103,7 +103,7 @@ function template_header()
                         </li>
                     <?php } ?>
 
-                    <?php if ($db->dbSettings['ina_enable_agent_insurance']['value'] == 1) { ?>
+                    <?php if ($db->dbSettings['ina_enable_agent_insurance']['value'] == 111) { ?>
                         <!-- Accounts -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -157,53 +157,59 @@ function template_header()
                             </div>
                         </li>
                     <?php } ?>
-                    <!-- Insurance Agents Settings -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            IA<i class="fas fa-cogs"></i>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/ainsurance/codes/insurance_companies.php">
-                                <i class="fab fa-linode"></i> Insurance Companies</a>
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/ainsurance/underwriters/underwriters.php">
-                                <i class="fas fa-users"></i> Insurance Underwriters</a>
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/send_auto_emails/send_auto_emails.php">
-                                <i class="fas fa-envelope"></i> Auto Emails</a>
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/settings/settings_update.php">
-                                <i class="fas fa-screwdriver"></i> System Settings</a>
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/agents/agents.php">
-                                <i class="fas fa-users"></i> Agents</a>
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/ainsurance/policy_types/policy_types.php">
-                                <i class="fas fa-linode"></i> Policy Types</a>
-                        </div>
+                    <?php if ($db->user_data["usr_user_rights"] == 0 && $db->dbSettings['ina_enable_agent_insurance']['value'] == 1) { ?>
+                        <!-- Insurance Agents Settings -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                IA<i class="fas fa-cogs"></i>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/ainsurance/codes/insurance_companies.php">
+                                    <i class="fab fa-linode"></i> Insurance Companies</a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/ainsurance/underwriters/underwriters.php">
+                                    <i class="fas fa-users"></i> Insurance Underwriters</a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/send_auto_emails/send_auto_emails.php">
+                                    <i class="fas fa-envelope"></i> Auto Emails</a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/settings/settings_update.php">
+                                    <i class="fas fa-screwdriver"></i> System Settings</a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/agents/agents.php">
+                                    <i class="fas fa-users"></i> Agents</a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/ainsurance/policy_types/policy_types.php">
+                                    <i class="fas fa-linode"></i> Policy Types</a>
+                            </div>
 
-                    </li>
-                    <!-- Settings -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-cogs"></i>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/codes/codes.php">
-                                <i class="fab fa-linode"></i> Codes</a>
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/send_auto_emails/send_auto_emails.php">
-                                <i class="fas fa-envelope"></i> Auto Emails</a>
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/settings/settings_update.php">
-                                <i class="fas fa-screwdriver"></i> System Settings</a>
-                        </div>
+                        </li>
+                        <?php
+                    }
+                    if ($db->user_data["usr_user_rights"] == 0 && $db->dbSettings['ina_enable_agent_insurance']['value'] == 1) {
+                        ?>
+                        <!-- Settings -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-cogs"></i>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/codes/codes.php">
+                                    <i class="fab fa-linode"></i> Codes</a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/send_auto_emails/send_auto_emails.php">
+                                    <i class="fas fa-envelope"></i> Auto Emails</a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/settings/settings_update.php">
+                                    <i class="fas fa-screwdriver"></i> System Settings</a>
+                            </div>
 
-                    </li>
+                        </li>
+                    <?php } ?>
 
                 <?php } ?>
 
@@ -222,20 +228,24 @@ function template_header()
 
 }//printer layout
 
+    $alertsLeftSpace = 1;
+    $alertCenterSpace = 10;
+    $alertsRightSpace = 1;
     if ($_GET['alert-success'] != '') {
         ?>
 
         <br>
         <div class="container-fluid">
             <div class="row">
-                <div class="col-3"></div>
-                <div class="alert alert-success alert-dismissible fade show col-6" role="alert">
+                <div class="col-<?php echo $alertsLeftSpace; ?>"></div>
+                <div class="alert alert-success alert-dismissible fade show col-<?php echo $alertCenterSpace; ?>"
+                     role="alert">
                     <?php echo $_GET["alert-success"]; ?>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="col-3"></div>
+                <div class="col-<?php echo $alertsRightSpace; ?>"></div>
             </div>
         </div>
         <?php
@@ -244,8 +254,8 @@ function template_header()
     if ($db->dismissWarning != '') { ?>
         <div class="container-fluid">
             <div class="row">
-                <div class="col-3"></div>
-                <div class="col-6">
+                <div class="col-<?php echo $alertsLeftSpace; ?>"></div>
+                <div class="col-<?php echo $alertCenterSpace; ?>">
                     <div class="alert alert-warning alert-dismissible fade show" role="alert">
                         <strong>Warning! </strong> <?php echo $db->dismissWarning; ?>
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -253,15 +263,15 @@ function template_header()
                         </button>
                     </div>
                 </div>
-                <div class="col-3"></div>
+                <div class="col-<?php echo $alertsRightSpace; ?>"></div>
             </div>
         </div>
     <?php }
     if ($db->dismissError != '') { ?>
         <div class="container-fluid">
             <div class="row">
-                <div class="col-3"></div>
-                <div class="col-6">
+                <div class="col-<?php echo $alertsLeftSpace; ?>"></div>
+                <div class="col-<?php echo $alertCenterSpace; ?>">
                     <div class="alert alert-danger alert-dismissible fade show" role="alert">
                         <strong>Error! </strong> <?php echo $db->dismissError; ?>
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -269,15 +279,15 @@ function template_header()
                         </button>
                     </div>
                 </div>
-                <div class="col-3"></div>
+                <div class="col-<?php echo $alertsRightSpace; ?>"></div>
             </div>
         </div>
     <?php }
     if ($db->dismissSuccess != '') { ?>
         <div class="container-fluid">
             <div class="row">
-                <div class="col-3"></div>
-                <div class="col-6">
+                <div class="col-<?php echo $alertsLeftSpace; ?>"></div>
+                <div class="col-<?php echo $alertCenterSpace; ?>">
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         <strong>Success! </strong> <?php echo $db->dismissSuccess; ?>
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -285,15 +295,15 @@ function template_header()
                         </button>
                     </div>
                 </div>
-                <div class="col-3"></div>
+                <div class="col-<?php echo $alertsRightSpace; ?>"></div>
             </div>
         </div>
     <?php }
     if ($db->dismissInfo != '') { ?>
         <div class="container-fluid">
             <div class="row">
-                <div class="col-3"></div>
-                <div class="col-6">
+                <div class="col-<?php echo $alertsLeftSpace; ?>"></div>
+                <div class="col-<?php echo $alertCenterSpace; ?>">
                     <div class="alert alert-info alert-dismissible fade show" role="alert">
                         <strong>Info! </strong> <?php echo $db->dismissInfo; ?>
                         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -301,59 +311,59 @@ function template_header()
                         </button>
                     </div>
                 </div>
-                <div class="col-3"></div>
+                <div class="col-<?php echo $alertsRightSpace; ?>"></div>
             </div>
         </div>
     <?php }
     if ($db->alertWarning != '') { ?>
         <div class="container-fluid">
             <div class="row">
-                <div class="col-3"></div>
-                <div class="col-6">
+                <div class="col-<?php echo $alertsLeftSpace; ?>"></div>
+                <div class="col-<?php echo $alertCenterSpace; ?>">
                     <div class="alert alert-warning" role="alert">
                         <strong>Warning! </strong> <?php echo $db->alertWarning; ?>
                     </div>
                 </div>
-                <div class="col-3"></div>
+                <div class="col-<?php echo $alertsRightSpace; ?>"></div>
             </div>
         </div>
     <?php }
     if ($db->alertError != '') { ?>
         <div class="container-fluid">
             <div class="row">
-                <div class="col-3"></div>
-                <div class="col-6">
+                <div class="col-<?php echo $alertsLeftSpace; ?>"></div>
+                <div class="col-<?php echo $alertCenterSpace; ?>">
                     <div class="alert alert-danger" role="alert">
-                        <strong>Error! </strong> <?php echo $db->alertError; ?>
+                        <strong>Error!!! </strong> <?php echo $db->alertError; ?>
                     </div>
                 </div>
-                <div class="col-3"></div>
+                <div class="col-<?php echo $alertsRightSpace; ?>"></div>
             </div>
         </div>
     <?php }
     if ($db->alertSuccess != '') { ?>
         <div class="container-fluid">
             <div class="row">
-                <div class="col-3"></div>
-                <div class="col-6">
+                <div class="col-<?php echo $alertsLeftSpace; ?>"></div>
+                <div class="col-<?php echo $alertCenterSpace; ?>">
                     <div class="alert alert-success" role="alert">
                         <strong>Success! </strong> <?php echo $db->alertSuccess; ?>
                     </div>
                 </div>
-                <div class="col-3"></div>
+                <div class="col-<?php echo $alertsRightSpace; ?>"></div>
             </div>
         </div>
     <?php }
     if ($db->alertInfo != '') { ?>
         <div class="container-fluid">
             <div class="row">
-                <div class="col-3"></div>
-                <div class="col-6">
+                <div class="col-<?php echo $alertsLeftSpace; ?>"></div>
+                <div class="col-<?php echo $alertCenterSpace; ?>">
                     <div class="alert alert-info" role="alert">
                         <strong>Info! </strong> <?php echo $db->alertInfo; ?>
                     </div>
                 </div>
-                <div class="col-3"></div>
+                <div class="col-<?php echo $alertsRightSpace; ?>"></div>
             </div>
         </div>
     <?php }

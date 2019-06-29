@@ -9,6 +9,7 @@
 include("../../include/main.php");
 include("installments_class.php");
 include('../policy_class.php');
+include("payments_class.php");
 $db = new Main();
 $db->admin_title = "AInsurance Policy Payment Modify";
 
@@ -40,6 +41,14 @@ if ($_POST["action"] == "insert") {
     $db->check_restriction_area('update');
     $db->working_section = 'AInsurance Policy Payment Modify';
     $db->start_transaction();
+
+    //check if you are allowed to modify this payment.
+    $payment = new PolicyPayment($_POST['lid']);
+    if ($payment->isPaymentAllowedForModify() == false){
+        $db->generateSessionAlertError('Not allowed to modify this payment.');
+        header("Location: payments.php?pid=" . $_POST['pid']);
+        exit();
+    }
 
     $_POST['fld_payment_date'] = $db->convert_date_format($_POST['fld_payment_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $db->db_tool_update_row('ina_policy_payments', $_POST, "`inapp_policy_payment_ID` = " . $_POST["lid"],

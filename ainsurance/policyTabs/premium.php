@@ -12,7 +12,7 @@ include('../policy_class.php');
 $db = new Main(1, 'UTF-8');
 $db->admin_title = "AInsurance Policy Items Premium";
 
-if ($_POST['action'] == 'update'){
+if ($_POST['action'] == 'update') {
     $db->working_section = 'AInsurance Policy Premium Update';
     $db->start_transaction();
 
@@ -21,7 +21,7 @@ if ($_POST['action'] == 'update'){
 
     $db->commit_transaction();
 
-    header("Location: premium.php?pid=".$_POST['pid']."&type=".$_POST['type']);
+    header("Location: premium.php?pid=" . $_POST['pid'] . "&type=" . $_POST['type']);
     exit();
 }
 
@@ -33,7 +33,7 @@ $db->show_empty_header();
 
 include('../../scripts/form_validator_class.php');
 $formValidator = new customFormValidator();
-if ($policy->policyData['inapol_status'] != 'Outstanding'){
+if ($policy->policyData['inapol_status'] != 'Outstanding') {
     $formValidator->disableForm();
 }
 
@@ -44,7 +44,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding'){
         <div class="row">
             <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12">
                 <form name="myForm" id="myForm" method="post" action=""
-                    <?php $formValidator->echoFormParameters();?> >
+                    <?php $formValidator->echoFormParameters(); ?> >
                     <div class="alert alert-dark text-center">
                         <b>Premium</b>
                     </div>
@@ -122,29 +122,28 @@ if ($policy->policyData['inapol_status'] != 'Outstanding'){
                         </div>
 
 
-                        <?php if (1==2) { ?>
-                        <label for="fld_mif" class="col-sm-3 col-form-label">Policy MIF</label>
-                        <div class="col-sm-3">
-                            <input type="text" id="fld_mif" name="fld_mif"
-                                   class="form-control"
-                                   required onchange="updateGrossPremium();"
-                                   value="<?php echo $policy->policyData["inapol_mif"]; ?>">
-                            <?php
-                            $formValidator->addField(
-                                [
-                                    'fieldName' => 'fld_mif',
-                                    'fieldDataType' => 'number',
-                                    'required' => true,
-                                    'invalidText' => 'MIF is Required'
-                                ]);
-                            ?>
-                        </div>
+                        <?php if (1 == 2) { ?>
+                            <label for="fld_mif" class="col-sm-3 col-form-label">Policy MIF</label>
+                            <div class="col-sm-3">
+                                <input type="text" id="fld_mif" name="fld_mif"
+                                       class="form-control"
+                                       required onchange="updateGrossPremium();"
+                                       value="<?php echo $policy->policyData["inapol_mif"]; ?>">
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_mif',
+                                        'fieldDataType' => 'number',
+                                        'required' => true,
+                                        'invalidText' => 'MIF is Required'
+                                    ]);
+                                ?>
+                            </div>
                         <?php } ?>
 
                     </div>
 
                     <div class="form-group row">
-
 
 
                     </div>
@@ -160,21 +159,27 @@ if ($policy->policyData['inapol_status'] != 'Outstanding'){
                     <div class="form-group row">
                         <label for="name" class="col-sm-5 col-form-label"></label>
                         <div class="col-sm-7">
-                            <?php if ($policy->getTotalItems() > 0 ) {
-                                    if ($policy->policyData['inapol_status'] == 'Outstanding')
-                                    {
-                                ?>
+                            <?php if ($policy->getTotalItems() > 0 || $policy->policyData['inapol_process_status'] == 'Cancellation') {
+                                if ($policy->policyData['inapol_status'] == 'Outstanding') {
+                                    ?>
 
-                                <input type="submit" name="Save" id="Save"
-                                       value="Save Premium"
-                                       class="btn btn-secondary">
+                                    <input type="submit" name="Save" id="Save"
+                                           value="Save Premium"
+                                           class="btn btn-secondary">
 
 
-                            <?php
-                                    }
-                            } else { ?>
-                                <div class="col-5 alert alert-danger">Must insert <?php echo $policy->getTypeFullName();?></div>
-                            <?php } ?>
+                                    <?php
+                                }
+                            } else {
+                                if ($policy->policyData['inapol_process_status'] != 'Cancellation') {
+                                    ?>
+                                    <div class="col-5 alert alert-danger">Must
+                                        insert <?php echo $policy->getTypeFullName(); ?></div>
+                                    <?php
+                                }
+                            }
+
+                            ?>
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
                             <input name="pid" type="hidden" id="pid" value="<?php echo $_GET["pid"]; ?>">
                             <input name="type" type="hidden" id="type" value="<?php echo $_GET["type"]; ?>">
@@ -187,7 +192,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding'){
         </div>
     </div>
     <script>
-        function updateGrossPremium(){
+        function updateGrossPremium() {
 
             let grossPremium = 0;
             let premium = $('#fld_premium').val() * 1;
@@ -202,9 +207,13 @@ if ($policy->policyData['inapol_status'] != 'Outstanding'){
                 grossPremium.toFixed(2)
             );
         }
-        $( document ).ready(function() {
+
+        $(document).ready(function () {
             updateGrossPremium();
+            //every time this page loads reload the premium tab
+            parent.window.frames['installmentsTab'].location.reload(true);
         });
+
 
     </script>
 

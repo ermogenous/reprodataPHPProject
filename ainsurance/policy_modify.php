@@ -177,9 +177,9 @@ $db->show_header();
                             <script>
 
                                 function loadInsuranceCompanies(clear = true) {
-                                    let agentSelected = $('#fld_underwriter_ID').val();
-                                    if (agentSelected > 0) {
-                                        Rx.Observable.fromPromise($.get("underwriters/underwriters_api.php?section=underwriter_commission_types_insurance_companies&underwriter=" + agentSelected))
+                                    let underwriterSelected = $('#fld_underwriter_ID').val();
+                                    if (underwriterSelected > 0) {
+                                        Rx.Observable.fromPromise($.get("underwriters/underwriters_api.php?section=underwriter_commission_types_insurance_companies&underwriter=" + underwriterSelected))
                                             .subscribe((response) => {
                                                     data = response;
                                                 },
@@ -228,12 +228,12 @@ $db->show_header();
                         <script>
                             function loadPolicyTypes(clear = true) {
 
-                                let agentSelected = $('#fld_agent_ID').val();
+                                let underwriterSelected = $('#fld_underwriter_ID').val();
                                 let insuranceCompanySelected = $('#fld_insurance_company_ID').val();
 
-                                if (agentSelected > 0 && insuranceCompanySelected > 0) {
+                                if (underwriterSelected > 0 && insuranceCompanySelected > 0) {
                                     Rx.Observable.fromPromise($.get("underwriters/underwriters_api.php?section=agent_commission_types_policy_types&agent="
-                                        + agentSelected + '&inscompany=' + insuranceCompanySelected))
+                                        + underwriterSelected + '&inscompany=' + insuranceCompanySelected))
                                         .subscribe((response) => {
                                                 data = response;
                                                 //console.log(data);
@@ -361,6 +361,13 @@ $db->show_header();
                                     Activate
                                 </button>
                             <?php } ?>
+                            <?php if ($data['inapol_status'] == 'Active') { ?>
+                                <button id="changeStatus" name="changeStatus" class="form-control alert-success"
+                                        type="button"
+                                        onclick="window.location.assign('policy_change_status.php?lid=<?php echo $data['inapol_policy_ID']; ?>')">
+                                    Endorse/Cancel
+                                </button>
+                            <?php } ?>
                         </div>
 
                         <label for="fld_starting_date" class="col-sm-3 col-form-label">Starting Date</label>
@@ -399,6 +406,11 @@ $db->show_header();
                                 <option value="Endorsement" <?php if ($data['inapol_process_status'] == 'Endorsement') echo 'selected'; ?>>
                                     Endorsement
                                 </option>
+                                <?php } ?>
+                                <?php if ($data['inapol_process_status'] == 'Cancellation') { ?>
+                                    <option value="Cancellation" <?php if ($data['inapol_process_status'] == 'Cancellation') echo 'selected'; ?>>
+                                        Cancellation
+                                    </option>
                                 <?php } ?>
                             </select>
                         </div>
@@ -467,6 +479,7 @@ $db->show_header();
                             </li>
                         </ul>
                         <div class="tab-content" id="myTabContent">
+
                             <div class="tab-pane fade show active" id="items" role="tabpanel"
                                  aria-labelledby="items-tab">
                                 <iframe src="policyTabs/policy_items.php?pid=<?php echo $_GET["lid"] . "&type=" . $policy->getInputType(); ?>"
@@ -474,10 +487,11 @@ $db->show_header();
                                         scrolling="0" width="100%" height="500"></iframe>
                             </div>
 
-                            <div class="tab-pane fade" id="premium" role="tabpanel" aria-labelledby="premium-tab">
+                            <div class="tab-pane fade" id="premium" role="tabpanel"
+                                 aria-labelledby="premium-tab">
                                 <iframe src="policyTabs/premium.php?pid=<?php echo $_GET["lid"] . "&type=" . $policy->getInputType(); ?>"
                                         frameborder="0" id="premiumTab" name="premiumTab"
-                                        scrolling="0" width="100%" height="400"></iframe>
+                                        scrolling="0" width="100%" height="400"> </iframe>
                             </div>
 
                             <div class="tab-pane fade" id="installments" role="tabpanel"

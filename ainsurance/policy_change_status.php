@@ -17,6 +17,7 @@ if ($_GET['action'] == 'activate'){
     $db->start_transaction();
     if ($policy->activatePolicy() == true){
         $db->generateSessionAlertSuccess('Policy '.$policy->policyData['inapol_policy_number'].' activated');
+        //$db->rollback_transaction();
         $db->commit_transaction();
         header('Location: policy_change_status.php?lid='.$_GET['lid']);
         exit();
@@ -143,6 +144,9 @@ $db->show_header();
                                 <button type="button" value="Cancel" style="width: 150px;" class="btn inapolCancelledColor" onclick="cancelPolicy();">
                                     Cancellation
                                 </button>
+                                <button type="button" value="Cancel" style="width: 150px;" class="btn inapolEndorsenentColor" onclick="endorsePolicy();">
+                                    Endorse
+                                </button>
                                 <?php
                             }
                             ?>
@@ -174,13 +178,15 @@ $db->show_header();
         }
 
         function cancelPolicy() {
-            if (confirm('Are you sure you want to cancel this Policy?')){
-                window.location.assign('?lid=<?php echo $_GET['lid'];?>&action=cancel');
-            }
+            window.location.assign('policy_cancellation.php?pid=<?php echo $_GET['lid'];?>');
         }
 
         function modifyPolicy() {
             window.location.assign('policy_modify.php?lid=<?php echo $_GET['lid'];?>');
+        }
+
+        function endorsePolicy(){
+            window.location.assign('policy_endorsement.php?pid=<?php echo $_GET['lid'];?>');
         }
 
         function goBack() {

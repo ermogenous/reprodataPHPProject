@@ -35,19 +35,20 @@ class Policy
           LEFT OUTER JOIN ina_insurance_companies ON inapol_insurance_company_ID = inainc_insurance_company_ID
           LEFT OUTER JOIN customers ON inapol_customer_ID = cst_customer_ID
           WHERE 
-          inapol_underwriter_ID '.$this->getAgentWhereClauseSql().'
+          inapol_underwriter_ID ' . $this->getAgentWhereClauseSql() . '
           AND inapol_policy_ID = ' . $policyID);
         $this->policyData = $db->fetch_assoc($result);
 
         //if no record then redirect to policies for security
-        if ($db->num_rows($result) < 1){
+        if ($db->num_rows($result) < 1) {
             header("Location: policies.php?notAllowed");
             exit();
         }
 
         $this->installmentID = $this->policyData['inapol_installment_ID'];
 
-        $this->totalPremium = round(($this->policyData['inapol_premium'] + /*$this->policyData['inapol_mif'] +*/ $this->policyData['inapol_fees'] + $this->policyData['inapol_stamps']), 2);
+        $this->totalPremium = round(($this->policyData['inapol_premium'] + /*$this->policyData['inapol_mif'] +*/
+            $this->policyData['inapol_fees'] + $this->policyData['inapol_stamps']), 2);
         $this->commission = $this->policyData['inapol_commission'];
 
         $result = $db->query_fetch('SELECT COUNT(*)as clo_total FROM ina_policy_items WHERE inapit_policy_ID = ' . $this->policyID);
@@ -55,15 +56,16 @@ class Policy
 
     }
 
-    public static function getAgentWhereClauseSql($whatToReturn = 'where'){
+    public static function getAgentWhereClauseSql($whatToReturn = 'where')
+    {
         global $db;
 
         //first get the underwriter
-        $underwriter = $db->query_fetch('SELECT * FROM ina_underwriters WHERE inaund_user_ID = '.$db->user_data['usr_users_ID']);
+        $underwriter = $db->query_fetch('SELECT * FROM ina_underwriters WHERE inaund_user_ID = ' . $db->user_data['usr_users_ID']);
 
         $totalFound = 1;
         //initialize and add current user
-        $whereClause = 'IN ('.$underwriter['inaund_user_ID'].",";
+        $whereClause = 'IN (' . $underwriter['inaund_user_ID'] . ",";
 
         //find all the users that are of the same group and lower level
         $sql = "
@@ -72,20 +74,19 @@ class Policy
           JOIN users_groups ON usr_users_groups_ID = usg_users_groups_ID
 		  JOIN ina_underwriters ON inaund_user_ID = usr_users_ID 
           WHERE 
-          usg_users_groups_ID = ".$db->user_data['usr_users_groups_ID']."
-          AND inaund_vertical_level > ".$underwriter['inaund_vertical_level'];
+          usg_users_groups_ID = " . $db->user_data['usr_users_groups_ID'] . "
+          AND inaund_vertical_level > " . $underwriter['inaund_vertical_level'];
         $result = $db->query($sql);
-        while ($row = $db->fetch_assoc($result)){
+        while ($row = $db->fetch_assoc($result)) {
             $totalFound++;
-            $whereClause .= $row['inaund_user_ID'].",";
+            $whereClause .= $row['inaund_user_ID'] . ",";
         }
         $whereClause = $db->remove_last_char($whereClause);
         $whereClause .= ")";
         //echo $whereClause."<br>";
         if ($whatToReturn == 'where') {
             return $whereClause;
-        }
-        else if ($whatToReturn == 'totalFound'){
+        } else if ($whatToReturn == 'totalFound') {
             return $totalFound;
         }
 
@@ -201,13 +202,23 @@ class Policy
         global $db;
         if ($this->policyData['inapol_status'] == 'Outstanding') {
             //perform validations.
-            //1. Check if premium is equal to total premium of items
+            //1. Check if any installments exists.
+            $totalInstallments = $db->query_fetch("SELECT COUNT(*)as clo_total_installments FROM ina_policy_installments WHERE inapi_policy_ID = ".$this->installmentID);
+            if ($totalInstallments['clo_total_installments'] < 1){
+                $this->error = true;
+                $this->errorDescription = 'No installments found. You can automatically generate.';
+                return false;
+            }
+
+            //2. Check if premium is equal to total premium of items
             $premCheck = $db->query_fetch('SELECT 
               SUM(inapit_premium)as clo_total_premium,
               SUM(inapit_mif) as clo_total_mif 
               FROM ina_policy_items WHERE inapit_policy_ID = ' . $this->policyID);
 
-            if ($this->policyData['inapol_premium'] != $premCheck['clo_total_premium'] && $this->policyData['inapol_process_status'] != 'Endorsement') {
+            if ($this->policyData['inapol_premium'] != $premCheck['clo_total_premium']
+                && $this->policyData['inapol_process_status'] != 'Endorsement'
+                && $this->policyData['inapol_process_status'] != 'Cancellation') {
                 $this->error = true;
                 $this->errorDescription = 'Policy Premium is not equal with total items premium';
                 return false;
@@ -230,20 +241,24 @@ class Policy
                     WHERE
                     inapi_policy_ID = ' . $this->policyID);
 
-            if ($this->totalPremium != $instCheck['clo_total_amount'] && $this->policyData['inapol_process_status'] != 'Endorsement') {
+            if ($this->totalPremium != $instCheck['clo_total_amount']
+                && $this->policyData['inapol_process_status'] != 'Endorsement'
+                && $this->policyData['inapol_process_status'] != 'Cancellation') {
                 $this->error = true;
                 $this->errorDescription = 'Installments Premium is not equal with policy premium. Re-Calculate installments.';
                 return false;
             }
 
-            if ($this->policyData['inapol_commission'] != $instCheck['clo_total_commission_amount'] && $this->policyData['inapol_process_status'] != 'Endorsement') {
+            if ($this->policyData['inapol_commission'] != $instCheck['clo_total_commission_amount']
+                && $this->policyData['inapol_process_status'] != 'Endorsement'
+                && $this->policyData['inapol_process_status'] != 'Cancellation') {
                 $this->error = true;
                 $this->errorDescription = 'Installments Commission is not equal with policy commission. Re-Calculate installments.';
                 return false;
             }
 
-            //if endorsement apply the installments changes.
-            if ($this->policyData['inapol_process_status'] == 'Endorsement') {
+            //if endorsement or cancellation apply the installments changes.
+            if ($this->policyData['inapol_process_status'] == 'Endorsement' || $this->policyData['inapol_process_status'] == 'Cancellation') {
                 $this->applyEndorsementAmount();
             }
 
@@ -258,6 +273,10 @@ class Policy
         if ($this->error == false) {
             //update the policy to active
             $newData['status'] = 'Active';
+            //in case of cancellation is not active but archived. Cannot consider a cancellation as active.
+            if ($this->policyData['inapol_process_status'] == 'Cancellation') {
+                $newData['status'] = 'Archived';
+            }
             $db->db_tool_update_row('ina_policies',
                 $newData,
                 'inapol_policy_ID = ' . $this->policyID,
@@ -269,8 +288,7 @@ class Policy
             //check if is replacing other policy to set to archive.
 
 
-
-            if ($this->policyData['inapol_replacing_ID'] > 0){
+            if ($this->policyData['inapol_replacing_ID'] > 0) {
                 $archNewData['status'] = 'Archived';
                 $db->db_tool_update_row('ina_policies',
                     $archNewData,
@@ -299,11 +317,11 @@ class Policy
         }
     }
 
-    public function cancelPolicy($cancelDate,$premium, $fees, $commission)
+    public function cancelPolicy($cancelDate, $premium)
     {
         global $db;
 
-        if ($this->policyData['inapol_status'] != 'Active'){
+        if ($this->policyData['inapol_status'] != 'Active') {
             $this->error = true;
             $this->errorDescription = 'Only Active policies can be cancelled.';
             return false;
@@ -317,15 +335,16 @@ class Policy
             }
         }
 
-        $newData['inapol_starting_date'] = $cancelDate;
+        $newData['inapol_starting_date'] = $db->convert_date_format($cancelDate, 'dd/mm/yyyy', 'yyyy-mm-dd');
         $newData['inapol_status'] = 'Outstanding';
         $newData['inapol_process_status'] = 'Cancellation';
         $newData['inapol_premium'] = $premium;
         //$newData['inapol_mif'] = 0;
-        $newData['inapol_commission'] = $commission;
-        $newData['inapol_fees'] = $fees;
-        //$newData['inapol_stamps'] = 'Renewal';
+        $newData['inapol_commission'] = 0;
+        $newData['inapol_fees'] = 0;
+        $newData['inapol_stamps'] = 0;
         $newData['inapol_replacing_ID'] = $this->policyID;
+        $instNewData['inapol_installment_ID'] = $this->policyData['inapol_installment_ID'];
 
         unset($newData['inapol_created_date_time']);
         unset($newData['inapol_created_by']);
@@ -337,10 +356,6 @@ class Policy
         $newPolicyID = $db->db_tool_insert_row('ina_policies', $newData, '', 1);
         $this->newCancellationID = $newPolicyID;
 
-        $instNewData['inapol_installment_ID'] = $newPolicyID;
-        $db->db_tool_update_row('ina_policies', $instNewData, 'inapol_policy_ID = ' . $newPolicyID,
-            $newPolicyID, '', 'execute', '');
-
         //update the current
         //echo "Update Current<br>\n";
         $curNewData['inapol_replaced_by_ID'] = $newPolicyID;
@@ -348,9 +363,10 @@ class Policy
             $this->policyID, '', 'execute', '');
 
 
-        $this->error = true;
-        $this->errorDescription = 'Some error. Cancel function needs build';
-        return false;
+        //$this->error = true;
+        //$this->errorDescription = 'Some error. Cancel function needs build';
+        //return false;
+        return true;
     }
 
     public function reviewPolicy($expiryDate = null)
@@ -479,8 +495,7 @@ class Policy
         } else {
             $installments->updateInstallmentsAmountAndCommission();
         }
-        //if all ok commit
-        $db->commit_transaction();
+
         return true;
     }
 
@@ -571,7 +586,7 @@ class Policy
         //no installments for the endorsement
 
         //if all ok commit
-        $db->commit_transaction();
+        //$db->commit_transaction();
         return true;
 
 
@@ -581,15 +596,17 @@ class Policy
     {
         global $db;
 
-        if ($this->policyData['inapol_process_status'] != 'Endorsement') {
+        echo "applyEndorsementAmount()<br>";
+
+        if ($this->policyData['inapol_process_status'] != 'Endorsement' && $this->policyData['inapol_process_status'] != 'Cancellation') {
             $this->error = true;
-            $this->errorDescription = 'Policy must be endorsement to apply endorsement amount';
+            $this->errorDescription = 'Policy must be endorsement/cancellation to apply endorsement amount';
             return false;
         }
 
         //first get the changes to the installments
         $changes = $this->getSplitEndorsementAmount();
-        //print_r($changes);echo "\n\n";
+        //print_r($changes);echo "\n\n";exit();
         $total = 0;
         $totalComm = 0;
         foreach ($changes as $name => $value) {
@@ -606,7 +623,7 @@ class Policy
         //get all the current installments amounts
         $sql = "SELECT * FROM ina_policy_installments
                 WHERE
-                inapi_policy_ID = ".$this->policyData['inapol_installment_ID']."
+                inapi_policy_ID = " . $this->policyData['inapol_installment_ID'] . "
                 AND inapi_paid_status IN ('UnPaid','Partial')
                 ORDER BY inapi_policy_installments_ID ASC;";
         $result = $db->query($sql);
@@ -623,7 +640,12 @@ class Policy
                 //loop into the changes.
                 foreach ($changes as $name => $value) {
                     //create the unallocated afterwards
-                    if ($name != 'unallocated' && $name != 'new') {
+                    //find the change that applies to this installment.
+                    if ($name != 'unallocated'
+                        && $name != 'new'
+                        && $name == $row['inapi_policy_installments_ID']) {
+
+                        //echo "<br>".$name." -> ".$value['amount']." -> ".$value['commission']."<br>";
                         //echo "Working ON:".$name." Val:".$value."<br>";
                         $newData['amount'] = $currentAmounts[$name]['amount'] + $value['amount'];
                         $newData['commission_amount'] = $currentAmounts[$name]['commAmount'] + $value['commission'];
@@ -631,18 +653,27 @@ class Policy
                         //check if now the installment is paid
                         //echo $name." -> newdata Amount:".$newData['amount']." -> CurrentAmounts[name]:".$currentAmounts[$name]."\n\n\n\n";
                         if ($newData['amount'] == $currentAmounts[$name]['paid']) {
+                            //echo $newData['amount']." == ".$currentAmounts[$name]['paid']."<br>";
                             $newData['paid_status'] = 'Paid';
                         }
+
+                        //echo "final updates<br>";
+                        //print_r($newData);
+                        //echo "<br>";
+
                         $db->db_tool_update_row('ina_policy_installments', $newData,
                             'inapi_policy_installments_ID = ' . $name, $name, '', 'execute', 'inapi_');
-                        //echo "\n\n";
+
+                        //reset the paid status
+                        unset($newData['paid_status']);
                     }
                 }
+
+                //echo "<br>here";//exit();
             }
-        }
-        //if no installments exists to split the amount then need to create a new record.
+        } //if no installments exists to split the amount then need to create a new record.
         else {
-            if ($changes['new']['amount'] != 0 || $changes['new']['commission'] != 0){
+            if ($changes['new']['amount'] != 0 || $changes['new']['commission'] != 0) {
                 $newData['policy_ID'] = $this->installmentID;
                 $newData['installment_type'] = 'Endorsement';
                 $newData['amount'] = $changes['new']['amount'];
@@ -651,22 +682,20 @@ class Policy
                 $newData['document_date'] = date('Y-m-d');
                 $newData['last_payment_date'] = date('Y-m-d');
 
-                if ($changes['new']['commission'] < 0 || $changes['new']['amount'] < 0){
+                if ($changes['new']['commission'] < 0 || $changes['new']['amount'] < 0) {
                     $newData['paid_amount'] = $changes['new']['amount'];
                     $newData['paid_commission_amount'] = $changes['new']['commission'];
                     $newData['paid_status'] = 'Paid';
-                }
-                else {
+                } else {
                     $newData['paid_amount'] = 0;
                     $newData['paid_commission_amount'] = 0;
                     $newData['paid_status'] = 'UnPaid';
                 }
 
-                $db->db_tool_insert_row('ina_policy_installments', $newData,'','0','inapi_','execute');
+                $db->db_tool_insert_row('ina_policy_installments', $newData, '', '0', 'inapi_', 'execute');
                 //echo "\n\n";
             }
         }
-
 
 
         //echo 'Create unallocated Entry.';
@@ -681,6 +710,22 @@ class Policy
             $unAllData['inapp_allocated_commission'] = 0;
             $db->db_tool_insert_row('ina_policy_payments', $unAllData, '', 0, '', 'execute');
             //echo "\n\n";
+        }
+
+        //all payments that are applied need to be locked
+        //in case of reverse it will mess up the data now because this function modifies the installments and so any reverse will mess it up.
+        //fix one by one record to create log file entry.
+        $sql = "
+            SELECT * FROM ina_policy_payments WHERE inapp_policy_ID = " . $this->installmentID . " 
+            AND inapp_status = 'Applied'";
+        $result = $db->query($sql);
+        while ($pay = $db->fetch_assoc($result)) {
+            $payNewData['locked'] = 1;
+            $db->db_tool_update_row('ina_policy_payments',
+                $payNewData,
+                'inapp_policy_payment_ID = ' . $pay['inapp_policy_payment_ID'],
+                $pay['inapp_policy_payment_ID'],'','execute','inapp_');
+
         }
 
         return true;
@@ -717,12 +762,11 @@ class Policy
             $perInstallment = round((floor(($amountToAllocate / $totalInstallments) * 100) / 100), 2);
             $perInstallmentComm = round((floor(($commToAllocate / $totalInstallments) * 100) / 100), 2);
 
+
         } else {
             $perInstallment = $amountToAllocate;
             $perInstallmentComm = $commToAllocate;
         }
-        //echo $amountToAllocate." - Split: into".$db->num_rows($result)." = ".$perInstallment."<br>";
-
 
         //if installments exists to split the amounts
         if ($totalInstallments > 0) {
@@ -740,7 +784,6 @@ class Policy
 
                     //if perinstallment is negative and more than the remaining.
                     if (($inst['inapi_amount'] - $inst['inapi_paid_amount']) < ($perInstallment * -1)) {
-                        //echo "Part 1 <br>";
                         //allocate the amount
                         $fixes[$inst['inapi_policy_installments_ID']]['amount'] = round((($inst['inapi_amount'] - $inst['inapi_paid_amount']) * -1), 2);
                         $fixes[$inst['inapi_policy_installments_ID']]['commission'] = round((($inst['inapi_commission_amount'] - $inst['inapi_paid_commission_amount']) * -1), 2);
@@ -783,11 +826,10 @@ class Policy
                 //$amountToAllocate = round($amountToAllocate, 2);
                 //echo " Amount to allocate:".$amountToAllocate."<br>";
             }//while loop all installments
-        }
-        //if no installments exists then need to create a new record
+        } //if no installments exists then need to create a new record
         else {
             //in case if its return amount (-)
-            if ($amountToAllocate < 0){
+            if ($amountToAllocate < 0) {
                 //the amount will be created as new unallocated
                 $fixes['unallocated']['amount'] = $amountToAllocate;
                 $fixes['new']['amount'] = 0;
@@ -795,8 +837,7 @@ class Policy
                 //the commission will create a new installment as paid with the return commission
                 $fixes['new']['commission'] = $commToAllocate;
                 $commToAllocate = 0;
-            }
-            else {
+            } else {
                 //the amount will be created as new unallocated
                 //$fixes['unallocated']['amount'] = $amountToAllocate;
                 //the commission will create a new installment as paid with the return commission
@@ -817,12 +858,19 @@ class Policy
         //loop into the results and check if the total amount is correct.
         //if not add the difference to the last installment.
         $totalCalculated = 0;
+        $totalCalculatedCommission = 0;
         foreach ($fixes as $name => $value) {
             $totalCalculated += $value['amount'];
             $lastID = $name;
+
+            $totalCalculatedCommission += $value['commission'];
         }
         if ($totalCalculated < $this->totalPremium) {
             $fixes[$lastID]['amount'] += ($this->totalPremium - $totalCalculated);
+        }
+        //fix commission
+        if ($totalCalculatedCommission < $this->commission) {
+            $fixes[$lastID]['commission'] += ($this->commission - $totalCalculatedCommission);
         }
 
         $totalCalculated = 0;

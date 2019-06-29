@@ -50,10 +50,10 @@ $db->show_empty_header();
 if ($_GET['pid'] > 0) {
 
     $policy = new Policy($_GET['pid']);
-    if ($policy->policyData['inapol_status'] == 'Active') {
+    if ($policy->policyData['inapol_status'] == 'Active' || $policy->policyData['inapol_status'] == 'Archived') {
 
         $table = new draw_table('ina_policy_payments', 'inapp_policy_payment_ID', 'ASC');
-        $table->extras .= 'inapp_policy_ID = ' . $_GET['pid'];
+        $table->extras .= 'inapp_policy_ID = ' . $policy->installmentID;
 
         $table->generate_data();
         ?>
@@ -79,7 +79,7 @@ if ($_GET['pid'] > 0) {
                                 <th scope="col"><?php $table->display_order_links('All.Commission', 'inapp_allocated_commission'); ?></th>
                                 <th scope="col"><?php $table->display_order_links('Status', 'inapp_status'); ?></th>
                                 <th scope="col">
-                                    <a href="payment_modify.php?pid=<?php echo $_GET['pid'] . "&type=" . $_GET['type']; ?>">
+                                    <a href="payment_modify.php?pid=<?php echo $policy->installmentID . "&type=" . $_GET['type']; ?>">
                                         <i class="fas fa-plus-circle"></i>
                                     </a>
                                 </th>
@@ -88,12 +88,16 @@ if ($_GET['pid'] > 0) {
                             <tbody>
                             <?php
                             $totalLines = 0;
-                            $maxPaymentID = $db->query_fetch("SELECT MAX(inapp_policy_payment_ID)as clo_max FROM ina_policy_payments WHERE inapp_policy_ID = ".$_GET['pid']." AND inapp_status = 'Applied'");
-                            $minPaymentID = $db->query_fetch("SELECT MIN(inapp_policy_payment_ID)as clo_min FROM ina_policy_payments WHERE inapp_policy_ID = ".$_GET['pid']." AND inapp_status = 'Outstanding'");
+                            $maxPaymentID = $db->query_fetch("
+                                            SELECT MAX(inapp_policy_payment_ID)as clo_max FROM ina_policy_payments 
+                                            WHERE inapp_policy_ID = ".$policy->installmentID." AND inapp_status = 'Applied' AND inapp_locked != 1");
+                            $minPaymentID = $db->query_fetch("
+                                            SELECT MIN(inapp_policy_payment_ID)as clo_min FROM ina_policy_payments 
+                                            WHERE inapp_policy_ID = ".$policy->installmentID." AND inapp_status = 'Outstanding' AND inapp_locked != 1");
                             while ($row = $table->fetch_data()) {
                                 $totalLines++;
                                 ?>
-                                <tr onclick="editLine(<?php echo $row["inapp_policy_payment_ID"] . "," . $_GET['pid'] . ",'" . $_GET['type'] . "'"; ?>);">
+                                <tr onclick="editLine(<?php echo $row["inapp_policy_payment_ID"] . "," . $policy->installmentID . ",'" . $_GET['type'] . "'"; ?>);">
                                     <th scope="row"><?php echo $row["inapp_policy_payment_ID"]; ?></th>
                                     <td><?php echo $row["inapp_payment_date"]; ?></td>
                                     <td><?php echo $row["inapp_amount"]; ?></td>
@@ -101,26 +105,35 @@ if ($_GET['pid'] > 0) {
                                     <td><?php echo $row["inapp_allocated_commission"]; ?></td>
                                     <td><?php echo $row["inapp_status"]; ?></td>
                                     <td>
-                                        <a href="payment_modify.php?lid=<?php echo $row["inapp_policy_payment_ID"] . "&pid=" . $_GET['pid']; ?>"><i
-                                                    class="fas fa-edit"></i></a>
-
                                         <?php if ($row['inapp_status'] == 'Outstanding') { ?>
+                                            <a href="payment_modify.php?lid=<?php echo $row["inapp_policy_payment_ID"] . "&pid=" . $policy->installmentID; ?>"><i
+                                                        class="fas fa-edit"></i></a>
+                                            <?php
+                                        } else {
+                                            ?>
+                                            <a href="payment_modify.php?lid=<?php echo $row["inapp_policy_payment_ID"] . "&pid=" . $policy->installmentID; ?>"><i
+                                                        class="fas fa-eye"></i></a>
+                                            <?php
+                                        }
+                                        if ($row['inapp_status'] == 'Outstanding') { ?>
                                             &nbsp
-                                            <a href="payment_delete.php?lid=<?php echo $row["inapp_policy_payment_ID"] . "&pid=" . $_GET['pid']; ?>"
+                                            <a href="payment_delete.php?lid=<?php echo $row["inapp_policy_payment_ID"] . "&pid=" . $policy->installmentID; ?>"
                                                onclick="ignoreEdit = true;
                                return confirm('Are you sure you want to delete this policy payment?');"><i
                                                         class="fas fa-minus-circle"></i></a>
                                         <?php }
                                         if ($row['inapp_status'] == 'Outstanding' && $row['inapp_policy_payment_ID'] == $minPaymentID['clo_min']) { ?>
                                             &nbsp
-                                            <a href="payments.php?lid=<?php echo $row["inapp_policy_payment_ID"] . "&pid=" . $_GET['pid'] . "&action=apply"; ?>"
+                                            <a href="payments.php?lid=<?php echo $row["inapp_policy_payment_ID"] . "&pid=" . $policy->installmentID . "&action=apply"; ?>"
                                                onclick="ignoreEdit = true;
                                return confirm('Are you sure you want to apply this policy payment?');"><i
                                                         class="fas fa-fast-forward"></i></a>
                                         <?php }
-                                        if ($row['inapp_status'] == 'Applied' && $row['inapp_policy_payment_ID'] == $maxPaymentID['clo_max']) { ?>
+                                        if ($row['inapp_status'] == 'Applied'
+                                            && $row['inapp_policy_payment_ID'] == $maxPaymentID['clo_max']
+                                            && $row['inapp_locked'] != 1) { ?>
                                             &nbsp
-                                            <a href="payments.php?lid=<?php echo $row["inapp_policy_payment_ID"] . "&pid=" . $_GET['pid'] . "&action=reverse"; ?>"
+                                            <a href="payments.php?lid=<?php echo $row["inapp_policy_payment_ID"] . "&pid=" . $policy->installmentID . "&action=reverse"; ?>"
                                                onclick="ignoreEdit = true;
                                return confirm('Are you sure you want to reverse this policy payment?');"><i
                                                         class="fas fa-fast-backward"></i></a>
@@ -138,31 +151,31 @@ if ($_GET['pid'] > 0) {
             </div>
         </div>
 
-    <script>
+        <script>
 
-        var ignoreEdit = false;
+            var ignoreEdit = false;
 
-        function editLine(id, pid, type) {
-            if (ignoreEdit === false) {
-                window.location.assign('payment_modify.php?lid=' + id + '&pid=' + pid + '&type=' + type);
+            function editLine(id, pid, type) {
+                if (ignoreEdit === false) {
+                    window.location.assign('payment_modify.php?lid=' + id + '&pid=' + pid + '&type=' + type);
+                }
             }
-        }
 
-        //every time this page loads reload the premium tab
-        $(document).ready(function () {
-            parent.window.frames['premiumTab'].location.reload(true);
-
-
-            let fixedPx = 200;
-            let totalPx = fixedPx + (<?php echo $totalLines;?> * 60
-        )
-            ;
-            $('#paymentsTab', window.parent.document).height(totalPx + 'px');
-            parent.window.frames['installmentsTab'].location.reload(true);
-        });
+            //every time this page loads reload the premium tab
+            $(document).ready(function () {
+                parent.window.frames['premiumTab'].location.reload(true);
 
 
-    </script>
+                let fixedPx = 200;
+                let totalPx = fixedPx + (<?php echo $totalLines;?> * 60
+            )
+                ;
+                $('#paymentsTab', window.parent.document).height(totalPx + 'px');
+                parent.window.frames['installmentsTab'].location.reload(true);
+            });
+
+
+        </script>
         <?php
     }//if policy is active
     else {

@@ -1,6 +1,6 @@
 <?php
 include("../include/main.php");
-include('insurance_balance_class.php');
+include('../ainsurance/customers/insurance_balance_class.php');
 $db = new Main();
 $db->admin_title = "Customers Modify";
 
@@ -16,7 +16,7 @@ if ($_POST["action"] == "insert") {
     $db->db_tool_insert_row('customers', $_POST, 'fld_', 0, 'cst_');
 
     //check for basic accounts to create the customer account
-    if ($db->dbSettings['accounts']['value'] == 'basic'){
+    if ($db->dbSettings['accounts']['value'] == 'basic') {
         include('../basic_accounts/basic_accounts_class.php');
         $bacc = new BasicAccounts();
         $bacc->createAccountForAllCustomers();
@@ -35,7 +35,7 @@ if ($_POST["action"] == "insert") {
     $db->db_tool_update_row('customers', $_POST, "`cst_customer_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'cst_');
 
-    if ($db->dbSettings['accounts']['value'] == 'basic'){
+    if ($db->dbSettings['accounts']['value'] == 'basic') {
         include('../basic_accounts/basic_accounts_class.php');
         $bacc = new BasicAccounts();
         $bacc->updateAccountDetailsFromCustomer($_POST['lid']);
@@ -86,16 +86,22 @@ $db->show_header();
                            aria-controls="pills-groups" aria-selected="true">Groups</a>
                     </li>
 
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-unpaid-tab" data-toggle="pill" href="#pills-unpaid"
+                           role="tab"
+                           aria-controls="pills-unpaid" aria-selected="true">Unpaid Installments</a>
+                    </li>
+
                 </ul>
 
                 <div class="tab-content" id="pills-tabContent">
                     <div class="tab-pane fade show active" id="pills-general" role="tabpanel"
                          aria-labelledby="pills-general-tab">
-<!-- GENERAL -->
+                        <!-- GENERAL -->
                         <div class="row">
                             <div class="col-4" style="height: 40px;">Balance</div>
                             <div class="col-8">
-                                <?php echo $balance->getBalance();?>
+                                <?php echo $balance->getBalance(); ?>
                             </div>
                         </div>
                         <div class="form-group row">
@@ -301,7 +307,12 @@ $db->show_header();
                         </div>
 
                     </div>
-<!-- PRODUCTS -->
+
+
+
+
+
+                    <!-- PRODUCTS -->
                     <div class="tab-pane fade show" id="pills-products" role="tabpanel"
                          aria-labelledby="pills-products-tab">
 
@@ -310,11 +321,33 @@ $db->show_header();
                                 scrolling="0" width="100%" height="400"></iframe>
 
                     </div>
-<!-- Customer Groups -->
+
+
+
+
+
+
+
+                    <!-- Customer Groups -->
                     <div class="tab-pane fade show" id="pills-groups" role="tabpanel"
                          aria-labelledby="pills-groups-tab">
 
                         <iframe src="customers_groups_list.php?cid=<?php echo $_GET["lid"]; ?>"
+                                frameborder="0"
+                                scrolling="0" width="100%" height="400"></iframe>
+
+                    </div>
+
+
+
+
+
+
+                    <!-- Customer Unpaid Installments -->
+                    <div class="tab-pane fade show" id="pills-unpaid" role="tabpanel"
+                         aria-labelledby="pills-unpaid-tab">
+
+                        <iframe src="../ainsurance/customers/customer_unpaid.php?cid=<?php echo $_GET["lid"]; ?>"
                                 frameborder="0"
                                 scrolling="0" width="100%" height="400"></iframe>
 

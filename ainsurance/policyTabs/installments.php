@@ -77,7 +77,7 @@ if ($_GET['pid'] > 0) {
     $table->generate_data();
 
     $policy = new Policy($_GET['pid']);
-    if ($policy->getTotalItems() == 0) {
+    if ($policy->getTotalItems() == 0 && $policy->policyData['inapol_process_status'] != 'Cancellation') {
         $db->generateAlertError('Must Insert Vehicle First');
     }
 
@@ -86,12 +86,10 @@ if ($_GET['pid'] > 0) {
     //$policy->applyEndorsementAmount();
     //$db->rollback_transaction();
 
-
     $db->show_empty_header();
 
-
     $totalLines = 0; //number of records found to resize the window accordingly
-    if ($policy->getTotalItems() > 0) {
+    if ($policy->getTotalItems() > 0 || $policy->policyData['inapol_process_status'] == 'Cancellation') {
 //echo $table->sql;
 //echo $_GET['type'];
         ?>
@@ -156,26 +154,39 @@ if ($_GET['pid'] > 0) {
 
                             //if endorsement get all changes to show
                             $unallocated = '';
-                            if ($policy->policyData['inapol_process_status'] == 'Endorsement' && $policy->policyData['inapol_status'] == 'Outstanding') {
+                            if ( ($policy->policyData['inapol_process_status'] == 'Endorsement' || $policy->policyData['inapol_process_status'] == 'Cancellation')
+                                && $policy->policyData['inapol_status'] == 'Outstanding') {
                                 $endChanges = $policy->getSplitEndorsementAmount();
+
                                 foreach ($endChanges as $name => $value) {
-                                    if ($value['amount'] > 0){
-                                        $amountAddMinus[$name] .= ' <span style="color: green;">(+'.$value['amount'].")</span>";
-                                        $commAddMinus[$name] .= ' <span style="color: green;">(+'.$value['commission'].")</span>";
-                                    }
-                                    else {
-                                        $amountAddMinus[$name] .= ' <span style="color: red;">('.$value['amount'].")</span>";
-                                        $commAddMinus[$name] .= ' <span style="color: red;">('.$value['commission'].")</span>";
+                                    $amountAddMinus['total'] += $value['amount'];
+                                    $commAddMinus['total'] += $value['commission'];
+                                    if ($value['amount'] > 0) {
+                                        $amountAddMinus[$name] .= ' <span style="color: green;">(+' . $value['amount'] . ")</span>";
+                                        $commAddMinus[$name] .= ' <span style="color: green;">(+' . $value['commission'] . ")</span>";
+                                    } else {
+                                        $amountAddMinus[$name] .= ' <span style="color: red;">(' . $value['amount'] . ")</span>";
+                                        $commAddMinus[$name] .= ' <span style="color: red;">(' . $value['commission'] . ")</span>";
                                     }
                                 }
+
+                                if ($amountAddMinus['total'] > 0){
+                                    $amountAddMinus['total'] = ' <span style="color: green;">(+' . $amountAddMinus['total'] . ")</span>";
+                                    $commAddMinus['total'] = ' <span style="color: green;">(+' . $commAddMinus['total'] . ")</span>";
+                                }
+                                else {
+                                    $amountAddMinus['total'] = ' <span style="color: red;">(' . $amountAddMinus['total'] . ")</span>";
+                                    $commAddMinus['total'] = ' <span style="color: red;">(' . $commAddMinus['total'] . ")</span>";
+                                }
+
                                 //check if unallocated entry exists
-                                if ($endChanges['unallocated']['amount'] != 0){
-                                    $unallocated = '<span style="color:red;">Unallocated Entry will be created with the amount: '.$endChanges['unallocated']['amount']."</span>";
+                                if ($endChanges['unallocated']['amount'] != 0) {
+                                    $unallocated = '<span style="color:red;">Unallocated Entry will be created with the amount: ' . $endChanges['unallocated']['amount'] . "</span>";
                                 }
-                                if ($endChanges['new']['amount'] != 0 || $endChanges['new']['commission'] != 0){
+                                if ($endChanges['new']['amount'] != 0 || $endChanges['new']['commission'] != 0) {
                                     $newEntry = '<br><span style="color:red;">
-                                                    New entry will be created with the Amount: '.$endChanges['new']['amount'].
-                                                    " and Commission: ".$endChanges['new']['commission']."</span>";
+                                                    New entry will be created with the Amount: ' . $endChanges['new']['amount'] .
+                                        " and Commission: " . $endChanges['new']['commission'] . "</span>";
                                 }
                             }
 
@@ -191,9 +202,9 @@ if ($_GET['pid'] > 0) {
                                 <tr onclick="editLine(<?php echo $row["inapi_policy_installments_ID"] . "," . $_GET['pid'] . ",'" . $_GET['type'] . "'"; ?>);">
                                     <th scope="row"><?php echo $row["inapi_policy_installments_ID"]; ?></th>
                                     <td><?php echo $db->convert_date_format($row["inapi_document_date"], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?></td>
-                                    <td><?php echo $row["inapi_amount"].$amountAddMinus[$row["inapi_policy_installments_ID"]]; ?></td>
+                                    <td><?php echo $row["inapi_amount"] . $amountAddMinus[$row["inapi_policy_installments_ID"]]; ?></td>
                                     <td><?php echo $row["inapi_paid_amount"]; ?></td>
-                                    <td><?php echo $row["inapi_commission_amount"]."/".$row['inapi_paid_commission_amount'].$commAddMinus[$row["inapi_policy_installments_ID"]]; ?></td>
+                                    <td><?php echo $row["inapi_commission_amount"] . "/" . $row['inapi_paid_commission_amount'] . $commAddMinus[$row["inapi_policy_installments_ID"]]; ?></td>
                                     <td><?php echo $row["inapi_paid_status"]; ?></td>
                                     <td>
                                         <?php if ($policy->policyData['inapol_status'] == 'Outstanding' && $policy->policyData['inapol_process_status'] != 'Endorsement') { ?>
@@ -211,10 +222,10 @@ if ($_GET['pid'] > 0) {
                             ?>
                             <tr>
                                 <td colspan="2" class="text-right"><b>Total:</b></td>
-                                <td><b><?php echo $amountSum; ?></b></td>
+                                <td><b><?php echo $amountSum.$amountAddMinus['total']; ?></b></td>
                                 <td><b><?php echo $paidSum; ?></b></td>
-                                <td><b><?php echo $commSum."/".$commPaidSum; ?></b></td>
-                                <td><b>Unpaid:</b> <?php echo $amountSum - $paidSum;?></td>
+                                <td><b><?php echo $commSum . "/" . $commPaidSum.$commAddMinus['total']; ?></b></td>
+                                <td><b>Unpaid:</b> <?php echo $amountSum - $paidSum; ?></td>
                             </tr>
 
                             </tbody>
@@ -222,9 +233,9 @@ if ($_GET['pid'] > 0) {
                     </div>
                 </div>
             </div>
-            <?php if ($policy->policyData['inapol_status'] == 'Outstanding') { ?>
+            <?php if ($policy->policyData['inapol_status'] == 'Outstanding' && $policy->policyData['inapol_process_status'] != 'Cancellation' && $policy->policyData['inapol_process_status'] != 'Endorsement') { ?>
                 <div class="row">
-                    <div class="col-12"><?php echo $unallocated.$newEntry;?></div>
+                    <div class="col-12"><?php echo $unallocated . $newEntry; ?></div>
                     <div class="col-4">
                         Generate Recursive Installments
                     </div>
@@ -275,8 +286,6 @@ if ($_GET['pid'] > 0) {
 }//if policy exists
 
 
-
-
 ?>
     <script>
 
@@ -305,6 +314,10 @@ if ($_GET['pid'] > 0) {
             let totalPx = fixedPx + (<?php echo $totalLines;?> * 60
         )
             ;
+
+            <?php if ($policy->policyData['inapol_status'] != 'Outstanding') { ?>
+            totalPx = totalPx - 250;
+            <?php }?>
             $('#installmentsTab', window.parent.document).height(totalPx + 'px');
         });
 

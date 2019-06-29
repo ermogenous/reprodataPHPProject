@@ -14,6 +14,7 @@ class PolicyPayment
     public $error = false;
     public $errorDescription = '';
     private $policyID;
+    private $allowedModify = true;
 
     function __construct($paymentID)
     {
@@ -24,8 +25,17 @@ class PolicyPayment
             JOIN ina_policies ON inapp_policy_ID = inapol_policy_ID
             WHERE inapp_policy_payment_ID = ' . $paymentID);
         $this->paymentID = $paymentID;
-        $this->policyID = $this->paymentData['inapp_policy_ID'];
+        $this->policyID = $this->paymentData['inapol_installment_ID'];
 
+        if ($this->paymentData['inapp_locked'] == 1 || $this->paymentData['inapp_status'] != 'Outstanding') {
+            $this->allowedModify = false;
+        }
+
+    }
+
+    public function isPaymentAllowedForModify()
+    {
+        return $this->allowedModify;
     }
 
     public function deletePayment()
@@ -50,10 +60,13 @@ class PolicyPayment
 
     }
 
-    public function postPayment(){
+    public function postPayment()
+    {
         global $db;
 
-        if ($this->paymentData['inapol_status'] != 'Active'){
+        //echo $this->paymentData['inapol_status'];exit();
+
+        if ($this->paymentData['inapol_status'] != 'Active' && $this->paymentData['inapol_status'] != 'Archived') {
             $this->error = true;
             $this->errorDescription = 'Policy must be Active to post payments';
         }
@@ -68,8 +81,10 @@ class PolicyPayment
         }
 
         //only the first outstanding can be applied
-        $minPaymentID = $db->query_fetch("SELECT MIN(inapp_policy_payment_ID)as clo_min FROM ina_policy_payments WHERE inapp_policy_ID = ".$this->policyID." AND inapp_status = 'Outstanding'");
-        if ($minPaymentID['clo_min'] != $this->paymentID){
+        $minPaymentID = $db->query_fetch("
+                  SELECT MIN(inapp_policy_payment_ID)as clo_min FROM ina_policy_payments 
+                  WHERE inapp_policy_ID = " . $this->policyID . " AND inapp_status = 'Outstanding' AND inapp_locked != 1");
+        if ($minPaymentID['clo_min'] != $this->paymentID) {
             $this->error = true;
             $this->errorDescription = 'Only the first outstanding payment can be applied';
         }
@@ -81,7 +96,7 @@ class PolicyPayment
         //if no error proceed to post
         //loop into all installments which are unpaid or partial
         $sql = 'SELECT * FROM ina_policy_installments 
-                WHERE inapi_policy_ID = ' . $this->paymentData['inapp_policy_ID'] . "
+                WHERE inapi_policy_ID = ' . $this->policyID . "
                 AND inapi_paid_status IN ('UnPaid', 'Partial')
                 ORDER BY inapi_document_date ASC";
         $result = $db->query($sql);
@@ -109,7 +124,7 @@ class PolicyPayment
 
                 $installmentRemainingAmount = ($installment['inapi_amount'] - $installment['inapi_paid_amount']);
                 //if the amount to allocate is more than installment then do full paid
-                if ($amountToAllocate >=  $installmentRemainingAmount) {
+                if ($amountToAllocate >= $installmentRemainingAmount) {
 
 
                     //subtract the amount from remaining
@@ -130,11 +145,11 @@ class PolicyPayment
                     //commission paid analogy of the payment.
                     //first find the analogy of the commission.
                     // (total comm - paid comm) / (total amount - paid amount)
-                    $analogy = ($installment['inapi_commission_amount'] - $installment['inapi_paid_commission_amount']) /  ($installment['inapi_amount'] - $installment['inapi_paid_amount']);
-                    $newData['paid_commission_amount'] = round(($amountToAllocate * $analogy),2) + $installment['inapi_paid_commission_amount'] ;
-                    $totalAllocatedCommission += round(($amountToAllocate * $analogy),2);
+                    $analogy = ($installment['inapi_commission_amount'] - $installment['inapi_paid_commission_amount']) / ($installment['inapi_amount'] - $installment['inapi_paid_amount']);
+                    $newData['paid_commission_amount'] = round(($amountToAllocate * $analogy), 2) + $installment['inapi_paid_commission_amount'];
+                    $totalAllocatedCommission += round(($amountToAllocate * $analogy), 2);
                     //verify that the paid commission is not more than the total comm.
-                    if ($newData['paid_commission_amount'] > $installment['inapi_commission_amount']){
+                    if ($newData['paid_commission_amount'] > $installment['inapi_commission_amount']) {
                         $newData['paid_commission_amount'] = $installment['inapi_commission_amount'];
                     }
 
@@ -160,9 +175,7 @@ class PolicyPayment
                 $db->db_tool_insert_row('ina_policy_payments_lines', $lineData, '', 0, 'inappl_', 'execute');
 
 
-
             }//if amount to allocate > 0
-
 
 
             //echo "End - Amount to allocate:".$amountToAllocate."\n\n\n\n\n-------------------------------------";
@@ -201,9 +214,15 @@ class PolicyPayment
             $this->errorDescription = 'Must be applied to reverse';
         }
 
+        //check if the payment is not locked
+        if ($this->paymentData['inapp_locked'] == 1) {
+            $this->error = true;
+            $this->errorDescription = 'This payment is locked because endorsement/cancellation was activated after the payment. Permanent locked payment.';
+        }
+
         //check if its the last applied payment
-        $maxPaymentID = $db->query_fetch("SELECT MAX(inapp_policy_payment_ID)as clo_max FROM ina_policy_payments WHERE inapp_policy_ID = ".$this->policyID." AND inapp_status = 'Applied'");
-        if ($maxPaymentID['clo_max'] != $this->paymentID){
+        $maxPaymentID = $db->query_fetch("SELECT MAX(inapp_policy_payment_ID)as clo_max FROM ina_policy_payments WHERE inapp_policy_ID = " . $this->policyID . " AND inapp_status = 'Applied'");
+        if ($maxPaymentID['clo_max'] != $this->paymentID) {
             $this->error = true;
             $this->errorDescription = 'Can only reverse the last applied payment.';
         }
@@ -225,8 +244,8 @@ class PolicyPayment
                 $line['inappl_policy_installment_ID'], '', 'execute', 'inapi_');
 
             //delete the line
-            $db->db_tool_delete_row('ina_policy_payments_lines',$line['inappl_policy_payments_line_ID'],
-            'inappl_policy_payments_line_ID = '.$line['inappl_policy_payments_line_ID']);
+            $db->db_tool_delete_row('ina_policy_payments_lines', $line['inappl_policy_payments_line_ID'],
+                'inappl_policy_payments_line_ID = ' . $line['inappl_policy_payments_line_ID']);
         }
 
         //fix the payment.
