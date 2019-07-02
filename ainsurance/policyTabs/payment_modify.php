@@ -30,7 +30,7 @@ if ($_POST["action"] == "insert") {
     $db->commit_transaction();
 
     if ($_POST['sub-action'] == 'exit') {
-        header("Location: payments.php?pid=" . $_POST['pid']);
+        header("Location: payments.php?rel=yes&pid=" . $_POST['pid']);
         exit();
     } else {
         $_GET['lid'] = $newId;
@@ -46,7 +46,7 @@ if ($_POST["action"] == "insert") {
     $payment = new PolicyPayment($_POST['lid']);
     if ($payment->isPaymentAllowedForModify() == false){
         $db->generateSessionAlertError('Not allowed to modify this payment.');
-        header("Location: payments.php?pid=" . $_POST['pid']);
+        header("Location: payments.php?rel=yes&pid=" . $_POST['pid']);
         exit();
     }
 
@@ -58,7 +58,7 @@ if ($_POST["action"] == "insert") {
     $db->commit_transaction();
 
     if ($_POST['sub-action'] == 'exit') {
-        header("Location: payments.php?pid=" . $_POST['pid']);
+        header("Location: payments.php?rel=yes&pid=" . $_POST['pid']);
         exit();
     } else {
         $_GET['lid'] = $_POST['lid'];

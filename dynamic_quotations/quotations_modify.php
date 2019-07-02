@@ -11,8 +11,8 @@ $db->include_js_file("jscripts.js");
 //$db->include_js_file("../scripts/bootstrap-3.3.7-dist/js/bootstrap.min.js");
 include("quotations_functions.php");
 include('quotations_class.php');
-$underwriter = $db->query_fetch('SELECT * FROM oqt_quotations_underwriters WHERE oqun_user_ID = '.$db->user_data['usr_users_ID']);
-if (strpos($underwriter['oqun_allow_quotations'],'#'.$_GET["quotation_type"].'-1#') === false) {
+$underwriter = $db->query_fetch('SELECT * FROM oqt_quotations_underwriters WHERE oqun_user_ID = ' . $db->user_data['usr_users_ID']);
+if (strpos($underwriter['oqun_allow_quotations'], '#' . $_GET["quotation_type"] . '-1#') === false) {
     header('Location: quotations.php');
     exit();
 }
@@ -96,8 +96,7 @@ if ($_POST["action"] == "save") {
     //check if change language and new quotation
     if ($_POST["change_language"] == '1' && $_GET["quotation"] == "") {
         //do nothing
-    }
-    else {
+    } else {
         if ($quote->quotationData()['oqit_status'] == 'Outstanding' || $db->user_data['usr_user_rights'] <= 1 || $_POST['lid'] == '') {
             $db->start_transaction();
             $quotation_id = insert_quotation_data_to_db($_POST["quotation"], $_POST["quotation_type"]);
@@ -145,7 +144,7 @@ if ($_POST["action"] == "save") {
             }
         }//if outstanding
         //not allowed to update
-        else{
+        else {
             $db->generateAlertError('Not Outstanding. Not allowed to Modify.');
         }
 
@@ -182,8 +181,7 @@ if ($quote->quotationData()['oqq_status'] != 'Outstanding' && $_GET['quotation']
     if ($db->user_data['usr_user_rights'] >= 3) {
         $allowEdit = false;
         $formValidator->disableForm();
-    }
-    //allow in case administrator/advanced user
+    } //allow in case administrator/advanced user
     else {
         $allowEditAdvanced = true;
     }
@@ -306,9 +304,11 @@ $formValidator->addCustomCode("
                                     ]);
                                 ?>
                                 &nbsp;
-                                <i class="fas fa-spinner" id="client_search_autofill_loading" style="display: none;"></i>
+                                <i class="fas fa-spinner" id="client_search_autofill_loading"
+                                   style="display: none;"></i>
                                 <i class="fas fa-check" id="client_search_autofill_found" style="display: none;"></i>
-                                <i class="fas fa-times" id="client_search_autofill_not_found" style="display: none;"></i>
+                                <i class="fas fa-times" id="client_search_autofill_not_found"
+                                   style="display: none;"></i>
                             </div>
                             <script>
                                 $('#search_name').focusout(
@@ -417,11 +417,16 @@ $formValidator->addCustomCode("
                                        class="form-control"
                                        value="<?php echo $q_data["oqq_insureds_mobile"]; ?>">
                                 <?php
+                                $mobileRequired = false;
+                                if ($quotation_type_data['oqqt_added_field_mobile_required'] == 1) {
+                                    $mobileRequired = true;
+                                }
+
                                 $formValidator->addField(
                                     [
                                         'fieldName' => 'insureds_mobile',
                                         'fieldDataType' => 'text',
-                                        'required' => false,
+                                        'required' => $mobileRequired,
                                         'invalidText' => show_quotation_text("Συμπληρώστε Κινητό Τηλ.", "Must Enter Mobile", 'Return')
                                     ]);
                                 ?>
@@ -439,11 +444,15 @@ $formValidator->addCustomCode("
                                        class="form-control"
                                        value="<?php echo $q_data["oqq_insureds_email"]; ?>">
                                 <?php
+                                $emailRequired = false;
+                                if ($quotation_type_data['oqqt_added_field_email_required'] == 1) {
+                                    $emailRequired = true;
+                                }
                                 $formValidator->addField(
                                     [
                                         'fieldName' => 'insureds_email',
                                         'fieldDataType' => 'text',
-                                        'required' => true,
+                                        'required' => $emailRequired,
                                         'invalidText' => show_quotation_text("Συμπληρώστε Email.", "Must Enter Email", 'Return')
                                     ]);
                                 ?>
@@ -460,11 +469,15 @@ $formValidator->addCustomCode("
                                        class="form-control"
                                        value="<?php echo $q_data["oqq_insureds_contact_person"]; ?>">
                                 <?php
+                                $contactRequired = false;
+                                if ($quotation_type_data['oqqt_added_field_contact_person_required'] == 1) {
+                                    $contactRequired = true;
+                                }
                                 $formValidator->addField(
                                     [
                                         'fieldName' => 'insureds_contact_person',
                                         'fieldDataType' => 'text',
-                                        'required' => true,
+                                        'required' => $contactRequired,
                                         'invalidText' => show_quotation_text("Συμπληρώστε Όνομα Επικοινωνίας.", "Must Enter Contact Person", 'Return')
                                     ]);
                                 ?>
@@ -502,19 +515,23 @@ $formValidator->addCustomCode("
                                 <select name="insureds_city" id="insureds_city"
                                         class="form-control">
                                     <option value=""></option>
-                                    <option value="Λεμεσός"    <?php if ($q_data['oqq_insureds_city'] == 'Λεμεσός' || $q_data['oqq_insureds_city'] == 'Limassol') echo "selected";?>><?php show_quotation_text("Λεμεσός", "Limassol");?></option>
-                                    <option value="Λευκωσία"   <?php if ($q_data['oqq_insureds_city'] == 'Λευκωσία' || $q_data['oqq_insureds_city'] == 'Nicosia') echo "selected";?>><?php show_quotation_text("Λευκωσία", "Nicosia");?></option>
-                                    <option value="Λάρνακα"    <?php if ($q_data['oqq_insureds_city'] == 'Λάρνακα' || $q_data['oqq_insureds_city'] == 'Larnaka') echo "selected";?>><?php show_quotation_text("Λάρνακα", "Larnaka");?></option>
-                                    <option value="Πάφος"      <?php if ($q_data['oqq_insureds_city'] == 'Πάφος' || $q_data['oqq_insureds_city'] == 'Paphos') echo "selected";?>><?php show_quotation_text("Πάφος", "Paphos");?></option>
-                                    <option value="Αμμόχωστος" <?php if ($q_data['oqq_insureds_city'] == 'Αμμόχωστος' || $q_data['oqq_insureds_city'] == 'Famagusta') echo "selected";?>><?php show_quotation_text("Αμμόχωστος", "Famagusta");?></option>
-                                    <option value="Κερύνεια"   <?php if ($q_data['oqq_insureds_city'] == 'Κερύνεια' || $q_data['oqq_insureds_city'] == 'Kyrenia') echo "selected";?>><?php show_quotation_text("Κερύνεια", "Kyrenia");?></option>
+                                    <option value="Λεμεσός" <?php if ($q_data['oqq_insureds_city'] == 'Λεμεσός' || $q_data['oqq_insureds_city'] == 'Limassol') echo "selected"; ?>><?php show_quotation_text("Λεμεσός", "Limassol"); ?></option>
+                                    <option value="Λευκωσία" <?php if ($q_data['oqq_insureds_city'] == 'Λευκωσία' || $q_data['oqq_insureds_city'] == 'Nicosia') echo "selected"; ?>><?php show_quotation_text("Λευκωσία", "Nicosia"); ?></option>
+                                    <option value="Λάρνακα" <?php if ($q_data['oqq_insureds_city'] == 'Λάρνακα' || $q_data['oqq_insureds_city'] == 'Larnaka') echo "selected"; ?>><?php show_quotation_text("Λάρνακα", "Larnaka"); ?></option>
+                                    <option value="Πάφος" <?php if ($q_data['oqq_insureds_city'] == 'Πάφος' || $q_data['oqq_insureds_city'] == 'Paphos') echo "selected"; ?>><?php show_quotation_text("Πάφος", "Paphos"); ?></option>
+                                    <option value="Αμμόχωστος" <?php if ($q_data['oqq_insureds_city'] == 'Αμμόχωστος' || $q_data['oqq_insureds_city'] == 'Famagusta') echo "selected"; ?>><?php show_quotation_text("Αμμόχωστος", "Famagusta"); ?></option>
+                                    <option value="Κερύνεια" <?php if ($q_data['oqq_insureds_city'] == 'Κερύνεια' || $q_data['oqq_insureds_city'] == 'Kyrenia') echo "selected"; ?>><?php show_quotation_text("Κερύνεια", "Kyrenia"); ?></option>
                                 </select>
                                 <?php
+                                $cityRequired = false;
+                                if ($quotation_type_data['oqqt_added_field_city_required'] == 1) {
+                                    $cityRequired = true;
+                                }
                                 $formValidator->addField(
                                     [
                                         'fieldName' => 'insureds_city',
                                         'fieldDataType' => 'select',
-                                        'required' => true,
+                                        'required' => $cityRequired,
                                         'invalidText' => show_quotation_text("Επιλέξατε Πόλη.", "Must Select City", 'Return')
                                     ]);
                                 ?>
@@ -604,20 +621,32 @@ $formValidator->addCustomCode("
 
                 <?php }
                 if ($quotation_type_data['oqqt_added_field_extra_details'] == 1) {
+                    $extraDetailsRequired = false;
+                    if ($quotation_type_data['oqqt_added_field_extra_details_required'] == 1) {
+                        $extraDetailsRequired = true;
+                    }
                     ?>
 
-                    <div class="form-group row">
-                        <label for="fld_quotation_label_gr" class="col-sm-4 col-form-label">
-                            <?php echo show_quotation_text('Επιπρόσθετες Πληροφορίες', 'Extra Details'); ?>
-                        </label>
-                        <div class="col-sm-8">
+                    <div class="container">
+                        <div class="form-group row">
+                            <label for="fld_quotation_label_gr" class="col-sm-4 col-form-label">
+                                <?php echo show_quotation_text('Επιπρόσθετες Πληροφορίες', 'Extra Details'); ?>
+                            </label>
+                            <div class="col-sm-8">
                             <textarea name="situations_extra_details" id="situations_extra_details"
-                                      class="form-control">
-                                <?php echo $q_data["oqq_extra_details"]; ?>
-                            </textarea>
+                                      class="form-control"><?php echo $q_data["oqq_extra_details"]; ?></textarea>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'situations_extra_details',
+                                        'fieldDataType' => 'text',
+                                        'required' => $extraDetailsRequired,
+                                        'invalidText' => show_quotation_text("Συμπληρώστε Επιπρόσθετες Πληροφορίες", "Must Enter Extra Details", 'Return')
+                                    ]);
+                                ?>
+                            </div>
                         </div>
                     </div>
-
                 <?php } ?>
 
                 <!-- BUTTONS -->
@@ -659,25 +688,27 @@ $formValidator->addCustomCode("
 <script>
     var allWarning = Object;
     var allAlert = Object;
+
     function addNewWarning(warning, warningID) {
 
         allWarning[warningID] = warning;
         showWarning();
     }
+
     function addNewAlert(alert, alertID) {
 
         allAlert[alertID] = alert;
         showAlert();
     }
 
-    function removeWarning(warningID){
+    function removeWarning(warningID) {
         if (allWarning[warningID] != '') {
             allWarning[warningID] = '';
         }
         showWarning();
     }
 
-    function removeAlert(alertID){
+    function removeAlert(alertID) {
         if (allAlert[alertID] != '') {
             allAlert[alertID] = '';
         }
@@ -687,7 +718,7 @@ $formValidator->addCustomCode("
     function showWarning() {
         let allHtml = 'Warning! - ';
         let i = 0;
-        $.each(allWarning ,function( key, value ) {
+        $.each(allWarning, function (key, value) {
             if (value != '') {
                 i++;
                 if (i > 1) {
@@ -696,7 +727,7 @@ $formValidator->addCustomCode("
                 allHtml += value;
             }
         });
-        if (i>0) {
+        if (i > 0) {
             $('#warningDivSection').show();
             $('#warningDivSection').html(allHtml);
         }
@@ -709,7 +740,7 @@ $formValidator->addCustomCode("
     function showAlert() {
         let allHtml = 'Alert! - ';
         let i = 0;
-        $.each(allAlert ,function( key, value ) {
+        $.each(allAlert, function (key, value) {
             if (value != '') {
                 i++;
                 if (i > 1) {
@@ -718,7 +749,7 @@ $formValidator->addCustomCode("
                 allHtml += value;
             }
         });
-        if (i>0) {
+        if (i > 0) {
             $('#alertDivSection').show();
             $('#alertDivSection').html(allHtml);
         }
@@ -730,17 +761,18 @@ $formValidator->addCustomCode("
 
     //check if a function named Approval[fieldID] exists. If does then executes the function and gets the result
     //if in the result[result] is equal to 0 then issue warning.
-    $("#myForm :input").change(function() {
+    $("#myForm :input").change(function () {
         updateWarnings($(this)[0]['id']);
         updateAlerts($(this)[0]['id']);
     });
-    function updateWarnings(fieldID){
+
+    function updateWarnings(fieldID) {
 
         var result = [];
-        var functionString = 'if (typeof Approval'+fieldID+' === "function") {result = Approval'+ fieldID +'();}';
+        var functionString = 'if (typeof Approval' + fieldID + ' === "function") {result = Approval' + fieldID + '();}';
         eval(functionString);
-        if (result['result'] == 1){
-            addNewWarning(result['info'],fieldID);
+        if (result['result'] == 1) {
+            addNewWarning(result['info'], fieldID);
         }
         else {
             removeWarning(fieldID);
@@ -749,19 +781,18 @@ $formValidator->addCustomCode("
 
     //checks if function Reject[fieldID] exists and executes and gets the result
     //if in the result[result] is equal to 0 then issue alert.
-    function updateAlerts(fieldID){
+    function updateAlerts(fieldID) {
 
         var result = [];
-        var functionString = 'if (typeof Reject'+fieldID+' === "function") {result = Reject'+ fieldID +'();}';
+        var functionString = 'if (typeof Reject' + fieldID + ' === "function") {result = Reject' + fieldID + '();}';
         eval(functionString);
-        if (result['result'] == 1){
-            addNewAlert(result['info'],fieldID);
+        if (result['result'] == 1) {
+            addNewAlert(result['info'], fieldID);
         }
         else {
             removeAlert(fieldID);
         }
     }
-
 
 
 </script>

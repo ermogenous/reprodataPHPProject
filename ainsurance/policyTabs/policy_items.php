@@ -121,9 +121,11 @@ if ($_GET['pid'] > 0) {
 
         //every time this page loads reload the premium tab
         $(document).ready(function () {
-            parent.window.frames['premiumTab'].location.reload(true);
-            parent.window.frames['installmentsTab'].location.reload(true);
 
+            <?php if ($_GET['rel'] == 'yes') { ?>
+            parent.window.frames['premTab'].location.reload(true);
+            parent.window.frames['installmentsTab'].location.reload(true);
+            <?php } ?>
 
             let fixedPx = 100;
             let totalPx = fixedPx + (<?php echo $totalLines;?> * 60

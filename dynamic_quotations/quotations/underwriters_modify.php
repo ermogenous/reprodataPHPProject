@@ -71,8 +71,8 @@ $formValidator = new customFormValidator();
 
     <div class="container">
         <div class="row">
-            <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
-            <div class="col-lg-6 col-md-6 col-xs-12 col-sm-12">
+            <div class="col-lg-1 col-md-3 hidden-xs hidden-sm"></div>
+            <div class="col-lg-10 col-md-6 col-xs-12 col-sm-12">
                 <form name="myForm" id="myForm" method="post" action=""
                     <?php $formValidator->echoFormParameters(); ?>>
                     <div class="row alert alert-success text-center">
@@ -152,7 +152,7 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="row">
-                        <label for="allow_mff" class="col-sm-5 col-form-label">
+                        <label for="allow_mff" class="col-sm-4 col-form-label">
                             Allow Medical For Foreigners
                         </label>
                         <div class="col-sm-1">
@@ -164,7 +164,7 @@ $formValidator = new customFormValidator();
 
                     <div class="form-group row">
                         <label for="fld_mf_age_restriction" class="col-sm-4 col-form-label">Age limit Inclusive</label>
-                        <div class="col-sm-8">
+                        <div class="col-sm-4">
                             <input name="fld_mf_age_restriction" type="text" id="fld_mf_age_restriction"
                                    class="form-control"
                                    value="<?php echo $data["oqun_mf_age_restriction"]; ?>">
@@ -187,7 +187,7 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="row">
-                        <label for="allow_mc" class="col-sm-5 col-form-label">
+                        <label for="allow_mc" class="col-sm-4 col-form-label">
                             Allow Marine Cargo
                         </label>
                         <div class="col-sm-1">
@@ -213,12 +213,27 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
 
+                    <?php
+
+                    //default excesses
+                    $defExcGeneralCargo = $data["oqun_excess_general_cargo"] == '' ? 'Deductible €150 each and every loss.' : $data["oqun_excess_general_cargo"];
+                    $defExcVehicles = $data["oqun_excess_vehicles"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_vehicles"];
+                    $defExcMachinery = $data["oqun_excess_machinery"] == '' ? 'Deductible €150 each and every loss.' : $data["oqun_excess_machinery"];
+                    $defExcTempNoMeat = $data["oqun_excess_temp_no_meat"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_temp_no_meat"];
+                    $defExcTempMeat = $data["oqun_excess_temp_meat"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_temp_meat"];
+                    $defExcSpecialCover = $data["oqun_excess_special_cover"] == '' ? 'Deductible €250 or 1% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_special_cover"];
+                    $defExcProPacked = $data["oqun_excess_pro_packed"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_pro_packed"];
+                    $defExcOwnerPacked = $data["oqun_excess_owner_packed"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_owner_packed"];
+                    $defExcOther = $data["oqun_excess_general_cargo"] == '' ? '' : $data["oqun_excess_general_cargo"];
+
+                    ?>
+
                     <div class="form-group row">
-                        <label for="fld_excess_general_cargo" class="col-sm-8 col-form-label">Excess General Cargo & Merchandise</label>
-                        <div class="col-sm-4">
+                        <label for="fld_excess_general_cargo" class="col-sm-5 col-form-label">Excess General Cargo & Merchandise</label>
+                        <div class="col-sm-7">
                             <input name="fld_excess_general_cargo" type="text" id="fld_excess_general_cargo"
-                                   class="form-control"
-                                   value="<?php echo $data["oqun_excess_general_cargo"]; ?>">
+                                   class="form-control" maxlength="100"
+                                   value="<?php echo $defExcGeneralCargo; ?>">
                             <?php
                             $formValidator->addField([
                                 "fieldName" => "fld_excess_general_cargo",
@@ -231,11 +246,11 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_excess_vehicles" class="col-sm-8 col-form-label">Excess New/Used Vehicles</label>
-                        <div class="col-sm-4">
+                        <label for="fld_excess_vehicles" class="col-sm-5 col-form-label">Excess New/Used Vehicles</label>
+                        <div class="col-sm-7">
                             <input name="fld_excess_vehicles" type="text" id="fld_excess_vehicles"
-                                   class="form-control"
-                                   value="<?php echo $data["oqun_excess_vehicles"]; ?>">
+                                   class="form-control" maxlength="100"
+                                   value="<?php echo $defExcVehicles; ?>">
                             <?php
                             $formValidator->addField([
                                 "fieldName" => "fld_excess_vehicles",
@@ -248,11 +263,11 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_excess_machinery" class="col-sm-8 col-form-label">Excess Machinery</label>
-                        <div class="col-sm-4">
+                        <label for="fld_excess_machinery" class="col-sm-5 col-form-label">Excess Machinery</label>
+                        <div class="col-sm-7">
                             <input name="fld_excess_machinery" type="text" id="fld_excess_machinery"
-                                   class="form-control"
-                                   value="<?php echo $data["oqun_excess_machinery"]; ?>">
+                                   class="form-control" maxlength="100"
+                                   value="<?php echo $defExcMachinery; ?>">
                             <?php
                             $formValidator->addField([
                                 "fieldName" => "fld_excess_machinery",
@@ -265,11 +280,11 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_excess_temp_no_meat" class="col-sm-8 col-form-label">Excess Temp.Controlled Cargo other than meat</label>
-                        <div class="col-sm-4">
+                        <label for="fld_excess_temp_no_meat" class="col-sm-5 col-form-label">Excess Temp.Controlled Cargo other than meat</label>
+                        <div class="col-sm-7">
                             <input name="fld_excess_temp_no_meat" type="text" id="fld_excess_temp_no_meat"
-                                   class="form-control"
-                                   value="<?php echo $data["oqun_excess_temp_no_meat"]; ?>">
+                                   class="form-control" maxlength="100"
+                                   value="<?php echo $defExcTempNoMeat; ?>">
                             <?php
                             $formValidator->addField([
                                 "fieldName" => "fld_excess_temp_no_meat",
@@ -282,11 +297,11 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_excess_temp_meat" class="col-sm-8 col-form-label">Excess Temp.Controlled Cargo meat</label>
-                        <div class="col-sm-4">
+                        <label for="fld_excess_temp_meat" class="col-sm-5 col-form-label">Excess Temp.Controlled Cargo meat</label>
+                        <div class="col-sm-7">
                             <input name="fld_excess_temp_meat" type="text" id="fld_excess_temp_meat"
-                                   class="form-control"
-                                   value="<?php echo $data["oqun_excess_temp_meat"]; ?>">
+                                   class="form-control" maxlength="100"
+                                   value="<?php echo $defExcTempMeat; ?>">
                             <?php
                             $formValidator->addField([
                                 "fieldName" => "fld_excess_temp_meat",
@@ -299,11 +314,11 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_excess_special_cover" class="col-sm-8 col-form-label">Excess Special Cover Mobile Phones, Electronic Equipment</label>
-                        <div class="col-sm-4">
+                        <label for="fld_excess_special_cover" class="col-sm-5 col-form-label">Excess Special Cover Mobile Phones, Electronic Equipment</label>
+                        <div class="col-sm-7">
                             <input name="fld_excess_special_cover" type="text" id="fld_excess_special_cover"
-                                   class="form-control"
-                                   value="<?php echo $data["oqun_excess_special_cover"]; ?>">
+                                   class="form-control" maxlength="100"
+                                   value="<?php echo $defExcSpecialCover; ?>">
                             <?php
                             $formValidator->addField([
                                 "fieldName" => "fld_excess_special_cover",
@@ -316,11 +331,11 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_excess_pro_packed" class="col-sm-8 col-form-label">Excess Personal Effects professionally packed</label>
-                        <div class="col-sm-4">
+                        <label for="fld_excess_pro_packed" class="col-sm-5 col-form-label">Excess Personal Effects professionally packed</label>
+                        <div class="col-sm-7">
                             <input name="fld_excess_pro_packed" type="text" id="fld_excess_pro_packed"
-                                   class="form-control"
-                                   value="<?php echo $data["oqun_excess_pro_packed"]; ?>">
+                                   class="form-control" maxlength="100"
+                                   value="<?php echo $defExcProPacked; ?>">
                             <?php
                             $formValidator->addField([
                                 "fieldName" => "fld_excess_pro_packed",
@@ -333,11 +348,11 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_excess_owner_packed" class="col-sm-8 col-form-label">Excess Personal Effects owner packed</label>
-                        <div class="col-sm-4">
+                        <label for="fld_excess_owner_packed" class="col-sm-5 col-form-label">Excess Personal Effects owner packed</label>
+                        <div class="col-sm-7">
                             <input name="fld_excess_owner_packed" type="text" id="fld_excess_owner_packed"
-                                   class="form-control"
-                                   value="<?php echo $data["oqun_excess_owner_packed"]; ?>">
+                                   class="form-control" maxlength="100"
+                                   value="<?php echo $defExcOwnerPacked; ?>">
                             <?php
                             $formValidator->addField([
                                 "fieldName" => "fld_excess_owner_packed",
@@ -350,11 +365,11 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_excess_other" class="col-sm-8 col-form-label">Excess Other</label>
-                        <div class="col-sm-4">
+                        <label for="fld_excess_other" class="col-sm-5 col-form-label">Excess Other</label>
+                        <div class="col-sm-7">
                             <input name="fld_excess_other" type="text" id="fld_excess_other"
-                                   class="form-control"
-                                   value="<?php echo $data["oqun_excess_other"]; ?>">
+                                   class="form-control" maxlength="100"
+                                   value="<?php echo $defExcOther; ?>">
                             <?php
                             $formValidator->addField([
                                 "fieldName" => "fld_excess_other",

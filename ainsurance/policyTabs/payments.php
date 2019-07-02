@@ -163,15 +163,16 @@ if ($_GET['pid'] > 0) {
 
             //every time this page loads reload the premium tab
             $(document).ready(function () {
-                parent.window.frames['premiumTab'].location.reload(true);
 
+                <?php if ($_GET['rel'] == 'yes') { ?>
+                parent.window.frames['premTab'].location.reload(true);
+                parent.window.frames['installmentsTab'].location.reload(true);
+                <?php } ?>
 
                 let fixedPx = 200;
-                let totalPx = fixedPx + (<?php echo $totalLines;?> * 60
-            )
-                ;
+                let totalPx = fixedPx + (<?php echo $totalLines;?> * 60);
                 $('#paymentsTab', window.parent.document).height(totalPx + 'px');
-                parent.window.frames['installmentsTab'].location.reload(true);
+
             });
 
 

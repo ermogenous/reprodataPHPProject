@@ -13,12 +13,12 @@ $db->admin_title = "Customers Groups List";
 
 
 $db->show_empty_header();
-
-$table = new draw_table('customer_group_relation', 'cstg_customer_group_ID', 'ASC');
-$table->extra_from_section = "JOIN customer_groups ON cstg_customer_groups_ID = csg_customer_group_ID";
-$table->extras = " csg_active = 1 AND cstg_customer_ID = " . $_GET['cid'];
-$table->generate_data();
-?>
+if ($_GET['cid'] > 0) {
+    $table = new draw_table('customer_group_relation', 'cstg_customer_group_ID', 'ASC');
+    $table->extra_from_section = "JOIN customer_groups ON cstg_customer_groups_ID = csg_customer_group_ID";
+    $table->extras = " csg_active = 1 AND cstg_customer_ID = " . $_GET['cid'];
+    $table->generate_data();
+    ?>
 
     <div class="container">
         <div class="row">
@@ -71,16 +71,16 @@ $table->generate_data();
                 $sqlOtherMembers = 'SELECT * FROM customer_group_relation 
                             JOIN customers ON cst_customer_ID = cstg_customer_ID
                             JOIN customer_groups ON csg_customer_group_ID = cstg_customer_groups_ID
-                            WHERE cstg_customer_ID != ' . $_GET['cid']." ORDER BY cstg_customer_groups_ID ASC";
+                            WHERE cstg_customer_ID != ' . $_GET['cid'] . " ORDER BY cstg_customer_groups_ID ASC";
                 $resultOtherMembers = $db->query($sqlOtherMembers);
                 $i = 0;
                 while ($otherMember = $db->fetch_assoc($resultOtherMembers)) {
 
                     $i++;
                     if ($previousRow['cstg_customer_groups_ID'] != $otherMember['cstg_customer_groups_ID']) {
-                        echo "<br><u><b>".$otherMember['csg_code']." - ".$otherMember['csg_description']."</b></u><br>";
+                        echo "<br><u><b>" . $otherMember['csg_code'] . " - " . $otherMember['csg_description'] . "</b></u><br>";
                     }
-                    echo $otherMember['cst_name'] . " " . $otherMember['cst_surname'].", ";
+                    echo $otherMember['cst_name'] . " " . $otherMember['cst_surname'] . ", ";
                     $previousRow = $otherMember;
                 }
                 ?>
@@ -97,6 +97,7 @@ $table->generate_data();
         }
     </script>
 
-<?php
+    <?php
+}
 $db->show_empty_footer();
 ?>

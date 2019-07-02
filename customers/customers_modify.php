@@ -1,6 +1,7 @@
 <?php
 include("../include/main.php");
 include('../ainsurance/customers/insurance_balance_class.php');
+include('../scripts/form_validator_class.php');
 $db = new Main();
 $db->admin_title = "Customers Modify";
 
@@ -10,17 +11,18 @@ if ($_POST["action"] == "insert") {
 
     $db->start_transaction();
 
-    $_POST['fld_for_user_group_ID'] = $db->user_data['usr_users_group_ID'];
+    $_POST['fld_for_user_group_ID'] = $db->user_data['usr_users_groups_ID'];
     $_POST['fld_user_ID'] = $db->user_data['usr_users_ID'];
 
     $db->db_tool_insert_row('customers', $_POST, 'fld_', 0, 'cst_');
 
     //check for basic accounts to create the customer account
-    if ($db->dbSettings['accounts']['value'] == 'basic') {
+    /*if ($db->dbSettings['accounts']['value'] == 'basic') {
         include('../basic_accounts/basic_accounts_class.php');
         $bacc = new BasicAccounts();
         $bacc->createAccountForAllCustomers();
     }
+    */
 
     $db->commit_transaction();
 
@@ -35,11 +37,12 @@ if ($_POST["action"] == "insert") {
     $db->db_tool_update_row('customers', $_POST, "`cst_customer_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'cst_');
 
-    if ($db->dbSettings['accounts']['value'] == 'basic') {
+    /*if ($db->dbSettings['accounts']['value'] == 'basic') {
         include('../basic_accounts/basic_accounts_class.php');
         $bacc = new BasicAccounts();
         $bacc->updateAccountDetailsFromCustomer($_POST['lid']);
     }
+    */
 
     $db->commit_transaction();
     header("Location: customers.php");
@@ -54,13 +57,20 @@ if ($_GET["lid"] != "") {
 
 }
 $balance = new aInsuranceBalance($_GET['lid']);
+
+
+$formValidator = new customFormValidator();
+$formValidator->setFormName('myForm');
+
+
 $db->show_header();
 ?>
 <div class="container">
     <div class="row">
         <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
         <div class="col-lg-6 col-md-6 col-xs-12 col-sm-12">
-            <form name="myForm" id="myForm" method="post" action="" onsubmit="">
+            <form name="myForm" id="myForm" method="post" action="" onsubmit=""
+                <?php $formValidator->echoFormParameters(); ?>>
                 <div class="alert alert-dark text-center">
                     <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
                         &nbsp;Customer</b>
@@ -73,13 +83,15 @@ $db->show_header();
                            role="tab"
                            aria-controls="pills-general" aria-selected="true">General</a>
                     </li>
-
+                    <?php if ($db->get_setting('prd_enable_products') == 1) {?>
                     <li class="nav-item">
                         <a class="nav-link" id="pills-products-tab" data-toggle="pill" href="#pills-products"
                            role="tab"
                            aria-controls="pills-products" aria-selected="true">Products</a>
                     </li>
+                    <?php } ?>
 
+                    <?php if ($_GET['lid'] > 0){ ?>
                     <li class="nav-item">
                         <a class="nav-link" id="pills-groups-tab" data-toggle="pill" href="#pills-groups"
                            role="tab"
@@ -91,6 +103,7 @@ $db->show_header();
                            role="tab"
                            aria-controls="pills-unpaid" aria-selected="true">Unpaid Installments</a>
                     </li>
+                    <?php } ?>
 
                 </ul>
 
@@ -108,8 +121,7 @@ $db->show_header();
                             <label for="fld_business_type_code_ID" class="col-sm-4 col-form-label">Business Type</label>
                             <div class="col-sm-8">
                                 <select name="fld_business_type_code_ID" id="fld_business_type_code_ID"
-                                        class="form-control"
-                                        required>
+                                        class="form-control">
                                     <option value=""></option>
                                     <?php
                                     $btResult = $db->query("SELECT * FROM codes WHERE cde_type = 'BusinessType' ORDER BY cde_value ASC");
@@ -122,6 +134,15 @@ $db->show_header();
                                         </option>
                                     <?php } ?>
                                 </select>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_business_type_code_ID',
+                                        'fieldDataType' => 'select',
+                                        'required' => true,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
                             </div>
                         </div>
 
@@ -130,8 +151,16 @@ $db->show_header();
                             <div class="col-sm-8">
                                 <input name="fld_identity_card" type="text" id="fld_identity_card"
                                        class="form-control"
-                                       value="<?php echo $data["cst_identity_card"]; ?>"
-                                       required>
+                                       value="<?php echo $data["cst_identity_card"]; ?>">
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_identity_card',
+                                        'fieldDataType' => 'text',
+                                        'required' => true,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
                             </div>
                         </div>
 
@@ -140,8 +169,16 @@ $db->show_header();
                             <div class="col-sm-8">
                                 <input name="fld_name" type="text" id="fld_name"
                                        class="form-control"
-                                       value="<?php echo $data["cst_name"]; ?>"
-                                       required>
+                                       value="<?php echo $data["cst_name"]; ?>">
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_name',
+                                        'fieldDataType' => 'text',
+                                        'required' => true,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
                             </div>
                         </div>
 
@@ -151,6 +188,15 @@ $db->show_header();
                                 <input name="fld_surname" type="text" id="fld_surname"
                                        class="form-control"
                                        value="<?php echo $data["cst_surname"]; ?>">
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_surname',
+                                        'fieldDataType' => 'text',
+                                        'required' => false,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
                             </div>
                         </div>
 
@@ -160,6 +206,15 @@ $db->show_header();
                                 <input name="fld_address_line_1" type="text" id="fld_address_line_1"
                                        value="<?php echo $data["cst_address_line_1"]; ?>"
                                        class="form-control"/>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_address_line_1',
+                                        'fieldDataType' => 'text',
+                                        'required' => false,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
                             </div>
                         </div>
 
@@ -169,6 +224,15 @@ $db->show_header();
                                 <input name="fld_address_line_2" type="text" id="fld_address_line_2"
                                        value="<?php echo $data["cst_address_line_2"]; ?>"
                                        class="form-control"/>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_address_line_2',
+                                        'fieldDataType' => 'text',
+                                        'required' => false,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
                             </div>
                         </div>
 
@@ -176,8 +240,7 @@ $db->show_header();
                             <label for="fld_city_code_ID" class="col-sm-4 col-form-label">City</label>
                             <div class="col-sm-8">
                                 <select name="fld_city_code_ID" id="fld_city_code_ID"
-                                        class="form-control"
-                                        required>
+                                        class="form-control">
                                     <option value=""></option>
                                     <?php
                                     $btResult = $db->query("SELECT * FROM codes WHERE cde_type = 'Cities' ORDER BY cde_value ASC");
@@ -190,6 +253,15 @@ $db->show_header();
                                         </option>
                                     <?php } ?>
                                 </select>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_city_code_ID',
+                                        'fieldDataType' => 'select',
+                                        'required' => true,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
                             </div>
                         </div>
 
@@ -199,16 +271,23 @@ $db->show_header();
                                 <input name="fld_contact_person" type="text" id="fld_contact_person"
                                        value="<?php echo $data["cst_contact_person"]; ?>"
                                        class="form-control"/>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_contact_person',
+                                        'fieldDataType' => 'text',
+                                        'required' => false,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
                             </div>
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_contact_person_title_code_ID" class="col-sm-4 col-form-label">C.P.
-                                Title</label>
+                            <label for="fld_contact_person_title_code_ID" class="col-sm-4 col-form-label">C.P.Title</label>
                             <div class="col-sm-8">
                                 <select name="fld_contact_person_title_code_ID" id="fld_contact_person_title_code_ID"
-                                        class="form-control"
-                                        required>
+                                        class="form-control">
                                     <option value=""
                                         <?php if ('' == $data['cst_contact_person_title_code_ID']) echo 'selected'; ?>>
                                         -----
@@ -224,6 +303,15 @@ $db->show_header();
                                         </option>
                                     <?php } ?>
                                 </select>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_contact_person_title_code_ID',
+                                        'fieldDataType' => 'select',
+                                        'required' => false,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
                             </div>
                         </div>
 
@@ -233,6 +321,15 @@ $db->show_header();
                                 <input name="fld_work_tel_1" type="text" id="fld_work_tel_1"
                                        value="<?php echo $data["cst_work_tel_1"]; ?>"
                                        class="form-control"/>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_work_tel_1',
+                                        'fieldDataType' => 'text',
+                                        'required' => false,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
                             </div>
                         </div>
 
@@ -242,6 +339,15 @@ $db->show_header();
                                 <input name="fld_work_tel_2" type="text" id="fld_work_tel_2"
                                        value="<?php echo $data["cst_work_tel_2"]; ?>"
                                        class="form-control"/>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_work_tel_2',
+                                        'fieldDataType' => 'text',
+                                        'required' => false,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
                             </div>
                         </div>
 
@@ -251,6 +357,15 @@ $db->show_header();
                                 <input name="fld_fax" type="text" id="fld_fax"
                                        value="<?php echo $data["cst_fax"]; ?>"
                                        class="form-control"/>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_fax',
+                                        'fieldDataType' => 'text',
+                                        'required' => false,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
                             </div>
                         </div>
 
@@ -260,6 +375,15 @@ $db->show_header();
                                 <input name="fld_mobile_1" type="text" id="fld_mobile_1"
                                        value="<?php echo $data["cst_mobile_1"]; ?>"
                                        class="form-control"/>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_mobile_1',
+                                        'fieldDataType' => 'text',
+                                        'required' => false,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
                             </div>
                         </div>
 
@@ -269,6 +393,15 @@ $db->show_header();
                                 <input name="fld_mobile_2" type="text" id="fld_mobile_2"
                                        value="<?php echo $data["cst_mobile_2"]; ?>"
                                        class="form-control"/>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_mobile_2',
+                                        'fieldDataType' => 'text',
+                                        'required' => false,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
                             </div>
                         </div>
 
@@ -278,6 +411,16 @@ $db->show_header();
                                 <input name="fld_email" type="text" id="fld_email"
                                        value="<?php echo $data["cst_email"]; ?>"
                                        class="form-control"/>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_email',
+                                        'fieldDataType' => 'email',
+                                        'required' => false,
+                                        'validateEmail' => true,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
                             </div>
                         </div>
 
@@ -287,6 +430,16 @@ $db->show_header();
                                 <input name="fld_email_newsletter" type="text" id="fld_email_newsletter"
                                        value="<?php echo $data["cst_email_newsletter"]; ?>"
                                        class="form-control"/>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_email_newsletter',
+                                        'fieldDataType' => 'email',
+                                        'required' => false,
+                                        'validateEmail' => true,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
                             </div>
                         </div>
 
@@ -301,8 +454,7 @@ $db->show_header();
                                        onclick="window.location.assign('customers.php')">
                                 <input type="submit" name="Submit" id="Submit"
                                        value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Customer"
-                                       class="btn btn-secondary"
-                                       onclick="submitForm()">
+                                       class="btn btn-secondary">
                             </div>
                         </div>
 
@@ -311,7 +463,7 @@ $db->show_header();
 
 
 
-
+                    <?php if ($_GET['lid'] > 0 && $db->get_setting('prd_enable_products') == 1) {?>
                     <!-- PRODUCTS -->
                     <div class="tab-pane fade show" id="pills-products" role="tabpanel"
                          aria-labelledby="pills-products-tab">
@@ -321,13 +473,13 @@ $db->show_header();
                                 scrolling="0" width="100%" height="400"></iframe>
 
                     </div>
+                    <?php } ?>
 
 
 
 
 
-
-
+                    <?php if ($_GET['lid'] > 0){ ?>
                     <!-- Customer Groups -->
                     <div class="tab-pane fade show" id="pills-groups" role="tabpanel"
                          aria-labelledby="pills-groups-tab">
@@ -352,6 +504,8 @@ $db->show_header();
                                 scrolling="0" width="100%" height="400"></iframe>
 
                     </div>
+                    <?php } ?>
+
                 </div>
 
 
@@ -360,18 +514,7 @@ $db->show_header();
     </div>
 </div>
 
-
-<script>
-    function submitForm() {
-        frm = document.getElementById('myForm');
-        if (frm.checkValidity() === false) {
-
-        }
-        else {
-            document.getElementById('Submit').disabled = true
-        }
-    }
-</script>
 <?php
+$formValidator->output();
 $db->show_footer();
 ?>

@@ -105,8 +105,8 @@ function getQuotationHTML($quotationID)
 
         //underwriter open cover number
         $underwriterOpenCoverNumber = '';
-        if ($underwriterData['oqun_open_cover_number'] != ''){
-            $underwriterOpenCoverNumber = "Open Cover Number:".$underwriterData['oqun_open_cover_number'];
+        if ($underwriterData['oqun_open_cover_number'] != '' && strlen($underwriterData['oqun_open_cover_number']) >= 5){
+            $underwriterOpenCoverNumber = "Open Cover Number: ".$underwriterData['oqun_open_cover_number'];
         }
 
         //find excess
@@ -240,7 +240,7 @@ function getQuotationHTML($quotationID)
         <tr>
             <td colspan="3" height="270px" valign="top">
                 <b>Conditions of Insurance '.$approvalCommodity.'</b><br><br>
-                ' . $conditionsOfInsurance[0] . '<br>Excess:'.$excess.'
+                ' . $conditionsOfInsurance[0] . '<br>'.$excess.'
             </td>
             
         </tr>
@@ -254,7 +254,7 @@ function getQuotationHTML($quotationID)
         <tr>
             <td colspan="3">
                 <b>Underwriters Agree Losses, if any, shall be payable to the order of 
-                _____________<??????????>______________ 
+                '.$quotationData['oqq_insureds_name'].'
                 on surrender of this Certificate
                 </b><br><br><br><br>
                 
@@ -263,9 +263,9 @@ function getQuotationHTML($quotationID)
 
         <tr>
             <td><b>
-                    Place of Issue:
+                    Place of Issue: Limassol 
                     <br>
-                    Date:
+                    Date: '.$db->convert_date_format($quotationData['oqq_effective_date'],'yyyy-mm-dd','dd/mm/yyyy',1,1).'
                 </b>
             </td>
             <td colspan="2" align="right"><b>
@@ -668,7 +668,7 @@ function getConditionsOfInsurance($commodity){
         <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
         <br>Institute Replacement Clause CL372 dated 01.12.2008 or Second-hand Replacement Clause as attached as applicable.
         <br>Including transhipment, barge and lightering risks whether customary or otherwise.
-        <br>Subject also to Additional Conditions as on page 3.';
+        <br><b>Subject also to Additional Conditions as on page 3.</b>';
         
         $return[1] = ' 
         <br>Subject to a Certificate of Condition defined as: A document stating the condition of the vehicle at the time the vehicle enters the custody of the freight forwarder or steamship company noting all defects agreed by both the freight forwarder and the owner of the vehicle and signed at the same time.
@@ -771,7 +771,7 @@ function getConditionsOfInsurance($commodity){
         <br>Termination of Transit Clause (Terrorism).
         <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
         <br>Including transhipment, barge and lightering risks whether customary or otherwise.
-        <br>Subject also to Additional Conditions as on page 3.';
+        <br><b>Subject also to Additional Conditions as on page 3.</b>';
 
         $return[1] = '
         <br>Subject also to Household Goods & Personal Effects Additional Conditions as follows:
@@ -817,7 +817,7 @@ function getConditionsOfInsurance($commodity){
         <br>Termination of Transit Clause (Terrorism).
         <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
         <br>Including transhipment, barge and lightering risks whether customary or otherwise.
-        <br>Subject also to Additional Conditions as on page 3.';
+        <br><b>Subject also to Additional Conditions as on page 3.</b>';
 
         $return[1] = '
         <br>Subject also to Household Goods & Personal Effects Additional Conditions as follows:

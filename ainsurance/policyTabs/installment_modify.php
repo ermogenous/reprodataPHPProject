@@ -30,7 +30,7 @@ if ($_POST["action"] == "insert") {
     $db->commit_transaction();
 
     if ($_POST['sub-action'] == 'exit') {
-        header("Location: installments.php?pid=" . $_POST['pid'] . "&type=" . $_POST['type']);
+        header("Location: installments.php?rel=yes&pid=" . $_POST['pid'] . "&type=" . $_POST['type']);
         exit();
     } else {
         $_GET['lid'] = $_POST['lid'];
@@ -51,7 +51,7 @@ if ($_POST["action"] == "insert") {
     $db->commit_transaction();
 
     if ($_POST['sub-action'] == 'exit') {
-        header("Location: installments.php?pid=" . $_POST['pid'] . "&type=" . $_POST['type']);
+        header("Location: installments.php?rel=yes&pid=" . $_POST['pid'] . "&type=" . $_POST['type']);
         exit();
     } else {
         $_GET['lid'] = $_POST['lid'];

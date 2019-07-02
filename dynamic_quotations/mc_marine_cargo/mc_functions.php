@@ -221,6 +221,9 @@ function mc_shipment_details_3()
                 <option value="Ocean Vessel" <?php if ($qitem_data['oqqit_rate_6'] == 'Ocean Vessel') echo 'selected'; ?>>
                     Ocean Vessel
                 </option>
+                <option value="Multimode" <?php if ($qitem_data['oqqit_rate_6'] == 'Multimode') echo 'selected'; ?>>
+                    Multimode
+                </option>
             </select>
             <?php
             $formValidator->addField(

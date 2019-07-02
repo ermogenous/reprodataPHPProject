@@ -21,7 +21,7 @@ if ($_POST['action'] == 'update') {
 
     $db->commit_transaction();
 
-    header("Location: premium.php?pid=" . $_POST['pid'] . "&type=" . $_POST['type']);
+    header("Location: premium.php?rel=yes&pid=" . $_POST['pid'] . "&type=" . $_POST['type']);
     exit();
 }
 
@@ -210,8 +210,11 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
 
         $(document).ready(function () {
             updateGrossPremium();
+
+            <?php if ($_GET['rel'] == 'yes') { ?>
             //every time this page loads reload the premium tab
             parent.window.frames['installmentsTab'].location.reload(true);
+            <?php } ?>
         });
 
 

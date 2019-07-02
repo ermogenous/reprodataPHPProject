@@ -28,7 +28,7 @@ if ($_POST["action"] == "insert") {
     $db->commit_transaction();
 
     if ($_POST['sub-action'] == 'exit') {
-        header("Location: policy_items.php?pid=" . $_POST['pid'] . "&type=" . $_POST['type']);
+        header("Location: policy_items.php?rel=yes&pid=" . $_POST['pid'] . "&type=" . $_POST['type']);
         exit();
     } else {
         $_GET['lid'] = $_POST['lid'];
@@ -51,7 +51,7 @@ if ($_POST["action"] == "insert") {
     $db->commit_transaction();
 
     if ($_POST['sub-action'] == 'exit') {
-        header("Location: policy_items.php?pid=" . $_POST['pid'] . "&type=" . $_POST['type']);
+        header("Location: policy_items.php?rel=yes&pid=" . $_POST['pid'] . "&type=" . $_POST['type']);
         exit();
     } else {
         $_GET['lid'] = $_POST['lid'];
@@ -510,7 +510,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
 
         //every time this page loads reload the premium tab
         $(document).ready(function () {
-            parent.window.frames['premiumTab'].location.reload(true);
+            parent.window.frames['premTab'].location.reload(true);
 
             $('#policyItemsTab', window.parent.document).height('500px');
         });

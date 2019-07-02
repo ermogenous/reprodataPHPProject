@@ -93,10 +93,10 @@ $db->show_header();
 
 ?>
 
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-1 col-md-1 hidden-xs hidden-sm"></div>
-            <div class="col-lg-10 col-md-10 col-xs-12 col-sm-12">
+            <div class="col-1 d-none d-sm-block"></div>
+            <div class="col-10">
                 <form name="myForm" id="myForm" method="post" action="" onsubmit=""
                     <?php $formValidator->echoFormParameters(); ?>>
                     <div class="alert alert-dark text-center">
@@ -463,8 +463,8 @@ $db->show_header();
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" id="premium-tab" data-toggle="tab" href="#premium" role="tab"
-                                   aria-controls="premium" aria-selected="false">Premium</a>
+                                <a class="nav-link" id="prem-tab" data-toggle="tab" href="#prem" role="tab"
+                                   aria-controls="prem" aria-selected="false">Premium</a>
                             </li>
 
                             <li class="nav-item">
@@ -487,10 +487,10 @@ $db->show_header();
                                         scrolling="0" width="100%" height="500"></iframe>
                             </div>
 
-                            <div class="tab-pane fade" id="premium" role="tabpanel"
-                                 aria-labelledby="premium-tab">
+                            <div class="tab-pane fade" id="prem" role="tabpanel"
+                                 aria-labelledby="prem-tab">
                                 <iframe src="policyTabs/premium.php?pid=<?php echo $_GET["lid"] . "&type=" . $policy->getInputType(); ?>"
-                                        frameborder="0" id="premiumTab" name="premiumTab"
+                                        frameborder="0" id="premTab" name="premTab"
                                         scrolling="0" width="100%" height="400"> </iframe>
                             </div>
 
@@ -549,7 +549,7 @@ $db->show_header();
 
                 </form>
             </div>
-            <div class="col-lg-1 col-md-1 hidden-xs hidden-sm"></div>
+            <div class="col-1 d-none d-sm-block"></div>
         </div>
     </div>
     <script>
