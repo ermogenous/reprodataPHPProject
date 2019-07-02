@@ -27,6 +27,7 @@ if ($_GET['action'] == 'apply' && $_GET['lid'] != '') {
         $db->generateAlertError($payment->errorDescription);
     }
 
+    $_GET['rel'] = 'yes';
 }
 
 if ($_GET['action'] == 'reverse' && $_GET['lid'] != '') {
@@ -41,6 +42,7 @@ if ($_GET['action'] == 'reverse' && $_GET['lid'] != '') {
         $db->rollback_transaction();
         $db->generateAlertError($payment->errorDescription);
     }
+    $_GET['rel'] = 'yes';
 
 }
 

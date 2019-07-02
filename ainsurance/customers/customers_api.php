@@ -6,7 +6,8 @@
  * Time: 5:35 ΜΜ
  */
 
-include("../include/main.php");
+include("../../include/main.php");
+include("../policy_class.php");
 $db = new Main(1);
 $db->working_section = 'Customers API';
 $db->apiGetReadHeaders();
@@ -19,13 +20,17 @@ if ($_GET['section'] == 'customers') {
               cst_identity_card as identity_card,
               cst_work_tel_1 as work_tel,
               cst_mobile_1 as mobile
-               FROM customers WHERE 
-              (
-CONCAT(cst_identity_card, ' ', cst_name, ' ', cst_surname) 
+               FROM customers 
+               JOIN ina_underwriters ON inaund_user_ID = cst_user_ID
+               WHERE 
+               inaund_underwriter_ID ".Policy::getAgentWhereClauseSql()."
+               AND 
+                (
+                CONCAT(cst_identity_card, ' ', cst_name, ' ', cst_surname) 
                 LIKE '%".$_GET['term']."%'
-OR
-CONCAT(cst_work_tel_1, ' ', cst_work_tel_2, ' ', cst_fax, ' ', cst_mobile_1, ' ', cst_mobile_2 )
-	LIKE '%".$_GET['term']."%') 
+                OR
+                CONCAT(cst_work_tel_1, ' ', cst_work_tel_2, ' ', cst_fax, ' ', cst_mobile_1, ' ', cst_mobile_2 )
+	            LIKE '%".$_GET['term']."%') 
 	LIMIT 0,25";
 
     $result = $db->query($sql);

@@ -195,8 +195,10 @@ class PolicyPayment
             $payNewData['status'] = 'Incomplete';
             $payNewData['allocated_amount'] = $totalAllocatedAmount;
             $payNewData['allocated_commission'] = $totalAllocatedCommission;
-            $db->generateAlertError('Error');
-            $db->rollback_transaction();
+            $this->error = true;
+            $this->errorDescription('Total allocated amount is not equal with the total payment. Contact administrator.');
+            //$db->generateAlertError('Error');
+            //$db->rollback_transaction();
             return false;
 
         }

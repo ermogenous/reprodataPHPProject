@@ -52,9 +52,11 @@ if ($_GET['pid'] > 0) {
                             <th scope="col"><?php $table->display_order_links('Excess', 'inapit_excess'); ?></th>
                             <th scope="col"><?php $table->display_order_links('Premium', 'inapit_premium'); ?></th>
                             <th scope="col">
+                                <?php if ($policy->policyData['inapol_status'] == 'Outstanding'){ ?>
                                 <a href="policy_item_modify.php?pid=<?php echo $_GET['pid'] . "&type=" . $_GET['type']; ?>">
-                                    <i class="fas fa-plus-circle"></i>
+                                    <i class="fas fa-plus-circle" title="Insert new item"></i>
                                 </a>
+                                <?php } ?>
                             </th>
                         </tr>
                         </thead>
@@ -89,14 +91,14 @@ if ($_GET['pid'] > 0) {
                                     if ($policy->policyData['inapol_status'] == 'Oustanding') {
                                         ?>
                                         <a href="policy_item_modify.php?lid=<?php echo $row["inapit_policy_item_ID"] . "&pid=" . $_GET['pid'] . "&type=" . $_GET['type']; ?>"><i
-                                                    class="fas fa-edit"></i></a>&nbsp
+                                                    class="fas fa-edit" title="Edit Item"></i></a>&nbsp
                                         <a href="policy_item_delete.php?lid=<?php echo $row["inapit_policy_item_ID"] . "&pid=" . $_GET['pid'] . "&type=" . $_GET['type']; ?>"
                                            onclick="ignoreEdit = true;
                                             return confirm('Are you sure you want to delete this policy item?');"><i
-                                                    class="fas fa-minus-circle"></i></a>
+                                                    class="fas fa-minus-circle" title="Delete Item"></i></a>
                                     <?php }else { ?>
                                         <a href="policy_item_modify.php?lid=<?php echo $row["inapit_policy_item_ID"] . "&pid=" . $_GET['pid'] . "&type=" . $_GET['type']; ?>"><i
-                                                    class="fas fa-eye"></i></a>&nbsp
+                                                    class="fas fa-eye" title="View Item"></i></a>&nbsp
                                     <?php } ?>
                                 </td>
                             </tr>

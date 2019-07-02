@@ -232,7 +232,7 @@ $db->show_header();
                                 let insuranceCompanySelected = $('#fld_insurance_company_ID').val();
 
                                 if (underwriterSelected > 0 && insuranceCompanySelected > 0) {
-                                    Rx.Observable.fromPromise($.get("underwriters/underwriters_api.php?section=agent_commission_types_policy_types&agent="
+                                    Rx.Observable.fromPromise($.get("underwriters/underwriters_api.php?section=agent_commission_types_policy_types&underwriter="
                                         + underwriterSelected + '&inscompany=' + insuranceCompanySelected))
                                         .subscribe((response) => {
                                                 data = response;
@@ -267,14 +267,16 @@ $db->show_header();
                                     'fieldName' => 'customerSelect',
                                     'fieldDataType' => 'text',
                                     'required' => true,
+                                    'requiredAddedCustomCode' => '|| $("#fld_customer_ID").val() == ""',
                                     'invalidText' => 'Must select Customer'
                                 ]);
                             ?>
                             <input name="fld_customer_ID" id="fld_customer_ID" type="hidden"
                                    value="<?php echo $data['cst_customer_ID']; ?>">
                             <script>
+
                                 $('#customerSelect').autocomplete({
-                                    source: '../customers/customers_api.php?section=customers',
+                                    source: 'customers/customers_api.php?section=customers',
                                     delay: 500,
                                     minLength: 2,
                                     messages: {

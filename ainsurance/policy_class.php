@@ -65,7 +65,7 @@ class Policy
 
         $totalFound = 1;
         //initialize and add current user
-        $whereClause = 'IN (' . $underwriter['inaund_user_ID'] . ",";
+        $whereClause = 'IN (' . $underwriter['inaund_underwriter_ID'] . ",";
 
         //find all the users that are of the same group and lower level
         $sql = "
@@ -76,14 +76,17 @@ class Policy
           WHERE 
           usg_users_groups_ID = " . $db->user_data['usr_users_groups_ID'] . "
           AND inaund_vertical_level > " . $underwriter['inaund_vertical_level'];
+        //echo $sql;
         $result = $db->query($sql);
         while ($row = $db->fetch_assoc($result)) {
+            //print_r($row);
             $totalFound++;
-            $whereClause .= $row['inaund_user_ID'] . ",";
+            $whereClause .= $row['inaund_underwriter_ID'] . ",";
+            //echo "<br><br>".$row['inaund_underwriter_ID'];
         }
         $whereClause = $db->remove_last_char($whereClause);
         $whereClause .= ")";
-        //echo $whereClause."<br>";
+        //echo "<br>".$totalFound."->".$whereClause."<br>";
         if ($whatToReturn == 'where') {
             return $whereClause;
         } else if ($whatToReturn == 'totalFound') {
