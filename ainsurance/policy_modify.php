@@ -30,6 +30,18 @@ if ($_POST["action"] == "insert") {
     $db->db_tool_update_row('ina_policies', $newData, 'inapol_policy_ID = '.$newID, $newID,
         '','execute','inapol_');
 
+    //validate policy number
+    $policy = new Policy($newID);
+    if ($policy->validatePolicyNumber() == false){
+        $db->generateSessionAlertError($policy->errorDescription);
+        //reset the policy number
+        $resetNumData['policy_number'] = '';
+        $db->db_tool_update_row('ina_policies', $resetNumData, 'inapol_policy_ID = '.$newID, $newID,
+            '','execute','inapol_');
+        header("Location: policy_modify.php?lid=" . $newID);
+        exit();
+    }
+
     if ($_POST['sub-action'] == 'exit') {
         header("Location: policies.php");
         exit();
@@ -105,8 +117,8 @@ $db->show_header();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_underwriter_ID" class="col-sm-2 col-form-label">Underwriter</label>
-                        <div class="col-sm-4">
+                        <label for="fld_underwriter_ID" class="col-md-2 col-form-label">Underwriter</label>
+                        <div class="col-md-4">
                             <select name="fld_underwriter_ID" id="fld_underwriter_ID"
                                     class="form-control"
                                     onchange="loadInsuranceCompanies();">
@@ -153,10 +165,10 @@ $db->show_header();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_insurance_company_ID" class="col-sm-2 col-form-label">
+                        <label for="fld_insurance_company_ID" class="col-md-2 col-form-label">
                             Company
                         </label>
-                        <div class="col-sm-4">
+                        <div class="col-md-4">
                             <select name="fld_insurance_company_ID" id="fld_insurance_company_ID"
                                     class="form-control" onchange="loadPolicyTypes();">
                                 <?php if ($_GET['lid'] > 0) { ?>
@@ -204,8 +216,9 @@ $db->show_header();
                             </script>
                         </div>
 
-                        <label for="fld_type_code" class="col-sm-2 col-form-label">Type</label>
-                        <div class="col-sm-4">
+                        <label for="fld_type_code" class="col-md-2 col-form-label">Type</label>
+                        <div class="col-md-4">
+                            <input type="hidden" id="type_code_db" name="type_code_db" value="<?php echo $data['inapol_type_code']; ?>">
                             <select name="fld_type_code" id="fld_type_code"
                                     class="form-control"
                                     onchange="insuranceTypeChange()">
@@ -224,6 +237,7 @@ $db->show_header();
                                     'invalidText' => 'Must select Type'
                                 ]);
                             ?>
+                            <div class="invalid-feedback" id="errorDeleteAllItems">Must delete all items before you can change the type</div>
                         </div>
                         <script>
                             function loadPolicyTypes(clear = true) {
@@ -246,6 +260,8 @@ $db->show_header();
                                                     clearDropDown('fld_type_code');
                                                 }
                                                 loadDropDown('fld_type_code', data);
+                                                //check if policy type is changed
+                                                insuranceTypeChange();
                                             }
                                         )
                                     ;
@@ -256,8 +272,8 @@ $db->show_header();
                     </div>
 
                     <div class="form-group row">
-                        <label for="customerSelect" class="col-sm-2 col-form-label">Customer</label>
-                        <div class="col-sm-4">
+                        <label for="customerSelect" class="col-md-2 col-form-label">Customer</label>
+                        <div class="col-md-4">
                             <input name="customerSelect" type="text" id="customerSelect"
                                    class="form-control"
                                    value="<?php echo $data["cst_name"] . " " . $data['cst_surname']; ?>">
@@ -304,10 +320,10 @@ $db->show_header();
                             </script>
                         </div>
 
-                        <label for="fld_policy_number" class="col-sm-3 col-form-label">Policy Number</label>
-                        <div class="col-sm-3">
+                        <label for="fld_policy_number" class="col-md-2 col-form-label">Policy Number</label>
+                        <div class="col-md-3">
                             <input name="fld_policy_number" type="text" id="fld_policy_number"
-                                   class="form-control"
+                                   class="form-control" onkeyup="$('#policyNumberValidation').val('error');"
                                    value="<?php echo $data["inapol_policy_number"]; ?>">
                             <?php
                             $formValidator->addField(
@@ -315,23 +331,83 @@ $db->show_header();
                                     'fieldName' => 'fld_policy_number',
                                     'fieldDataType' => 'text',
                                     'required' => true,
-                                    'invalidText' => 'Must enter Policy Number'
+                                    'invalidText' => 'Must Enter Valid Policy Number',
+                                    'requiredAddedCustomCode' => '|| $("#policyNumberValidation").val() != "valid"'
                                 ]);
                             ?>
                         </div>
+                        <div class="col-md-1">
+                            <i class="fas fa-check" id="policyNumberCheck" style="display: none;"></i>
+                            <i class="fas fa-times" id="policyNumberError" style="display: none;"></i>
+                            <img src="../images/spinner-transparent.gif" height="28px" id="policyNumberSpinner" style="display: none;">
+                            <input type="hidden" id="policyNumberValidation" value="valid">
+                        </div>
                     </div>
 
+                    <script>
+                        //validate policy number with delay of 500 milliseconds
+                        function delay(callback, ms) {
+                            var timer = 0;
+                            return function() {
+                                var context = this, args = arguments;
+                                clearTimeout(timer);
+                                timer = setTimeout(function () {
+                                    callback.apply(context, args);
+                                }, ms || 0);
+                            };
+                        }
+                        $('#fld_policy_number').keyup(delay(function (e) {
+                            console.log('Time elapsed!', this.value);
+                            let policyNumber = this.value;
+                            let policyID = '<?php echo $_GET['lid'];?>';
+
+                            $('#policyNumberSpinner').show();
+                            $('#policyNumberError').hide();
+                            $('#policyNumberCheck').hide();
+                            $('#policyNumberValidation').val('valid');
+
+                            Rx.Observable.fromPromise($.get("policy_api.php?section=check_if_policy_number_exists&policyNumber=" + policyNumber + "&policyID=" + policyID))
+                                .subscribe((response) => {
+                                        data = response;
+                                        console.log(data);
+                                    },
+                                    () => {
+                                        $('#policyNumberSpinner').hide();
+                                        $('#policyNumberError').show();
+                                        $('#policyNumberValidation').val('error');
+                                    }
+                                    ,
+                                    () => {
+                                        $('#policyNumberSpinner').hide();
+                                        if (data['clo_total_policies'] > 0){
+                                            $('#policyNumberError').show();
+                                            $('#policyNumberValidation').val('error');
+                                        }
+                                        else {
+                                            $('#policyNumberCheck').show();
+                                        }
+                                    }
+                                )
+                            ;
+
+
+
+
+                        }, 500));
+
+                    </script>
+
                     <div class="form-group row">
-                        <div class="col-sm-6 text-center">
+                        <div class="col-md-6 text-center">
                             <b>#</b><span id="cus_number"><?php echo $data['cst_customer_ID']; ?></span>
                             <b>ID:</b> <span id="cus_id"><?php echo $data['cst_identity_card']; ?></span>
                             <b>Tel:</b> <span id="cus_work_tel"><?php echo $data['cst_work_tel_1']; ?></span>
                             <b>Mobile:</b> <span id="cus_mobile"><?php echo $data['cst_mobile_1']; ?></span>
                         </div>
 
-                        <label for="fld_period_starting_date" class="col-sm-3 col-form-label">
+                        <label for="fld_period_starting_date" class="col-md-2 col-form-label">
                             Period Starting Date</label>
-                        <div class="col-sm-3">
+                        <div class="col-md-2">
                             <input name="fld_period_starting_date" type="text" id="fld_period_starting_date"
                                    class="form-control"
                                    value="">
@@ -350,12 +426,12 @@ $db->show_header();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_name" class="col-sm-2 col-form-label">Status</label>
-                        <div class="col-sm-2">
+                        <label for="fld_name" class="col-md-2 col-form-label">Status</label>
+                        <div class="col-md-2">
                             <?php echo $data['inapol_status']; ?>
 
                         </div>
-                        <div class="col-sm-2">
+                        <div class="col-md-2">
                             <?php if ($data['inapol_status'] == 'Outstanding') { ?>
                                 <button id="changeStatus" name="changeStatus" class="form-control alert-success"
                                         type="button"
@@ -372,8 +448,8 @@ $db->show_header();
                             <?php } ?>
                         </div>
 
-                        <label for="fld_starting_date" class="col-sm-3 col-form-label">Starting Date</label>
-                        <div class="col-sm-3">
+                        <label for="fld_starting_date" class="col-md-2 col-form-label">Starting Date</label>
+                        <div class="col-md-2">
                             <input name="fld_starting_date" type="text" id="fld_starting_date"
                                    class="form-control"
                                    value="">
@@ -392,8 +468,8 @@ $db->show_header();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_process_status" class="col-sm-2 col-form-label">Process Status</label>
-                        <div class="col-sm-4">
+                        <label for="fld_process_status" class="col-md-2 col-form-label">Process Status</label>
+                        <div class="col-md-4">
                             <select name="fld_process_status" id="fld_process_status"
                                     class="form-control"
                             <?php if ($data['inapol_replacing_ID'] > 0 || $data['inapol_replaced_by_ID'] > 0) echo "disabled";?>
@@ -417,7 +493,7 @@ $db->show_header();
                             </select>
                         </div>
 
-                        <label class="col-sm-3 col-form-label">
+                        <label class="col-md-2 col-form-label">
                             Expiry Date <br>
                             <span class="main_text_smaller">
                                 <span style="cursor: pointer" onclick="fillExpiryDate('year',1);">1Y</span>&nbsp
@@ -428,7 +504,7 @@ $db->show_header();
                                 <span style="cursor: pointer" onclick="fillExpiryDate('month',1);">1M</span>&nbsp
                             </span>
                         </label>
-                        <div class="col-sm-3">
+                        <div class="col-md-2">
                             <input name="fld_expiry_date" type="text" id="fld_expiry_date"
                                    class="form-control"
                                    value="">
@@ -527,8 +603,8 @@ $db->show_header();
 
                     <!-- BUTTONS -->
                     <div class="form-group row">
-                        <label for="name" class="col-sm-4 col-form-label"></label>
-                        <div class="col-sm-8">
+                        <label for="name" class="col-md-4 col-form-label"></label>
+                        <div class="col-md-8">
                             <input name="action" type="hidden" id="action"
                                    value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
@@ -540,7 +616,7 @@ $db->show_header();
                                    class="btn btn-secondary" id="Save"
                                    onclick="submitForm('save');">
                             <input type="submit"
-                                   value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Policy"
+                                   value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Save"; ?> Policy & Exit"
                                    class="btn btn-secondary" id="Submit"
                                    onclick="submitForm('exit');">
 
@@ -564,15 +640,60 @@ $db->show_header();
         }
 
         function insuranceTypeChange() {
-            <?php
-            //check if only modify. when insert do nothing
-            if ($_GET['lid'] > 0) {?>
-            if (confirm('This will refresh the page. Are you sure?')) {
-                submitForm('save');
-            } else {
-                $('#fld_type_code_ID').val('<?php echo $data['inapol_type_code_ID'];?>');
+            //curent option selected
+            let current = $('#fld_type_code').val();
+            let saved = $('#type_code_db').val();
+
+            if (saved == '') {
+                //when inserting. Nothing to do here
             }
-            <?php } ?>
+            else {
+                //check if the option is changed.
+                if (current != saved){
+
+                    let policy = '<?php echo $_GET['lid'];?>';
+                    Rx.Observable.fromPromise($.get("policy_api.php?section=policy_num_of_items&policyID=" + policy))
+                        .subscribe((response) => {
+                                data = response;
+                                //console.log(data);
+                            },
+                            () => {
+                                //if error occurs make option back to the saved one.
+                                $('#fld_type_code').val(saved);
+                            }
+                            ,
+                            () => {
+                            //console.log(data['clo_total_items']);
+                                if ((data['clo_total_items']*1) > 0){
+                                    $('#errorDeleteAllItems').show();
+                                    $('#fld_type_code').val(saved);
+                                }
+                                else {
+                                    $('#errorDeleteAllItems').hide();
+                                    //check if the type is not empty
+                                    if (current != '') {
+                                        //need to refresh the page now.
+                                        if (confirm('This will change the policy type. Are you sure you want to continue?')) {
+                                            $('#myForm').submit();
+                                        }
+                                        else {
+                                            $('#fld_type_code').val(saved);
+                                        }
+                                    }
+
+                                }
+                            }
+                        )
+                    ;
+                }
+                else {
+                    //no change is found. do nothing
+                    $('#errorDeleteAllItems').hide();
+                }
+            }
+
+
+
         }
 
         function fillExpiryDate(lengthType, lengthAmount) {

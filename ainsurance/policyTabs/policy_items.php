@@ -88,7 +88,7 @@ if ($_GET['pid'] > 0) {
                                 <td>
 
                                     <?php
-                                    if ($policy->policyData['inapol_status'] == 'Oustanding') {
+                                    if ($policy->policyData['inapol_status'] == 'Outstanding') {
                                         ?>
                                         <a href="policy_item_modify.php?lid=<?php echo $row["inapit_policy_item_ID"] . "&pid=" . $_GET['pid'] . "&type=" . $_GET['type']; ?>"><i
                                                     class="fas fa-edit" title="Edit Item"></i></a>&nbsp

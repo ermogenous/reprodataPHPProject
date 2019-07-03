@@ -95,6 +95,32 @@ class Policy
 
     }
 
+    public function validatePolicyNumber()
+    {
+        global $db;
+        $sql = "
+        SELECT
+        COUNT(*)as clo_total_policies
+        FROM
+        ina_policies
+        WHERE
+        inapol_underwriter_ID ".$this->getAgentWhereClauseSql()."
+        AND inapol_policy_number = '".$this->policyData['inapol_policy_number']."'
+        AND inapol_policy_ID != '".$this->policyID."'
+        ";
+        $check = $db->query_fetch($sql);
+        if ($check['clo_total_policies'] > 0){
+            $this->error = true;
+            $this->errorDescription = 'Policy is already been used by another policy.';
+            return false;
+        }
+        else {
+            return true;
+        }
+
+
+    }
+
     //updates the policy premium by sum the policyItems premium/mif/commission
     public function updatePolicyPremium()
     {
@@ -131,9 +157,26 @@ class Policy
         $currentType = $this->policyData['inapol_type_code'];
 
         if ($currentType == $newInsType) {
+            //everything ok.
             return true;
         } else {
-            return false;
+            //need to check if items exists.
+            $sql = "SELECT
+            COUNT(*)as clo_total_items
+            FROM
+            ina_policy_items
+            WHERE
+            inapit_policy_ID = " . $this->policyID;
+            $check = $db->query_fetch($sql);
+            if ($check['clo_total_items'] > 0) {
+                //items found -> error
+                $this->error = true;
+                $this->errorDescription = 'Cannot change policy type without deleting all items first.';
+                return false;
+            } else {
+                return true;
+            }
+
         }
     }
 
@@ -206,8 +249,8 @@ class Policy
         if ($this->policyData['inapol_status'] == 'Outstanding') {
             //perform validations.
             //1. Check if any installments exists.
-            $totalInstallments = $db->query_fetch("SELECT COUNT(*)as clo_total_installments FROM ina_policy_installments WHERE inapi_policy_ID = ".$this->installmentID);
-            if ($totalInstallments['clo_total_installments'] < 1){
+            $totalInstallments = $db->query_fetch("SELECT COUNT(*)as clo_total_installments FROM ina_policy_installments WHERE inapi_policy_ID = " . $this->installmentID);
+            if ($totalInstallments['clo_total_installments'] < 1) {
                 $this->error = true;
                 $this->errorDescription = 'No installments found. You can automatically generate.';
                 return false;
@@ -727,7 +770,7 @@ class Policy
             $db->db_tool_update_row('ina_policy_payments',
                 $payNewData,
                 'inapp_policy_payment_ID = ' . $pay['inapp_policy_payment_ID'],
-                $pay['inapp_policy_payment_ID'],'','execute','inapp_');
+                $pay['inapp_policy_payment_ID'], '', 'execute', 'inapp_');
 
         }
 

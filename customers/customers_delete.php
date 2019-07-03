@@ -29,7 +29,14 @@ if ($_GET["lid"] != "") {
         }
     }
 
-
+    if ($db->get_setting('ina_enable_agent_insurance') == 1){
+        $checkINA = $db->query_fetch('SELECT COUNT(*) as clo_total FROM ina_policies WHERE inapol_customer_ID = '.$_GET['lid']);
+        if ($checkINA['clo_total'] > 0) {
+            $db->generateSessionAlertError('Customer [' . $_GET['lid'] . '] cannot be deleted. Used in policies');
+            header("Location: customers.php");
+            exit();
+        }
+    }
 
 
 	$db->db_tool_delete_row('customers',$_GET["lid"],"`cst_customer_ID` = ".$_GET["lid"]);
