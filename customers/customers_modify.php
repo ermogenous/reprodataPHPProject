@@ -500,7 +500,7 @@ $db->show_header();
                          aria-labelledby="pills-unpaid-tab">
 
                         <iframe src="../ainsurance/customers/customer_unpaid.php?cid=<?php echo $_GET["lid"]; ?>"
-                                frameborder="0"
+                                frameborder="0" id="frmCustomerUnpaidTab"
                                 scrolling="0" width="100%" height="400"></iframe>
 
                     </div>

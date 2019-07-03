@@ -14,9 +14,9 @@ $db->admin_title = "AInsurance Customers Unpaid Installments";
 
 if ($_GET['cid'] > 0) {
 
-    $table = new draw_table('ina_policy_installments', 'inapi_document_date', 'DESC');
+    $table = new draw_table('ina_policy_installments', 'inapi_document_date', 'ASC');
     $table->extra_from_section = ' JOIN ina_policies ON inapol_policy_ID = inapi_policy_ID';
-    $table->extras = 'inapol_customer_ID = ' . $_GET['cid'];
+    $table->extras = 'inapol_customer_ID = ' . $_GET['cid']." AND inapi_paid_status IN ('UnPaid','Partial')";
     $table->generate_data();
 
     $db->show_empty_header();
@@ -42,7 +42,9 @@ if ($_GET['cid'] > 0) {
                         </thead>
                         <tbody>
                         <?php
+                        $totalRows = 0;
                         while ($row = $table->fetch_data()) {
+                            $totalRows++;
                             ?>
                             <tr onclick="editLine(<?php echo $row["inapol_policy_ID"]; ?>);">
                                 <th scope="row"><?php echo $row["inapi_policy_installments_ID"]; ?></th>
@@ -72,6 +74,10 @@ if ($_GET['cid'] > 0) {
                 window.top.location.href = '../policy_modify.php?lid=' + id;
             }
         }
+
+        let totalRows = <?php echo $totalRows;?>;
+        let totalPx = 300 + (totalRows * 30);
+        $('#frmCustomerUnpaidTab', window.parent.document).height(totalPx + 'px');
     </script>
     <?php
     $db->show_empty_footer();

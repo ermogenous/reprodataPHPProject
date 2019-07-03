@@ -40,7 +40,7 @@ class customFormValidator
         //enableDatePicker: true/false ->when true it will echo the script required for the datepicker. jqueryUi must already exists.
         //datePickerValue: the value date to be inserted on creation
         //invalidText: the text to show when invalid.
-        //invalidTextAutoGenerate: gets automatically the value in the label field and generates the error. invalidText must be empty for this to work
+        //invalidTextAutoGenerate: true/false gets automatically the value in the label field and generates the error. invalidText must be empty for this to work
         //requiredAddedCustomCode: added custom code in the if statement for the required section
         //dateMinDate : dd/mm/yyyy compares the 2 dates and if lower than min date then error
         //dateMaxDate : dd/mm/yyyy compares the 2 dates and if higher than max date then error

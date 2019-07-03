@@ -126,14 +126,17 @@ if ($data['inapp_status'] != 'Outstanding' && $data['inapp_status'] != '') {
                             <input name="fld_payment_date" type="text" id="fld_payment_date"
                                    class="form-control"
                                    value="<?php echo $data['inapp_payment_date']; ?>">
-                            <script>
-                                $(function () {
-                                    $("#fld_payment_date").datepicker();
-                                    $("#fld_payment_date").datepicker("option", "dateFormat", "dd/mm/yy");
-                                    $("#fld_payment_date").val('<?php echo $db->convert_date_format($data["inapp_payment_date"], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?>');
-
-                                });
-                            </script>
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_payment_date',
+                                    'fieldDataType' => 'date',
+                                    'required' => true,
+                                    'enableDatePicker' => true,
+                                    'invalidTextAutoGenerate' => true,
+                                    'datePickerValue' => $db->convert_date_format($data["inapp_payment_date"], 'yyyy-mm-dd', 'dd/mm/yyyy')
+                                ]);
+                            ?>
                         </div>
 
                         <label for="fld_amount" class="col-sm-3 col-form-label">Amount</label>
@@ -141,6 +144,15 @@ if ($data['inapp_status'] != 'Outstanding' && $data['inapp_status'] != '') {
                             <input type="text" id="fld_amount" name="fld_amount"
                                    class="form-control" onkeyup="validateAmount();"
                                    value="<?php echo $data['inapp_amount']; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_amount',
+                                    'fieldDataType' => 'number',
+                                    'required' => true,
+                                    'invalidTextAutoGenerate' => true
+                                ]);
+                            ?>
                         </div>
                     </div>
 
