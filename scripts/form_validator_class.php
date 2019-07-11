@@ -21,9 +21,15 @@ class customFormValidator
     private $disableFormExceptions = [];
     private $formName = 'myForm';
 
+    private $showErrorList = 0;
+
 
     function __construct()
     {
+    }
+
+    public function showErrorList(){
+        $this->showErrorList = 1;
     }
 
     /**
@@ -45,6 +51,8 @@ class customFormValidator
         //dateMinDate : dd/mm/yyyy compares the 2 dates and if lower than min date then error
         //dateMaxDate : dd/mm/yyyy compares the 2 dates and if higher than max date then error
         //validateEmail: Validates if the email has the right format
+        //minNumber: decimal -> number cannot be lower than this (inclusive)
+        //maxNumber: decimal -> number cannot be higher than this (inclusive)
         if ($fieldData['fieldName'] == '') {
             echo "<div class='alert alert-danger'>Must provide fieldName in newField</div>";
             exit();
@@ -196,7 +204,7 @@ class customFormValidator
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                 $('#" . $fieldData['fieldName'] . "-invalid-text').show();
                 FormErrorFound = true;
-                //alert('radio error');
+                ErrorList.push('". $fieldData['fieldName'] ." -> Radio Empty');
             }
             else {
                 $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
@@ -211,7 +219,7 @@ class customFormValidator
                 $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                 FormErrorFound = true;
-
+                ErrorList.push('". $fieldData['fieldName'] ." -> Other Empty ');
             }
             else {
                 $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
@@ -236,7 +244,7 @@ class customFormValidator
                 $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                 FormErrorFound = true;
-                
+                ErrorList.push('". $fieldData['fieldName'] ." -> If Valid Date ');
             }
             ";
         }
@@ -249,6 +257,7 @@ class customFormValidator
                     $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                     FormErrorFound = true;
                     FieldsErrors['" . $fieldData['fieldName'] . "']['dateMin'] = false;
+                    ErrorList.push('". $fieldData['fieldName'] ." -> Minimum Date ');
                 }
                 else {
                     //if is-invalid already exists then another check hit. do not make as valid.
@@ -269,6 +278,7 @@ class customFormValidator
                     $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                     $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                     FormErrorFound = true;
+                    ErrorList.push('". $fieldData['fieldName'] ." -> Maximum Date ');
                 }
                 else {
                     //if is-invalid already exists then another check hit. do not make as valid.
@@ -283,16 +293,58 @@ class customFormValidator
         //NUMBER added check if valid number
         if ($fieldData['fieldDataType'] == 'number') {
             $return .= "
-            if ($.isNumeric($('#" . $fieldData['fieldName'] . "').val()) == true ){
-                $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
-                $('#" . $fieldData['fieldName'] . "').removeClass('is-invalid');
+            if ($.isNumeric($('#" . $fieldData['fieldName'] . "').val()) == true || $('#" . $fieldData['fieldName'] . "').val() == ''){
+                //if is-invalid already exists then another check hit. do not make as valid.
+                if ($('#" . $fieldData['fieldName'] . "').hasClass('is-invalid') != true){
+                    $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
+                    $('#" . $fieldData['fieldName'] . "').removeClass('is-invalid');
+                }
             }
             else {
                 $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                 FormErrorFound = true;
+                ErrorList.push('". $fieldData['fieldName'] ." -> If is numeric');
             }
             ";
+
+            //NUMBER MINIMUM
+            if (is_numeric($fieldData['minNumber'])){
+                $return .= "
+                    if ($('#" . $fieldData['fieldName'] . "').val() < ".$fieldData['minNumber']."){
+                        $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
+                        $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
+                        FormErrorFound = true;
+                        ErrorList.push('". $fieldData['fieldName'] ." -> Min Number ');
+                    }
+                    else {
+                        //if is-invalid already exists then another check hit. do not make as valid.
+                        if ($('#" . $fieldData['fieldName'] . "').hasClass('is-invalid') != true){
+                            $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
+                            $('#" . $fieldData['fieldName'] . "').removeClass('is-invalid');
+                        }
+                    }
+                ";
+            }
+
+            //NUMBER MAXIMUM
+            if (is_numeric($fieldData['maxNumber'])){
+                $return .= "
+                    if ($('#" . $fieldData['fieldName'] . "').val() > ".$fieldData['maxNumber']." && FieldsErrors['" . $fieldData['fieldName'] . "']['minNumber'] != false){
+                        $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
+                        $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
+                        FormErrorFound = true;
+                        ErrorList.push('". $fieldData['fieldName'] ." -> Max Number ');
+                    }
+                    else {
+                        //if is-invalid already exists then another check hit. do not make as valid.
+                        if ($('#" . $fieldData['fieldName'] . "').hasClass('is-invalid') != true){
+                            $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
+                            $('#" . $fieldData['fieldName'] . "').removeClass('is-invalid');
+                        }
+                    }
+                ";
+            }
         }
 
         //Email Validation
@@ -302,13 +354,12 @@ class customFormValidator
                 if (validateEmail($('#" . $fieldData['fieldName'] . "').val())) {
                     $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
                     $('#" . $fieldData['fieldName'] . "').removeClass('is-invalid');
-                    //console.log('valid email');
                 }
                 else {
                     $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                     $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                     FormErrorFound = true;
-                    //console.log('Invalid email');
+                    ErrorList.push('". $fieldData['fieldName'] ." -> Invalid Email ');
                 }
             ";
         }
@@ -335,6 +386,8 @@ class customFormValidator
  <script>
  var FormErrorFound = false;
  var FieldsErrors = [];
+ var ErrorList = [];
+ var showErrorList = '".$this->showErrorList."';
      (function () {
         'use strict';
         window.addEventListener('load', function () {
@@ -357,7 +410,10 @@ class customFormValidator
                     " . $customCode . "
 
                     if (FormErrorFound) {
-                        //alert('Error validation');
+                        console.log('Error validation');
+                        if (showErrorList = '1'){
+                            console.log(ErrorList);
+                        }
                         event.preventDefault();
                         event.stopPropagation();
                     }

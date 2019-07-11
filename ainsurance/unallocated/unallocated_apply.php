@@ -7,27 +7,31 @@
  */
 
 include("../../include/main.php");
-
+include("../policyTabs/payments_class.php");
 $db = new Main(1, 'UTF-8');
 $db->admin_title = "AInsurance Apply Unallocated Payments";
 
-if ($_POST['action'] == 'applyAllocation'){
-    //get the data
-    $data = $db->query_fetch('
-        SELECT * FROM
-        ina_policy_payments
-        JOIN ina_policies ON inapol_policy_ID = inapp_policy_ID
-        JOIN customers ON cst_customer_ID = inapp_customer_ID
-        WHERE
-        inapp_policy_payment_ID = ' . $_POST['lid']);
+$action = 'os';
 
-    if ($data['inapp_amount'] > $_POST['amountToApply']){
-        echo "Partial";
-    }
-    else {
-        echo "Full";
-    }
+if ($_POST['action'] == 'applyAllocation') {
 
+    $payment = new PolicyPayment($_POST['lid']);
+
+    $db->start_transaction();
+    if ($payment->applyUnallocatedPayment($_POST['toPolicyID'], $_POST['amountToApply']) == true) {
+        $db->generateAlertSuccess('Unallocated record has been allocated succesfully.');
+        $newPaymentID = $payment->newPaymentID;
+        $newUnAllocatedID = $payment->newUnAllocatedID;
+        $db->commit_transaction();
+
+        //create the informations
+        $action = 'applied';
+
+    } else {
+        $db->generateAlertError($payment->errorDescription);
+        $db->rollback_transaction();
+        $action = 'Error';
+    }
 }
 
 if ($_GET['lid'] > 0) {
@@ -90,6 +94,7 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
 
+                    <?php if ($action == 'os') { ?>
                     <div class="row">
                         <div class="col-12">&nbsp;</div>
                     </div>
@@ -169,6 +174,7 @@ $formValidator = new customFormValidator();
                             </p>
                         </div>
                     </div>
+                    <?php } ?>
 
 
                     <script>
@@ -219,6 +225,25 @@ $formValidator = new customFormValidator();
                         <div class="col-12">&nbsp;</div>
                     </div>
 
+                    <?php if ($action == 'applied') { ?>
+                    <div class="container">
+                        <div class="row alert alert-warning">
+                            <a href="../policy_modify.php?lid=<?php echo $_POST['toPolicyID']; ?>">
+                                New payment is created. Click to open policy to apply the payment.
+                            </a>
+                        </div>
+
+                        <?php if ($newUnAllocatedID > 0 ){?>
+                        <div class="row alert alert-warning">
+                            <a href="unallocated_apply.php?lid=<?php echo $newUnAllocatedID;?>">
+                                The remaining amount was placed in another unallocated record. Click to allocate it
+                            </a>
+                        </div>
+                        <?php } ?>
+                    </div>
+                    <?php } ?>
+
+                    <?php if ($action == 'os') { ?>
                     <div class="card">
                         <div class="card-body">
                             <p class="card-text text-center">
@@ -235,7 +260,7 @@ $formValidator = new customFormValidator();
                             </p>
                         </div>
                     </div>
-
+                    <?php } ?>
 
                 </div>
 

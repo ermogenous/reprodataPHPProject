@@ -51,7 +51,7 @@ $table->generate_data();
                 <div class="col-12">
                     <form name="myForm" id="myForm" method="post" action="" onsubmit="">
                         <div class="form-group row">
-                            <label for="search_field" class="col-sm-2 col-form-label">Search</label>
+                            <label for="search_field" class="col-sm-2 col-form-label"><?php echo $db->showLangText("Search", "Αναζήτηση"); ?></label>
                             <div class="col-sm-8 ui-widget">
                                 <input name="search_field" type="text" id="search_field"
                                        class="form-control"
@@ -76,12 +76,12 @@ $table->generate_data();
                     <thead>
                     <tr class="alert alert-success">
                         <th scope="col"><?php $table->display_order_links('#', 'cst_customer_ID'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('ID', 'cst_identity_card'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Name', 'cst_name'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('SurName', 'cst_surname'); ?></th>
+                        <th scope="col"><?php $table->display_order_links($db->showLangText("ID", "Ταυτότητα"), 'cst_identity_card'); ?></th>
+                        <th scope="col"><?php $table->display_order_links($db->showLangText("Name", "Όνομα"), 'cst_name'); ?></th>
+                        <th scope="col"><?php $table->display_order_links($db->showLangText("SurName", "Επίθετο"), 'cst_surname'); ?></th>
                         <th scope="col">
                             <a href="customers_modify.php">
-                                <i class="fas fa-plus-circle"></i>
+                                <i class="fas fa-plus-circle" title="<?php echo $db->showLangText("Customer Modify", "Δημιουργία Νέου Πελάτη "); ?>"></i>
                             </a>
                         </th>
                     </tr>
@@ -97,10 +97,10 @@ $table->generate_data();
                             <td><?php echo $row["cst_surname"]; ?></td>
                             <td>
                                 <a href="customers_modify.php?lid=<?php echo $row["cst_customer_ID"]; ?>"><i
-                                            class="fas fa-edit"></i></a>&nbsp
+                                            class="fas fa-edit" title="<?php echo $db->showLangText("Customer Modify", "Τροποποίηση Πελάτη "); ?>"></i></a>&nbsp
                                 <a href="customers_delete.php?lid=<?php echo $row["cst_customer_ID"]; ?>"
                                    onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this customer?');"><i
-                                            class="fas fa-minus-circle"></i></a>
+                                            class="fas fa-minus-circle" title="<?php echo $db->showLangText("Customer Delete", "Σβήσιμο Πελάτη "); ?>"></i></a>
                             </td>
                         </tr>
                         <?php

@@ -16,14 +16,17 @@ $endorsementID = 0;
 
 if ($_POST['action'] == 'endorse') {
 
+    $db->start_transaction();
     $db->working_section = 'Policy Endorsement';
     $policy = new Policy($_POST['pid']);
     $policy->endorsePolicy($_POST['fld_endorsement_date'],$_POST['fld_premium']);
     if ($policy->error == true) {
         $db->generateAlertError($policy->errorDescription);
+        $db->rollback_transaction();
     } else {
         $db->generateAlertSuccess('Policy Endorsed Successfully');
         $endorsementID = $policy->newEndorsementID;
+        $db->commit_transaction();
     }
 
     $_GET['pid'] = $_POST['pid'];
@@ -159,7 +162,7 @@ $formValidator = new customFormValidator();
                     <div class="row">
                         <div class="col-4">
                             <?php if ($_POST['action'] != 'endorse') { ?>
-                            Proceed to Review?
+                            Proceed to Endorse?
                             <?php } ?>
                         </div>
                         <div class="col-3">

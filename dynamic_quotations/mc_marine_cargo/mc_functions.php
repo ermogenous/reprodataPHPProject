@@ -18,32 +18,41 @@ function mc_shipment_details_3()
         <div class="col-sm-8">
             <div class="container custom-control-inline">
                 <div class="input-group">
-                    <div class="input-group-text">
-                        <input type="radio" id="3_oqqit_rate_13" name="3_oqqit_rate_13" value="Clause A" class="form-control"
-                        <?php if ($qitem_data['oqqit_rate_13'] == 'Clause A') echo 'checked';?>>
-                    </div>
-                    &nbsp;Institute Clause A
+                    <div class="custom-control custom-radio"
+                    ">
+                    <input type="radio" id="ClauseA" name="3_oqqit_rate_13" value="Clause A"
+                           class="custom-control-input"
+                        <?php if ($qitem_data['oqqit_rate_13'] == 'Clause A') echo 'checked'; ?>>
+                    <label class="custom-control-label" for="ClauseA">
+                        &nbsp;Institute Clause A
+                    </label>
                 </div>
-
-                <div class="input-group">
-                    <div class="input-group-text">
-                        <input type="radio" id="3_oqqit_rate_13" name="3_oqqit_rate_13" value="Clause C" class="form-control"
-                            <?php if ($qitem_data['oqqit_rate_13'] == 'Clause C') echo 'checked';?>>
-                    </div>
-                    &nbsp;Institute Clause C
-                </div>
+                &nbsp;
             </div>
 
-            <?php
-            $formValidator->addField(
-                [
-                    'fieldName' => '3_oqqit_rate_13',
-                    'fieldDataType' => 'radio',
-                    'required' => true,
-                    'invalidText' => show_quotation_text("Επιλέξτε Conditions Of Insurance.", "Must select Conditions Of Insurance", 'Return')
-                ]);
-            ?>
+            <div class="input-group">
+                <div class="custom-control custom-radio">
+                    <input type="radio" id="ClauseC" name="3_oqqit_rate_13" value="Clause C"
+                           class="custom-control-input"
+                        <?php if ($qitem_data['oqqit_rate_13'] == 'Clause C') echo 'checked'; ?> >
+                    <label class="custom-control-label" for="ClauseC">
+                        &nbsp;Institute Clause C
+                    </label>
+                </div>
+
+            </div>
         </div>
+
+        <?php
+        $formValidator->addField(
+            [
+                'fieldName' => '3_oqqit_rate_13',
+                'fieldDataType' => 'radio',
+                'required' => true,
+                'invalidText' => show_quotation_text("Επιλέξτε Conditions Of Insurance.", "Must select Conditions Of Insurance", 'Return')
+            ]);
+        ?>
+    </div>
     </div>
 
     <div class="form-group row">
@@ -94,7 +103,7 @@ function mc_shipment_details_3()
             <script>
                 function Approval3_oqqit_rate_4() {
 
-                    console.log('executed');
+                    //console.log('executed');
 
                     let result = [];
                     if ($('#3_oqqit_rate_4').val() == 'Other') {
@@ -590,12 +599,20 @@ function activate_custom_validation($data, $returnJS = false)
 
 
         //get all 3 countries from codes
-        $countriesResult = $db->query("
-        SELECT * FROM codes WHERE cde_type = 'Countries' AND (
-            cde_code_ID = " . $item3['oqqit_rate_10'] . " OR
-            cde_code_ID = " . $item3['oqqit_rate_11'] . " OR
-            cde_code_ID = " . $item3['oqqit_rate_12'] . " 
-        )");
+        $sql = "
+        SELECT * FROM codes WHERE cde_type = 'Countries' AND (";
+
+        if ($item3['oqqit_rate_10'] > 0) {
+            $sql .= " cde_code_ID = " . $item3['oqqit_rate_10'] . " OR";
+        }
+        if ($item3['oqqit_rate_11'] > 0) {
+            $sql .= " cde_code_ID = " . $item3['oqqit_rate_11'] . " OR";
+        }
+        if ($item3['oqqit_rate_12'] > 0) {
+            $sql .= " cde_code_ID = " . $item3['oqqit_rate_12'];
+        }
+        $sql .= ")";
+        $countriesResult = $db->query($sql);
         while ($country = $db->fetch_assoc($countriesResult)) {
             $countries[$country['cde_code_ID']] = $country;
         }
@@ -701,12 +718,32 @@ function customCheckForApproval($data)
     $item3 = $db->query_fetch('SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = ' . $data['oqq_quotations_ID'] . ' AND oqqit_items_ID = 3');
 
     //get all 3 countries from codes
-    $countriesResult = $db->query("
+    $sql = "
+        SELECT * FROM codes WHERE cde_type = 'Countries' AND (";
+
+    if ($item3['oqqit_rate_10'] > 0) {
+        $sql .= " cde_code_ID = " . $item3['oqqit_rate_10'] . " OR";
+    }
+    if ($item3['oqqit_rate_11'] > 0) {
+        $sql .= " cde_code_ID = " . $item3['oqqit_rate_11'] . " OR";
+    }
+    if ($item3['oqqit_rate_12'] > 0) {
+        $sql .= " cde_code_ID = " . $item3['oqqit_rate_12'];
+    }
+    $sql .= ")";
+    $countriesResult = $db->query($sql);
+
+
+
+
+
+    /*$countriesResult = $db->query("
         SELECT * FROM codes WHERE cde_type = 'Countries' AND (
             cde_code_ID = " . $item3['oqqit_rate_10'] . " OR
             cde_code_ID = " . $item3['oqqit_rate_11'] . " OR
             cde_code_ID = " . $item3['oqqit_rate_12'] . " 
         )");
+    */
     while ($country = $db->fetch_assoc($countriesResult)) {
         $countries[$country['cde_code_ID']] = $country;
     }

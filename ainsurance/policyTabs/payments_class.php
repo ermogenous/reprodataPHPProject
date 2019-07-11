@@ -13,6 +13,10 @@ class PolicyPayment
     public $paymentData;
     public $error = false;
     public $errorDescription = '';
+
+    public $newPaymentID = 0;
+    public $newUnAllocatedID = 0;
+
     private $policyID;
     private $allowedModify = true;
 
@@ -83,7 +87,7 @@ class PolicyPayment
         //only the first outstanding can be applied
         $minPaymentID = $db->query_fetch("
                   SELECT MIN(inapp_policy_payment_ID)as clo_min FROM ina_policy_payments 
-                  WHERE inapp_policy_ID = " . $this->policyID . " AND inapp_status = 'Outstanding' AND inapp_locked != 1");
+                  WHERE inapp_policy_ID = " . $this->policyID . " AND inapp_status = 'Outstanding' AND inapp_process_status = 'Policy' AND inapp_locked != 1");
         if ($minPaymentID['clo_min'] != $this->paymentID) {
             $this->error = true;
             $this->errorDescription = 'Only the first outstanding payment can be applied';
@@ -205,7 +209,6 @@ class PolicyPayment
 
     }
 
-
     function reversePostPayment()
     {
         global $db;
@@ -266,6 +269,82 @@ class PolicyPayment
         global $db;
 
         //loop into all the installments
+
+    }
+
+    /**
+     * This will create another payment and set the unallocated one as deleted. If partial then the same and a new unallocated will be created.
+     * @param $policyID
+     * @param $amount
+     * @return true/false
+     */
+    function applyUnallocatedPayment($policyID, $amount)
+    {
+        global $db;
+
+        if ($this->paymentData['inapp_process_status'] != 'Unallocated'){
+            $this->error = true;
+            $this->errorDescription = 'Must be unallocated record to allocate';
+            return false;
+        }
+
+        if ($this->paymentData['inapp_status'] != 'Outstanding'){
+            $this->error = true;
+            $this->errorDescription = 'Payment must be outstanding to apply unallocated.';
+            return false;
+        }
+
+        if ($policyID == '' || $policyID == 0){
+            $this->error = true;
+            $this->errorDescription = 'Must supply the policy which will be allocated.';
+            return false;
+        }
+
+        if ($amount == '' || $amount == 0){
+            $this->error = true;
+            $this->errorDescription = 'Must provide an amount for the allocation.';
+            return false;
+        }
+
+        $policyData = $db->query_fetch('SELECT * FROM ina_policies WHERE inapol_policy_ID = '.$policyID);
+
+        //make the payment
+        $newData['amount'] = $amount;
+        $newData['policy_ID'] = $policyID;
+        $newData['customer_ID'] = $policyData['inapol_customer_ID'];
+        $newData['status'] = 'Outstanding';
+        $newData['process_status'] = 'Policy';
+        $newData['payment_date'] = date('Y-m-d');
+        $newData['locked'] = 0;
+        $newPaymentID = $db->db_tool_insert_row('ina_policy_payments', $newData, '', 1, 'inapp_');
+        $this->newPaymentID = $newPaymentID;
+
+        if ($this->paymentData['inapp_amount'] > $amount) {
+            //Partial. need to create another unallocated record.
+
+            $newUnAll['amount'] = $this->paymentData['inapp_amount'] - $amount;
+            $newUnAll['policy_ID'] = $policyID;
+            $newUnAll['customer_ID'] = $this->paymentData['inapp_customer_ID'];
+            $newUnAll['status'] = 'Outstanding';
+            $newUnAll['process_status'] = 'Unallocated';
+            $newUnAll['payment_date'] = date('Y-m-d');
+            $newUnAll['locked'] = 1;
+            $newUnallID = $db->db_tool_insert_row('ina_policy_payments', $newUnAll, '', 1, 'inapp_');
+            $this->newUnAllocatedID = $newUnallID;
+
+        } else {
+            //full allocation. no need to create another record.
+        }
+
+        //update the current unallocated record
+        $curUnAll['status'] = 'Deleted';
+        $curUnAll['created_payment_ID'] = $newPaymentID;
+        $curUnAll['replaced_by_payment_ID'] = $newUnallID;
+        $db->db_tool_update_row('ina_policy_payments', $curUnAll,
+            'inapp_policy_payment_ID = '.$this->paymentID, $this->policyID,
+            '','execute','inapp_');
+
+        return true;
 
     }
 }

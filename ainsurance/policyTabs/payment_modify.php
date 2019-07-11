@@ -22,6 +22,7 @@ if ($_POST["action"] == "insert") {
     $policy = new Policy($_POST['pid']);
 
     $_POST['fld_status'] = 'Outstanding';
+    $_POST['fld_process_status'] = 'Policy';
     $_POST['fld_policy_ID'] = $_POST['pid'];
     $_POST['fld_customer_ID'] = $policy->policyData['inapol_customer_ID'];
     $_POST['fld_payment_date'] = $db->convert_date_format($_POST['fld_payment_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');

@@ -22,6 +22,10 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_expiry_date'] = $db->convert_date_format($_POST['fld_expiry_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $_POST['fld_status'] = 'Outstanding';
 
+    //init fields
+    $_POST['fld_replacing_ID'] = 0;
+    $_POST['fld_replaced_by_ID'] = 0;
+
     $db->working_section = 'AInsurance Policy Insert';
     $newID = $db->db_tool_insert_row('ina_policies', $_POST, 'fld_', 1, 'inapol_');
 
@@ -112,12 +116,11 @@ $db->show_header();
                 <form name="myForm" id="myForm" method="post" action="" onsubmit=""
                     <?php $formValidator->echoFormParameters(); ?>>
                     <div class="alert alert-dark text-center">
-                        <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
-                            &nbsp;Policy</b>
+                        <b><?php if ($_GET["lid"] == "") echo $db->showLangText('Insert Policy','Δημιουργία Συμβολαίου'); else echo $db->showLangText('Update Policy','Αλλαγή Συμβολαίου'); ?></b>
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_underwriter_ID" class="col-md-2 col-form-label">Underwriter</label>
+                        <label for="fld_underwriter_ID" class="col-md-2 col-form-label"><?php echo $db->showLangText('Underwriter','Ασφαλιστής');?></label>
                         <div class="col-md-4">
                             <select name="fld_underwriter_ID" id="fld_underwriter_ID"
                                     class="form-control"
@@ -166,7 +169,7 @@ $db->show_header();
 
                     <div class="form-group row">
                         <label for="fld_insurance_company_ID" class="col-md-2 col-form-label">
-                            Company
+                            <?php echo $db->showLangText('Company','Εταιρεία');?>
                         </label>
                         <div class="col-md-4">
                             <select name="fld_insurance_company_ID" id="fld_insurance_company_ID"
@@ -216,8 +219,10 @@ $db->show_header();
                             </script>
                         </div>
 
-                        <label for="fld_type_code" class="col-md-2 col-form-label">Type</label>
-                        <div class="col-md-4">
+                        <label for="fld_type_code" class="col-md-3 col-form-label">
+                            <?php echo $db->showLangText('Type','Τύπος');?>
+                        </label>
+                        <div class="col-md-3">
                             <input type="hidden" id="type_code_db" name="type_code_db" value="<?php echo $data['inapol_type_code']; ?>">
                             <select name="fld_type_code" id="fld_type_code"
                                     class="form-control"
@@ -237,7 +242,9 @@ $db->show_header();
                                     'invalidText' => 'Must select Type'
                                 ]);
                             ?>
-                            <div class="invalid-feedback" id="errorDeleteAllItems">Must delete all items before you can change the type</div>
+                            <div class="invalid-feedback" id="errorDeleteAllItems">
+                                <?php echo $db->showLangText('Must delete all items before you can change the type','Πρέπει να διαγράψετε όλα τα στοιχεία για να μπορέσετε να αλλάξετε τον τύπο');?>
+                            </div>
                         </div>
                         <script>
                             function loadPolicyTypes(clear = true) {
@@ -272,7 +279,9 @@ $db->show_header();
                     </div>
 
                     <div class="form-group row">
-                        <label for="customerSelect" class="col-md-2 col-form-label">Customer</label>
+                        <label for="customerSelect" class="col-md-2 col-form-label">
+                            <?php echo $db->showLangText('Customer','Πελάτης');?>
+                        </label>
                         <div class="col-md-4">
                             <input name="customerSelect" type="text" id="customerSelect"
                                    class="form-control"
@@ -320,7 +329,9 @@ $db->show_header();
                             </script>
                         </div>
 
-                        <label for="fld_policy_number" class="col-md-2 col-form-label">Policy Number</label>
+                        <label for="fld_policy_number" class="col-md-3 col-form-label">
+                            <?php echo $db->showLangText('Policy Number','Αρ.Συμβολαίου');?>
+                        </label>
                         <div class="col-md-3">
                             <input name="fld_policy_number" type="text" id="fld_policy_number"
                                    class="form-control" onkeyup="$('#policyNumberValidation').val('error');"
@@ -401,12 +412,13 @@ $db->show_header();
                         <div class="col-md-6 text-center">
                             <b>#</b><span id="cus_number"><?php echo $data['cst_customer_ID']; ?></span>
                             <b>ID:</b> <span id="cus_id"><?php echo $data['cst_identity_card']; ?></span>
-                            <b>Tel:</b> <span id="cus_work_tel"><?php echo $data['cst_work_tel_1']; ?></span>
-                            <b>Mobile:</b> <span id="cus_mobile"><?php echo $data['cst_mobile_1']; ?></span>
+                            <b><?php echo $db->showLangText('Tel:','Τηλ:');?></b> <span id="cus_work_tel"><?php echo $data['cst_work_tel_1']; ?></span>
+                            <b><?php echo $db->showLangText('Mobile:','Κινητό:');?></b> <span id="cus_mobile"><?php echo $data['cst_mobile_1']; ?></span>
                         </div>
 
-                        <label for="fld_period_starting_date" class="col-md-2 col-form-label">
-                            Period Starting Date</label>
+                        <label for="fld_period_starting_date" class="col-md-3 col-form-label">
+                            <?php echo $db->showLangText('Period Starting Date','Ημ.Έναρξης Περιόδου');?>
+                        </label>
                         <div class="col-md-2">
                             <input name="fld_period_starting_date" type="text" id="fld_period_starting_date"
                                    class="form-control"
@@ -426,7 +438,9 @@ $db->show_header();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_name" class="col-md-2 col-form-label">Status</label>
+                        <label for="fld_name" class="col-md-2 col-form-label">
+                            <?php echo $db->showLangText('Status','Κατάσταση');?>
+                        </label>
                         <div class="col-md-2">
                             <?php echo $data['inapol_status']; ?>
 
@@ -436,19 +450,21 @@ $db->show_header();
                                 <button id="changeStatus" name="changeStatus" class="form-control alert-success"
                                         type="button"
                                         onclick="window.location.assign('policy_change_status.php?lid=<?php echo $data['inapol_policy_ID']; ?>')">
-                                    Activate
+                                    <?php echo $db->showLangText('Activate','Ενεργοποίηση');?>
                                 </button>
                             <?php } ?>
                             <?php if ($data['inapol_status'] == 'Active') { ?>
                                 <button id="changeStatus" name="changeStatus" class="form-control alert-success"
                                         type="button"
                                         onclick="window.location.assign('policy_change_status.php?lid=<?php echo $data['inapol_policy_ID']; ?>')">
-                                    Endorse/Cancel
+                                    <?php echo $db->showLangText('Endorse/Cancel','Αλλαγή/Ακύρωση');?>
                                 </button>
                             <?php } ?>
                         </div>
 
-                        <label for="fld_starting_date" class="col-md-2 col-form-label">Starting Date</label>
+                        <label for="fld_starting_date" class="col-md-3 col-form-label">
+                            <?php echo $db->showLangText('Starting Date','Ημ.Έναρξης');?>
+                        </label>
                         <div class="col-md-2">
                             <input name="fld_starting_date" type="text" id="fld_starting_date"
                                    class="form-control"
@@ -468,8 +484,10 @@ $db->show_header();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_process_status" class="col-md-2 col-form-label">Process Status</label>
-                        <div class="col-md-4">
+                        <label for="fld_process_status" class="col-md-3 col-form-label">
+                            <?php echo $db->showLangText('Process Status','Κατάσταση Λειτουργίας');?>
+                        </label>
+                        <div class="col-md-3">
                             <select name="fld_process_status" id="fld_process_status"
                                     class="form-control"
                             <?php if ($data['inapol_replacing_ID'] > 0 || $data['inapol_replaced_by_ID'] > 0) echo "disabled";?>
@@ -493,8 +511,8 @@ $db->show_header();
                             </select>
                         </div>
 
-                        <label class="col-md-2 col-form-label">
-                            Expiry Date <br>
+                        <label class="col-md-3 col-form-label">
+                            <?php echo $db->showLangText('Expiry Date','Ημ.Λήξης');?> <br>
                             <span class="main_text_smaller">
                                 <span style="cursor: pointer" onclick="fillExpiryDate('year',1);">1Y</span>&nbsp
                                 <span style="cursor: pointer" onclick="fillExpiryDate('month',6);">6M</span>&nbsp

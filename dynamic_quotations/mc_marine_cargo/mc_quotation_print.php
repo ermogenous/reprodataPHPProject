@@ -139,7 +139,7 @@ function getQuotationHTML($quotationID)
             $excess = $underwriterData['oqun_excess_other'];
         }
 
-        $conditionsOfInsurance = getConditionsOfInsurance($sect1['oqqit_rate_4']);
+        $conditionsOfInsurance = getConditionsOfInsurance($sect1['oqqit_rate_4'],$sect1['oqqit_rate_13']);
 
         $html .= '
 <div style="font-family: Tahoma;">
@@ -163,7 +163,7 @@ function getQuotationHTML($quotationID)
         </tr>
         <tr>
             <td colspan="3" align="center"><b>
-                <span style="font-size: 17px;">CERIFICATE OF INSURANCE<br></span>'.$certificateNumber.' '.$underwriterOpenCoverNumber.'
+                <span style="font-size: 17px;">CERTIFICATE OF INSURANCE<br>'.$certificateNumber.' '.$underwriterOpenCoverNumber.'</span>
             </b></td>
         </tr>
         <tr>
@@ -222,13 +222,13 @@ function getQuotationHTML($quotationID)
                     <tr>
                         <td width="50%" valign="top">
                             <b>Marks and Numbers</b><br><br>
-                            ' . $sect2['oqqit_rate_2'] . '<br><br><br>
+                            ' . nl2br($sect2['oqqit_rate_2']) . '<br><br><br>
                             <strong>Supplier</strong><br>
-                            ' . $sect2['oqqit_rate_5'] . '
+                            ' . nl2br($sect2['oqqit_rate_5']) . '
                         </td>
                         <td width="50%" valign="top">
                             <b>Goods Insured - (as per bill of landing)</b><br><br>
-                            ' . $sect2['oqqit_rate_1'] . '
+                            ' . nl2br($sect2['oqqit_rate_1']) . '
                         </td>
                     </tr>
                 </table>
@@ -639,20 +639,43 @@ function getQuotationHTML($quotationID)
 
 }
 
-function getConditionsOfInsurance($commodity){
+function getConditionsOfInsurance($commodity,$clause){
     if ($commodity == 'General Cargo & Merchandise'){
-        $return[0] = '<strong>General Cargo - Shipments by Sea, Air or Land</strong>
-        <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009. and/or Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009 as applicable.
-        <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009 and/or Institute War Clauses (Air Cargo) (excluding sendings by Post) CL388 dated 01.01.2009 as applicable.
-        <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009 and/ or Institute Strikes Clauses (Cargo) (Air Cargo) CL389 dated 01.01.2009 as applicable. 
+        if ($clause == 'Clause A') {
+            $return[0] = '<strong>General Cargo - Shipments by Sea, Air or Land</strong>
+            <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009. and/or Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009 as applicable.
+            <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009 and/or Institute War Clauses (Air Cargo) (excluding sendings by Post) CL388 dated 01.01.2009 as applicable.
+            <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009 and/ or Institute Strikes Clauses (Cargo) (Air Cargo) CL389 dated 01.01.2009 as applicable. 
+            <br>Institute Classification Clause CL354 dated 1.1.01.
+            <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical & Electromagnetic Weapons Exclusion Clause CL370 dated 10/11/03.
+            <br>Institute Cyber Attack Exclusion Clause CL380 dated 10/11/03.
+            <br>Termination of Transit Clause (Terrorism).
+            <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
+            <br>Including transhipment, barge and lightering risks whether customary or otherwise.
+            <br>Subject also to Additional Conditions as attached.
+            ';
+        }
+        else {
+            $return[0] = "
+        <strong>ICC C</strong>
+        <br>Institute Cargo Clauses “C” CL384 dated 01.01.2009.
+        <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009.
+        <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009.
         <br>Institute Classification Clause CL354 dated 1.1.01.
-        <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical & Electromagnetic Weapons Exclusion Clause CL370 dated 10/11/03.
+        <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons
+        <br>Exclusion Clause CL370 dated 10/11/03.
         <br>Institute Cyber Attack Exclusion Clause CL380 dated 10/11/03.
         <br>Termination of Transit Clause (Terrorism).
         <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
+        <br>Institute Replacement Clause CL372 dated 01.12.2008 or Second-hand Replacement Clause as attached as
+        applicable.
+        <br>Excluding Electrical and Mechanical derangement unless caused by a peril insured against.
+        <br>Termination of Transit Clause Terrorism 2009 JC2009/056
         <br>Including transhipment, barge and lightering risks whether customary or otherwise.
-        <br>Subject also to Additional Conditions as attached.
-        ';
+        <br>Subject also to Additional Conditions as attached.";
+        }
+
+
     }
 
     if ($commodity == 'New/Used Vehicles'){

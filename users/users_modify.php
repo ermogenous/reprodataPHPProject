@@ -111,6 +111,20 @@ $db->show_header();
                 </div>
 
                 <div class="form-group row">
+                    <label for="fld_usr_default_lang" class="col-sm-4 col-form-label">Default Language</label>
+                    <div class="col-sm-8">
+                        <select name="fld_usr_default_lang" id="fld_usr_default_lang" class="form-control">
+                            <option value="eng" <?php if ($data["usr_user_rights"] == 'eng') echo "selected=\"selected\""; ?>>
+                                English
+                            </option>
+                            <option value="gre" <?php if ($data["usr_user_rights"] == 'gre') echo "selected=\"selected\""; ?>>
+                                Greek
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
                     <label for="fld_usr_username" class="col-sm-4 col-form-label">Username</label>
                     <div class="col-sm-8">
                         <input name="fld_usr_username" type="text" id="fld_usr_username"

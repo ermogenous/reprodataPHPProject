@@ -62,22 +62,22 @@ function template_header()
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-users"></i> Customers
+                            <i class="fas fa-users"></i> <?php echo $db->showLangText('Customers','Πελάτες');?>
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/customers/customers.php"><i
-                                        class="fas fa-eye"></i> View Customers</a>
+                                        class="fas fa-eye"></i> <?php echo $db->showLangText('View Customers','Προβολή Πελατών');?></a>
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/customers/customers_modify.php"><i
-                                        class="fas fa-plus-circle"></i> New Customer</a>
+                                        class="fas fa-plus-circle"></i> <?php echo $db->showLangText('New Customer','Δημιουργία Πελάτη');?></a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/customers/customer_groups.php"><i
-                                        class="fas fa-eye"></i> View Customer Groups</a>
+                                        class="fas fa-eye"></i> <?php echo $db->showLangText('View Customer Groups','Προβολή Ομάδες Πελατών');?></a>
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/customers/customer_groups_modify.php"><i
-                                        class="fas fa-plus-circle"></i> New Customer Group</a>
+                                        class="fas fa-plus-circle"></i> <?php echo $db->showLangText('New Customer Group','Δημιουργία Ομάδας Πελατών');?></a>
                         </div>
                     </li>
 
@@ -87,23 +87,23 @@ function template_header()
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-clipboard-list"></i> Agent Insurance
+                                <i class="fas fa-clipboard-list"></i> <?php echo $db->showLangText('Agent Insurance','Ασφαληστικό');?>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/policies.php">
-                                    <i class="far fa-calendar-alt"></i> View Policies</a>
+                                    <i class="far fa-calendar-alt"></i> <?php echo $db->showLangText('View Policies','Προβολή Συμβολαίων');?></a>
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/policy_modify.php">
-                                    <i class="far fa-calendar-alt"></i> New Policy</a>
+                                    <i class="far fa-calendar-alt"></i> <?php echo $db->showLangText('New Policy','Νέο Συμβόλαιο');?></a>
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/unallocated/unallocated.php">
-                                    <i class="fas fa-wallet"></i> View UnAllocated</a>
+                                    <i class="fas fa-wallet"></i> <?php echo $db->showLangText('View UnAllocated','Προβολή Μη Κατανεμημένων');?></a>
                             </div>
                         </li>
                     <?php } ?>
 
-                    <?php if ($db->dbSettings['ina_enable_agent_insurance']['value'] == 111) { ?>
+                    <?php if ($db->get_setting('ac_advanced_accounts_enable') == 1) { ?>
                         <!-- Accounts -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -112,11 +112,17 @@ function template_header()
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/basic_accounts/baccounts.php">
+                                   href="<?php echo $main["site_url"]; ?>/accounts/accounts/accounts.php">
                                     <i class="far fa-calendar-alt"></i> View Accounts</a>
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/accounts/transactions/transactions.php">
                                     <i class="far fa-calendar-alt"></i> View Transactions</a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/accounts/transactions/make_journal_entry.php">
+                                    <i class="fas fa-book"></i> Make Journal Entry</a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/accounts/categories/categories.php">
+                                    <i class="fas fa-th-list"></i> Categories Maintenance</a>
                             </div>
                         </li>
                     <?php } ?>
@@ -383,10 +389,37 @@ if ($db->admin_layout_printer != 'yes')
     <div class="container-fluid">
         <div class="row">&nbsp</div>
         <div class="row glyphicon-copyright-mark footer-bar <?php if ($db->imitationMode === true) echo 'alert alert-danger'; ?>">
-            Welcome:
-            <?php if ($db->imitationMode === true) echo '<b> &nbsp;Imitating &nbsp;</b>'; ?>
-            <?php echo $db->user_data['usr_name']; ?>
+            <div class="col-1"></div>
+            <div class="col-11">
+
+                <div class="container-fluid">
+                    <div class="row" style="height: 5px;"></div>
+                    <div class="row">
+                        <div class="col-12">
+                            Welcome:
+                            <?php if ($db->imitationMode === true) echo '<b> &nbsp;Imitating &nbsp;</b>'; ?>
+                            <?php echo $db->user_data['usr_name']; ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <a href="?switchLang=<?php if ($db->user_data['usr_default_lang'] == 'eng') echo 'gre'; else echo 'eng';?>">
+                                <?php if ($db->user_data['usr_default_lang'] == 'eng') { ?> Αλλαγή Γλώσσας σε Ελληνικά<?php } ?>
+                                <?php if ($db->user_data['usr_default_lang'] == 'gre') { ?> Switch Language to English<?php } ?>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 text-center">
+                            Copyright AgentsCy 2019. All rights reserved. Developed & Hosted by Ermogenous.M
+                        </div>
+                    </div>
+                    <div class="row" style="height: 5px;"></div>
+                </div>
+
+            </div>
         </div>
+
     </div>
     <?php
     $showStatsFooter = $db->get_setting('layout_show_footer_stats');

@@ -1,7 +1,7 @@
 <?php
 /////////////////////////////////////////////////////////////////////
-//MAIN CLASS V2.201
-//LAST UPDATE 21/10/2015 
+//MAIN CLASS V2.202
+//LAST UPDATE 10/07/2019
 //- Added START TRANSACTION Functionality
 //- added coalesce_null function
 //- added update_log_file_custom (inserts empty log with the sql in the description
@@ -17,6 +17,7 @@
 //- 09/8/2018 add insert/update automatically fields insert_date_time, last_update_date_time and by
 //- 04/01/2019 db_tool_delete_row check if the record exists before deleting
 //- 09/04/2019 setDebugMode. When true prints all queries executed
+//- 10/7/2019 Fixed function error. was giving sql error to all users.
 //usefull information
 //
 //mysqli_query("SET NAMES 'utf8'");
@@ -152,6 +153,15 @@ class Main
         if ($login == 1) {
 
             $this->check_login();
+
+            //check for language switch
+            if ($_GET['switchLang'] == 'eng' || $_GET['switchLang'] == 'gre'){
+                $newData['default_lang'] = $_GET['switchLang'];
+                $this->db_tool_update_row('users', $newData, 'usr_users_ID = '.$this->user_data['usr_users_ID'], $this->user_data['usr_users_ID'],
+                    '','execute','usr_');
+                header("Location: ".$main['site_url']."/home.php");
+                exit();
+            }
 
         }
         $this->admin_title = $this->settings["admin_title"];
@@ -599,7 +609,7 @@ class Main
 
             //if debug mode echo the sql
             if ($this->debugMode == true) {
-                echo $sql . "\n<br><hr>";
+                echo $sql . "\n<br>";
             }
 
         }
@@ -724,7 +734,8 @@ class Main
             'User[ID]:' . $this->user_data['usr_name'] . '[' . $this->user_data['usr_users_ID'] . ']',
             '$_GET->' . print_r($_GET, true) . '\n$_POST->' . print_r($_POST, true), $string);
 
-        if ($this->user_data["user_rights"] == 0) {
+
+        if ($this->user_data["usr_user_rights"] == 0) {
             //$this->show_header();
             echo $string . " ERROR <br><a href=\"#\" onclick=\"history.go(-1);\">Back</a>";
             //$this->show_footer();
@@ -732,7 +743,7 @@ class Main
             exit();
         } else {
             $this->show_header();
-            echo "Error has been found. Please contact the system administrator. <br>" . $string . "<br><a href=\"#\" onclick=\"history.go(-1);\">Back</a>";
+            echo "Error has been found. Please contact the system administrator. <br><a href=\"#\" onclick=\"history.go(-1);\">Back</a>";
             $this->show_footer();
             exit();
         }
@@ -2059,6 +2070,15 @@ class Main
         $return['month'] = $newMonth;
         $return['year'] = $newYear;
         return $return;
+    }
+
+    public function showLangText($eng,$gre){
+        if ($this->user_data['usr_default_lang'] == 'gre'){
+            return $gre;
+        }
+        else {
+            return $eng;
+        }
     }
 
 }//main class

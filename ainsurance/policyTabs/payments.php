@@ -56,6 +56,8 @@ if ($_GET['pid'] > 0) {
 
         $table = new draw_table('ina_policy_payments', 'inapp_policy_payment_ID', 'ASC');
         $table->extras .= 'inapp_policy_ID = ' . $policy->installmentID;
+        $table->extras .= " AND inapp_process_status = 'Policy' AND inapp_status != 'Deleted'";
+
 
         $table->generate_data();
         ?>

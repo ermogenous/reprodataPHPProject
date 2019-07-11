@@ -120,7 +120,7 @@ function mff_insured_details_1()
                     ?>
                     <option value="<?php echo $country['cde_code_ID']; ?>"
                         <?php if ($qitem_data['oqqit_rate_5'] == $country['cde_code_ID']) echo 'selected'; ?>>
-                        <?php echo $country['cde_value'] . $reffered; ?>
+                        <?php echo $country['cde_value']; ?>
                     </option>
                 <?php } ?>
             </select>

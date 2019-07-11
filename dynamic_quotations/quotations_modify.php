@@ -90,6 +90,8 @@ $items_sql = "SELECT * FROM `oqt_items` WHERE
               ORDER BY oqit_sort";
 
 //update the quotation if not change language and is new quotation.
+
+
 if ($_POST["action"] == "save") {
 
 

@@ -20,11 +20,12 @@ if ($_POST['action'] == 'cancel') {
 
     $db->working_section = 'Policy Cancellation';
     $policy = new Policy($_POST['pid']);
-    $policy->cancelPolicy($_POST['fld_cancellation_date'],$_POST['fld_premium']);
+    $policy->cancelPolicy($_POST['fld_cancellation_date'],$_POST['fld_premium'],$_POST['fld_fees'],$_POST['fld_commission']);
 
     if ($policy->error == true) {
         $db->rollback_transaction();
         $db->generateAlertError($policy->errorDescription);
+        $_POST['action'] = 'error';
     } else {
         $db->commit_transaction();
         $db->generateAlertSuccess('Policy Cancelled Successfully');
@@ -46,6 +47,16 @@ $db->show_header();
 
 include('../scripts/form_validator_class.php');
 $formValidator = new customFormValidator();
+$formValidator->addCustomCode('
+    if (FormErrorFound === false) {
+        if (confirm("Are you sure you want to cancel this policy?")){
+            //proceed
+        }
+        else {
+            FormErrorFound = true;
+        }
+    }
+');
 ?>
 
 <div class="container">
@@ -110,10 +121,12 @@ $formValidator = new customFormValidator();
                     <?php
                     }
                     else {
+                        //get the premiums limits
+                        $limits = $policy->getPeriodTotalPremiums();
                     ?>
                         <div class="row">
                             <div class="col-4">Cancellation Date</div>
-                            <div class="col-4">
+                            <div class="col-8">
                                 <input type="text" id="fld_cancellation_date" name="fld_cancellation_date"
                                        class="form-control"
                                        value="">
@@ -137,8 +150,8 @@ $formValidator = new customFormValidator();
                         </div>
 
                         <div class="row">
-                            <div class="col-4">- Premium</div>
-                            <div class="col-4">
+                            <div class="col-4">- Premium (<?php echo $limits['premium'] * -1;?>)</div>
+                            <div class="col-8">
                                 <input type="text" id="fld_premium" name="fld_premium"
                                        class="form-control"
                                        value="">
@@ -149,8 +162,54 @@ $formValidator = new customFormValidator();
                                     [
                                         'fieldName' => 'fld_premium',
                                         'fieldDataType' => 'number',
+                                        'minNumber' => ($limits['premium'] * -1),
+                                        'maxNumber' => 0,
                                         'required' => true,
-                                        'invalidText' => 'Enter Valid Premium Between '.$minDate." and ".$maxDate
+                                        'invalidText' => 'Enter Valid Premium Between 0 and '.($limits['premium'] * -1)
+                                    ]);
+                                ?>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">- Fees (<?php echo $limits['fees'] * -1;?>)</div>
+                            <div class="col-8">
+                                <input type="text" id="fld_fees" name="fld_fees"
+                                       class="form-control"
+                                       value="">
+                                <?php
+                                $minValue = 0;
+                                $maxValue = 0;
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_fees',
+                                        'fieldDataType' => 'number',
+                                        'minNumber' => ($limits['fees'] * -1),
+                                        'maxNumber' => 0,
+                                        'required' => true,
+                                        'invalidText' => 'Enter Valid Fees Between 0 and '.($limits['fees'] * -1)
+                                    ]);
+                                ?>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-4">- Commission (<?php echo $limits['commission'] * -1;?>)</div>
+                            <div class="col-8">
+                                <input type="text" id="fld_commission" name="fld_commission"
+                                       class="form-control"
+                                       value="">
+                                <?php
+                                $minValue = 0;
+                                $maxValue = 0;
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_commission',
+                                        'fieldDataType' => 'number',
+                                        'minNumber' => ($limits['commission'] * -1),
+                                        'maxNumber' => 0,
+                                        'required' => true,
+                                        'invalidText' => 'Enter Valid Commission Between 0 and '.($limits['commission'] * -1)
                                     ]);
                                 ?>
                             </div>
@@ -164,7 +223,7 @@ $formValidator = new customFormValidator();
                     <div class="row">
                         <div class="col-4">
                             <?php if ($_POST['action'] != 'cancel') { ?>
-                                Proceed to Cancel policy?
+                                Proceed to Cancel?
                             <?php } ?>
                         </div>
                         <div class="col-5">
@@ -175,9 +234,7 @@ $formValidator = new customFormValidator();
                                     <input type="hidden" id="pid" name="pid" value="<?php echo $_GET['pid']; ?>">
                                     <input type="hidden" id="action" name="action" value="cancel">
                                     <input class="btn btn-primary" type="submit"
-                                           value="Cancel Policy"
-                                           onclick="return confirm('Are you sure you want to cancel this policy?')"
-                                    >
+                                           value="Cancel Policy">
                                 <?php } ?>
                             </form>
                         </div>
