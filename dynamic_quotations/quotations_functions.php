@@ -57,14 +57,14 @@ function insert_item_data_to_db($quotation_type_data, $quotation_id, $item_id)
 //step2 locate if the query needs insert or update
 //step3 execute.
     global $db;
-
+    $sql = '';
 
     //step1
     //first get the items data for this quotation type to identify all the fields to locate.
     $item_data = $db->query_fetch("SELECT * FROM oqt_items WHERE oqit_items_ID = " . $item_id);
     //LOOP in all the insured amount fields
     foreach ($item_data as $name => $value) {
-//		echo $name." -> ".$value."<br>";
+		//echo $name." -> ".$value."<br>";
 
         //find the insured amount fields
         if (substr($name, 0, 20) == 'oqit_insured_amount_') {
@@ -108,7 +108,6 @@ function insert_item_data_to_db($quotation_type_data, $quotation_id, $item_id)
 
         //find the date fields
         if (substr($name, 0, 10) == 'oqit_date_') {
-
             //find the insured amount fields that are not empty. We do not need to use the empty fields.
             if ($value != "") {
 
@@ -121,6 +120,7 @@ function insert_item_data_to_db($quotation_type_data, $quotation_id, $item_id)
                     //convert the date from dd/mm/yyyy to yyyy-mm-dd
                     $field_value = $db->convert_date_format($field_value,'dd/mm/yyyy','yyyy-mm-dd');
                 }
+                //echo $_POST[$item_id . "_" . $field_name];
                 $sql .= ",\n" . $field_name . " = \"" . $field_value . "\"";
 //echo $item_id . "_" . $field_name;exit();
             }//insured amount fields that are not empty.
@@ -132,7 +132,7 @@ function insert_item_data_to_db($quotation_type_data, $quotation_id, $item_id)
     //add the rest of the fields
     $sql .= "\n ,oqqit_quotations_ID = '" . $quotation_id . "', oqqit_items_ID = '" . $item_id . "'";
 
-
+//exit();
     //remove the first comma from the SQL
     $sql = substr($sql, 1);
 

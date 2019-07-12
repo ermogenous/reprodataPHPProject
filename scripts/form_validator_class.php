@@ -410,8 +410,9 @@ class customFormValidator
                     " . $customCode . "
 
                     if (FormErrorFound) {
-                        console.log('Error validation');
-                        if (showErrorList = '1'){
+                        
+                        if (showErrorList == '1'){
+                            console.log('Error validation');
                             console.log(ErrorList);
                         }
                         event.preventDefault();

@@ -141,6 +141,14 @@ function getQuotationHTML($quotationID)
 
         $conditionsOfInsurance = getConditionsOfInsurance($sect1['oqqit_rate_4'],$sect1['oqqit_rate_13']);
 
+        //ocean vessel name and steamer
+        if ($sect1['oqqit_rate_6'] == 'Ocean Vessel') {
+            $oceanVessel = "<strong>Vessel Name:</strong> " . $sect1['oqqit_rate_7'] . "<br><strong>Approved Steamer:</strong> " . $sect1['oqqit_rate_8'];
+        }
+        else {
+            $oceanVessel = '';
+        }
+
         $html .= '
 <div style="font-family: Tahoma;">
 
@@ -189,7 +197,7 @@ function getQuotationHTML($quotationID)
                         <td width="10%">Conveyance:</td>
                         <td width="28%">' . $sect1['oqqit_rate_6'] . '</td>
                         <td width="6%">From:</td>
-                        <td width="28%">' . $sect1['clo_country_from'] . $approvalFromCountry. '</td>
+                        <td width="28%">' . $sect1['clo_country_from'] . $approvalFromCountry.' - '.$sect1['oqqit_rate_14'].'</td>
                         <td width="18%"></td>
                         <td width=""></td>
                     </tr>
@@ -197,7 +205,7 @@ function getQuotationHTML($quotationID)
                        <td>Via</td>
                        <td>' . $sect1['clo_country_via'] . $approvalViaCountry . '</td>
                        <td>To</td>
-                       <td>' . $sect1['clo_country_to'] . $approvalToCountry . '</td>
+                       <td>' . $sect1['clo_country_to'] . $approvalToCountry . ' - '.$sect1['oqqit_rate_15'].'</td>
                        <td>Insured Value/Currency</td>
                        <td>' . $sect1['oqqit_rate_3']."/".$sect1['oqqit_rate_2'] . '</td>
                     </tr>
@@ -228,14 +236,18 @@ function getQuotationHTML($quotationID)
                         </td>
                         <td width="50%" valign="top">
                             <b>Goods Insured - (as per bill of landing)</b><br><br>
-                            ' . nl2br($sect2['oqqit_rate_1']) . '
+                            ' . nl2br($sect2['oqqit_rate_1']) . '<br>
+                            '.$oceanVessel.'
                         </td>
                     </tr>
                 </table>
             </td>
         </tr>
         <tr>
-            <td colspan="3" align="center"><hr style="color: #000000; height: 1px;"></td>
+            <td colspan="3" align="left">
+                <strong>Shipment Date:</strong> '.$db->convert_date_format($sect1['oqqit_date_1'],'yyyy-mm-dd','dd/mm/yyyy').'
+                <hr style="color: #000000; height: 1px;">
+            </td>
         </tr>
         <tr>
             <td colspan="3" height="270px" valign="top">

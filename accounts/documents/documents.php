@@ -2,8 +2,8 @@
 /**
  * Created by PhpStorm.
  * User: micac
- * Date: 11/7/2019
- * Time: 12:52 ΜΜ
+ * Date: 12/7/2019
+ * Time: 1:46 ΜΜ
  */
 
 include("../../include/main.php");
@@ -14,7 +14,7 @@ $db->admin_title = "Accounts Categories";
 
 $db->show_header();
 
-$table = new draw_table('ac_categories','accat_type, accat_code','ASC');
+$table = new draw_table('ac_documents','acdoc_code','ASC');
 
 $table->generate_data();
 
@@ -30,12 +30,11 @@ $table->generate_data();
                     <table class="table table-hover">
                         <thead>
                         <tr>
-                            <th scope="col"><?php $table->display_order_links('Code','accat_code');?></th>
-                            <th scope="col"><?php $table->display_order_links('Type','accat_type');?></th>
-                            <th scope="col"><?php $table->display_order_links('Name','accat_name');?></th>
-                            <th scope="col"><?php $table->display_order_links('Active','accat_active');?></th>
+                            <th scope="col"><?php $table->display_order_links('Code','acdoc_code');?></th>
+                            <th scope="col"><?php $table->display_order_links('Name','acdoc_name');?></th>
+                            <th scope="col"><?php $table->display_order_links('Active','acdoc_active');?></th>
                             <th scope="col">
-                                <a href="category_modify.php">
+                                <a href="document_modify.php">
                                     <i class="fas fa-plus-circle"></i>
                                 </a>
                             </th>
@@ -46,20 +45,19 @@ $table->generate_data();
                         while ($row = $table->fetch_data()) {
                             $class = '';
 
-                            if($row["accat_active"] != 'Active'){
+                            if($row["acdoc_active"] != 'Active'){
                                 $class .= "alert alert-danger";
                             }
 
                             ?>
-                            <tr class="<?php echo $class; ?>" onclick="editLine(<?php echo $row["accat_category_ID"]; ?>);">
-                                <th scope="row"><?php echo $row["accat_code"];?></td>
-                                <td><?php echo $row["accat_type"] == 1? 'Control' : 'Account';?></td>
-                                <td><?php echo $row["accat_name"];?></td>
-                                <td><?php echo $row["accat_active"];?></td>
+                            <tr class="<?php echo $class; ?>" onclick="editLine(<?php echo $row["acdoc_document_ID"]; ?>);">
+                                <th scope="row"><?php echo $row["acdoc_code"];?></td>
+                                <td><?php echo $row["acdoc_name"];?></td>
+                                <td><?php echo $row["acdoc_active"];?></td>
                                 <td>
-                                    <a href="category_modify.php?lid=<?php echo $row["accat_category_ID"];?>"><i class="fas fa-edit"></i></a>&nbsp
-                                    <a href="category_delete.php?lid=<?php echo $row["accat_category_ID"];?>"
-                                       onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this Category?');"><i class="fas fa-minus-circle"></i></a>
+                                    <a href="document_modify.php?lid=<?php echo $row["acdoc_document_ID"];?>"><i class="fas fa-edit"></i></a>&nbsp
+                                    <a href="document_delete.php?lid=<?php echo $row["acdoc_document_ID"];?>"
+                                       onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this Document?');"><i class="fas fa-minus-circle"></i></a>
                                 </td>
                             </tr>
                         <?php } ?>
@@ -75,7 +73,7 @@ $table->generate_data();
         var ignoreEdit = false;
         function editLine(id) {
             if (ignoreEdit === false) {
-                window.location.assign('category_modify.php?lid=' + id);
+                window.location.assign('document_modify.php?lid=' + id);
             }
         }
     </script>

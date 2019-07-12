@@ -114,15 +114,27 @@ function template_header()
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/accounts/accounts/accounts.php">
                                     <i class="far fa-calendar-alt"></i> View Accounts</a>
+
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/accounts/transactions/issue_transaction.php">
+                                    <i class="fas fa-plus"></i> Issue Transaction</a>
+
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/accounts/transactions/transactions.php">
                                     <i class="far fa-calendar-alt"></i> View Transactions</a>
+
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/accounts/transactions/make_journal_entry.php">
                                     <i class="fas fa-book"></i> Make Journal Entry</a>
+
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/accounts/documents/documents.php">
+                                    <i class="fas fa-file-alt"></i> Documents Maintenance</a>
+
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/accounts/categories/categories.php">
                                     <i class="fas fa-th-list"></i> Categories Maintenance</a>
+
                             </div>
                         </li>
                     <?php } ?>
