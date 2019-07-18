@@ -143,11 +143,14 @@ function getQuotationHTML($quotationID)
 
         //ocean vessel name and steamer
         if ($sect1['oqqit_rate_6'] == 'Ocean Vessel') {
-            $oceanVessel = "<strong>Vessel Name:</strong> " . $sect1['oqqit_rate_7'] . "<br><strong>Approved Steamer:</strong> " . $sect1['oqqit_rate_8'];
+            $oceanVessel = "<strong>Vessel Name:</strong> " . $sect1['oqqit_rate_7'];
         }
         else {
             $oceanVessel = '';
         }
+        //for currency money format
+        setlocale(LC_MONETARY, 'it_IT');
+
 
         $html .= '
 <div style="font-family: Tahoma;">
@@ -207,7 +210,7 @@ function getQuotationHTML($quotationID)
                        <td>To</td>
                        <td>' . $sect1['clo_country_to'] . $approvalToCountry . ' - '.$sect1['oqqit_rate_15'].'</td>
                        <td>Insured Value/Currency</td>
-                       <td>' . $sect1['oqqit_rate_3']."/".$sect1['oqqit_rate_2'] . '</td>
+                       <td>' .number_format($sect1['oqqit_rate_3'],0,',','.')." ".$sect1['oqqit_rate_2'] . '</td>
                     </tr>
                 </table>
             </td>
@@ -245,7 +248,7 @@ function getQuotationHTML($quotationID)
         </tr>
         <tr>
             <td colspan="3" align="left">
-                <strong>Shipment Date:</strong> '.$db->convert_date_format($sect1['oqqit_date_1'],'yyyy-mm-dd','dd/mm/yyyy').'
+                <strong>Shipment Date: on or about </strong> '.$db->convert_date_format($sect1['oqqit_date_1'],'yyyy-mm-dd','dd/mm/yyyy').'
                 <hr style="color: #000000; height: 1px;">
             </td>
         </tr>
@@ -259,7 +262,7 @@ function getQuotationHTML($quotationID)
         
         <tr>
             <td colspan="3" align="center">
-                <b>Conditions Coninued on the back hereof</b><br><br>
+                <b>Conditions Continued on the back hereof</b><br><br>
             </td>
         </tr>
         
@@ -301,7 +304,7 @@ function getQuotationHTML($quotationID)
         </tr>
         <tr>
             <td colspan="3" align="justify">
-                In the vent of physical evidence of loss or damage which may result in a claim under this insurance immediate notice must be given
+                In the event of physical evidence of loss or damage which may result in a claim under this insurance immediate notice must be given
                 <b>Within Cyprus</b>
                 to Kemter Insurance Agencies Sub-Agencies and Consultants Ltd or Claims outside of Cyprus the nearest Lloyd\'s Agent at the port 
                 or place where the loss or damage is discovered in the order that they may examine the goods and issue a survey report if required.
@@ -427,12 +430,17 @@ function getQuotationHTML($quotationID)
             </td>
         </tr>
         <tr>
-            <td>2.</td>
+            <td valign="top">2.</td>
             <td colspan="2" align="justify">
                 oil tankers, chemical tankers, gas carriers, bulk carriers and cargo high speed craft of 500 gt or more.<br>
                 Applicable with effect from 1 July 2002 to shipments on board all other cargo ships and mobile offshore
-                drilling units of 500 gt or more<br>
-                In no case shall this Insurance cover loss, damage or expense where the subject matter insured insured is carried 
+                drilling units of 500 gt or more
+            </td>
+        </tr>
+        <tr>
+            <td valign="top">3.</td>
+            <td colspan="2" align="justify">
+                In no case shall this Insurance cover loss, damage or expense where the subject matter insured is carried 
                 by a vessel that is not ISM Code certified or whose owners or operators do not hold an ISM Code Document 
                 of Compliance when, at the time of loading of the subject matter insured on board the vessel, the Assured
                 were aware, or in the ordinary course of business should have been aware: 
@@ -500,9 +508,9 @@ function getQuotationHTML($quotationID)
         </tr>
         <tr>
             <td colspan="3" align="justify">
-                No (re)insured shall be deemed to provide cover and no (re)insured shall be liable to pay any claim or 
+                No (re)insurer shall be deemed to provide cover and no (re)insurer shall be liable to pay any claim or 
                 provide any benefit hereunder to the extent that the provision of such cover, payment of cuch claim or
-                provision of such benefit would expose that (re)insured to any sanction, prohibition or restriction under 
+                provision of such benefit would expose that (re)insurer to any sanction, prohibition or restriction under 
                 United Nations resolutions or the trade or economic sanctions, laws or regulations of the European Union,
                 United Kingdom or United States of America.
             </td>
@@ -589,26 +597,30 @@ function getQuotationHTML($quotationID)
             </tr>
             <tr>
                 <td width="15" align="left">1.</td>
-                <td align="left">Top claim immediately on the Carriers, Port Authorities or other Bailees for any missing packages.</td>
+                <td align="left">To claim immediately on the Carriers, Port Authorities or other Bailees for any missing packages.
+                </td>
             </tr>
             <tr>
                 <td width="15" align="left">2.</td>
-                <td align="left">In no circumstances, except under written protest, to give clean receipts where goods are in doubtful condition,</td>
+                <td align="left">In no circumstances, except under written protest, to give clean receipts where goods are in doubtful condition,
+                </td>
             </tr>
             <tr>
-                <td width="15" align="left">3.</td>
-                <td align="left">When delivery is made vy Container, to ensure that the Container and its seals are examined
+                <td width="15" align="left" valign="top">3.</td>
+                <td align="left">When delivery is made by Container, to ensure that the Container and its seals are examined
                 immediately by their responsible official. If the container is delivered damaged or with shipping documents, 
-                to clause the delivery receipt accordingly and retain all defective or irregular seals for subsequent identification.</td>
+                to clause the delivery receipt accordingly and retain all defective or irregular seals for subsequent identification.
+                </td>
             </tr>
             <tr>
-                <td width="15" align="left">4.</td>
+                <td width="15" align="left" valign="top">4.</td>
                 <td align="left">To apply immediately for survey by Carriers` or other Bailees` Representatives if any 
                 loss or damage be apparent and claim on the Carriers or other Bailees for any actual loss or damage found at 
-                such survey.</td>
+                such survey.
+                </td>
             </tr>
             <tr>
-                <td width="15" align="left">5.</td>
+                <td width="15" align="left" valign="top">5.</td>
                 <td align="left">To give notice in waiting to the Carriers or other Bailees within 3 days of delivery 
                 if the loss or damage was not apparent at the time of taking delivery.</td>
             </tr>

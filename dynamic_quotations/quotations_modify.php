@@ -176,6 +176,7 @@ $db->show_header();
 include('../scripts/form_validator_class.php');
 $formValidator = new customFormValidator();
 $formValidator->setFormName('myForm');
+//$formValidator->showErrorList();
 $allowEdit = true;
 $allowEditAdvanced = false;
 if ($quote->quotationData()['oqq_status'] != 'Outstanding' && $_GET['quotation'] > 0) {

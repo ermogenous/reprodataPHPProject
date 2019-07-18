@@ -203,9 +203,9 @@ function mc_shipment_details_3()
             $formValidator->addField(
                 [
                     'fieldName' => '3_oqqit_rate_3',
-                    'fieldDataType' => 'text',
+                    'fieldDataType' => 'integer',
                     'required' => true,
-                    'invalidText' => show_quotation_text("Συμπληρώστε Insured Value.", "Must Enter Insured Value", 'Return')
+                    'invalidText' => show_quotation_text("Συμπληρώστε Insured Value.", "Must Enter Insured Value (Integer)no comma`s, no dots.", 'Return')
                 ]);
             ?>
         </div>
@@ -267,6 +267,7 @@ function mc_shipment_details_3()
         </div>
     </div>
 
+    <!-- removed
     <div class="form-group row" id="ocean-steamer-div">
         <label for="3_oqqit_rate_8" class="col-5 text-right">
             <?php show_quotation_text("Approved Steamer if not known", "Approved Steamer if not known"); ?>
@@ -287,6 +288,7 @@ function mc_shipment_details_3()
             ?>
         </div>
     </div>
+    -->
 
     <script>
         function checkConveyanceDropDown() {

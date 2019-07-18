@@ -15,6 +15,7 @@ class customFormValidator
     private $needIsDateFunction = false;
     private $needCompare2DatesFunction = false;
     private $needEmailValidationFunction = false;
+    private $needIntegerOnlyValidationFunction = false;
     private $customCode = [];
 
     private $disableForm = false;
@@ -28,7 +29,8 @@ class customFormValidator
     {
     }
 
-    public function showErrorList(){
+    public function showErrorList()
+    {
         $this->showErrorList = 1;
     }
 
@@ -41,7 +43,7 @@ class customFormValidator
     function addField(array $fieldData)
     {
         //fieldName:string
-        //fieldDataType: text/number/date/age/radio/select/email
+        //fieldDataType: text/number/integer/date/age/radio/select/email
         //required: true/false
         //enableDatePicker: true/false ->when true it will echo the script required for the datepicker. jqueryUi must already exists.
         //datePickerValue: the value date to be inserted on creation
@@ -108,17 +110,14 @@ class customFormValidator
             } else {
                 echo '<div class="invalid-feedback">' . $fieldData['invalidText'] . '</div>';
             }
-        }
-        else {
+        } else {
 
             if ($fieldData['invalidTextAutoGenerate'] == true) {
                 if ($fieldData['fieldDataType'] == 'select') {
                     $prefix = 'Must Select ';
-                }
-                else if ($fieldData['fieldDataType'] == 'email'){
+                } else if ($fieldData['fieldDataType'] == 'email') {
                     $prefix = 'Must Enter Valid ';
-                }
-                else {
+                } else {
                     $prefix = 'Must Enter ';
                 }
 
@@ -155,7 +154,7 @@ class customFormValidator
 
         if ($fieldData['fieldDataType'] == 'date' && $fieldData['enableDatePicker'] == true) {
             //check if jquery_ui is enabled
-            if ($db->enabled_jquery_ui != 'yes'){
+            if ($db->enabled_jquery_ui != 'yes') {
                 echo '<div class="alert alert-danger">For date picker to work needs Jquery UI</div>';
             }
 
@@ -204,7 +203,7 @@ class customFormValidator
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                 $('#" . $fieldData['fieldName'] . "-invalid-text').show();
                 FormErrorFound = true;
-                ErrorList.push('". $fieldData['fieldName'] ." -> Radio Empty');
+                ErrorList.push('" . $fieldData['fieldName'] . " -> Radio Empty');
             }
             else {
                 $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
@@ -219,7 +218,7 @@ class customFormValidator
                 $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                 FormErrorFound = true;
-                ErrorList.push('". $fieldData['fieldName'] ." -> Other Empty ');
+                ErrorList.push('" . $fieldData['fieldName'] . " -> Other Empty ');
             }
             else {
                 $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
@@ -244,7 +243,7 @@ class customFormValidator
                 $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                 FormErrorFound = true;
-                ErrorList.push('". $fieldData['fieldName'] ." -> If Valid Date ');
+                ErrorList.push('" . $fieldData['fieldName'] . " -> If Valid Date ');
             }
             ";
         }
@@ -257,7 +256,7 @@ class customFormValidator
                     $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                     FormErrorFound = true;
                     FieldsErrors['" . $fieldData['fieldName'] . "']['dateMin'] = false;
-                    ErrorList.push('". $fieldData['fieldName'] ." -> Minimum Date ');
+                    ErrorList.push('" . $fieldData['fieldName'] . " -> Minimum Date ');
                 }
                 else {
                     //if is-invalid already exists then another check hit. do not make as valid.
@@ -278,7 +277,7 @@ class customFormValidator
                     $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                     $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                     FormErrorFound = true;
-                    ErrorList.push('". $fieldData['fieldName'] ." -> Maximum Date ');
+                    ErrorList.push('" . $fieldData['fieldName'] . " -> Maximum Date ');
                 }
                 else {
                     //if is-invalid already exists then another check hit. do not make as valid.
@@ -292,6 +291,7 @@ class customFormValidator
 
         //NUMBER added check if valid number
         if ($fieldData['fieldDataType'] == 'number') {
+
             $return .= "
             if ($.isNumeric($('#" . $fieldData['fieldName'] . "').val()) == true || $('#" . $fieldData['fieldName'] . "').val() == ''){
                 //if is-invalid already exists then another check hit. do not make as valid.
@@ -304,18 +304,18 @@ class customFormValidator
                 $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                 FormErrorFound = true;
-                ErrorList.push('". $fieldData['fieldName'] ." -> If is numeric');
+                ErrorList.push('" . $fieldData['fieldName'] . " -> If is numeric');
             }
             ";
 
             //NUMBER MINIMUM
-            if (is_numeric($fieldData['minNumber'])){
+            if (is_numeric($fieldData['minNumber'])) {
                 $return .= "
-                    if ($('#" . $fieldData['fieldName'] . "').val() < ".$fieldData['minNumber']."){
+                    if ($('#" . $fieldData['fieldName'] . "').val() < " . $fieldData['minNumber'] . "){
                         $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                         $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                         FormErrorFound = true;
-                        ErrorList.push('". $fieldData['fieldName'] ." -> Min Number ');
+                        ErrorList.push('" . $fieldData['fieldName'] . " -> Min Number ');
                     }
                     else {
                         //if is-invalid already exists then another check hit. do not make as valid.
@@ -328,13 +328,13 @@ class customFormValidator
             }
 
             //NUMBER MAXIMUM
-            if (is_numeric($fieldData['maxNumber'])){
+            if (is_numeric($fieldData['maxNumber'])) {
                 $return .= "
-                    if ($('#" . $fieldData['fieldName'] . "').val() > ".$fieldData['maxNumber']." && FieldsErrors['" . $fieldData['fieldName'] . "']['minNumber'] != false){
+                    if ($('#" . $fieldData['fieldName'] . "').val() > " . $fieldData['maxNumber'] . " && FieldsErrors['" . $fieldData['fieldName'] . "']['minNumber'] != false){
                         $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                         $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                         FormErrorFound = true;
-                        ErrorList.push('". $fieldData['fieldName'] ." -> Max Number ');
+                        ErrorList.push('" . $fieldData['fieldName'] . " -> Max Number ');
                     }
                     else {
                         //if is-invalid already exists then another check hit. do not make as valid.
@@ -345,6 +345,25 @@ class customFormValidator
                     }
                 ";
             }
+        }
+
+        if ($fieldData['fieldDataType'] == 'integer' && $fieldData['required'] == true) {
+            $this->needIntegerOnlyValidationFunction = true;
+            $return .= "
+                    if ( validateOnlyInteger($('#" . $fieldData['fieldName'] . "').val()) == false ){
+                        $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
+                        $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
+                        FormErrorFound = true;
+                        ErrorList.push('" . $fieldData['fieldName'] . " -> Invalid Integer ');
+                    }
+                    else {
+                        //if is-invalid already exists then another check hit. do not make as valid.
+                        if ($('#" . $fieldData['fieldName'] . "').hasClass('is-invalid') != true){
+                            $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
+                            $('#" . $fieldData['fieldName'] . "').removeClass('is-invalid');
+                        }
+                    }
+                ";
         }
 
         //Email Validation
@@ -359,7 +378,7 @@ class customFormValidator
                     $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                     $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                     FormErrorFound = true;
-                    ErrorList.push('". $fieldData['fieldName'] ." -> Invalid Email ');
+                    ErrorList.push('" . $fieldData['fieldName'] . " -> Invalid Email ');
                 }
             ";
         }
@@ -387,7 +406,7 @@ class customFormValidator
  var FormErrorFound = false;
  var FieldsErrors = [];
  var ErrorList = [];
- var showErrorList = '".$this->showErrorList."';
+ var showErrorList = '" . $this->showErrorList . "';
      (function () {
         'use strict';
         window.addEventListener('load', function () {
@@ -405,6 +424,8 @@ class customFormValidator
                     
                     
                     FormErrorFound = false;
+                    //clear errorList
+                    ErrorList = [];
 
                     " . $fieldsValidationsText . "
                     " . $customCode . "
@@ -494,14 +515,24 @@ class customFormValidator
             }
             ';
         }
+        if ($this->needIntegerOnlyValidationFunction == true) {
+            echo '
+            function validateOnlyInteger($text) {
+                if ($text.match(/^\d*$/)){
+                    return true
+                }
+                return false;
+            }
+            ';
+        }
         if ($this->disableForm == true) {
             echo '
             $("#' . $this->formName . ' :input").prop("disabled", true);
             ';
 
             //find the exceptions
-            foreach ($this->disableFormExceptions as $value){
-                if ($value == 'buttons'){
+            foreach ($this->disableFormExceptions as $value) {
+                if ($value == 'buttons') {
                     echo '
                     $("#' . $this->formName . ' :button").prop("disabled", false);
                     ';
@@ -509,9 +540,125 @@ class customFormValidator
             }
 
 
-
         }
         echo "</script>";
+
+    }
+
+    //STATIC FUNCTION
+    public static function getAutoCompleteJSCode($fieldName, $parameters)
+    {
+
+        if ($parameters['delay'] == '') {
+            $parameters['delay'] = 500;
+        }
+        if ($parameters['minLength'] == '') {
+            $parameters['minLength'] = 2;
+        }
+
+        $return = '
+        <script>
+        $("#' . $fieldName . '").autocomplete({
+            source: "' . $parameters['source'] . '",
+            delay: ' . $parameters['delay'] . ',
+            minLength: ' . $parameters['minLength'] . ',
+            messages: {
+            noResults: "",
+            results: function () {
+                ' . $parameters['resultsCode'] . '
+            }
+            },
+            search: function (event, ui) {
+                ' . $parameters['searchCode'] . '
+            },
+            focus: function (event, ui) {
+                ' . $parameters['focusCode'] . '
+                return false;
+            },
+            select: function (event, ui) {
+                ' . $parameters['selectCode'] . '
+            return false;
+        }
+        });
+        </script>';
+        return $return;
+    }
+
+    /**
+     * @param $settings [
+     * source -> the full source of the api ->automatically the input code is added as 'value'
+     * functionName -> the name of the function for the output. Make sure it does not exists in the same page dont forget the ()
+     * sourceField -> the id of the field that has the source
+     * spinnerIcon -> id of the spinner icon -> if set shows/hides a spinner when necessary
+     * errorIcon -> id of the error icon -> if set shows/hides an error icon when necessary
+     * correctIcon -> id of the correct icon -> if set shows/hides a correct icon when necessary
+     * errorField -> a field (div,span etc) to show the errorText
+     * errorText -> not required. default exists -> the errorText to show in the errorField
+     * errorJSCode -> extra js code to show in the error part of the promise
+     * successJSCode -> extra js code to show in the success part of the promise
+     * ifDataJSCode-> extra js code if data is found
+     * ifNoDataJSCode-> extra js code if data is NOT found
+     * ]
+     * @return Promise JSCODE
+     */
+
+    public static function getPromiseJSCode($settings)
+    {
+
+        if ($settings['spinnerIcon'] != '') {
+            $spinnerShow = '$(' . $settings['spinnerIcon'].').show();';
+            $spinnerHide = '$(' . $settings['spinnerIcon'].').hide();';
+        }
+        if ($settings['correctIcon'] != '') {
+            $correctShow = '$('.$settings['correctIcon'].').show();';
+            $correctHide = '$('.$settings['correctIcon'].').hide();';
+        }
+        if ($settings['errorIcon'] != '') {
+            $errorShow = '$(' . $settings['errorIcon'].').show();';
+            $errorHide = '$(' . $settings['errorIcon'].').hide();';
+        }
+        if ($settings['errorText'] == '') {
+            $errorText = '$('.$settings['errorField'].').html("Error finding the account");';
+        } else {
+            $errorText = '$('.$settings['errorField'].').html("' . $settings['errorText'] . '");';
+        }
+
+        $return = '
+            function ' . $settings['functionName'] . ' {
+            ' . $spinnerShow . '
+            ' . $correctHide . '
+            ' . $errorHide . '
+            let inputCode = $('.$settings['sourceField'].').val();
+        
+            Rx.Observable.fromPromise($.get("' . $settings['source'] . '&value=" + inputCode))
+            .subscribe((response) => {
+                    data = response;
+                },
+                () => {
+                    ' . $errorShow . '
+                    ' . $spinnerHide . '
+                    ' . $errorText . '
+                    ' . $settings['errorJSCode'] . '
+                }
+                ,
+                () => {
+                    ' . $spinnerHide . '
+                    if (data != null) {
+                        ' . $correctShow . '
+                        ' . $settings['ifDataJSCode'] . '
+                    }
+                    else {
+                        ' . $errorShow . '
+                        ' . $errorText . '
+                        ' . $settings['ifNoDataJSCode'] . '
+                    }
+                    ' . $settings['successJSCode'] . '
+
+                }
+                );
+            }
+        ';
+        return $return;
 
     }
 

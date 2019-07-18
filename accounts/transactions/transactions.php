@@ -27,7 +27,7 @@ $table->generate_data();
                         <th scope="col"><?php $table->display_order_links('Type','actrn_type');?></th>
                         <th scope="col"><?php $table->display_order_links('Code','actrn_status');?></th>
                         <th scope="col">
-                            <a href="transactions_modify.php">
+                            <a href="transaction_modify.php">
                                 <i class="fas fa-plus-circle"></i>
                             </a>
                         </th>
@@ -42,9 +42,16 @@ $table->generate_data();
                             <td><?php echo $row["actrn_type"];?></td>
                             <td><?php echo $row["actrn_status"];?></td>
                             <td>
-                                <a href="transactions_modify.php?lid=<?php echo $row["actrn_transaction_ID"];?>"><i class="fas fa-edit"></i></a>&nbsp
-                                <a href="transactions_delete.php?lid=<?php echo $row["actrn_transaction_ID"];?>"
+                                <a href="transaction_modify.php?lid=<?php echo $row["actrn_transaction_ID"];?>"><i class="fas fa-edit"></i></a>&nbsp
+
+                                <a href="transaction_delete.php?lid=<?php echo $row["actrn_transaction_ID"];?>"
                                    onclick="return confirm('Are you sure you want to delete this Transaction?');"><i class="fas fa-minus-circle"></i></a>
+
+                                <a href="transaction_change_status.php?lid=<?php echo $row['actrn_transaction_ID'];?>">
+                                    <i class="fas fa-lock"
+                                       title="<?php echo $db->showLangText('Activate Transaction','Ενεργοποίηση Πράξης');?>"></i>
+                                </a>
+
                             </td>
                         </tr>
                     <?php } ?>

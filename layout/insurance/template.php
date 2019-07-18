@@ -26,6 +26,7 @@ function template_header()
         </script>
         <!-- More Head -->
         <?php echo $db->admin_more_head; ?>
+        <script src="<?php echo $db->admin_layout_url; ?>customScript.js"></script>
 
     </head>
     <body>
@@ -116,7 +117,7 @@ function template_header()
                                     <i class="far fa-calendar-alt"></i> View Accounts</a>
 
                                 <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/accounts/transactions/issue_transaction.php">
+                                   href="<?php echo $main["site_url"]; ?>/accounts/transactions/transaction_modify.php">
                                     <i class="fas fa-plus"></i> Issue Transaction</a>
 
                                 <a class="dropdown-item"
