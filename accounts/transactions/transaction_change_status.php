@@ -12,20 +12,46 @@ include('transactions_class.php');
 $db = new Main();
 $db->admin_title = "Accounts Transaction change status";
 
-if ($_GET['action'] == 'lock'){
+if ($_GET['action'] == 'lock') {
     $db->start_transaction();
     $transaction = new AccountsTransaction($_GET['lid']);
-    if ($transaction->lockTransaction() == true){
-        $db->generateAlertSuccess('Transaction locked succesfully');
+    if ($transaction->lockTransaction() == true) {
+        $db->generateAlertSuccess('Transaction locked successfully');
         $db->commit_transaction();
-    }
-    else {
+    } else {
         $db->generateAlertError($transaction->errorDescription);
         $db->rollback_transaction();
     }
 }
 
-if ($_GET['lid'] == ''){
+if ($_GET['action'] == 'unlock') {
+    $db->start_transaction();
+    $transaction = new AccountsTransaction($_GET['lid']);
+    if ($transaction->unlockTransaction() == true) {
+        $db->generateAlertSuccess('Transaction unlocked successfully');
+        $db->commit_transaction();
+    } else {
+        $db->generateAlertError($transaction->errorDescription);
+        $db->rollback_transaction();
+    }
+}
+
+if ($_GET['action'] == 'delete') {
+    $db->start_transaction();
+    $transaction = new AccountsTransaction($_GET['lid']);
+    if ($transaction->deleteTransaction() == true) {
+        $db->generateSessionAlertSuccess('Transaction deleted successfully');
+        $db->commit_transaction();
+        header("Location: transactions.php");
+        exit();
+    } else {
+        $db->generateAlertError($transaction->errorDescription);
+        $db->rollback_transaction();
+    }
+}
+
+
+if ($_GET['lid'] == '') {
     header('Location: transactions.php');
     exit();
 }
@@ -33,7 +59,7 @@ if ($_GET['lid'] == ''){
 $data = $db->query_fetch('
     SELECT * FROM ac_transactions 
     LEFT OUTER JOIN ac_documents ON acdoc_document_ID = actrn_document_ID 
-    WHERE actrn_transaction_ID = '.$_GET['lid']);
+    WHERE actrn_transaction_ID = ' . $_GET['lid']);
 //print_r($data);
 $db->show_header();
 ?>
@@ -82,36 +108,39 @@ $db->show_header();
                 <div class="card">
                     <div class="card-body">
                         <p class="card-text text-center">
-                            <button type="button" value="Back" style="width: 140px;" class="btn btn-primary" onclick="goBack();">
+                            <button type="button" value="Back" style="width: 140px;" class="btn btn-primary"
+                                    onclick="goBack();">
                                 Back
                             </button>
                             <?php
                             if ($data['actrn_status'] == 'Outstanding') {
                                 ?>
-                                <button type="button" value="Activate" style="width: 140px;" class="btn inapolActiveColor" onclick="lockTransaction();">
+                                <button type="button" value="Activate" style="width: 140px;"
+                                        class="btn inapolActiveColor" onclick="lockTransaction();">
                                     Lock
                                 </button>
-                                <?php
-                            }
-                            if ($data['actrn_status'] == 'Outstanding') {
-                                ?>
-                                <button type="button" value="Delete" style="width: 140px;" class="btn inapolDeletedColor" onclick="deleteTransaction();">
+
+                                <button type="button" value="Delete" style="width: 140px;"
+                                        class="btn inapolDeletedColor" onclick="deleteTransaction();">
                                     Delete
                                 </button>
                                 <?php
                             }
-                            if ($data['actrn_status'] == 'Active') {
+                            if ($data['actrn_status'] == 'Locked') {
                                 ?>
-                                <button type="button" value="Cancel" style="width: 150px;" class="btn inapolCancelledColor" onclick="cancelTransaction();">
-                                    Cancellation
+                                <button type="button" value="Unlock" style="width: 150px;"
+                                        class="btn inapolCancelledColor" onclick="unlockTransaction();">
+                                    UnLock
                                 </button>
-                                <button type="button" value="Cancel" style="width: 150px;" class="btn inapolEndorsenentColor" onclick="endorseTransaction();">
-                                    Endorse
+                                <button type="button" value="Post" style="width: 150px;"
+                                        class="btn inapolEndorsenentColor" onclick="postTransaction();">
+                                    Post
                                 </button>
                                 <?php
                             }
                             ?>
-                            <button type="button" value="Modify" style="width: 150px;" class="btn btn-success" onclick="modifyTransaction();">
+                            <button type="button" value="Modify" style="width: 150px;" class="btn btn-success"
+                                    onclick="modifyTransaction();">
                                 <?php if ($data['inapol_status'] == 'Outstanding') echo 'Modify'; else echo 'View'; ?>
                             </button>
                         </p>
@@ -127,32 +156,47 @@ $db->show_header();
     <script>
 
         function lockTransaction() {
-            if (confirm('Are you sure you want to lock this Transaction?')){
+            if (confirm('Are you sure you want to lock this Transaction?')) {
                 window.location.assign('?lid=<?php echo $_GET['lid'];?>&action=lock');
             }
         }
 
         function deleteTransaction() {
-            if (confirm('Are you sure you want to delete this Transaction?')){
+            if (confirm('Are you sure you want to delete this Transaction?')) {
                 window.location.assign('?lid=<?php echo $_GET['lid'];?>&action=delete');
             }
         }
 
-        function cancelTransaction() {
-            window.location.assign('Transaction_cancellation.php?pid=<?php echo $_GET['lid'];?>');
+        function unlockTransaction() {
+            if (confirm('Are you sure you want to UnLock this Transaction?')) {
+                window.location.assign('?action=unlock&lid=<?php echo $_GET['lid'];?>');
+            }
         }
 
         function modifyTransaction() {
             window.location.assign('transaction_modify.php?lid=<?php echo $_GET['lid'];?>');
         }
 
-        function endorseTransaction(){
-            window.location.assign('Transaction_endorsement.php?pid=<?php echo $_GET['lid'];?>');
+        function postTransaction() {
+            if (confirm('Are you sure you want to UnLock this Transaction?')) {
+                window.location.assign('?action=post&pid=<?php echo $_GET['lid'];?>');
+            }
         }
 
         function goBack() {
             window.location.assign('transactions.php');
         }
+
+        $(document).ready(function () {
+            <?php
+            if ($_GET['action'] == 'issueUnlock') {
+                echo 'unlockTransaction();';
+            }
+            if ($_GET['action'] == 'issueLock') {
+                echo 'lockTransaction();';
+            }
+            ?>
+        });
     </script>
 <?php
 $db->show_footer();

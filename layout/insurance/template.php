@@ -94,9 +94,15 @@ function template_header()
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/policies.php">
                                     <i class="far fa-calendar-alt"></i> <?php echo $db->showLangText('View Policies','Προβολή Συμβολαίων');?></a>
+
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/policy_modify.php">
                                     <i class="far fa-calendar-alt"></i> <?php echo $db->showLangText('New Policy','Νέο Συμβόλαιο');?></a>
+
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/ainsurance/review/view_renewals.php">
+                                    <i class="fas fa-retweet"></i> <?php echo $db->showLangText('Review','Ανανεώσεις');?></a>
+
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/unallocated/unallocated.php">
                                     <i class="fas fa-wallet"></i> <?php echo $db->showLangText('View UnAllocated','Προβολή Μη Κατανεμημένων');?></a>

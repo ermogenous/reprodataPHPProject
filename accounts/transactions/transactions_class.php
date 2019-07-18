@@ -84,6 +84,61 @@ class AccountsTransaction
             return false;
         }
 
+        //ALL OK PROCEED TO LOCK
+        $newData['status'] = 'Locked';
+        $db->db_tool_update_row('ac_transactions', $newData,
+            'actrn_transaction_ID = '.$this->transactionID,
+            $this->transactionID,
+            '',
+            'execute',
+            'actrn_');
+
+        return true;
+    }
+
+    public function unlockTransaction(){
+        global $db;
+        if ($this->transactionData['actrn_status'] != 'Locked'){
+            $this->error = true;
+            $this->errorDescription = 'Transaction must be locked to unlock';
+            return false;
+        }
+
+        //ALL OK PROCEED TO LOCK
+        $newData['status'] = 'Outstanding';
+        $db->db_tool_update_row('ac_transactions', $newData,
+            'actrn_transaction_ID = '.$this->transactionID,
+            $this->transactionID,
+            '',
+            'execute',
+            'actrn_');
+
+
+        return true;
+    }
+
+    public function deleteTransaction(){
+        global $db;
+        if ($this->transactionData['actrn_status'] != 'Outstanding'){
+            $this->error = true;
+            $this->errorDescription = 'Transaction must be Outstanding to Delete';
+            return false;
+        }
+
+        //first delete the lines
+        $sql = 'SELECT * FROM ac_transaction_lines WHERE actrl_transaction_ID = '.$this->transactionID;
+        $result = $db->query($sql);
+        while ($line = $db->fetch_assoc($result)){
+
+            $db->db_tool_delete_row('ac_transaction_lines',
+                $line['actrl_transaction_line_ID'],
+                'actrl_transaction_line_ID = '.$line['actrl_transaction_line_ID']);
+
+        }
+
+        //delete the transaction
+        $db->db_tool_delete_row('ac_transactions', $this->transactionID,
+            'actrn_transaction_ID = '.$this->transactionID);
 
         return true;
     }

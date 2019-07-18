@@ -19,13 +19,12 @@ if ($_POST["action"] == "insert") {
     $transaction = new AccountsTransaction();
 
     $db->start_transaction();
-    if ($transaction->insertAccountsTransaction($_POST) == true){
+    if ($transaction->insertAccountsTransaction($_POST) == true) {
         $db->commit_transaction();
         $db->generateSessionAlertSuccess('Transaction Created Successfully');
         header("Location: transactions.php");
         exit();
-    }
-    else {
+    } else {
         $db->rollback_transaction();
         $db->generateAlertError($transaction->errorDescription);
         $data = $_POST;
@@ -38,13 +37,12 @@ if ($_POST["action"] == "insert") {
     $transaction = new AccountsTransaction();
 
     $db->start_transaction();
-    if ($transaction->updateAccountsTransaction($_POST) == true){
+    if ($transaction->updateAccountsTransaction($_POST) == true) {
         $db->commit_transaction();
         $db->generateSessionAlertSuccess('Transaction Updated Successfully');
         header("Location: transactions.php");
         exit();
-    }
-    else {
+    } else {
         $db->rollback_transaction();
         $db->generateAlertError($transaction->errorDescription);
         $_GET['lid'] = $_POST['lid'];
@@ -62,11 +60,10 @@ if ($_GET["lid"] != "") {
               WHERE `actrn_transaction_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
 
-}else {
+} else {
     $data['actrn_period'] = $db->dbSettings['ac_open_period']['value'];
     $data['actrn_year'] = $db->dbSettings['ac_open_year']['value'];
 }
-
 
 
 $todayDate = date('d/m/Y');
@@ -74,6 +71,10 @@ $todayDate = date('d/m/Y');
 $formValidator = new customFormValidator();
 $formValidator->setFormName('myForm');
 $formValidator->showErrorList();
+if ($data['actrn_status'] != 'Outstanding') {
+    $formValidator->disableForm(array('buttons'));
+}
+
 
 $db->enable_jquery_ui();
 $db->enable_rxjs_lite();
@@ -137,9 +138,26 @@ $totalAccountLines = 15;
                     </div>
 
                     <div class="form-group row">
-                        <div class="col-sm-4 col-form-label">Status: <?php echo $data['actrn_status'];?></div>
+                        <div class="col-sm-5 col-form-label">
+                            Status: <?php echo $data['actrn_status']; ?>
 
-                        <div class="col-sm-4 col-form-label">
+                            <?php if ($data['actrn_status'] == 'Locked') { ?>
+                                <input type="button" class="btn btn-secondary" value="UnLock"
+                                       onclick="window.location.assign('transaction_change_status.php?action=issueUnlock&lid=<?php echo $data['actrn_transaction_ID']; ?>')"/>
+                                <input type="button" class="btn btn-primary" value="Post"
+                                       onclick="window.location.assign('transaction_change_status.php?action=issuePost&lid=<?php echo $data['actrn_transaction_ID']; ?>')"/>
+                                <?php
+                            }
+                            if ($data['actrn_status'] == 'Outstanding') {
+                                ?>
+                                <input type="button" class="btn btn-secondary" value="Lock"
+                                       onclick="window.location.assign('transaction_change_status.php?action=issueLock&lid=<?php echo $data['actrn_transaction_ID'];?>')"/>
+                                <?php
+                            }
+                            ?>
+                        </div>
+
+                        <div class="col-sm-3 col-form-label">
                             Period/Year:
                             <?php echo $data['actrn_period'] . "/" . $data['actrn_year']; ?>
                         </div>
@@ -259,7 +277,7 @@ $totalAccountLines = 15;
                                     'fieldDataType' => 'date',
                                     'enableDatePicker' => true,
                                     'required' => true,
-                                    'datePickerValue' => $db->convert_date_format($data["actrn_transaction_date"],'yyyy-mm-dd','dd/mm/yyyy'),
+                                    'datePickerValue' => $db->convert_date_format($data["actrn_transaction_date"], 'yyyy-mm-dd', 'dd/mm/yyyy'),
                                     'invalidTextAutoGenerate' => true
                                 ]);
                             ?>
@@ -285,7 +303,7 @@ $totalAccountLines = 15;
                                     'fieldName' => 'fld_reference_date',
                                     'fieldDataType' => 'date',
                                     'enableDatePicker' => true,
-                                    'datePickerValue' => $db->convert_date_format($data["actrn_reference_date"],'yyyy-mm-dd','dd/mm/yyyy'),
+                                    'datePickerValue' => $db->convert_date_format($data["actrn_reference_date"], 'yyyy-mm-dd', 'dd/mm/yyyy'),
                                     'required' => true,
                                     'invalidTextAutoGenerate' => true
                                 ]);
@@ -473,7 +491,7 @@ $totalAccountLines = 15;
                                 </div>
                                 <div class="col-sm-2 m-0 p-0">
                                     <input type="text" name="accLineAccount_' . $i . '" id="accLineAccount_' . $i . '"
-                                        value="" class="form-control" onchange="loadLineAccount('.$i.');"/>
+                                        value="" class="form-control" onchange="loadLineAccount(' . $i . ');"/>
                                         ';
                         $formValidator->addField(
                             [
@@ -487,22 +505,22 @@ $totalAccountLines = 15;
                             [
                                 'source' => '../accounts/accounts_api.php?section=searchAccounts',
                                 'minLength' => 1,
-                                'selectCode' => '$("#accLineAccount_' . $i .'").val(ui.item.document_code);'
+                                'selectCode' => '$("#accLineAccount_' . $i . '").val(ui.item.document_code);'
                             ]);
 
                         echo '
                                 </div>
                                 <div class="col-sm-4 m-0 p-0 d-inline-block">
-                                    <div id="accountLineNameErrorText_'.$i.'"></div>
+                                    <div id="accountLineNameErrorText_' . $i . '"></div>
                                     <table>
                                         <tr>
                                             <td>
-                                                <img src="../../images/icon_spinner_transparent.gif" height="25px" style="display: none" id="lineSpinner_'.$i.'">
-                                                <img src="../../images/icon_correct_green.gif" height="25px" style="display: none" id="lineCorrect_'.$i.'">
-                                                <img src="../../images/icon_error_x_red.gif" height="25px" style="display: none" id="lineError_'.$i.'">
+                                                <img src="../../images/icon_spinner_transparent.gif" height="25px" style="display: none" id="lineSpinner_' . $i . '">
+                                                <img src="../../images/icon_correct_green.gif" height="25px" style="display: none" id="lineCorrect_' . $i . '">
+                                                <img src="../../images/icon_error_x_red.gif" height="25px" style="display: none" id="lineError_' . $i . '">
                                             </td>
                                             <td>
-                                                <input type="hidden" id="accLine_account_ID_'.$i.'" name="accLine_account_ID_'.$i.'" value="">
+                                                <input type="hidden" id="accLine_account_ID_' . $i . '" name="accLine_account_ID_' . $i . '" value="">
                                                 <div id="accountLineName_' . $i . '" style="font-size: 12px;"></div>
                                             </td>
                                         </tr>
@@ -512,7 +530,7 @@ $totalAccountLines = 15;
                                 </div>
                                 <div class="col-sm-1 m-0 p-0">
                                     <input type="text" name="accLine_debit_' . $i . '" id="accLine_debit_' . $i . '"
-                                        value="" class="form-control" onkeyup="checkDebitCreditField('.$i.')"/>';
+                                        value="" class="form-control" onkeyup="checkDebitCreditField(' . $i . ')"/>';
                         $formValidator->addField(
                             [
                                 'fieldName' => 'accLine_debit_' . $i,
@@ -525,7 +543,7 @@ $totalAccountLines = 15;
                                 </div>
                                 <div class="col-sm-1 m-0 p-0">
                                     <input type="text" name="accLine_credit_' . $i . '" id="accLine_credit_' . $i . '"
-                                        value="" class="form-control" onkeyup="checkDebitCreditField('.$i.')"/>';
+                                        value="" class="form-control" onkeyup="checkDebitCreditField(' . $i . ')"/>';
                         $formValidator->addField(
                             [
                                 'fieldName' => 'accLine_credit_' . $i,
@@ -559,7 +577,8 @@ $totalAccountLines = 15;
                     <div class="row">
                         <div class="col-sm-7">
                             <input type="hidden" id="linesValid" name="linesValid" value="0">
-                            <input type="hidden" id="totalAccountLines" name="totalAccountLines" value="<?php echo $totalAccountLines;?>">
+                            <input type="hidden" id="totalAccountLines" name="totalAccountLines"
+                                   value="<?php echo $totalAccountLines; ?>">
                         </div>
                         <div class="col-sm-1 m-0 p-0 text-center" id="totalDebit">0</div>
                         <div class="col-sm-1 m-0 p-0 text-center" id="totalCredit">0</div>
@@ -570,49 +589,49 @@ $totalAccountLines = 15;
                         <?php
                         echo $formValidator::getPromiseJSCode(
                             [
-                            'source' => '../accounts/accounts_api.php?section=getFirstAccountByID',
-                            'functionName' => 'loadLineAccount(lineID)',
-                            'sourceField' => '"#accLineAccount_" + lineID',
-                            'spinnerIcon' => '"#lineSpinner_" + lineID',
-                            'errorIcon' => '"#lineError_" + lineID',
-                            'correctIcon' => '"#lineCorrect_" + lineID',
-                            'errorField' => '"#accountLineName_" + lineID',
-                            'ifDataJSCode' => '
+                                'source' => '../accounts/accounts_api.php?section=getFirstAccountByID',
+                                'functionName' => 'loadLineAccount(lineID)',
+                                'sourceField' => '"#accLineAccount_" + lineID',
+                                'spinnerIcon' => '"#lineSpinner_" + lineID',
+                                'errorIcon' => '"#lineError_" + lineID',
+                                'correctIcon' => '"#lineCorrect_" + lineID',
+                                'errorField' => '"#accountLineName_" + lineID',
+                                'ifDataJSCode' => '
                         $("#accLine_account_ID_" + lineID).val(data["acacc_account_ID"]);
                         $("#accountLineName_" + lineID).html(data["acacc_name"]);
                         $("#accLineAccount_" + lineID).val(data["acacc_code"]);
                         ',
-                        'ifNoDataJSCode' => '
+                                'ifNoDataJSCode' => '
                         $("#accLine_account_ID_" + line_ID).val("");
                         $("#accountLineName_" + lineID).html("No Account Found");
                         '
-                        ]);
+                            ]);
                         ?>
 
 
 
-                        function checkDebitCreditField(line){
+                        function checkDebitCreditField(line) {
                             let debit = $("#accLine_debit_" + line).val();
                             let credit = $("#accLine_credit_" + line).val();
 
                             $("#accLine_credit_" + line).prop('disabled', false);
                             $("#accLine_debit_" + line).prop('disabled', false);
 
-                            if (debit != ''){
+                            if (debit != '') {
                                 $("#accLine_credit_" + line).prop('disabled', true);
                             }
-                            if (credit != ''){
+                            if (credit != '') {
                                 $("#accLine_debit_" + line).prop('disabled', true);
                             }
                             calculateDebitCreditTotals();
 
                         }
 
-                        function calculateDebitCreditTotals(){
+                        function calculateDebitCreditTotals() {
                             let totalDebit = 0;
                             let totalCredit = 0;
-                            for (i=1; i <= <?php echo $totalAccountLines;?>; i++){
-                                if ( $('#activeLine_' + i).val() == 1) {
+                            for (i = 1; i <= <?php echo $totalAccountLines;?>; i++) {
+                                if ($('#activeLine_' + i).val() == 1) {
                                     totalDebit += $('#accLine_debit_' + i).val() * 1;
                                     totalCredit += $('#accLine_credit_' + i).val() * 1;
                                 }
@@ -620,7 +639,7 @@ $totalAccountLines = 15;
                             $('#totalDebit').html(totalDebit);
                             $('#totalCredit').html(totalCredit);
 
-                            if (totalDebit == totalCredit){
+                            if (totalDebit == totalCredit) {
                                 $('#linesValid').val('1');
 
                                 $('#totalDebit').removeClass('alert-danger');
@@ -641,11 +660,12 @@ $totalAccountLines = 15;
 
                         }
 
-                        $(document).key('shift+a', function() {
+                        $(document).key('shift+a', function () {
                             insertNewLine();
                         });
 
                         let totalAccountLines = 0;
+
                         function insertNewLine() {
                             if (totalAccountLines >= <?php echo $totalAccountLines;?>) {
                                 alert('Reached the Max Limit of lines');
@@ -668,8 +688,8 @@ $totalAccountLines = 15;
 
                             //fix totalAccountLines
                             let lastFound = 1;
-                            for (g=1; g <= <?php echo $totalAccountLines;?>; g++){
-                                if ( $('#activeLine_' + g).val() == 1) {
+                            for (g = 1; g <= <?php echo $totalAccountLines;?>; g++) {
+                                if ($('#activeLine_' + g).val() == 1) {
                                     lastFound = g;
                                 }
                             }
@@ -679,39 +699,38 @@ $totalAccountLines = 15;
 
                         //if modify create and fill the lines
                         <?php
-                                if ($_GET['lid'] > 0) {
-                                    $sql = 'SELECT * FROM 
+                        if ($_GET['lid'] > 0) {
+                            $sql = 'SELECT * FROM 
                                               ac_transaction_lines 
                                               JOIN ac_accounts ON acacc_account_ID = actrl_account_ID
-                                              WHERE actrl_transaction_ID = '.$_GET['lid']." ORDER BY actrl_line_number ASC";
-                                    $result = $db->query($sql);
-                                    while ($line = $db->fetch_assoc($result)){
+                                              WHERE actrl_transaction_ID = ' . $_GET['lid'] . " ORDER BY actrl_line_number ASC";
+                            $result = $db->query($sql);
+                            while ($line = $db->fetch_assoc($result)) {
 
-                                        if ($line['actrl_dr_cr'] == 1){
-                                            $debit = $line['actrl_value'];
-                                            $credit = '';
-                                        }
-                                        else {
-                                            $debit = '';
-                                            $credit = $line['actrl_value'];
-                                        }
+                                if ($line['actrl_dr_cr'] == 1) {
+                                    $debit = $line['actrl_value'];
+                                    $credit = '';
+                                } else {
+                                    $debit = '';
+                                    $credit = $line['actrl_value'];
+                                }
 
-                                        echo 'insertNewLine();
+                                echo 'insertNewLine();
                                         ';
-                                        //load the data
-                                        echo '$("#accLineAccount_'.$line['actrl_line_number'].'").val("'.$line['acacc_code'].'");
-                                        loadLineAccount('.$line['actrl_line_number'].');
+                                //load the data
+                                echo '$("#accLineAccount_' . $line['actrl_line_number'] . '").val("' . $line['acacc_code'] . '");
+                                        loadLineAccount(' . $line['actrl_line_number'] . ');
                                         ';
-                                        echo '$("#accLine_debit_'.$line['actrl_line_number'].'").val("'.$debit.'");
+                                echo '$("#accLine_debit_' . $line['actrl_line_number'] . '").val("' . $debit . '");
                                         ';
-                                        echo '$("#accLine_credit_'.$line['actrl_line_number'].'").val("'.$credit.'");
+                                echo '$("#accLine_credit_' . $line['actrl_line_number'] . '").val("' . $credit . '");
                                         ';
-                                        echo 'checkDebitCreditField('.$line['actrl_line_number'].');
+                                echo 'checkDebitCreditField(' . $line['actrl_line_number'] . ');
                                         ';
-                                        echo '$("#accLine_reference_'.$line['actrl_line_number'].'").val("'.$line['actrl_reference'].'");
+                                echo '$("#accLine_reference_' . $line['actrl_line_number'] . '").val("' . $line['actrl_reference'] . '");
                                         ';
-                                    }
-                                }//if modify
+                            }
+                        }//if modify
                         ?>
 
                     </script>
@@ -742,9 +761,9 @@ $totalAccountLines = 15;
             <div class="col-1 d-none d-md-block"></div>
         </div>
     </div>
-<script>
+    <script>
 
-</script>
+    </script>
 <?php
 $formValidator->output();
 $db->show_footer();

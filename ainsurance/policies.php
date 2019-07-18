@@ -39,7 +39,7 @@ $db->show_header();
 ?>
 
 
-<div class="container-fluid">
+<div class="container-fluid" style="font-size: 13px;">
     <div class="row">
         <div class="col-lg-1"></div>
         <div class="col-lg-10">
@@ -56,6 +56,7 @@ $db->show_header();
                         <th scope="col"><?php $table->display_order_links($db->showLangText('Customer','Ον.Πελάτη'), 'cst_name'); ?></th>
                         <th scope="col"><?php $table->display_order_links($db->showLangText('Customer ID','Ταυτότητα'), 'cst_identity_card'); ?></th>
                         <th scope="col"><?php $table->display_order_links($db->showLangText('Status','Κατάσταση'), 'inapol_status'); ?></th>
+                        <th scope="col"><?php $table->display_order_links($db->showLangText('St.Date','Ημ.Έναρξης'), 'inapol_starting_date'); ?></th>
                         <th scope="col">
                             <a href="policy_modify.php">
                                 <i class="fas fa-plus-circle"></i>
@@ -76,6 +77,7 @@ $db->show_header();
                             <td><?php echo $row["cst_name"]." ".$row['cst_surname']; ?></td>
                             <td><?php echo $row["cst_identity_card"]; ?></td>
                             <td><?php echo $row['inapol_process_status']."/".$row["inapol_status"]; ?></td>
+                            <td><?php echo $db->convert_date_format($row['inapol_starting_date'],'yyyy-mm-dd','dd/mm/yyyy'); ?></td>
                             <td>
                                 <input type="hidden" id="myLineID" name="myLineID" value="<?php echo $row["inapol_policy_ID"]; ?>">
                                 <?php if ($row['inapol_status'] == 'Outstanding') { ?>
