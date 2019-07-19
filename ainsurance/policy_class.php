@@ -55,6 +55,7 @@ class Policy
         $this->totalItems = $result['clo_total'];
 
     }
+
     //STATIC FUNCTIONS
     public static function getAgentWhereClauseSql($whatToReturn = 'where')
     {
@@ -95,21 +96,23 @@ class Policy
 
     }
 
-    public static function getUnderwriterData(){
+    public static function getUnderwriterData()
+    {
         global $db;
 
-        $sql = "SELECT * FROM ina_underwriters WHERE inaund_user_ID = ".$db->user_data['usr_users_ID'];
+        $sql = "SELECT * FROM ina_underwriters WHERE inaund_user_ID = " . $db->user_data['usr_users_ID'];
         return $db->query_fetch($sql);
 
     }
 
-    public function getPeriodTotalPremiums(){
+    public function getPeriodTotalPremiums()
+    {
         global $db;
 
-        $sql = "SELECT * FROM ina_policies WHERE inapol_installment_ID = ".$this->policyData['inapol_installment_ID'];
+        $sql = "SELECT * FROM ina_policies WHERE inapol_installment_ID = " . $this->policyData['inapol_installment_ID'];
         $result = $db->query($sql);
         $return = [];
-        while ($row = $db->fetch_assoc($result)){
+        while ($row = $db->fetch_assoc($result)) {
             $return['premium'] += $row['inapol_premium'];
             $return['commission'] += $row['inapol_commission'];
             $return['fees'] += $row['inapol_fees'];
@@ -127,17 +130,16 @@ class Policy
         FROM
         ina_policies
         WHERE
-        inapol_underwriter_ID ".$this->getAgentWhereClauseSql()."
-        AND inapol_policy_number = '".$this->policyData['inapol_policy_number']."'
-        AND inapol_policy_ID != '".$this->policyID."'
+        inapol_underwriter_ID " . $this->getAgentWhereClauseSql() . "
+        AND inapol_policy_number = '" . $this->policyData['inapol_policy_number'] . "'
+        AND inapol_policy_ID != '" . $this->policyID . "'
         ";
         $check = $db->query_fetch($sql);
-        if ($check['clo_total_policies'] > 0){
+        if ($check['clo_total_policies'] > 0) {
             $this->error = true;
             $this->errorDescription = 'Policy is already been used by another policy.';
             return false;
-        }
-        else {
+        } else {
             return true;
         }
 
@@ -256,18 +258,17 @@ class Policy
             }
 
             //delete installments if any
-            $instResult = $db->query('SELECT * FROM ina_policy_installments WHERE inapi_policy_ID = '.$this->policyID);
-            while ($inst = $db->fetch_assoc($instResult)){
-                $db->db_tool_delete_row('ina_policy_installments', $inst['inapi_policy_installments_ID'], 'inapi_policy_installments_ID = '.$inst['inapi_policy_installments_ID']);
+            $instResult = $db->query('SELECT * FROM ina_policy_installments WHERE inapi_policy_ID = ' . $this->policyID);
+            while ($inst = $db->fetch_assoc($instResult)) {
+                $db->db_tool_delete_row('ina_policy_installments', $inst['inapi_policy_installments_ID'], 'inapi_policy_installments_ID = ' . $inst['inapi_policy_installments_ID']);
             }
 
             //if its replacing another policy. fix previous policy
             if ($this->policyData['inapol_replacing_ID'] > 0) {
                 $newData['replaced_by_ID'] = null;
-                $db->db_tool_update_row('ina_policies', $newData, 'inapol_policy_ID = '.$this->policyData['inapol_replacing_ID'], $this->policyData['inapol_replacing_ID'],
+                $db->db_tool_update_row('ina_policies', $newData, 'inapol_policy_ID = ' . $this->policyData['inapol_replacing_ID'], $this->policyData['inapol_replacing_ID'],
                     '', 'execute', 'inapol_');
             }
-
 
 
             //delete the policy
@@ -411,19 +412,19 @@ class Policy
             return false;
         }
 
-        if ($premium > 0){
+        if ($premium > 0) {
             $this->error = true;
             $this->errorDescription = 'Cancellation premium must be negative.';
             return false;
         }
 
-        if ($fees > 0){
+        if ($fees > 0) {
             $this->error = true;
             $this->errorDescription = 'Cancellation fees must be negative.';
             return false;
         }
 
-        if ($commission > 0){
+        if ($commission > 0) {
             $this->error = true;
             $this->errorDescription = 'Cancellation commission must be negative.';
             return false;
@@ -432,21 +433,21 @@ class Policy
         //check min max premiums.
         $totalPeriodPrem = $this->getPeriodTotalPremiums();
 
-        if ($premium < ($totalPeriodPrem['premium'] * -1)){
+        if ($premium < ($totalPeriodPrem['premium'] * -1)) {
             $this->error = true;
-            $this->errorDescription = 'Cancellation premium cannot be less than '.($totalPeriodPrem['premium'] * -1).'.';
+            $this->errorDescription = 'Cancellation premium cannot be less than ' . ($totalPeriodPrem['premium'] * -1) . '.';
             return false;
         }
 
-        if ($fees < ($totalPeriodPrem['fees'] * -1)){
+        if ($fees < ($totalPeriodPrem['fees'] * -1)) {
             $this->error = true;
-            $this->errorDescription = 'Cancellation fees cannot be less than '.($totalPeriodPrem['fees'] * -1).'.';
+            $this->errorDescription = 'Cancellation fees cannot be less than ' . ($totalPeriodPrem['fees'] * -1) . '.';
             return false;
         }
 
-        if ($commission < ($totalPeriodPrem['commission'] * -1)){
+        if ($commission < ($totalPeriodPrem['commission'] * -1)) {
             $this->error = true;
-            $this->errorDescription = 'Cancellation commission cannot be less than '.($totalPeriodPrem['commission'] * -1).'.';
+            $this->errorDescription = 'Cancellation commission cannot be less than ' . ($totalPeriodPrem['commission'] * -1) . '.';
             return false;
         }
 
@@ -454,7 +455,7 @@ class Policy
         //load the new data
         foreach ($this->policyData as $name => $value) {
             if (substr($name, 0, 7) == 'inapol_') {
-                $newData[substr($name,7)] = $value;
+                $newData[substr($name, 7)] = $value;
             }
         }
 
@@ -470,7 +471,6 @@ class Policy
         $instNewData['installment_ID'] = $this->policyData['inapol_installment_ID'];
 
 
-
         unset($newData['created_date_time']);
         unset($newData['created_by']);
         unset($newData['last_update_date_time']);
@@ -478,7 +478,7 @@ class Policy
         unset($newData['replaced_by_ID']);
         unset($newData['policy_ID']);
 
-        $newPolicyID = $db->db_tool_insert_row('ina_policies', $newData, '', 1,'inapol_');
+        $newPolicyID = $db->db_tool_insert_row('ina_policies', $newData, '', 1, 'inapol_');
         $this->newCancellationID = $newPolicyID;
 
         //update the current
@@ -500,23 +500,17 @@ class Policy
         if ($this->policyData['inapol_status'] != 'Active') {
             $this->error = true;
             $this->errorDescription = 'Cannot review. Policy not active';
+            return false;
         }
         //check if its replaced
         if ($this->policyData['inapol_replaced_by_ID'] > 0) {
             $this->error = true;
             $this->errorDescription = 'Cannot review. Policy is already being replaced by another.';
-        }
-
-
-        if ($this->error == false) {
-            $this->renewPolicy($expiryDate);
-        }
-
-        if ($this->error == true) {
             return false;
-        } else {
-            return true;
         }
+
+        return $this->renewPolicy($expiryDate);
+
 
     }
 
@@ -527,7 +521,6 @@ class Policy
     private function renewPolicy($expiryDate = null)
     {
         global $db;
-        $db->start_transaction();
 
         //prepare the expiry date
         if ($expiryDate == null) {
@@ -564,11 +557,22 @@ class Policy
         $newData['inapol_expiry_date'] = $newExpiryDateParts['year'] . "-" . $newExpiryDateParts['month'] . "-" . $newExpiryDateParts['day'];
         $newData['inapol_status'] = 'Outstanding';
         $newData['inapol_process_status'] = 'Renewal';
-        //$newData['inapol_premium'] = 'Renewal';
-        //$newData['inapol_mif'] = 'Renewal';
-        //$newData['inapol_commission'] = 'Renewal';
-        //$newData['inapol_fees'] = 'Renewal';
-        //$newData['inapol_stamps'] = 'Renewal';
+
+        //find the total amounts from all the phases if endorsements exists
+        $sql = 'SELECT
+            SUM(inapol_premium)as clo_premium,
+            SUM(inapol_commission)as clo_commission
+            FROM
+            ina_policies
+            WHERE
+            inapol_installment_ID = '.$this->policyData['inapol_installment_ID'];
+        $totalAmounts = $db->query_fetch($sql);
+
+        $newData['inapol_premium'] = $totalAmounts['clo_premium'];
+        $newData['inapol_mif'] = 0;
+        $newData['inapol_commission'] = $totalAmounts['clo_commission'];
+        $newData['inapol_fees'] = 0;
+        $newData['inapol_stamps'] = 0;
         $newData['inapol_replacing_ID'] = $this->policyID;
 
         unset($newData['inapol_created_date_time']);
@@ -605,6 +609,13 @@ class Policy
             unset($newItemData['inapit_last_update_date_time']);
             unset($newItemData['inapit_last_update_by']);
             unset($newItemData['inapit_policy_item_ID']);
+
+            //remove all the empty fields
+            foreach($newItemData as $name => $value){
+                if ($value == ''){
+                    unset($newItemData[$name]);
+                }
+            }
             //echo "Create Item<br>\n";
             $db->db_tool_insert_row('ina_policy_items', $newItemData, '');
         }
@@ -615,7 +626,7 @@ class Policy
         if ($installments->generateInstallmentsRenewal() == false) {
             $this->error = true;
             $this->errorDescription = $installments->errorDescription;
-            $db->rollback_transaction();
+            //$db->rollback_transaction();
             return false;
         } else {
             $installments->updateInstallmentsAmountAndCommission();

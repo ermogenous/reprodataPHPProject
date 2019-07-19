@@ -16,16 +16,17 @@ $db->admin_title = "AInsurance Policy Renewal";
 if ($_POST['action'] == 'review'){
 
     $db->working_section = 'Policy Review';
+    $db->start_transaction();
+
     $policy = new Policy($_POST['pid']);
-    $policy->reviewPolicy();
-    if ($policy->error == true){
-        $db->generateAlertError($policy->errorDescription);
-    }
-    else {
+    if ($policy->reviewPolicy() == true){
+        $db->commit_transaction();
         $db->generateAlertSuccess('Policy Reviewed Successfully');
     }
-
-
+    else {
+        $db->rollback_transaction();
+        $db->generateAlertError($policy->errorDescription);
+    }
 
     $_GET['pid'] = $_POST['pid'];
 }

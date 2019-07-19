@@ -15,23 +15,6 @@ $db->apiGetReadHeaders();
 
 if ($_GET['section'] == 'reviewPolicy') {
 
-    sleep(1);
-
-    if ($_GET['policyID'] == 17 || $_GET['policyID'] == 18){
-        $data['result'] = false;
-        $data['resultDescription'] = 'An error occurred';
-    }
-    else if ($_GET['policyID'] == ''){
-        $data['result'] = false;
-        $data['resultDescription'] = 'Must Supply ID';
-    }
-    else {
-        $data['result'] = true;
-        $data['resultDescription'] = 'Policy Reviewed Successfully';
-    }
-
-
-    /*
     $policy = new Policy($_GET['policyID']);
     $db->start_transaction();
     if ($policy->reviewPolicy() == true){
@@ -41,11 +24,9 @@ if ($_GET['section'] == 'reviewPolicy') {
     }
     else {
         $db->rollback_transaction();
-        $data['result'] = true;
+        $data['result'] = false;
         $data['resultDescription'] = $policy->errorDescription;
     }
-    */
-
 
     $db->update_log_file_custom($sql, 'Policy Review API:reviewPolicy GET:' . print_r($_GET, true));
 }

@@ -22,7 +22,10 @@ Class Installments
         global $db;
         $this->policyID = $policyID;
 
-        $this->policyData = $db->query_fetch('SELECT * FROM ina_policies WHERE inapol_policy_ID = ' . $this->policyID);
+        $this->policyData = $db->query_fetch('
+          SELECT cur.*,
+          (SELECT inapol_installment_ID FROM ina_policies as prev WHERE prev.inapol_policy_ID = cur.inapol_replacing_ID )as clo_prev_installment_ID 
+          FROM ina_policies as cur WHERE cur.inapol_policy_ID = ' . $this->policyID);
         $this->totalPolicyPremium = ($this->policyData['inapol_premium'] + $this->policyData['inapol_mif'] + $this->policyData['inapol_fees'] + $this->policyData['inapol_stamps']);
         $this->policyCommission = $this->policyData['inapol_commission'];
         $instResult = $db->query('SELECT * FROM ina_policy_installments WHERE inapi_policy_ID = ' . $this->policyID);
@@ -266,9 +269,11 @@ Class Installments
     public function generateInstallmentsRenewal(){
         global $db;
         //get the installments of the previous phase.
-        $previousType = $db->query_fetch('
-        SELECT inapi_installment_type, COUNT(*)as clo_total_installments FROM ina_policy_installments 
-        WHERE inapi_policy_ID = '.$this->policyData['inapol_replacing_ID']." GROUP BY inapi_installment_type");
+        $sql = 'SELECT inapi_installment_type, COUNT(*)as clo_total_installments FROM ina_policy_installments 
+        WHERE inapi_policy_ID = '.$this->policyData['clo_prev_installment_ID']." 
+        AND inapi_installment_type != 'Endorsement'
+        GROUP BY inapi_installment_type";
+        $previousType = $db->query_fetch($sql);
 
         if ($previousType['inapi_installment_type'] == 'Divided'){
             $this->generateDividedInstallments($previousType['clo_total_installments']);
