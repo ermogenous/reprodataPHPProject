@@ -422,7 +422,7 @@ $db->show_header();
                         <div class="col-md-2">
                             <input name="fld_period_starting_date" type="text" id="fld_period_starting_date"
                                    class="form-control"
-                                   value="">
+                                   value="" onchange="applyDatesAuto();">
                             <?php
                             $formValidator->addField(
                                 [
@@ -436,6 +436,20 @@ $db->show_header();
                             ?>
                         </div>
                     </div>
+                    <script>
+                        function applyDatesAuto(){
+                            let periodStDate = $('#fld_period_starting_date').val();
+                            if ($('#fld_starting_date').val() == ''){
+                                $('#fld_starting_date').val(periodStDate);
+                            }
+                            if ($('#fld_financial_date').val() == ''){
+                                $('#fld_financial_date').val(periodStDate);
+                            }
+                            if ($('#fld_expiry_date').val() == ''){
+                                fillExpiryDate('year',1);
+                            }
+                        }
+                    </script>
 
                     <div class="form-group row">
                         <label for="fld_name" class="col-md-2 col-form-label">
@@ -535,6 +549,28 @@ $db->show_header();
                                     'enableDatePicker' => true,
                                     'required' => true,
                                     'invalidText' => 'Must enter Expiry Date'
+                                ]);
+                            ?>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="col-md-6"></div>
+
+                        <label for="fld_financial_date" class="col-md-3 col-form-label">Financial Date</label>
+                        <div class="col-md-2">
+                            <input name="fld_financial_date" type="text" id="fld_financial_date"
+                                   class="form-control"
+                                   value="">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_financial_date',
+                                    'fieldDataType' => 'date',
+                                    'datePickerValue' => $db->convert_date_format($data['inapol_financial_date'], 'yyyy-mm-dd', 'dd/mm/yyyy'),
+                                    'enableDatePicker' => true,
+                                    'required' => true,
+                                    'invalidText' => 'Must enter Financial Date'
                                 ]);
                             ?>
                         </div>

@@ -554,6 +554,7 @@ class Policy
             }
         }
         $newData['inapol_starting_date'] = $newStartingDateParts[2] . "-" . $newStartingDateParts[1] . "-" . $newStartingDateParts[0];
+        $newData['inapol_financial_date'] = $newData['inapol_starting_date'];
         $newData['inapol_expiry_date'] = $newExpiryDateParts['year'] . "-" . $newExpiryDateParts['month'] . "-" . $newExpiryDateParts['day'];
         $newData['inapol_status'] = 'Outstanding';
         $newData['inapol_process_status'] = 'Renewal';
@@ -675,6 +676,7 @@ class Policy
         }
         $newStartingDateParts = explode('/', $endorsementDate);
         $newData['inapol_starting_date'] = $newStartingDateParts[2] . "-" . $newStartingDateParts[1] . "-" . $newStartingDateParts[0];
+        $newData['inapol_financial_date'] = $newData['inapol_starting_date'];
         $newData['inapol_status'] = 'Outstanding';
         $newData['inapol_process_status'] = 'Endorsement';
         $newData['inapol_premium'] = $premium;

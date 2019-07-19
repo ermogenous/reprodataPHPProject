@@ -112,8 +112,9 @@ if ($db->check_persistent_logins() == 0) {
 <?php
 }
 else {
+    $timeRemaining = 300 - (time() - $_SESSION["failed_login_attempt_last_time"]);
 ?>
-<div align="center">More than 5 tries not allowed. Try again later</div>
+<div align="center">More than 5 tries not allowed. Try again later in <?php echo $timeRemaining;?> seconds</div>
 <?php }
 $db->show_footer();
 ?>

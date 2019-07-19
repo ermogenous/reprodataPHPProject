@@ -178,7 +178,6 @@ class Main
 
     public function check_persistent_logins()
     {
-
         if ($_SESSION["failed_login_attempt"] > 4) {
             if ((time() - $_SESSION["failed_login_attempt_last_time"]) < 300) {
                 return 1;//block

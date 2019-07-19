@@ -106,6 +106,10 @@ function template_header()
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/unallocated/unallocated.php">
                                     <i class="fas fa-wallet"></i> <?php echo $db->showLangText('View UnAllocated','Προβολή Μη Κατανεμημένων');?></a>
+
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/ainsurance/reports/production_report.php">
+                                    <i class="fas fa-table"></i> <?php echo $db->showLangText('Production Report','Αναφορά Παραγωγής');?></a>
                             </div>
                         </li>
                     <?php } ?>

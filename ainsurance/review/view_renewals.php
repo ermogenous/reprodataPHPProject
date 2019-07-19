@@ -170,7 +170,27 @@ $db->show_header();
                                         WHERE
                                         inapi_paid_status IN ('UnPaid','Partial')
                                         AND inapi_policy_ID = inapol_policy_ID
-                                    )as clo_balance
+                                    )as clo_balance,
+                                    (
+                                    SELECT SUM(inapol_premium) FROM ina_policies as ppol 
+                                    WHERE ppol.inapol_installment_ID = ina_policies.inapol_installment_ID
+                                    )as clo_total_period_premium,
+                                    
+                                    (
+                                    SELECT SUM(inapol_commission) FROM ina_policies as ppol 
+                                    WHERE ppol.inapol_installment_ID = ina_policies.inapol_installment_ID
+                                    )as clo_total_period_commission,
+                                    
+                                    (
+                                    SELECT SUM(inapol_fees) FROM ina_policies as ppol 
+                                    WHERE ppol.inapol_installment_ID = ina_policies.inapol_installment_ID
+                                    )as clo_total_period_fees,
+                                    
+                                    (
+                                    SELECT SUM(inapol_stamps) FROM ina_policies as ppol 
+                                    WHERE ppol.inapol_installment_ID = ina_policies.inapol_installment_ID
+                                    )as clo_total_period_stamps
+                                    
                                     FROM
                                     ina_policies
                                     JOIN customers ON cst_customer_ID = inapol_customer_ID
@@ -184,17 +204,27 @@ $db->show_header();
                                     $result = $db->query($sql);
 
                                     while ($policy = $db->fetch_assoc($result)) {
+
+                                        $title =    'Unpaid Balance:         '.$policy['clo_balance'];
+                                        $title .= "\nPeriod NET Premium: ".$policy['clo_total_period_premium'];
+                                        $title .= "\nPeriod Commission:   ".$policy['clo_total_period_commission'];
+                                        $title .= "\nPeriod Fees:                ".$policy['clo_total_period_fees'];
+                                        $title .= "\nPeriod Stamps:           ".$policy['clo_total_period_stamps'];
+                                        $title .= "\nGross Premium:          ".($policy['clo_total_period_premium'] + $policy['clo_total_period_fees'] + $policy['clo_total_period_stamps']);
+
                                         ?>
                                         <tr id="policyTR_<?php echo $policy['inapol_policy_ID']; ?>">
                                             <th scope="row">
                                                 <input type="checkbox" class="form-control form-check-label"
                                                        id="checkLine_<?php echo $policy['inapol_policy_ID']; ?>">
                                             </th>
-                                            <td id="linePolicyNumber_<?php echo $policy['inapol_policy_ID']; ?>"><?php echo $policy['inapol_policy_number']; ?></td>
+                                            <td id="linePolicyNumber_<?php echo $policy['inapol_policy_ID']; ?>"
+                                            ><a href="../policy_modify.php?lid=<?php echo $policy['inapol_policy_ID'];?>"
+                                                target="_blank"><?php echo $policy['inapol_policy_number']; ?></a></td>
                                             <td><?php echo $policy['cst_name'] . ' ' . $policy['cst_surname']; ?></td>
                                             <td><?php echo $policy['clo_item_list']; ?></td>
                                             <td><?php echo $db->convert_date_format($policy['inapol_expiry_date'], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?></td>
-                                            <td align="center"><?php echo $policy['clo_balance'] == '' ? 0 : $policy['clo_balance']; ?></td>
+                                            <td align="center" title="<?php echo $title;?>"><?php echo $policy['clo_balance'] == '' ? 0 : $policy['clo_balance']; ?></td>
                                             <td>
                                                 <img src="../../images/icon_spinner_transparent.gif" height="30"
                                                      id="spinner_<?php echo $policy['inapol_policy_ID']; ?>" style="display: none;">
@@ -345,7 +375,8 @@ $db->show_header();
             //show the result tr
             $('#trResult_' + id).show();
             //add the result description in the td
-            $('#tdResult_' + id).html(resultDescription);
+            $('#tdResult_' + id).html(resultDescription +
+            ' < href="../policy_modify.php?lid=' + id +'" target="_blank">Open Policy</a>');
             //make the policy line green
             $('#policyTR_' + id).addClass('alert alert-success');
             $('#console').append('Success');

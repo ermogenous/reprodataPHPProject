@@ -15,6 +15,7 @@ $db->apiGetReadHeaders();
 
 if ($_GET['section'] == 'reviewPolicy') {
 
+    sleep(1);
     $policy = new Policy($_GET['policyID']);
     $db->start_transaction();
     if ($policy->reviewPolicy() == true){
