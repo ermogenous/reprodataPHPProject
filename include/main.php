@@ -1516,6 +1516,13 @@ class Main
         $this->update_log_file('CUSTOM', 0, $action, 'CUSTOM', 'CUSTOM', $sql);
     }//update_log_file_custom
 
+    function convertDateToEU($date){
+        return $this->convert_date_format($date,'yyyy-mm-dd','dd/mm/yyyy');
+    }
+    function convertDateToUS($date){
+        return $this->convert_date_format($date,'dd/mm/yyyy','yyyy-mm-dd');
+    }
+
     function convert_date_format($date, $from_format = 'yyyy-mm-dd', $to_format = 'dd/mm/yyyy', $date_time = 0, $return_time = 0)
     {
 

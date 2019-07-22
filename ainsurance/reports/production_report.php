@@ -7,6 +7,7 @@
  */
 
 include("../../include/main.php");
+include("../policy_class.php");
 include('../../scripts/form_validator_class.php');
 
 $db = new Main(1, 'UTF-8');
@@ -15,6 +16,9 @@ $db->admin_title = "AInsurance Policies View Renewals";
 //Form Validator
 $formValidator = new customFormValidator();
 $formValidator->setFormName('myForm');
+
+//find underwriter
+$underwriter = Policy::getUnderwriterData();
 
 $db->enable_jquery_ui();
 $db->enable_rxjs_lite();
@@ -36,7 +40,7 @@ $db->show_header();
                     <div class="row d-none d-md-block" style="height: 35px;"></div>
 
                     <div class="row">
-                        <label for="company" class="col-sm-2">Company</label>
+                        <label for="company" class="col-sm-3">Company</label>
                         <div class="col-sm-3">
                             <select class="form-control" id="company" name="company">
                                 <option value="ALL">ALL</option>
@@ -53,7 +57,7 @@ $db->show_header();
                                 while ($comp = $db->fetch_assoc($result)) {
                                     ?>
                                     <option value="<?php echo $comp['inainc_insurance_company_ID']; ?>"
-                                        <?php if ($_POST['company'] == $comp['inainc_insurance_company_ID']) echo 'selected';?>>
+                                        <?php if ($_POST['company'] == $comp['inainc_insurance_company_ID']) echo 'selected'; ?>>
                                         <?php echo $comp['inainc_name']; ?>
                                     </option>
                                     <?php
@@ -71,25 +75,188 @@ $db->show_header();
                                 ]);
                             ?>
                         </div>
-                        <div class="col-sm-2">As At Date</div>
-                        <div class="col-sm-3">
-                            <input type="text" id="asAtDate" name="asAtDate"
+                    </div>
+                    <div class="row">
+                        <label for="financialDateFrom" class="col-sm-3">Financial Date From:</label>
+                        <div class="col-sm-2">
+                            <input type="text" id="financialDateFrom" name="financialDateFrom"
                                    class="form-control" value="">
                             <?php
                             $formValidator->addField(
                                 [
-                                    'fieldName' => 'asAtDate',
+                                    'fieldName' => 'financialDateFrom',
                                     'fieldDataType' => 'date',
-                                    'required' => true,
+                                    'required' => false,
                                     'enableDatePicker' => true,
-                                    'datePickerValue' => $_POST['asAtDate'],
-                                    'invalidText' => 'Must Supply As At Date'
+                                    'datePickerValue' => $_POST['financialDateFrom'],
+                                    'invalidText' => ''
                                 ]);
                             ?>
                         </div>
 
+                        <label for="financialDateTo" class="col-sm-1 text-right">To:</label>
+                        <div class="col-sm-2">
+                            <input type="text" id="financialDateTo" name="financialDateTo"
+                                   class="form-control" value="">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'financialDateTo',
+                                    'fieldDataType' => 'date',
+                                    'required' => false,
+                                    'enableDatePicker' => true,
+                                    'datePickerValue' => $_POST['financialDateTo'],
+                                    'invalidText' => ''
+                                ]);
+                            ?>
+                        </div>
 
                     </div>
+
+                    <div class="row">
+                        <label for="startingDateFrom" class="col-form-label col-sm-3">Starting Date From:</label>
+                        <div class="col-sm-2">
+                            <input type="text" id="startingDateFrom" name="startingDateFrom"
+                                   class="form-control" value="">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'startingDateFrom',
+                                    'fieldDataType' => 'date',
+                                    'required' => false,
+                                    'enableDatePicker' => true,
+                                    'datePickerValue' => $_POST['startingDateFrom'],
+                                    'invalidText' => ''
+                                ]);
+                            ?>
+                        </div>
+                        <label for="startingDateTo" class="col-sm-1 text-right">To:</label>
+                        <div class="col-sm-2">
+                            <input type="text" id="startingDateTo" name="startingDateTo"
+                                   class="form-control" value="">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'startingDateTo',
+                                    'fieldDataType' => 'date',
+                                    'required' => false,
+                                    'enableDatePicker' => true,
+                                    'datePickerValue' => $_POST['startingDateTo'],
+                                    'invalidText' => ''
+                                ]);
+                            ?>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label for="groupBy1" class="col-sm-3">Group By</label>
+                        <div class="col-sm-2">
+                            <select class="form-control" id="groupBy1" name="groupBy1" onchange="checkGroupBy()">
+                                <option value="NONE" <?php if ($_POST['groupBy1'] == 'NONE') echo 'selected'; ?>>NONE
+                                </option>
+                                <option value="Company" <?php if ($_POST['groupBy1'] == 'Company') echo 'selected'; ?>>
+                                    Company
+                                </option>
+                                <option value="Customer" <?php if ($_POST['groupBy1'] == 'Customer') echo 'selected'; ?>>
+                                    Customer
+                                </option>
+                                <option value="Policy" <?php if ($_POST['groupBy1'] == 'Policy') echo 'selected'; ?>>
+                                    Policy
+                                </option>
+                                <option value="Type" <?php if ($_POST['groupBy1'] == 'Type') echo 'selected'; ?>>
+                                    Type
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <select class="form-control" id="groupBy2" name="groupBy2" onchange="checkGroupBy()">
+                                <option value="NONE" <?php if ($_POST['groupBy2'] == 'NONE') echo 'selected'; ?>>NONE
+                                </option>
+                                <option value="Company" <?php if ($_POST['groupBy2'] == 'Company') echo 'selected'; ?>>
+                                    Company
+                                </option>
+                                <option value="Customer" <?php if ($_POST['groupBy2'] == 'Customer') echo 'selected'; ?>>
+                                    Customer
+                                </option>
+                                <option value="Policy" <?php if ($_POST['groupBy2'] == 'Policy') echo 'selected'; ?>>
+                                    Policy
+                                </option>
+                                <option value="Type" <?php if ($_POST['groupBy2'] == 'Type') echo 'selected'; ?>>
+                                    Type
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <select class="form-control" id="groupBy3" name="groupBy3" onchange="checkGroupBy()">
+                                <option value="NONE" <?php if ($_POST['groupBy3'] == 'NONE') echo 'selected'; ?>>NONE
+                                </option>
+                                <option value="Company" <?php if ($_POST['groupBy3'] == 'Company') echo 'selected'; ?>>
+                                    Company
+                                </option>
+                                <option value="Customer" <?php if ($_POST['groupBy3'] == 'Customer') echo 'selected'; ?>>
+                                    Customer
+                                </option>
+                                <option value="Policy" <?php if ($_POST['groupBy3'] == 'Policy') echo 'selected'; ?>>
+                                    Policy
+                                </option>
+                                <option value="Type" <?php if ($_POST['groupBy3'] == 'Type') echo 'selected'; ?>>
+                                    Type
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col-sm-2">
+                            <select class="form-control" id="groupBy4" name="groupBy4" onchange="checkGroupBy()">
+                                <option value="NONE" <?php if ($_POST['groupBy4'] == 'NONE') echo 'selected'; ?>>NONE
+                                </option>
+                                <option value="Company" <?php if ($_POST['groupBy4'] == 'Company') echo 'selected'; ?>>
+                                    Company
+                                </option>
+                                <option value="Customer" <?php if ($_POST['groupBy4'] == 'Customer') echo 'selected'; ?>>
+                                    Customer
+                                </option>
+                                <option value="Policy" <?php if ($_POST['groupBy4'] == 'Policy') echo 'selected'; ?>>
+                                    Policy
+                                </option>
+                                <option value="Type" <?php if ($_POST['groupBy4'] == 'Type') echo 'selected'; ?>>
+                                    Type
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <script>
+                        function checkGroupBy() {
+                            $('#groupBy2').attr('disabled', true);
+                            $('#groupBy3').attr('disabled', true);
+                            $('#groupBy4').attr('disabled', true);
+                            if ($('#groupBy1').val() != 'NONE') {
+                                $('#groupBy2').attr('disabled', false);
+                            }
+                            if ($('#groupBy2').val() != 'NONE') {
+                                $('#groupBy3').attr('disabled', false);
+                            }
+                            if ($('#groupBy3').val() != 'NONE') {
+                                $('#groupBy4').attr('disabled', false);
+                            }
+                            //reset the fields
+                            if ($('#groupBy1').val() == 'NONE') {
+                                $('#groupBy2').val('NONE');
+                                $('#groupBy3').val('NONE');
+                                $('#groupBy4').val('NONE');
+                            }
+                            if ($('#groupBy2').val() == 'NONE') {
+                                $('#groupBy3').val('NONE');
+                                $('#groupBy4').val('NONE');
+                            }
+                            if ($('#groupBy3').val() == 'NONE') {
+                                $('#groupBy4').val('NONE');
+                            }
+                        }
+
+                        $(document).ready(function () {
+                            checkGroupBy();
+                        });
+                    </script>
 
 
                     <!-- BUTTONS -->
@@ -122,121 +289,142 @@ $db->show_header();
                         <div class="col-sm-12 table-responsive">
                             <form id="searchForm" name="searchForm">
                                 <table class="table">
+                                    <?php
+
+                                    //company filter
+                                    $compFilter = '';
+                                    if ($_POST['company'] != 'ALL') {
+                                        $compFilter = 'AND inapol_insurance_company_ID = ' . $_POST['company'];
+                                    }
+
+                                    //financial date filter
+                                    $finDateFilter = '';
+                                    if ($_POST['financialDateFrom'] != '') {
+                                        $finDateFilter = 'AND inapol_financial_date BETWEEN "' .
+                                            $db->convertDateToUS($_POST['financialDateFrom']) . '" AND "' .
+                                            $db->convertDateToUS($_POST['financialDateTo']) . '"';
+                                    }
+                                    //starting date filter
+                                    $startingDateFilter = '';
+                                    if ($_POST['startingDateFrom'] != '') {
+                                        $startingDateFilter = 'AND inapol_starting_date BETWEEN "' .
+                                            $db->convertDateToUS($_POST['startingDateFrom']) . '" AND "' .
+                                            $db->convertDateToUS($_POST['startingDateTo']) . '"';
+                                    }
+
+                                    //group by
+                                    $groupBy = '';
+                                    for($i=1; $i<=4; $i++) {
+                                        if ($_POST['groupBy'.$i] != 'NONE') {
+
+                                            if ($_POST['groupBy'.$i] == 'Company'){
+                                                $groupBy .= ',inainc_name';
+                                                $colField[$i] = 'inainc_name';
+                                                $colName[$i] = 'Company';
+                                            }
+                                            else if ($_POST['groupBy'.$i] == 'Customer'){
+                                                $groupBy .= ',cst_name,cst_surname';
+                                                $colField[$i] = 'cst_name';
+                                                $colName[$i] = 'Customer';
+                                            }
+                                            else if ($_POST['groupBy'.$i] == 'Policy'){
+                                                $groupBy .= ',inapol_policy_number';
+                                                $colField[$i] = 'inapol_policy_number';
+                                                $colName[$i] = 'Policy';
+                                            }
+                                            else if ($_POST['groupBy'.$i] == 'Type'){
+                                                $groupBy .= ',inapol_type_code';
+                                                $colField[$i] = 'inapol_type_code';
+                                                $colName[$i] = 'Type';
+                                            }
+                                        }
+                                    }
+                                    ?>
                                     <thead>
                                     <tr>
-                                        <th scope="col">
-                                            <input type="checkbox" class="form-control" id="revertAllCheckBoxes"
-                                                   onchange="revertAll();">
-                                        </th>
-                                        <th scope="col">Policy</th>
-                                        <th scope="col">Customer</th>
-                                        <th scope="col">Item</th>
-                                        <th scope="col">Expiry</th>
-                                        <th scope="col">Balance</th>
-                                        <th scope="col"></th>
+                                        <th scope="col"><?php echo $colName[1];?></th>
+                                        <th scope="col"><?php echo $colName[2];?></th>
+                                        <th scope="col"><?php echo $colName[3];?></th>
+                                        <th scope="col"><?php echo $colName[4];?></th>
+                                        <th scope="col">Net Premium</th>
+                                        <th scope="col">Fees</th>
+                                        <th scope="col">Stamps</th>
+                                        <th scope="col">Commission</th>
+                                        <th scope="col">Gross Premium</th>
                                     </tr>
                                     </thead>
                                     <tbody>
                                     <?php
 
-                                    //company filter
-                                    $compFilter = '';
-                                    if ($_POST['company'] != 'ALL'){
-                                        $compFilter = 'AND inapol_insurance_company_ID = '.$_POST['company'];
-                                    }
 
                                     $sql = "
                                     SELECT 
-                                    ina_policies.*,
-                                    customers.*,
-                                    (
-                                        SELECT 
-                                        
-                                        #IF (inapit_type = 'Vehicles', GROUP_CONCAT(inapit_vh_registration), inapit_type)
-                                        GROUP_CONCAT(IF (inapit_type = 'Vehicles', inapit_vh_registration, inapit_type))
-                                        FROM ina_policy_items WHERE inapit_policy_ID = inapol_policy_ID
-                                    )as clo_item_list,
-                                    (
-                                    SELECT
-                                        SUM(inapi_amount - inapi_paid_amount)as clo_balance
-                                        FROM
-                                        ina_policy_installments
-                                        WHERE
-                                        inapi_paid_status IN ('UnPaid','Partial')
-                                        AND inapi_policy_ID = inapol_policy_ID
-                                    )as clo_balance,
-                                    (
-                                    SELECT SUM(inapol_premium) FROM ina_policies as ppol 
-                                    WHERE ppol.inapol_installment_ID = ina_policies.inapol_installment_ID
-                                    )as clo_total_period_premium,
-                                    
-                                    (
-                                    SELECT SUM(inapol_commission) FROM ina_policies as ppol 
-                                    WHERE ppol.inapol_installment_ID = ina_policies.inapol_installment_ID
-                                    )as clo_total_period_commission,
-                                    
-                                    (
-                                    SELECT SUM(inapol_fees) FROM ina_policies as ppol 
-                                    WHERE ppol.inapol_installment_ID = ina_policies.inapol_installment_ID
-                                    )as clo_total_period_fees,
-                                    
-                                    (
-                                    SELECT SUM(inapol_stamps) FROM ina_policies as ppol 
-                                    WHERE ppol.inapol_installment_ID = ina_policies.inapol_installment_ID
-                                    )as clo_total_period_stamps
-                                    
+                                    1 as clo_group_by,
+                                    SUM(inapol_premium) as clo_total_premium,
+                                    SUM(inapol_fees) as clo_total_fees,
+                                    SUM(inapol_stamps) as clo_total_stamps,
+                                    SUM(inapol_commission) as clo_total_commission,
+                                    SUM(inapol_premium + inapol_fees + inapol_stamps)as clo_gross_premium
+                                    " . $groupBy . "
                                     FROM
                                     ina_policies
-                                    JOIN customers ON cst_customer_ID = inapol_customer_ID
                                     JOIN ina_insurance_companies ON inapol_insurance_company_ID = inainc_insurance_company_ID
+                                    JOIN customers ON cst_customer_ID = inapol_customer_ID
                                     WHERE
-                                    inapol_status = 'Active'
-                                    AND inapol_expiry_date <= '" . $db->convert_date_format($_POST['asAtDate'], 'dd/mm/yyyy', 'yyyy-mm-dd') . "'
-                                    AND inapol_replaced_by_ID = 0
+                                    inapol_status IN ('Active','Archived')
                                     ".$compFilter."
-                                    AND inapol_underwriter_ID " . Policy::getAgentWhereClauseSql();
+                                    ".$finDateFilter."
+                                    ".$startingDateFilter."
+                                    AND inapol_underwriter_ID " . Policy::getAgentWhereClauseSql() . "
+                                    GROUP BY 
+                                    clo_group_by
+                                    " . $groupBy . "
+                                    ORDER BY
+                                    clo_group_by
+                                    ".$groupBy."
+                                    ";
                                     $result = $db->query($sql);
 
-                                    while ($policy = $db->fetch_assoc($result)) {
+                                    //echo $db->prepare_text_as_html($sql);
 
-                                        $title =    'Unpaid Balance:         '.$policy['clo_balance'];
-                                        $title .= "\nPeriod NET Premium: ".$policy['clo_total_period_premium'];
-                                        $title .= "\nPeriod Commission:   ".$policy['clo_total_period_commission'];
-                                        $title .= "\nPeriod Fees:                ".$policy['clo_total_period_fees'];
-                                        $title .= "\nPeriod Stamps:           ".$policy['clo_total_period_stamps'];
-                                        $title .= "\nGross Premium:          ".($policy['clo_total_period_premium'] + $policy['clo_total_period_fees'] + $policy['clo_total_period_stamps']);
+                                    while ($row = $db->fetch_assoc($result)) {
+                                        for($i=1;$i<=4;$i++) {
+                                            if ($colField[$i] == 'cst_name') {
+                                                $col[$i] = $row['cst_name'] . ' ' . $row['cst_surname'];
+                                            } else {
+                                                $col[$i] = $row[$colField[$i]];
+                                            }
+                                        }
+                                        $totalNetPremium += $row['clo_total_premium'];
+                                        $totalFees += $row['clo_total_fees'];
+                                        $totalStamps += $row['clo_total_stamps'];
+                                        $totalCommission += $row['clo_total_commission'];
+                                        $totalGross += $row['clo_gross_premium'];
 
                                         ?>
-                                        <tr id="policyTR_<?php echo $policy['inapol_policy_ID']; ?>">
-                                            <th scope="row">
-                                                <input type="checkbox" class="form-control form-check-label"
-                                                       id="checkLine_<?php echo $policy['inapol_policy_ID']; ?>">
-                                            </th>
-                                            <td id="linePolicyNumber_<?php echo $policy['inapol_policy_ID']; ?>"
-                                            ><a href="../policy_modify.php?lid=<?php echo $policy['inapol_policy_ID'];?>"
-                                                target="_blank"><?php echo $policy['inapol_policy_number']; ?></a></td>
-                                            <td><?php echo $policy['cst_name'] . ' ' . $policy['cst_surname']; ?></td>
-                                            <td><?php echo $policy['clo_item_list']; ?></td>
-                                            <td><?php echo $db->convert_date_format($policy['inapol_expiry_date'], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?></td>
-                                            <td align="center" title="<?php echo $title;?>"><?php echo $policy['clo_balance'] == '' ? 0 : $policy['clo_balance']; ?></td>
-                                            <td>
-                                                <img src="../../images/icon_spinner_transparent.gif" height="30"
-                                                     id="spinner_<?php echo $policy['inapol_policy_ID']; ?>" style="display: none;">
-                                            </td>
-                                        </tr>
-                                        <tr style="display: none" id="trResult_<?php echo $policy['inapol_policy_ID']; ?>">
-                                            <td colspan="7" id="tdResult_<?php echo $policy['inapol_policy_ID']; ?>">
+                                        <tr>
+                                            <th scope="row"><?php echo $col[1]; ?></th>
+                                            <td scope="row"><?php echo $col[2]; ?></td>
+                                            <td scope="row"><?php echo $col[3]; ?></td>
+                                            <td scope="row"><?php echo $col[4]; ?></td>
 
-                                            </td>
+                                            <td><?php echo $row['clo_total_premium']; ?></td>
+                                            <td><?php echo $row['clo_total_fees']; ?></td>
+                                            <td><?php echo $row['clo_total_stamps']; ?></td>
+                                            <td><?php echo $row['clo_total_commission']; ?></td>
+                                            <td><?php echo $row['clo_gross_premium']; ?></td>
                                         </tr>
                                     <?php } ?>
                                     <tr>
-                                        <td colspan="7">
-                                            <input type="button" value="Renew Selected" id="btnReviewSelected"
-                                                   class="btn btn-primary" onclick="renewSelected();">
-                                            <input type="button" value="Lapse Selected" id="btnLapseSelected"
-                                                   class="btn btn-danger">
-                                        </td>
+                                        <th scope="row"></th>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td><strong><?php echo $totalNetPremium;?></strong></td>
+                                        <td><strong><?php echo $totalFees;?></strong></td>
+                                        <td><strong><?php echo $totalStamps;?></strong></td>
+                                        <td><strong><?php echo $totalCommission;?></strong></td>
+                                        <td><strong><?php echo $totalGross;?></strong></td>
                                     </tr>
                                     </tbody>
                                 </table>
@@ -252,17 +440,8 @@ $db->show_header();
                 }//RESULTS
                 ?>
 
-                <div class="row">
-                    <div class="col-12">
-                        <textarea id="console" name="console" class="form-control" disabled rows="6">Console</textarea>
-                    </div>
-                </div>
-
             </div>
 
-
-
-            <div class="col-1 d-none d-md-block"></div>
         </div>
     </div>
 

@@ -88,7 +88,7 @@ else if ($_GET['section'] == 'agent_commission_types_policy_types') {
         $newData['label'] = 'Public Liability';
         $data[] = $newData;
     }
-    if ($undData['inaund_use_medical'] == 1 && $compData['inainc_use_medicals']) {
+    if ($undData['inaund_use_medical'] == 1 && $compData['inainc_use_medical']) {
         $newData['value'] = 'Medical';
         $newData['label'] = 'Medical';
         $data[] = $newData;

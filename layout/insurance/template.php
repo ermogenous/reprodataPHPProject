@@ -110,6 +110,11 @@ function template_header()
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/reports/production_report.php">
                                     <i class="fas fa-table"></i> <?php echo $db->showLangText('Production Report','Αναφορά Παραγωγής');?></a>
+
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/ainsurance/reports/statement.php">
+                                    <i class="fas fa-table"></i> <?php echo $db->showLangText('Statement','Δήλωση Λογαριασμού');?></a>
+
                             </div>
                         </li>
                     <?php } ?>

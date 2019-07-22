@@ -82,9 +82,10 @@ include('../../scripts/form_validator_class.php');
 $formValidator = new customFormValidator();
 if ($policy->policyData['inapol_status'] != 'Outstanding') {
     $formValidator->disableForm(
-            array('buttons')
+        array('buttons')
     );
 }
+
 ?>
     <div class="container-fluid">
         <div class="row">
@@ -99,7 +100,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
 
                     <?php
 
-                    if ($_GET['type'] == 'Vehicles') {
+                    if ($_GET['type'] == 'Vehicle') {
                         $label = 'Vehicle';
                         ?>
 
@@ -400,7 +401,98 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                             </div>
                         </div>
 
-                    <?php } ?>
+                    <?php } //if RiskLocation
+                    else if ($_GET['type'] == 'Member') {
+                        ?>
+
+                        <div class="form-group row">
+                            <label for="fld_mb_full_name" class="col-sm-3 col-form-label">Full Name</label>
+                            <div class="col-sm-3">
+                                <input type="text" id="fld_mb_full_name" name="fld_mb_full_name"
+                                       class="form-control"
+                                       value="<?php echo $data["inapit_mb_full_name"]; ?>">
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_mb_full_name',
+                                        'fieldDataType' => 'text',
+                                        'required' => true,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
+                            </div>
+
+                            <label for="fld_mb_birth_date" class="col-sm-3 col-form-label">Birth Date</label>
+                            <div class="col-sm-3">
+                                <input type="text" name="fld_mb_birth_date" id="fld_mb_birth_date"
+                                       class="form-control"
+                                       value="<?php echo $data["inapit_mb_birth_date"]; ?>">
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_mb_birth_date',
+                                        'fieldDataType' => 'date',
+                                        'enableDatePicker' => true,
+                                        'datePickerValue' => $db->convertDateToEU($data["inapit_mb_birth_date"]),
+                                        'required' => true,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
+                            </div>
+                        </div>
+
+                        <?php
+                    }
+                    ?>
+
+                    <div class="form-group row">
+                        <label for="fld_package_ID" class="col-sm-3 col-form-label">Package</label>
+                        <div class="col-sm-3">
+                            <select id="fld_package_ID" name="fld_package_ID"
+                                    class="form-control">
+                                <option value="0">No Package</option>
+                                <?php
+                                $sql = "SELECT * FROM ina_insurance_company_packages WHERE
+                              inaincpk_insurance_company_ID = " . $policy->policyData['inapol_insurance_company_ID'] . " 
+                              AND inaincpk_type = '" . $policy->policyData['inapol_type_code'] . "' 
+                              AND inaincpk_status = 'Active'";
+                                $result = $db->query($sql);
+                                while ($pack = $db->fetch_assoc($result)) {
+                                    ?>
+                                    <option value="<?php echo $pack['inaincpk_insurance_company_package_ID']; ?>"
+                                        <?php if ($data['inapit_package_ID'] == $pack['inaincpk_insurance_company_package_ID']) echo "selected"; ?>
+                                    ><?php echo $pack['inaincpk_name']; ?></option>
+                                    <?php
+                                }
+                                ?>
+
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_package_ID',
+                                        'fieldDataType' => 'select',
+                                        'required' => true,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
+                            </select>
+                        </div>
+
+                        <label for="fld_package_description" class="col-sm-3 col-form-label">Package Description</label>
+                        <div class="col-sm-3">
+                            <input type="text" name="fld_package_description" id="fld_package_description"
+                                   class="form-control"
+                                   value="<?php echo $data["inapit_package_description"]; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_package_description',
+                                    'fieldDataType' => 'text',
+                                    'required' => false
+                                ]);
+                            ?>
+                        </div>
+                    </div>
 
                     <div class="form-group row">
                         <label for="fld_insured_amount" class="col-sm-3 col-form-label">Insured Amount</label>
@@ -454,7 +546,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                             ?>
                         </div>
 
-                        <?php if ($_GET['type'] == 'Vehicles' && 1==2) { ?>
+                        <?php if ($_GET['type'] == 'Vehicles' && 1 == 2) { ?>
                             <label for="fld_mif" class="col-sm-3 col-form-label">MIF</label>
                             <div class="col-sm-3">
                                 <input type="text" id="fld_mif" name="fld_mif"
@@ -482,7 +574,8 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
                             <input name="pid" type="hidden" id="pid" value="<?php echo $_GET["pid"]; ?>">
                             <input name="type" type="hidden" id="type" value="<?php echo $_GET["type"]; ?>">
-                            <input type="button" value="Back" class="btn btn-secondary" name="BtnBack" id="BtnBack" style="donotdisable"
+                            <input type="button" value="Back" class="btn btn-secondary" name="BtnBack" id="BtnBack"
+                                   style="donotdisable"
                                    onclick="window.location.assign('policy_items.php?pid=<?php echo $_GET['pid'] . "&type=" . $_GET['type']; ?>')">
                             <?php
                             if ($policy->policyData['inapol_status'] == 'Outstanding') {
@@ -512,7 +605,23 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
         $(document).ready(function () {
             parent.window.frames['premTab'].location.reload(true);
 
-            $('#policyItemsTab', window.parent.document).height('500px');
+            <?php
+            if ($_GET['type'] == 'Vehicle'){
+            ?>
+            $('#policyItemsTab', window.parent.document).height('550px');
+            <?php
+            }
+            else if ($_GET['type'] == 'RiskLocation'){
+            ?>
+            $('#policyItemsTab', window.parent.document).height('450px');
+            <?php
+            }
+            else {
+            ?>
+            $('#policyItemsTab', window.parent.document).height('350px');
+            <?php
+            }
+            ?>
         });
     </script>
 <?php

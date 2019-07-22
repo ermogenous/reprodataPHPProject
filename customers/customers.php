@@ -10,7 +10,7 @@ $db->enable_jquery_ui();
 $db->show_header();
 
 $table = new draw_table('customers', 'cst_customer_ID', 'ASC');
-$table->extras = $db->CustomersWhere();
+$table->extras = "1=1 ".$db->CustomersWhere();
 if ($_POST['search'] == 'search') {
     if ($_POST['search_field-id'] > 0){
         $table->extras .= " AND cst_customer_ID = ".$_POST['search_field-id'];
@@ -55,7 +55,7 @@ $table->generate_data();
                             <div class="col-sm-8 ui-widget">
                                 <input name="search_field" type="text" id="search_field"
                                        class="form-control"
-                                       value="">
+                                       value="<?php echo $_POST['search_field'];?>">
                                 <input id="search_field-id" name="search_field-id" type="hidden">
                                 <input id="search" name="search" value="search" type="hidden">
                             </div>

@@ -38,7 +38,7 @@ if ($_GET["lid"] != "") {
     $data = $db->query_fetch($sql);
 }
 else {
-    $data['inainc_active'] = 1;
+    $data['inainc_active'] = 'Active';
 }
 
 

@@ -20,6 +20,7 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_period_starting_date'] = $db->convert_date_format($_POST['fld_period_starting_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $_POST['fld_starting_date'] = $db->convert_date_format($_POST['fld_starting_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $_POST['fld_expiry_date'] = $db->convert_date_format($_POST['fld_expiry_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
+    $_POST['fld_financial_date'] = $db->convertDateToUS($_POST['fld_financial_date']);
     $_POST['fld_status'] = 'Outstanding';
 
     //init fields
@@ -70,6 +71,7 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_period_starting_date'] = $db->convert_date_format($_POST['fld_period_starting_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $_POST['fld_starting_date'] = $db->convert_date_format($_POST['fld_starting_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $_POST['fld_expiry_date'] = $db->convert_date_format($_POST['fld_expiry_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
+    $_POST['fld_financial_date'] = $db->convertDateToUS($_POST['fld_financial_date']);
 
     if ($policy->policyData['inapol_status'] == 'Outstanding') {
         $db->db_tool_update_row('ina_policies', $_POST, "`inapol_policy_ID` = " . $_POST["lid"],
@@ -257,7 +259,7 @@ $db->show_header();
                                         + underwriterSelected + '&inscompany=' + insuranceCompanySelected))
                                         .subscribe((response) => {
                                                 data = response;
-                                                //console.log(data);
+                                                console.log(data);
                                             },
                                             () => {
                                             }
@@ -332,7 +334,7 @@ $db->show_header();
                         <label for="fld_policy_number" class="col-md-3 col-form-label">
                             <?php echo $db->showLangText('Policy Number','Αρ.Συμβολαίου');?>
                         </label>
-                        <div class="col-md-3">
+                        <div class="col-md-2">
                             <input name="fld_policy_number" type="text" id="fld_policy_number"
                                    class="form-control" onkeyup="$('#policyNumberValidation').val('error');"
                                    value="<?php echo $data["inapol_policy_number"]; ?>">
@@ -567,7 +569,7 @@ $db->show_header();
                                 [
                                     'fieldName' => 'fld_financial_date',
                                     'fieldDataType' => 'date',
-                                    'datePickerValue' => $db->convert_date_format($data['inapol_financial_date'], 'yyyy-mm-dd', 'dd/mm/yyyy'),
+                                    'datePickerValue' => $db->convertDateToEU($data['inapol_financial_date']),
                                     'enableDatePicker' => true,
                                     'required' => true,
                                     'invalidText' => 'Must enter Financial Date'

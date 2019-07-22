@@ -210,6 +210,24 @@ class Policy
         if ($this->policyData['inapol_type_code'] == 'Motor') {
             return 'Vehicles';
         }
+        else if ($this->policyData['inapol_type_code'] == 'Fire') {
+            return 'Risk Location';
+        }
+        else if ($this->policyData['inapol_type_code'] == 'PA') {
+            return 'Members';
+        }
+        else if ($this->policyData['inapol_type_code'] == 'EL') {
+            return 'Members';
+        }
+        else if ($this->policyData['inapol_type_code'] == 'PI') {
+            return 'Members';
+        }
+        else if ($this->policyData['inapol_type_code'] == 'PL') {
+            return 'Risk Location';
+        }
+        else if ($this->policyData['inapol_type_code'] == 'Medical') {
+            return 'Members';
+        }
 
         return $this->policyData['inapol_type_code'];
     }
@@ -218,10 +236,28 @@ class Policy
     public function getInputType()
     {
         if ($this->policyData['inapol_type_code'] == 'Motor') {
-            return 'Vehicles';
-        } else if ($this->policyData['inapol_type_code'] == 'Fire') {
+            return 'Vehicle';
+        }
+        else if ($this->policyData['inapol_type_code'] == 'Fire') {
             return 'RiskLocation';
         }
+        else if ($this->policyData['inapol_type_code'] == 'PA') {
+            return 'Member';
+        }
+        else if ($this->policyData['inapol_type_code'] == 'EL') {
+            return 'Member';
+        }
+        else if ($this->policyData['inapol_type_code'] == 'PI') {
+            return 'Member';
+        }
+        else if ($this->policyData['inapol_type_code'] == 'PL') {
+            return 'RiskLocation';
+        }
+        else if ($this->policyData['inapol_type_code'] == 'Medical') {
+            return 'Member';
+        }
+
+        return $this->policyData['inapol_type_code'];
     }
 
     public function deletePolicyItem($inapitID)
