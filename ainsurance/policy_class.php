@@ -207,26 +207,27 @@ class Policy
 
     public function getTypeFullName()
     {
+        global $db;
         if ($this->policyData['inapol_type_code'] == 'Motor') {
-            return 'Vehicles';
+            return $db->showLangText('Vehicles','Αυτοκήνιτα');
         }
         else if ($this->policyData['inapol_type_code'] == 'Fire') {
-            return 'Risk Location';
+            return $db->showLangText('Risk Location','Τοποθεσία Κινδύνου');
         }
         else if ($this->policyData['inapol_type_code'] == 'PA') {
-            return 'Members';
+            return $db->showLangText('Members','Άτομα');
         }
         else if ($this->policyData['inapol_type_code'] == 'EL') {
-            return 'Members';
+            return $db->showLangText('Members','Άτομα');
         }
         else if ($this->policyData['inapol_type_code'] == 'PI') {
-            return 'Members';
+            return $db->showLangText('Members','Άτομα');
         }
         else if ($this->policyData['inapol_type_code'] == 'PL') {
-            return 'Risk Location';
+            return $db->showLangText('Risk Location','Τοποθεσία Κινδύνου');
         }
         else if ($this->policyData['inapol_type_code'] == 'Medical') {
-            return 'Members';
+            return $db->showLangText('Members','Άτομα');
         }
 
         return $this->policyData['inapol_type_code'];

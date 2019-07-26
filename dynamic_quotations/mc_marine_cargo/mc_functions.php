@@ -524,7 +524,7 @@ function mc_shipment_details_3()
 
 function mc_cargo_details_4()
 {
-    global $db, $items_data, $qitem_data, $formValidator;
+    global $db, $items_data, $qitem_data, $formValidator, $underwriter;
     ?>
 
     <div class="form-group row">
@@ -602,6 +602,26 @@ function mc_cargo_details_4()
             ?>
         </div>
     </div>
+
+    <?php if ($db->user_data['usr_user_rights'] <= 2 || $underwriter['oqun_show_excess_replace'] == 1) { ?>
+    <div class="form-group row">
+        <label for="4_oqqit_rate_6" class="col-sm-4 col-form-label">
+            <?php show_quotation_text("Excess Replace", "Excess Replace"); ?>
+        </label>
+        <div class="col-sm-8">
+            <textarea name="4_oqqit_rate_6" id="4_oqqit_rate_6"
+                      class="form-control"><?php echo $qitem_data['oqqit_rate_6']; ?></textarea>
+            <?php
+            $formValidator->addField(
+                [
+                    'fieldName' => '4_oqqit_rate_6',
+                    'fieldDataType' => 'text',
+                    'required' => false
+                ]);
+            ?>
+        </div>
+    </div>
+    <?php }//show if user rights <= 2 ?>
 
     <?php
 }

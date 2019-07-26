@@ -149,7 +149,7 @@ $db->show_header();
                                     'fieldName' => 'fld_underwriter_ID',
                                     'fieldDataType' => 'select',
                                     'required' => true,
-                                    'invalidText' => 'Must select Underwriter'
+                                    'invalidText' => $db->showLangText('Must Select Underwriter', 'Επιλέξατε Ασφαλιστή')
                                 ]);
                             ?>
                         </div>
@@ -188,7 +188,7 @@ $db->show_header();
                                     'fieldName' => 'fld_insurance_company_ID',
                                     'fieldDataType' => 'select',
                                     'required' => true,
-                                    'invalidText' => 'Must select Company'
+                                    'invalidTextAutoGenerate' => true
                                 ]);
                             ?>
                             <script>
@@ -241,7 +241,7 @@ $db->show_header();
                                     'fieldName' => 'fld_type_code',
                                     'fieldDataType' => 'select',
                                     'required' => true,
-                                    'invalidText' => 'Must select Type'
+                                    'invalidText' => $db->showLangText('Must Select Type', 'Επιλέξατε Τύπο')
                                 ]);
                             ?>
                             <div class="invalid-feedback" id="errorDeleteAllItems">
@@ -295,7 +295,7 @@ $db->show_header();
                                     'fieldDataType' => 'text',
                                     'required' => true,
                                     'requiredAddedCustomCode' => '|| $("#fld_customer_ID").val() == ""',
-                                    'invalidText' => 'Must select Customer'
+                                    'invalidText' => $db->showLangText('Must enter Customer', 'Πρέπει να εισάγετε Πελάτη')
                                 ]);
                             ?>
                             <input name="fld_customer_ID" id="fld_customer_ID" type="hidden"
@@ -344,7 +344,7 @@ $db->show_header();
                                     'fieldName' => 'fld_policy_number',
                                     'fieldDataType' => 'text',
                                     'required' => true,
-                                    'invalidText' => 'Must Enter Valid Policy Number',
+                                    'invalidTextAutoGenerate' => true,
                                     'requiredAddedCustomCode' => '|| $("#policyNumberValidation").val() != "valid"'
                                 ]);
                             ?>
@@ -433,7 +433,7 @@ $db->show_header();
                                     'datePickerValue' => $db->convert_date_format($data['inapol_period_starting_date'], 'yyyy-mm-dd', 'dd/mm/yyyy'),
                                     'enableDatePicker' => true,
                                     'required' => true,
-                                    'invalidText' => 'Must enter Period Starting Date'
+                                    'invalidTextAutoGenerate' => true
                                 ]);
                             ?>
                         </div>
@@ -479,7 +479,7 @@ $db->show_header();
                         </div>
 
                         <label for="fld_starting_date" class="col-md-3 col-form-label">
-                            <?php echo $db->showLangText('Starting Date','Ημ.Έναρξης');?>
+                            <?php echo $db->showLangText('Starting Date','Ημερομηνία Έναρξης');?>
                         </label>
                         <div class="col-md-2">
                             <input name="fld_starting_date" type="text" id="fld_starting_date"
@@ -493,7 +493,7 @@ $db->show_header();
                                     'datePickerValue' => $db->convert_date_format($data['inapol_starting_date'], 'yyyy-mm-dd', 'dd/mm/yyyy'),
                                     'enableDatePicker' => true,
                                     'required' => true,
-                                    'invalidText' => 'Must enter Starting Date'
+                                    'invalidTextAutoGenerate' => true
                                 ]);
                             ?>
                         </div>
@@ -527,8 +527,8 @@ $db->show_header();
                             </select>
                         </div>
 
-                        <label class="col-md-3 col-form-label">
-                            <?php echo $db->showLangText('Expiry Date','Ημ.Λήξης');?> <br>
+                        <label for="fld_expiry_date" class="col-md-3 col-form-label">
+                            <?php echo $db->showLangText('Expiry Date','Ημερομηνία Λήξης');?> <br>
                             <span class="main_text_smaller">
                                 <span style="cursor: pointer" onclick="fillExpiryDate('year',1);">1Y</span>&nbsp
                                 <span style="cursor: pointer" onclick="fillExpiryDate('month',6);">6M</span>&nbsp
@@ -550,7 +550,7 @@ $db->show_header();
                                     'datePickerValue' => $db->convert_date_format($data['inapol_expiry_date'], 'yyyy-mm-dd', 'dd/mm/yyyy'),
                                     'enableDatePicker' => true,
                                     'required' => true,
-                                    'invalidText' => 'Must enter Expiry Date'
+                                    'invalidText' => $db->showLangText('Must Enter Expiry Date', 'Πρέπει να εισάγετε Ημ.Λήξης')
                                 ]);
                             ?>
                         </div>
@@ -559,7 +559,9 @@ $db->show_header();
                     <div class="form-group row">
                         <div class="col-md-6"></div>
 
-                        <label for="fld_financial_date" class="col-md-3 col-form-label">Financial Date</label>
+                        <label for="fld_financial_date" class="col-md-3 col-form-label">
+                            <?php echo $db->showLangText('Financial Date','Ημερομηνία Παραγωγής');?>
+                        </label>
                         <div class="col-md-2">
                             <input name="fld_financial_date" type="text" id="fld_financial_date"
                                    class="form-control"
@@ -572,7 +574,7 @@ $db->show_header();
                                     'datePickerValue' => $db->convertDateToEU($data['inapol_financial_date']),
                                     'enableDatePicker' => true,
                                     'required' => true,
-                                    'invalidText' => 'Must enter Financial Date'
+                                    'invalidTextAutoGenerate' => true
                                 ]);
                             ?>
                         </div>
@@ -598,18 +600,24 @@ $db->show_header();
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" id="prem-tab" data-toggle="tab" href="#prem" role="tab"
-                                   aria-controls="prem" aria-selected="false">Premium</a>
+                                   aria-controls="prem" aria-selected="false">
+                                    <?php echo $db->showLangText('Premium','Ασφάληστρα');?>
+                                </a>
                             </li>
 
                             <li class="nav-item">
                                 <a class="nav-link" id="installments-tab" data-toggle="tab" href="#installments"
                                    role="tab"
-                                   aria-controls="installments" aria-selected="false">Installments</a>
+                                   aria-controls="installments" aria-selected="false">
+                                    <?php echo $db->showLangText('Installments','Δόσεις');?>
+                                </a>
                             </li>
 
                             <li class="nav-item">
                                 <a class="nav-link" id="payments-tab" data-toggle="tab" href="#payments" role="tab"
-                                   aria-controls="payments" aria-selected="false">Payments</a>
+                                   aria-controls="payments" aria-selected="false">
+                                    <?php echo $db->showLangText('Payments','Πληρωμές');?>
+                                </a>
                             </li>
                         </ul>
                         <div class="tab-content" id="myTabContent">
@@ -644,7 +652,8 @@ $db->show_header();
                     <?php } else { ?>
                         <div class="row">
                             <div class="col-12 text-center alert alert-info">
-                                <b>Create the policy to be able to proceed.</b>
+                                <b><?php echo $db->showLangText('Create the policy to be able to proceed.',
+                                        'Δημιουργήστε το Συμβόλαιο για να μπορέσετε να προχωρήσετε.');?></b>
                             </div>
                         </div>
                         <div class="row">
@@ -664,15 +673,18 @@ $db->show_header();
                             <input name="action" type="hidden" id="action"
                                    value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
-                            <input type="button" value="Back" class="btn btn-secondary"
+                            <input type="button" value="<?php echo $db->showLangText('Back','Πίσω');?>" class="btn btn-secondary"
                                    onclick="window.location.assign('policies.php')">
 
 
-                            <input type="submit" value="Save Policy"
+                            <input type="submit" value="<?php echo $db->showLangText('Save Policy','Δημιουργία Συμβόλαιου');?>"
                                    class="btn btn-secondary" id="Save"
                                    onclick="submitForm('save');">
                             <input type="submit"
-                                   value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Save"; ?> Policy & Exit"
+                                   value="<?php if ($_GET["lid"] == "")
+                                       echo $db->showLangText('Insert Policy & Exit','Δημιουργία Συμβόλαιου και Έξοδος');
+                                   else
+                                       echo $db->showLangText('Save Policy & Exit','Αποθήκευση Συμβόλαιου και Έξοδος');  ?>"
                                    class="btn btn-secondary" id="Submit"
                                    onclick="submitForm('exit');">
 

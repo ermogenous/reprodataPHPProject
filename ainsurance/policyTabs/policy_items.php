@@ -40,21 +40,21 @@ if ($_GET['pid'] > 0) {
                         <tr>
                             <th scope="col"><?php $table->display_order_links('ID', 'inapit_policy_item_ID'); ?></th>
                             <?php if ($_GET['type'] == 'Vehicles') { ?>
-                                <th scope="col"><?php $table->display_order_links('Registration', 'inapit_vh_registration'); ?></th>
-                                <th scope="col"><?php $table->display_order_links('Make', 'inaic_name'); ?></th>
-                                <th scope="col"><?php $table->display_order_links('Model', 'inapit_vh_model'); ?></th>
+                                <th scope="col"><?php $table->display_order_links($db->showLangText('Registration','Αρ.Εγγραφής'), 'inapit_vh_registration'); ?></th>
+                                <th scope="col"><?php $table->display_order_links($db->showLangText('Make','Κατασκευαστής'), 'inaic_name'); ?></th>
+                                <th scope="col"><?php $table->display_order_links($db->showLangText('Model','Μοντέλο'), 'inapit_vh_model'); ?></th>
                             <?php } else if ($_GET['type'] == 'Risk Locations') { ?>
-                                <th scope="col"><?php $table->display_order_links('Type', 'inapit_rl_construction_type'); ?></th>
-                                <th scope="col"><?php $table->display_order_links('Address', 'inapit_rl_address_1'); ?></th>
-                                <th scope="col"><?php $table->display_order_links('City', 'cde_value'); ?></th>
+                                <th scope="col"><?php $table->display_order_links($db->showLangText('Type','Τύπος'), 'inapit_rl_construction_type'); ?></th>
+                                <th scope="col"><?php $table->display_order_links($db->showLangText('Address','Διεύθνση'), 'inapit_rl_address_1'); ?></th>
+                                <th scope="col"><?php $table->display_order_links($db->showLangText('City','Πόλη'), 'cde_value'); ?></th>
                             <?php } ?>
-                            <th scope="col"><?php $table->display_order_links('Ins.Amount', 'inapit_insured_amount'); ?></th>
-                            <th scope="col"><?php $table->display_order_links('Excess', 'inapit_excess'); ?></th>
-                            <th scope="col"><?php $table->display_order_links('Premium', 'inapit_premium'); ?></th>
+                            <th scope="col"><?php $table->display_order_links($db->showLangText('Ins.Amount','Ασφ.Κεφάλαιο'), 'inapit_insured_amount'); ?></th>
+                            <th scope="col"><?php $table->display_order_links($db->showLangText('Excess','Excess'), 'inapit_excess'); ?></th>
+                            <th scope="col"><?php $table->display_order_links($db->showLangText('Premium','Ασφάληστρο'), 'inapit_premium'); ?></th>
                             <th scope="col">
                                 <?php if ($policy->policyData['inapol_status'] == 'Outstanding'){ ?>
                                 <a href="policy_item_modify.php?pid=<?php echo $_GET['pid'] . "&type=" . $_GET['type']; ?>">
-                                    <i class="fas fa-plus-circle" title="Insert new item"></i>
+                                    <i class="fas fa-plus-circle" title="<?php echo $db->showLangText('Insert new item','Πρόσθεση Καινούργιου');?>"></i>
                                 </a>
                                 <?php } ?>
                             </th>
@@ -91,14 +91,14 @@ if ($_GET['pid'] > 0) {
                                     if ($policy->policyData['inapol_status'] == 'Outstanding') {
                                         ?>
                                         <a href="policy_item_modify.php?lid=<?php echo $row["inapit_policy_item_ID"] . "&pid=" . $_GET['pid'] . "&type=" . $_GET['type']; ?>"><i
-                                                    class="fas fa-edit" title="Edit Item"></i></a>&nbsp
+                                                    class="fas fa-edit" title="<?php echo $db->showLangText('Edit Item','Επεξεργασία');?>"></i></a>&nbsp
                                         <a href="policy_item_delete.php?lid=<?php echo $row["inapit_policy_item_ID"] . "&pid=" . $_GET['pid'] . "&type=" . $_GET['type']; ?>"
                                            onclick="ignoreEdit = true;
                                             return confirm('Are you sure you want to delete this policy item?');"><i
-                                                    class="fas fa-minus-circle" title="Delete Item"></i></a>
+                                                    class="fas fa-minus-circle" title="<?php echo $db->showLangText('Delete Item','Διαγραφή');?>"></i></a>
                                     <?php }else { ?>
                                         <a href="policy_item_modify.php?lid=<?php echo $row["inapit_policy_item_ID"] . "&pid=" . $_GET['pid'] . "&type=" . $_GET['type']; ?>"><i
-                                                    class="fas fa-eye" title="View Item"></i></a>&nbsp
+                                                    class="fas fa-eye" title="<?php echo $db->showLangText('View Item','Θέαση');?>"></i></a>&nbsp
                                     <?php } ?>
                                 </td>
                             </tr>

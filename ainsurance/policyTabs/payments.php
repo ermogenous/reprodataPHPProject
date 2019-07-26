@@ -76,7 +76,6 @@ if ($_GET['pid'] > 0) {
                         <table class="table table-hover">
                             <thead class="alert alert-success">
                             <tr>
-                                <th scope="col"><?php $table->display_order_links('ID', 'inapp_policy_payment_ID'); ?></th>
                                 <th scope="col"><?php $table->display_order_links('Date', 'inapp_payment_date'); ?></th>
                                 <th scope="col"><?php $table->display_order_links('Amount', 'inapp_amount'); ?></th>
                                 <th scope="col"><?php $table->display_order_links('All.Amount', 'inapp_allocated_amount'); ?></th>
@@ -102,8 +101,7 @@ if ($_GET['pid'] > 0) {
                                 $totalLines++;
                                 ?>
                                 <tr onclick="editLine(<?php echo $row["inapp_policy_payment_ID"] . "," . $policy->installmentID . ",'" . $_GET['type'] . "'"; ?>);">
-                                    <th scope="row"><?php echo $row["inapp_policy_payment_ID"]; ?></th>
-                                    <td><?php echo $row["inapp_payment_date"]; ?></td>
+                                    <td scope="row"><?php echo $row["inapp_payment_date"]; ?></td>
                                     <td><?php echo $row["inapp_amount"]; ?></td>
                                     <td><?php echo $row["inapp_allocated_amount"]; ?></td>
                                     <td><?php echo $row["inapp_allocated_commission"]; ?></td>
@@ -188,7 +186,9 @@ if ($_GET['pid'] > 0) {
         <div class="container-fluid">
             <div class="row" style="height: 25px"></div>
             <div class="row">
-                <div class="col-12 text-center alert alert-danger">Policy must be active to insert payments.</div>
+                <div class="col-12 text-center alert alert-danger">
+                    <?php echo $db->showLangText('Policy must be active to insert payments.','Το Συμβόλαιο πρέπει να είναι ενεργό για την εισαγωγή των πληρωμών.');?>
+                </div>
             </div>
         </div>
         <script>

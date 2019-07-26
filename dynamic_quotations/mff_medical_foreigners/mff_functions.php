@@ -223,11 +223,11 @@ function mff_insurance_period_2()
             //echo date('d/m/Y', mktime(0, 0, 0, date('m'), (date('d') + 45), date('Y')));
             ?>
         </div>
-        <label for="expiry_date" class="col-sm-1 col-form-label">
+        <label for="expiry_date" class="col-lg-1 col-form-label">
             <?php show_quotation_text("Μέχρι", "To"); ?>
         </label>
 
-        <div class="col-3 custom-control-inline">
+        <div class="col-lg-3 custom-control-inline">
             <button type="button" class="btn" style="width: 45px;" onclick="setExpiryDate(3)">3M</button>&nbsp;
             <button type="button" class="btn" style="width: 45px;" onclick="setExpiryDate(6)">6M</button>&nbsp;
             <button type="button" class="btn" style="width: 45px;" onclick="setExpiryDate(9)">9M</button>&nbsp;
@@ -235,7 +235,7 @@ function mff_insurance_period_2()
         </div>
 
 
-        <div class="col-sm-3">
+        <div class="col-lg-3">
             <input name="expiry_date" type="text" id="expiry_date"
                    class="form-control text-center" readonly
                    value="<?php echo $db->convert_date_format($q_data["oqq_expiry_date"], 'yyyy-mm-dd', 'dd/mm/yyyy',1,0); ?>">

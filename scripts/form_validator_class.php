@@ -104,6 +104,7 @@ class customFormValidator
 //this must be executed right after of the input field. Inside of the same <div> tag
     private function echoInvalidText($fieldData)
     {
+        global $db;
         if ($fieldData['invalidText'] != '') {
             if ($fieldData['fieldDataType'] == 'radio') {
                 echo '<div class="invalid-feedback" id="' . $fieldData['fieldName'] . '-invalid-text">' . $fieldData['invalidText'] . '</div>';
@@ -114,11 +115,11 @@ class customFormValidator
 
             if ($fieldData['invalidTextAutoGenerate'] == true) {
                 if ($fieldData['fieldDataType'] == 'select') {
-                    $prefix = 'Must Select ';
+                    $prefix = $db->showLangText('Must Select ','Επιλέξατε ');
                 } else if ($fieldData['fieldDataType'] == 'email') {
-                    $prefix = 'Must Enter Valid ';
+                    $prefix = $db->showLangText('Must Enter Valid ','Πρέπει να εισάγετε έγκυρο ');
                 } else {
-                    $prefix = 'Must Enter ';
+                    $prefix = $db->showLangText('Must Enter ','Πρέπει να εισάγετε ');
                 }
 
                 echo '<div class="invalid-feedback" id="' . $fieldData['fieldName'] . '-invalid-text"></div>';

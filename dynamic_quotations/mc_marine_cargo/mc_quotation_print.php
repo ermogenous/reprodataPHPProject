@@ -15,6 +15,7 @@ function getQuotationHTML($quotationID)
     //underwriter data
     $underwriterData = $db->query_fetch('SELECT * FROM oqt_quotations_underwriters WHERE oqun_user_ID = '.$db->user_data['usr_users_ID']);
 
+
     //get items data
     $sect1 = $db->query_fetch("
       SELECT 
@@ -31,7 +32,6 @@ function getQuotationHTML($quotationID)
         oqt_quotations_items 
         WHERE oqqit_quotations_ID = " . $quotationID . " AND oqqit_items_ID = 3");
     $sect2 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $quotationID . " AND oqqit_items_ID = 4");
-
 
     $html = '
 <style>
@@ -138,6 +138,22 @@ function getQuotationHTML($quotationID)
         else if ($sect1['oqqit_rate_4'] == 'Other'){
             $excess = $underwriterData['oqun_excess_other'];
         }
+
+        //if the field 4_oqqit_rate_6 is empty then fill it with the underwriters commission.
+        if ($sect2['oqqit_rate_6'] == ''){
+            //update the db field with the excess from above
+            $newData['rate_6'] = $excess;
+            $db->db_tool_update_row('oqt_quotations_items',
+                $newData,
+                'oqqit_quotations_items_ID = '.$sect2['oqqit_quotations_items_ID'],
+                $sect2['oqqit_quotations_items_ID'],
+                '',
+                'execute',
+                'oqqit_');
+            //update the sect2 data
+            $sect2['oqqit_rate_6'] = $excess;
+        }
+
 
         $conditionsOfInsurance = getConditionsOfInsurance($sect1['oqqit_rate_4'],$sect1['oqqit_rate_13']);
 
@@ -255,7 +271,7 @@ function getQuotationHTML($quotationID)
         <tr>
             <td colspan="3" height="270px" valign="top">
                 <b>Conditions of Insurance '.$approvalCommodity.'</b><br><br>
-                ' . $conditionsOfInsurance[0] . '<br>'.$excess.'
+                ' . $conditionsOfInsurance[0] . '<br>'.$sect2['oqqit_rate_6'].'
             </td>
             
         </tr>

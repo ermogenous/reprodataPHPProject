@@ -228,8 +228,8 @@ $formValidator->addCustomCode("
 </script>
 <div class="container">
     <div class="row">
-        <div class="col-lg-1 col-md-1 hidden-xs hidden-sm"></div>
-        <div class="col-lg-10 col-md-10 col-xs-12 col-sm-12">
+        <div class="d-none col-md-1"></div>
+        <div class="col-sm-12 col-md-10 col-lg-10 col-xl-10">
             <form name="myForm" id="myForm" method="post" action=""
                 <?php $formValidator->echoFormParameters(); ?>>
 
@@ -685,6 +685,10 @@ $formValidator->addCustomCode("
 
             </form>
         </div>
+        <div class="d-none col-md-1"></div>
+
+
+
     </div>
 </div>
 

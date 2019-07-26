@@ -71,7 +71,7 @@ $todayDate = date('d/m/Y');
 $formValidator = new customFormValidator();
 $formValidator->setFormName('myForm');
 $formValidator->showErrorList();
-if ($data['actrn_status'] != 'Outstanding') {
+if ($data['actrn_status'] != 'Outstanding' && $_GET['lid'] != '') {
     $formValidator->disableForm(array('buttons'));
 }
 

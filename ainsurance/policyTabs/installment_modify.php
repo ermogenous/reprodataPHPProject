@@ -87,7 +87,7 @@ $db->enable_jquery_ui();
 $db->enable_rxjs_lite();
 $db->show_empty_header();
 
-echo "Lid:".$_GET['lid']."<br>Pid".$_GET['pid'];
+//echo "Lid:".$_GET['lid']."<br>Pid".$_GET['pid'];
 
 ?>
     <div class="container-fluid">
@@ -95,20 +95,27 @@ echo "Lid:".$_GET['lid']."<br>Pid".$_GET['pid'];
             <div class="col-lg-12 col-md-12 col-xs-12 col-sm-12">
                 <form name="myForm" id="myForm" method="post" action="" onsubmit="">
                     <div class="alert alert-dark text-center">
-                        <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
-                            &nbsp;Installment</b>
+                        <b><?php if ($_GET["lid"] == "")
+                            echo $db->showLangText("Insert Installment","Δημιουργία Δόσεις");
+                        else
+                            echo $db->showLangText("Update Installment","Επεξεργασία Δόσεις"); ?>
+                        </b>
                     </div>
 
 
                     <div class="form-group row">
-                        <label for="fld_amount" class="col-sm-3 col-form-label">Amount</label>
+                        <label for="fld_amount" class="col-sm-3 col-form-label">
+                            <?php echo $db->showLangText('Amount','Ποσό');?>
+                        </label>
                         <div class="col-sm-3">
                             <input type="text" id="fld_amount" name="fld_amount"
                                    class="form-control"
                                    value="<?php echo $data["inapi_amount"]; ?>">
                         </div>
 
-                        <label for="fld_document_date" class="col-sm-3 col-form-label">Document Date</label>
+                        <label for="fld_document_date" class="col-sm-3 col-form-label">
+                            <?php echo $db->showLangText('Document Date','Ημερομηνία Πράξης');?>
+                        </label>
                         <div class="col-sm-3">
                             <input name="fld_document_date" type="text" id="fld_document_date"
                                    class="form-control"
@@ -126,7 +133,9 @@ echo "Lid:".$_GET['lid']."<br>Pid".$_GET['pid'];
                     </div>
 
                     <div class="form-group row">
-                        <label for="insert_date" class="col-sm-3 col-form-label">Insert Date</label>
+                        <label for="insert_date" class="col-sm-3 col-form-label">
+                            <?php echo $db->showLangText('Insert Date','Ημερομηνία Δημιουργίας');?>
+                        </label>
                         <div class="col-sm-3">
                             <input name="insert_date" type="text" id="insert_date"
                                    class="form-control"
@@ -136,7 +145,9 @@ echo "Lid:".$_GET['lid']."<br>Pid".$_GET['pid'];
                                    value="<?php echo $db->convert_date_format($data["inapi_insert_date"], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?>">
                         </div>
 
-                        <label for="fld_commission_amount" class="col-sm-3 col-form-label">Commission</label>
+                        <label for="fld_commission_amount" class="col-sm-3 col-form-label">
+                            <?php echo $db->showLangText('Commission','Προμήθεια');?>
+                        </label>
                         <div class="col-sm-3">
                             <input type="text" name="fld_commission_amount" id="fld_commission_amount"
                                    class="form-control"
@@ -145,7 +156,9 @@ echo "Lid:".$_GET['lid']."<br>Pid".$_GET['pid'];
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_last_payment_date" class="col-sm-3 col-form-label">Last Payment Date</label>
+                        <label for="fld_last_payment_date" class="col-sm-3 col-form-label">
+                            <?php echo $db->showLangText('Last Payment Date','Τελευταια Πληρωμή');?>
+                        </label>
                         <div class="col-sm-3">
                             <input type="text" id="fld_last_payment_date" name="fld_last_payment_date"
                                    class="form-control"
@@ -167,14 +180,18 @@ echo "Lid:".$_GET['lid']."<br>Pid".$_GET['pid'];
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
                             <input name="pid" type="hidden" id="pid" value="<?php echo $_GET["pid"]; ?>">
                             <input name="type" type="hidden" id="type" value="<?php echo $_GET["type"]; ?>">
-                            <input type="button" value="Back" class="btn btn-secondary" name="BtnBack" id="BtnBack"
+                            <input type="button" value="<?php echo $db->showLangText('Back','Πίσω');?>" class="btn btn-secondary" name="BtnBack" id="BtnBack"
                                    onclick="window.location.assign('installments.php?pid=<?php echo $_GET['pid'] . "&type=" . $_GET['type']; ?>')">
                             <input type="button" name="Save" id="Save"
-                                   value="Save <?php echo $label; ?>"
+                                   value="<?php echo $db->showLangText('Save','Φύλαξη');?>"
                                    class="btn btn-secondary" onclick="submitForm('save')">
                             <input type="button" name="Submit" id="Submit"
-                                   value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update";
-                                   echo $label; ?>"
+                                   value="<?php
+                                   if ($_GET["lid"] == "")
+                                       echo $db->showLangText('Insert & Exit','Δημιουργία και Έξοδος');
+                                   else
+                                       echo $db->showLangText('Update & Exit','Φύλαξη και Έξοδος');
+                                   ?>"
                                    class="btn btn-secondary" onclick="submitForm('exit')">
                             <input type="hidden" name="sub-action" id="sub-action" value="">
                         </div>

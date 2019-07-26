@@ -240,6 +240,10 @@ function template_header()
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/settings/settings_update.php">
                                     <i class="fas fa-screwdriver"></i> System Settings</a>
+
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/tools/backup_db.php">
+                                    <i class="fas fa-database"></i> Backup DB</a>
                             </div>
 
                         </li>

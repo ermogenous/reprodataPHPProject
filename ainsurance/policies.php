@@ -65,11 +65,13 @@ $db->show_header();
                 <div class="card-body">
                     <form action="" method="post">
                             <div class="row">
-                                <label for="" class="col-form-label col-sm-2 pr-0 pl-0">Status</label>
+                                <label for="" class="col-form-label col-sm-2 pr-0 pl-0">
+                                    <?php echo $db->showLangText('Status', 'Κατάσταση Συμβ.');?>
+                                </label>
                                 <div class="col-sm-2">
                                     <select class="form-control" name="srgStatus" id="srgStatus">
                                         <option value="ALL" <?php if ($_POST['srgStatus'] == 'ALL') echo 'selected'; ?>>
-                                            All
+                                            <?php echo $db->showLangText('All', 'ΌΛΑ');?>
                                         </option>
                                         <option value="Outstanding" <?php if ($_POST['srgStatus'] == 'Outstanding') echo 'selected'; ?>>
                                             Outstanding
@@ -83,11 +85,13 @@ $db->show_header();
                                     </select>
                                 </div>
 
-                                <label for="" class="col-form-label col-sm-2 pr-0 pl-0">ProcessStatus</label>
+                                <label for="" class="col-form-label col-sm-2 pr-0 pl-0">
+                                    <?php echo $db->showLangText('ProcessStatus', 'Κατάσταση Λειτουργίας');?>
+                                </label>
                                 <div class="col-sm-2">
                                     <select class="form-control" name="srgProcessStatus" id="srgProcessStatus">
                                         <option value="ALL" <?php if ($_POST['srgProcessStatus'] == 'ALL') echo 'selected'; ?>>
-                                            All
+                                            <?php echo $db->showLangText('All', 'ΌΛΑ');?>
                                         </option>
                                         <option value="New" <?php if ($_POST['srgProcessStatus'] == 'New') echo 'selected'; ?>>
                                             New
@@ -104,7 +108,9 @@ $db->show_header();
                                     </select>
                                 </div>
 
-                                <label for="" class="col-form-label col-sm-1 pr-0 pl-0">Policy</label>
+                                <label for="" class="col-form-label col-sm-1 pr-0 pl-0">
+                                    <?php echo $db->showLangText('Policy', 'Συμβόλαιο');?>
+                                </label>
                                 <div class="col-sm-3">
                                     <input type="text" class="form-control" value="<?php echo $_POST['srgPolicy']; ?>"
                                            name="srgPolicy" id="srgPolicy">
@@ -113,21 +119,26 @@ $db->show_header();
                             </div>
                             <div class="row">
                                 <label for="" class="col-sm-2 pr-0 pl-0"
-                                       title="Search By Name/Surname/ID/Tel">Customer</label>
+                                       title="Search By Name/Surname/ID/Tel">
+                                    <?php echo $db->showLangText('Customer', 'Πελάτης');?>
+                                </label>
                                 <div class="col-sm-3">
                                     <input type="text" class="form-control" value="<?php echo $_POST['srgCustomer']; ?>"
                                            name="srgCustomer" id="srgCustomer">
                                 </div>
 
-                                <label for="" class="col-sm-2 pr-0 pl-0" title="Search By Name">Company</label>
+                                <label for="" class="col-sm-1 pr-0 pl-0" title="Search By Name">
+                                    <?php echo $db->showLangText('Company', 'Εταιρεία');?>
+                                </label>
                                 <div class="col-sm-3">
                                     <input type="text" class="form-control" value="<?php echo $_POST['srgCompany']; ?>"
                                            name="srgCompany" id="srgCompany">
                                 </div>
 
-                                <div class="col-sm-2 text-right p-0">
-                                    <input type="button" value="Reset" class="btn btn-warning" onclick="resetForm();">
-                                    <input type="submit" value="Search"
+                                <div class="col-sm-3 text-right p-0 d-inline-block">
+                                    <input type="button" value="<?php echo $db->showLangText('Reset', 'Καθαρισμός');?>"
+                                           class="btn btn-warning" onclick="resetForm();">
+                                    <input type="submit" value="<?php echo $db->showLangText('Search', 'Αναζήτηση');?>"
                                            class="btn btn-primary" id="Search">
                                 </div>
                                 <script>
@@ -143,7 +154,9 @@ $db->show_header();
                     </form>
                     <div class="row" style="cursor: pointer;" onclick="showHideSearch();">
                         <input type="hidden" id="searchBodyActive" value="1">
-                        <div class="col-sm-12 text-right">Hide Search <i class="fas fa-minus"></i></div>
+                        <div class="col-sm-12 text-right">
+                            <?php echo $db->showLangText('Hide Search', 'Απόκρυψη Αναζήτησης');?> <i class="fas fa-minus"></i>
+                        </div>
                     </div>
                     <script>
                         function showHideSearch() {
@@ -164,7 +177,7 @@ $db->show_header();
 
             <div class="row" onclick="showHideSearch();" id="showSearchRow" style="display: none; cursor: pointer">
                 <div class="col-sm-12 text-right">
-                    Show Search <i class="fas fa-plus"></i>
+                    <?php echo $db->showLangText('Show Search', 'Εμφάνιση Αναζήτησης');?> <i class="fas fa-plus"></i>
                 </div>
             </div>
 
@@ -195,7 +208,7 @@ $db->show_header();
                         <th scope="col"><?php $table->display_order_links($db->showLangText('St.Date', 'Ημ.Έναρξης'), 'inapol_starting_date'); ?></th>
                         <th scope="col">
                             <a href="policy_modify.php">
-                                <i class="fas fa-plus-circle"></i>
+                                <i class="fas fa-plus-circle" title="<?php echo $db->showLangText('Create New Policy', 'Δημιουργία Νέου Συμβολαίου'); ?>"></i>
                             </a>
                         </th>
                     </tr>
@@ -229,34 +242,34 @@ $db->show_header();
 
                                     <a href="policy_change_status.php?lid=<?php echo $row["inapol_policy_ID"]; ?>"><i
                                                 class="fas fa-lock"
-                                                title="<?php echo $db->showLangText('Activate Policy', 'Επεξεργασία Συμβολαίου'); ?>"></i></a>&nbsp
+                                                title="<?php echo $db->showLangText('Activate Policy', 'Ενεργοποίηση Συμβολαίου'); ?>"></i></a>&nbsp
                                 <?php }
                                 if ($row['inapol_status'] == 'Active') { ?>
                                     <a href="policy_modify.php?lid=<?php echo $row["inapol_policy_ID"]; ?>"><i
                                                 class="fas fa-eye"
-                                                title="<?php echo $db->showLangText('View Policy', 'Επεξεργασία Συμβολαίου'); ?>"></i></a>&nbsp
+                                                title="<?php echo $db->showLangText('View Policy', 'Θέαση Συμβολαίου'); ?>"></i></a>&nbsp
                                 <?php }
                                 if ($row['inapol_status'] == 'Cancelled' || $row['inapol_status'] == 'Deleted') { ?>
                                     <a href="policy_modify.php?lid=<?php echo $row["inapol_policy_ID"]; ?>"><i
                                                 class="fas fa-eye"
-                                                title="<?php echo $db->showLangText('View Policy', 'Επεξεργασία Συμβολαίου'); ?>"></i></a>&nbsp
+                                                title="<?php echo $db->showLangText('View Policy', 'Θέαση Συμβολαίου'); ?>"></i></a>&nbsp
 
                                 <?php }
                                 if ($row['inapol_status'] == 'Active' && $row['inapol_replaced_by_ID'] == 0) { ?>
                                     <a href="policy_renewal.php?pid=<?php echo $row["inapol_policy_ID"]; ?>">
                                         <i class="fas fa-retweet"
-                                           title="<?php echo $db->showLangText('Review Policy', 'Επεξεργασία Συμβολαίου'); ?>"></i></a>&nbsp
+                                           title="<?php echo $db->showLangText('Review Policy', 'Ανανέωση Συμβολαίου'); ?>"></i></a>&nbsp
 
                                 <?php } ?>
                                 <?php
                                 if ($row['inapol_status'] == 'Active' && $row['inapol_replaced_by_ID'] == 0) { ?>
                                     <a href="policy_endorsement.php?pid=<?php echo $row["inapol_policy_ID"]; ?>">
                                         <i class="fas fa-wrench"
-                                           title="<?php echo $db->showLangText('Endorse Policy', 'Επεξεργασία Συμβολαίου'); ?>"></i></a>&nbsp
+                                           title="<?php echo $db->showLangText('Endorse Policy', 'Αλλαγή Συμβολαίου'); ?>"></i></a>&nbsp
 
                                     <a href="policy_cancellation.php?pid=<?php echo $row["inapol_policy_ID"]; ?>">
                                         <i class="fas fa-ban"
-                                           title="<?php echo $db->showLangText('Cancel Policy', 'Επεξεργασία Συμβολαίου'); ?>"></i></a>&nbsp
+                                           title="<?php echo $db->showLangText('Cancel Policy', 'Ακύρωση Συμβολαίου'); ?>"></i></a>&nbsp
 
                                 <?php } ?>
                             </td>

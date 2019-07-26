@@ -381,6 +381,23 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
 
+                    <div class="form-group row">
+                        <label for="fld_show_excess_replace" class="col-sm-5 col-form-label">Allow Excess Replace</label>
+                        <div class="col-sm-7">
+                            <select name="fld_show_excess_replace" id="fld_show_excess_replace"
+                                   class="form-control">
+                                <option value="0" <?php if ($data['oqun_show_excess_replace'] == '0')echo 'selected';?>>No</option>
+                                <option value="1" <?php if ($data['oqun_show_excess_replace'] == '1')echo 'selected';?>>Yes</option>
+                            </select>
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_show_excess_replace",
+                                "fieldDataType" => "select"
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+
                     <!-- BUTTONS -->
                     <div class="form-group row">
                         <label for="name" class="col-sm-4 col-form-label"></label>

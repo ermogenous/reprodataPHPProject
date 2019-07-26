@@ -46,11 +46,13 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                 <form name="myForm" id="myForm" method="post" action=""
                     <?php $formValidator->echoFormParameters(); ?> >
                     <div class="alert alert-dark text-center">
-                        <b>Premium</b>
+                        <b><?php echo $db->showLangText('Premium','Ασφάληστρα');?></b>
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_premium" class="col-sm-3 col-form-label">Policy Net Premium</label>
+                        <label for="fld_premium" class="col-sm-3 col-form-label">
+                            <?php echo $db->showLangText('Policy Net Premium','Καθαρά Ασφάληστρα');?>
+                        </label>
                         <div class="col-sm-3">
                             <input type="text" id="fld_premium" name="fld_premium"
                                    class="form-control"
@@ -67,7 +69,9 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                             ?>
                         </div>
 
-                        <label for="fld_commission" class="col-sm-3 col-form-label">Policy Commission</label>
+                        <label for="fld_commission" class="col-sm-3 col-form-label">
+                            <?php echo $db->showLangText('Policy Commission','Προμήθεια');?>
+                        </label>
                         <div class="col-sm-3">
                             <input type="text" name="fld_commission" id="fld_commission"
                                    class="form-control"
@@ -86,7 +90,9 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_fees" class="col-sm-3 col-form-label">Policy Fees</label>
+                        <label for="fld_fees" class="col-sm-3 col-form-label">
+                            <?php echo $db->showLangText('Policy Fees','Δηκαιώματα');?>
+                        </label>
                         <div class="col-sm-3">
                             <input type="text" name="fld_fees" id="fld_fees"
                                    class="form-control"
@@ -104,7 +110,9 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                         </div>
 
 
-                        <label for="fld_stamps" class="col-sm-3 col-form-label">Policy Stamps</label>
+                        <label for="fld_stamps" class="col-sm-3 col-form-label">
+                            <?php echo $db->showLangText('Policy Stamps','Χαρτόσημα');?>
+                        </label>
                         <div class="col-sm-3">
                             <input type="text" name="fld_stamps" id="fld_stamps"
                                    class="form-control"
@@ -123,7 +131,9 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
 
 
                         <?php if (1 == 2) { ?>
-                            <label for="fld_mif" class="col-sm-3 col-form-label">Policy MIF</label>
+                            <label for="fld_mif" class="col-sm-3 col-form-label">
+                                <?php echo $db->showLangText('Policy MIF','Τ.Α.Μ.Ο');?>
+                            </label>
                             <div class="col-sm-3">
                                 <input type="text" id="fld_mif" name="fld_mif"
                                        class="form-control"
@@ -151,7 +161,9 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                     <div class="form-group row">
                         <div class="col-sm-5 col-form-label"></div>
 
-                        <label class="col-sm-4 col-form-label alert alert-success">Policy Gross Premium</label>
+                        <label class="col-sm-4 col-form-label alert alert-success">
+                            <?php echo $db->showLangText('Policy Gross Premium','Συνολικά Ασφάληστρα');?>
+                        </label>
                         <div class="col-sm-3 text-center alert alert-success" id="grossPremium"></div>
                     </div>
 
@@ -173,8 +185,8 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                             } else {
                                 if ($policy->policyData['inapol_process_status'] != 'Cancellation') {
                                     ?>
-                                    <div class="col-5 alert alert-danger">Must
-                                        insert <?php echo $policy->getTypeFullName(); ?></div>
+                                    <div class="col-5 alert alert-danger">
+                                        <?php echo $db->showLangText('Must insert ','Πρέπει να εισαχθεί ');?> <?php echo $policy->getTypeFullName(); ?></div>
                                     <?php
                                 }
                             }

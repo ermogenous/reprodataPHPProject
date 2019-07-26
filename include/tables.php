@@ -140,11 +140,13 @@ else if ($this->type_of_database == 'sybase') {
 }//fetch data
 
 public function show_pages_links() {
+    global $db;
 
 	echo "<div align=\"center\">";
 		
-		echo $this->total_rows." Results. Page ".$this->pages_current." OF ".$this->pages_total;
-		echo " Goto Page - ";
+		echo $this->total_rows." ".$db->showLangText('Results. Page', 'Αποτελέσματα. Σελίδα')." ".$this->pages_current.
+            " ".$db->showLangText('OF', 'απο')." ".$this->pages_total;
+		echo " ".$db->showLangText('Goto Page', 'Πήγαινε Σελίδα')." - ";
 		
 		if ($this->pages_current != 1) 
 			echo "<a href=\"?tables_current=".($this->pages_current - 1)."&tables_order=".$this->order."&tables_order_type=".$this->order_by."\"><<<</a>&nbsp;&nbsp;";

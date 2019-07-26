@@ -78,7 +78,9 @@ if ($_GET['pid'] > 0) {
 
     $policy = new Policy($_GET['pid']);
     if ($policy->getTotalItems() == 0 && $policy->policyData['inapol_process_status'] != 'Cancellation') {
-        $db->generateAlertError('Must Insert Vehicle First');
+        $db->generateAlertError(
+                $db->showLangText('Must Insert Vehicle First','Πρέπει να εισαχθεί αυτοκίνητο πρώτα')
+        );
     }
 
 
@@ -100,11 +102,11 @@ if ($_GET['pid'] > 0) {
                 <div class="col-12" style="height: 25px;"></div>
                 <?php if ($policy->policyData['inapol_status'] == 'Outstanding') { ?>
                     <div class="col-3">
-                        <input type="button" value="Calculate Premium" class="btn btn-primary"
+                        <input type="button" value="<?php echo $db->showLangText('Calculate Premium','Υπολογισμός Ασφαλίστρων');?>" class="btn btn-primary"
                                onclick="calculatePremium();">
                     </div>
                     <div class="col-2">
-                        <input type="button" value="Clear All" class="btn btn-danger" onclick="clearAll();">
+                        <input type="button" value="<?php echo $db->showLangText('Clear All','Καθαρισμός');?>" class="btn btn-danger" onclick="clearAll();">
                     </div>
                     <div class="col-2"></div>
                     <div class="col-1"></div>
@@ -113,13 +115,19 @@ if ($_GET['pid'] > 0) {
                     <div class="col-2"></div>
                     <script>
                         function calculatePremium() {
-                            if (confirm('Are you sure you want to calculate? This will replace existing installments amount')) {
+                            if (confirm(
+                                <?php echo $db->showLangText("'Are you sure you want to calculate? This will replace existing installments amount'",
+                                    "'Είστε βέβαιοι ότι θέλετε να υπολογίσετε; Αυτό θα αντικαταστήσει το ποσό των υφιστάμενων δόσεων'");?>
+                            )) {
                                 window.location.assign('?pid=<?php echo $_GET['pid'];?>&action=calculate');
                             }
                         }
 
                         function clearAll() {
-                            if (confirm('Are you sure you want to delete all installments?')) {
+                            if (confirm(
+                                <?php echo $db->showLangText("'Are you sure you want to delete all installments?'",
+                                    "'Είστε βέβαιοι ότι θέλετε να διαγράψετε όλες τις δόσεις;'");?>
+                            )) {
                                 window.location.assign('?pid=<?php echo $_GET['pid'];?>&action=clearall');
                             }
                         }
@@ -134,12 +142,11 @@ if ($_GET['pid'] > 0) {
                         <table class="table table-hover">
                             <thead class="alert alert-success">
                             <tr>
-                                <th scope="col"><?php $table->display_order_links('ID', 'inapi_policy_installments_ID'); ?></th>
-                                <th scope="col"><?php $table->display_order_links('Doc.Date', 'inapi_document_date'); ?></th>
-                                <th scope="col"><?php $table->display_order_links('Amount', 'inapi_amount'); ?></th>
-                                <th scope="col"><?php $table->display_order_links('Paid', 'inapi_paid_amount'); ?></th>
-                                <th scope="col"><?php $table->display_order_links('Commission/Paid', 'inapi_commission_amount'); ?></th>
-                                <th scope="col"><?php $table->display_order_links('Status', 'inapi_paid_status'); ?></th>
+                                <th scope="col"><?php $table->display_order_links($db->showLangText('Doc.Date','Ημερομηνία'), 'inapi_document_date'); ?></th>
+                                <th scope="col"><?php $table->display_order_links($db->showLangText('Amount','Ποσό'), 'inapi_amount'); ?></th>
+                                <th scope="col"><?php $table->display_order_links($db->showLangText('Paid','Πληρωμένο'), 'inapi_paid_amount'); ?></th>
+                                <th scope="col"><?php $table->display_order_links($db->showLangText('Commission/Paid','Προμήθεια/Πληρωμένη'), 'inapi_commission_amount'); ?></th>
+                                <th scope="col"><?php $table->display_order_links($db->showLangText('Status','Κατάσταση'), 'inapi_paid_status'); ?></th>
                                 <th scope="col">
                                     <?php if ($policy->policyData['inapol_status'] == 'Outstanding' && $policy->policyData['inapol_process_status'] != 'Endorsement') { ?>
                                         <a href="installment_modify.php?pid=<?php echo $_GET['pid'] ?>">
@@ -181,12 +188,16 @@ if ($_GET['pid'] > 0) {
 
                                 //check if unallocated entry exists
                                 if ($endChanges['unallocated']['amount'] != 0) {
-                                    $unallocated = '<span style="color:red;">Unallocated Entry will be created with the amount: ' . $endChanges['unallocated']['amount'] . "</span>";
+                                    $unallocated = '<span style="color:red;"
+                                        >'.$db->showLangText('Unallocated Entry will be created with the amount: ',
+                                            'Μη κατανεμημένη εγγραφή θα δημιουργηθεί με το ποσό:')
+                                        . $endChanges['unallocated']['amount'] . "</span>";
                                 }
                                 if ($endChanges['new']['amount'] != 0 || $endChanges['new']['commission'] != 0) {
-                                    $newEntry = '<br><span style="color:red;">
-                                                    New entry will be created with the Amount: ' . $endChanges['new']['amount'] .
-                                        " and Commission: " . $endChanges['new']['commission'] . "</span>";
+                                    $newEntry = '<br><span style="color:red;"
+                                        >'.$db->showLangText('New entry will be created with the Amount: ',
+                                            'Θα δημιουργηθεί νέα εγγραφή με το ποσό: ') . $endChanges['new']['amount'] .
+                                        $db->showLangText(' and Commission: ', ' και προμήθεια'). $endChanges['new']['commission'] . "</span>";
                                 }
                             }
 
@@ -200,7 +211,6 @@ if ($_GET['pid'] > 0) {
                                 $commPaidSum += $row['inapi_paid_commission_amount'];
                                 ?>
                                 <tr onclick="editLine(<?php echo $row["inapi_policy_installments_ID"] . "," . $_GET['pid'] . ",'" . $_GET['type'] . "'"; ?>);">
-                                    <th scope="row"><?php echo $row["inapi_policy_installments_ID"]; ?></th>
                                     <td><?php echo $db->convert_date_format($row["inapi_document_date"], 'yyyy-mm-dd', 'dd/mm/yyyy'); ?></td>
                                     <td><?php echo $row["inapi_amount"] . $amountAddMinus[$row["inapi_policy_installments_ID"]]; ?></td>
                                     <td><?php echo $row["inapi_paid_amount"]; ?></td>
@@ -209,11 +219,14 @@ if ($_GET['pid'] > 0) {
                                     <td>
                                         <?php if ($policy->policyData['inapol_status'] == 'Outstanding' && $policy->policyData['inapol_process_status'] != 'Endorsement') { ?>
                                             <a href="installment_modify.php?lid=<?php echo $row["inapi_policy_installments_ID"] . "&pid=" . $_GET['pid']; ?>"><i
-                                                        class="fas fa-edit"></i></a>&nbsp
+                                                        class="fas fa-edit" title="<?php echo $db->showLangText('Modify Installment','Επεξεργασία Δόσης');?>"></i></a>&nbsp
                                             <a href="installment_delete.php?lid=<?php echo $row["inapi_policy_installments_ID"] . "&pid=" . $_GET['pid']; ?>"
                                                onclick="ignoreEdit = true;
-                               return confirm('Are you sure you want to delete this policy installment?');"><i
-                                                        class="fas fa-minus-circle"></i></a>
+                               return confirm(
+                                   <?php echo $db->showLangText("'Are you sure you want to delete this policy installment?'",
+                                       "'Είστε βέβαιοι ότι θέλετε να διαγράψετε αυτήν την δόση'");?>
+                                   );"><i
+                                                        class="fas fa-minus-circle" title="<?php echo $db->showLangText('Delete Installment','Διαγραφή Δόσης');?>"></i></a>
                                         <?php } ?>
                                     </td>
                                 </tr>
@@ -237,7 +250,7 @@ if ($_GET['pid'] > 0) {
                 <div class="row">
                     <div class="col-12"><?php echo $unallocated . $newEntry; ?></div>
                     <div class="col-4">
-                        Generate Recursive Installments
+                        <?php echo $db->showLangText('Generate Recursive Installments','Δημιούργησε Συνεχόμενες Δόσεις');?>
                     </div>
                     <div class="col-2">
                         <select name="genRescursiveAmount" id="genRescursiveAmount"
@@ -250,7 +263,7 @@ if ($_GET['pid'] > 0) {
                         </select>
                     </div>
                     <div class="col-6">
-                        <input type="button" value="Generate" class="btn btn-secondary"
+                        <input type="button" value="<?php echo $db->showLangText('Generate', 'Δημιουργία');?>" class="btn btn-secondary"
                                onclick="generateRecursive(<?php echo $_GET['pid']; ?>);">
                     </div>
                 </div>
@@ -260,19 +273,19 @@ if ($_GET['pid'] > 0) {
                 <div class="row">
 
                     <div class="col-4">
-                        Generate Divided Installments
+                        <?php echo $db->showLangText('Generate Divided Installments','Δημιούργησε Διαιρούμενες Δόσεις');?>
                     </div>
                     <div class="col-3">
                         <select name="genDividedAmount" id="genDividedAmount"
                                 class="form-control">
-                            <option value="12">Monthly - 12</option>
-                            <option value="4">Quarterly - 4</option>
-                            <option value="2">Semi-YEarly - 2</option>
-                            <option value="1">Yearly - 1</option>
+                            <option value="12"><?php echo $db->showLangText('Monthly','Μηνιαία');?> - 12</option>
+                            <option value="4"><?php echo $db->showLangText('Quarterly','Τριμηνιαία');?> - 4</option>
+                            <option value="2"><?php echo $db->showLangText('Semi-Yearly','Εξαμηνιαία');?> - 2</option>
+                            <option value="1"><?php echo $db->showLangText('Yearly','Ετήσια');?> - 1</option>
                         </select>
                     </div>
                     <div class="col-5">
-                        <input type="button" value="Generate" class="btn btn-secondary"
+                        <input type="button" value="<?php echo $db->showLangText('Generate', 'Δημιουργία');?>" class="btn btn-secondary"
                                onclick="generateDivided(<?php echo $_GET['pid']; ?>);">
                     </div>
 
