@@ -244,6 +244,10 @@ function template_header()
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/tools/backup_db.php">
                                     <i class="fas fa-database"></i> Backup DB</a>
+
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/tools/log_file_view.php">
+                                    <i class="fas fa-exclamation-triangle"></i> View Log File</a>
                             </div>
 
                         </li>

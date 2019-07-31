@@ -28,6 +28,7 @@ $db->show_header();
                     <td align="left"><?php $table->display_order_links('Name', 'usr_name'); ?></td>
                     <td align="center"><?php $table->display_order_links('Status', 'inaund_status'); ?></td>
                     <td align="center"><?php $table->display_order_links('V.Level', 'inaund_vertical_level'); ?></td>
+                    <td align="center">Commissions</td>
                     <td colspan="2" align="center"><a href="underwriters_modify.php">New</a></td>
                 </tr>
                 </thead>
@@ -41,6 +42,11 @@ $db->show_header();
                         <td align="left"><?php echo $row["usr_name"]; ?></td>
                         <td align="center"><?php echo $row["inaund_status"]; ?></td>
                         <td align="center"><?php echo $row["inaund_vertical_level"]; ?></td>
+                        <td align="center">
+                            <a href="underwriter_companies.php?lid=<?php echo $row['inaund_underwriter_ID'];?>">
+                                <i class="fas fa-stream"></i>
+                            </a>
+                        </td>
                         <td width="59" align="center"><a
                                 href="underwriters_modify.php?lid=<?php echo $row["inaund_underwriter_ID"]; ?>">Modify</a>
                         </td>

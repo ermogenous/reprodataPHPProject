@@ -1694,11 +1694,15 @@ class Main
 
     }
 
-    function backup_tables($host, $user, $pass, $name, $tables_to_use = '*')
+    function backup_tables($host, $user, $pass, $dbName, $tables_to_use = '*')
     {
 
         $link = mysqli_connect($host, $user, $pass);
-        mysqli_select_db($name, $link);
+        if ($link->errno) {
+            echo "Error Connecting to Database";
+            exit();
+        }
+        mysqli_select_db($link,$dbName);
 
         //get all of the tables
         if ($tables_to_use == '*') {
@@ -1710,8 +1714,8 @@ class Main
         } else {
             //if starts with - then use all tables except the ones with - in front of the table name
             //must always tables_to_use end with a comma,
+            $tables = array();
             if (substr($tables_to_use, 0, 1) == '-') {
-                $tables = array();
                 $result = $this->db_handle->query(" SHOW FULL TABLES WHERE table_type <> 'View'");
                 while ($row = mysqli_fetch_row($result)) {
                     if (strpos($tables_to_use, '-' . $row[0] . ",") === false) {
@@ -1738,7 +1742,7 @@ class Main
                     $return .= 'INSERT INTO ' . $table . ' VALUES(';
                     for ($j = 0; $j < $num_fields; $j++) {
                         $row[$j] = addslashes($row[$j]);
-                        $row[$j] = ereg_replace("\n", "\\n", $row[$j]);
+                        $row[$j] = str_replace("\n", "\\n", $row[$j]);
                         if (isset($row[$j])) {
                             $return .= '"' . $row[$j] . '"';
                         } else {

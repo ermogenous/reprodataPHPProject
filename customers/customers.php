@@ -6,11 +6,10 @@ $db = new Main(1, 'UTF-8');
 $db->admin_title = "Customers";
 //$db->enable_rxjs_lite();
 $db->enable_jquery_ui();
-
 $db->show_header();
 
 $table = new draw_table('customers', 'cst_customer_ID', 'ASC');
-$table->extras = "1=1 ".$db->CustomersWhere();
+$table->extras = $db->CustomersWhere();
 if ($_POST['search'] == 'search') {
     if ($_POST['search_field-id'] > 0){
         $table->extras .= " AND cst_customer_ID = ".$_POST['search_field-id'];
@@ -33,7 +32,6 @@ if ($_POST['search'] == 'search') {
         cst_mobile_2 LIKE '%".$_POST['search_field']."%')";
     }
 }
-
 
 $table->generate_data();
 //echo $table->sql;

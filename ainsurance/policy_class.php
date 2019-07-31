@@ -21,6 +21,7 @@ class Policy
     public $commission;
     private $validForActive = false;
     private $totalItems = 0;
+    public $companyCommission;//holds the commission % based on the underwriter/type/company
 
     public $error = false;
     public $errorDescription;
@@ -38,6 +39,17 @@ class Policy
           inapol_underwriter_ID ' . $this->getAgentWhereClauseSql() . '
           AND inapol_policy_ID = ' . $policyID);
         $this->policyData = $db->fetch_assoc($result);
+
+        //find the underwriter company commission record
+        $sql = "SELECT
+        *
+        FROM
+        ina_underwriter_companies
+        WHERE inaunc_underwriter_ID = ".$this->policyData['inapol_underwriter_ID']."
+        AND inaunc_insurance_company_ID = ".$this->policyData['inapol_insurance_company_ID'];
+        $commData = $db->query_fetch($sql);
+        $typeCode = strtolower($this->policyData['inapol_type_code']);
+        $this->companyCommission = $commData['inaunc_commission_'.$typeCode];
 
         //if no record then redirect to policies for security
         if ($db->num_rows($result) < 1) {

@@ -70,7 +70,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                         </div>
 
                         <label for="fld_commission" class="col-sm-3 col-form-label">
-                            <?php echo $db->showLangText('Policy Commission','Προμήθεια');?>
+                            <?php echo $db->showLangText('Policy Commission','Προμήθεια')." ".$policy->companyCommission."%";?>
                         </label>
                         <div class="col-sm-3">
                             <input type="text" name="fld_commission" id="fld_commission"

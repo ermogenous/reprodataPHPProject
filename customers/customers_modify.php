@@ -13,6 +13,10 @@ if ($_POST["action"] == "insert") {
 
     $_POST['fld_for_user_group_ID'] = $db->user_data['usr_users_groups_ID'];
     $_POST['fld_user_ID'] = $db->user_data['usr_users_ID'];
+    $_POST['fld_birthdate'] = $db->convertDateToUS($_POST['fld_birthdate']);
+    if ($_POST['fld_birthdate'] == ''){
+        $_POST['fld_birthdate'] = '0000-00-00';
+    }
 
     $db->db_tool_insert_row('customers', $_POST, 'fld_', 0, 'cst_');
 
@@ -33,6 +37,11 @@ if ($_POST["action"] == "insert") {
     $db->check_restriction_area('update');
 
     $db->start_transaction();
+
+    $_POST['fld_birthdate'] = $db->convertDateToUS($_POST['fld_birthdate']);
+    if ($_POST['fld_birthdate'] == ''){
+        $_POST['fld_birthdate'] = '0000-00-00';
+    }
 
     $db->db_tool_update_row('customers', $_POST, "`cst_customer_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'cst_');
@@ -62,7 +71,7 @@ $balance = new aInsuranceBalance($_GET['lid']);
 $formValidator = new customFormValidator();
 $formValidator->setFormName('myForm');
 
-
+$db->enable_jquery_ui();
 $db->show_header();
 ?>
 <div class="container">
@@ -310,6 +319,25 @@ $db->show_header();
                                         'fieldDataType' => 'select',
                                         'required' => false,
                                         'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <label for="fld_birthdate" class="col-sm-4 col-form-label">Birthdate</label>
+                            <div class="col-sm-8">
+                                <input name="fld_birthdate" type="text" id="fld_birthdate"
+                                       class="form-control"/>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_birthdate',
+                                        'fieldDataType' => 'date',
+                                        'required' => false,
+                                        'invalidTextAutoGenerate' => true,
+                                        'enableDatePicker' => true,
+                                        'datePickerValue' => $db->convertDateToEU($data['cst_birthdate'])
                                     ]);
                                 ?>
                             </div>

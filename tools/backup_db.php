@@ -14,6 +14,9 @@ $db->admin_title = "Backup DB";
 
 $db->show_header();
 
+
+echo $db->backup_tables($main['db_host'], $main['db_username'], $main['db_password'], $main['db_database']);
+
 ?>
 
 

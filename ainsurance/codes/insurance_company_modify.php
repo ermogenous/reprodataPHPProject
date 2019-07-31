@@ -46,6 +46,7 @@ $db->show_header();
 
 include('../../scripts/form_validator_class.php');
 $formValidator = new customFormValidator();
+$formValidator->showErrorList();
 ?>
 <div class="container">
     <div class="row">
@@ -328,7 +329,7 @@ $formValidator = new customFormValidator();
                         <input type="button" value="Back" class="btn btn-secondary"
                                onclick="window.location.assign('insurance_companies.php')" >
                         <input type="submit" name="Submit" id="Submit" value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Insurance Company"
-                               class="btn btn-secondary" onclick="submitForm()">
+                               class="btn btn-secondary">
                     </div>
                 </div>
 
@@ -337,17 +338,7 @@ $formValidator = new customFormValidator();
         <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
     </div>
 </div>
-<script>
-    function submitForm(){
-        frm = document.getElementById('myForm');
-        if (frm.checkValidity() === false){
-
-        }
-        else {
-            document.getElementById('Submit').disabled = true
-        }
-    }
-</script>
 <?php
+$formValidator->output();
 $db->show_footer();
 ?>

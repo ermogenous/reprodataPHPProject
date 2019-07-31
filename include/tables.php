@@ -62,7 +62,7 @@ public function generate_data() {
 }
 
 public function generate_data_mysql() {
-global $main,$db;	
+global $main,$db;
 
 	$sql = "SELECT ".$this->select_section." ".$this->extra_select_section." FROM ".$this->table." ".$this->extra_from_section;
 	if ($this->extras != "") {
@@ -76,14 +76,14 @@ global $main,$db;
 		$sql .= " ORDER BY ".$this->order." ".$this->order_by." ";
 	}
 	$this->sql = $sql;
-	
+
 	$result = $db->query($sql);
 	$this->total_rows = $db->num_rows($result);
-	
+
 	$this->pages_total = ceil($this->total_rows / $this->per_page);
 	
-	$this->sql .= "LIMIT ".(($this->pages_current -1) * $this->per_page).", ".$this->per_page;
-	
+	$this->sql .= " LIMIT ".(($this->pages_current -1) * $this->per_page).", ".$this->per_page;
+
 	$this->holder = $db->query($this->sql);
 	
 

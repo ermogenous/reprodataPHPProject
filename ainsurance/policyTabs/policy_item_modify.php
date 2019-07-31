@@ -19,6 +19,7 @@ if ($_POST["action"] == "insert") {
     $db->working_section = 'AInsurance Policy Item Insert';
     $_POST['fld_policy_ID'] = $_POST['pid'];
     $_POST['fld_type'] = $_POST['type'];
+    $_POST['fld_mb_birth_date'] = $db->convertDateToUS($_POST['fld_mb_birth_date']);
     $db->db_tool_insert_row('ina_policy_items', $_POST, 'fld_', 0, 'inapit_');
 
     //update the policy
@@ -40,6 +41,8 @@ if ($_POST["action"] == "insert") {
     $db->check_restriction_area('update');
     $db->working_section = 'AInsurance Policy Item Modify';
     $db->start_transaction();
+
+    $_POST['fld_mb_birth_date'] = $db->convertDateToUS($_POST['fld_mb_birth_date']);
 
     $db->db_tool_update_row('ina_policy_items', $_POST, "`inapit_policy_item_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'inapit_');
