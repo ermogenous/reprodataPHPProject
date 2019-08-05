@@ -259,7 +259,7 @@ $db->show_header();
                                         + underwriterSelected + '&inscompany=' + insuranceCompanySelected))
                                         .subscribe((response) => {
                                                 data = response;
-                                                console.log(data);
+                                                //console.log(data);
                                             },
                                             () => {
                                             }
@@ -370,7 +370,7 @@ $db->show_header();
                             };
                         }
                         $('#fld_policy_number').keyup(delay(function (e) {
-                            console.log('Time elapsed!', this.value);
+                            //console.log('Time elapsed!', this.value);
                             let policyNumber = this.value;
                             let policyID = '<?php echo $_GET['lid'];?>';
 
@@ -677,7 +677,7 @@ $db->show_header();
                                    onclick="window.location.assign('policies.php')">
 
 
-                            <input type="submit" value="<?php echo $db->showLangText('Save Policy','Δημιουργία Συμβόλαιου');?>"
+                            <input type="submit" value="<?php echo $db->showLangText('Save Policy','Αποθήκευση Συμβόλαιου');?>"
                                    class="btn btn-secondary" id="Save"
                                    onclick="submitForm('save');">
                             <input type="submit"

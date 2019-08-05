@@ -34,6 +34,7 @@ $db->show_header();
                     <td align="left"><?php $table->display_order_links('IP', 'lgf_ip'); ?></td>
                     <td align="center"><?php $table->display_order_links('Date/Time', 'lgf_date_time'); ?></td>
                     <td align="center"><?php $table->display_order_links('V.Level', 'inaund_vertical_level'); ?></td>
+                    <td align="center"><?php $table->display_order_links('Table', 'lgf_table_name'); ?></td>
                     <td colspan="2" align="center"></td>
                 </tr>
                 </thead>
@@ -47,6 +48,7 @@ $db->show_header();
                         <td align="left"><?php echo $row["lgf_ip"]; ?></td>
                         <td align="center"><?php echo $row["lgf_date_time"]; ?></td>
                         <td align="center"><?php echo $row["inaund_vertical_level"]; ?></td>
+                        <td align="center"><?php echo $row["lgf_table_name"]; ?></td>
                         <td align="center">
                             <a href="log_file_view_record.php?lid=<?php echo $row['lgf_log_file_ID'];?>">
                                 <i class="fas fa-stream"></i>

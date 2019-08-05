@@ -71,6 +71,9 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
 
                         <label for="fld_commission" class="col-sm-3 col-form-label">
                             <?php echo $db->showLangText('Policy Commission','Προμήθεια')." ".$policy->companyCommission."%";?>
+                            <i class="fas fa-calculator" style="cursor: pointer;" onclick="calculateCommission();"></i>
+                            <input type="hidden" value="<?php echo $policy->companyCommission;?>"
+                                   id="commissionPercent" name="commissionPercent">
                         </label>
                         <div class="col-sm-3">
                             <input type="text" name="fld_commission" id="fld_commission"
@@ -87,6 +90,28 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                                 ]);
                             ?>
                         </div>
+                        <script>
+                            function calculateCommission(){
+                                let premium = $('#fld_premium').val() * 1;
+                                let fees = $('#fld_fees').val() * 1;
+                                let commPercent = $('#commissionPercent').val() * 1;
+                                let commCalculation = '<?php echo $policy->commissionCalculation;?>';
+                                let commission = 0;
+
+                                if (commCalculation == 'commNetPrem'){
+                                    commission = (premium * commPercent) / 100;
+                                }
+                                else if (commCalculation == 'commNetPremFees'){
+                                    commission = ((premium + fees) * commPercent) / 100;
+                                }
+                                else {
+                                    commission = (premium * commPercent) / 100;
+                                }
+                                commission = commission.toFixed(2);
+                                $('#fld_commission').val(commission);
+
+                            }
+                        </script>
                     </div>
 
                     <div class="form-group row">
@@ -227,6 +252,11 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
             //every time this page loads reload the premium tab
             parent.window.frames['installmentsTab'].location.reload(true);
             <?php } ?>
+
+            //check if commission field is empty or zero then calculate
+            if ($('#fld_commission').val() == ''){
+                calculateCommission();
+            }
         });
 
 

@@ -88,26 +88,37 @@ function template_header()
                                    href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations_modify.php?quotation_type=2">
                                     <i class="fas fa-truck-moving"></i> New Marine Cargo</a>
                             <?php } ?>
+
                             <?php if ($db->user_data["usr_user_rights"] <= 2) { ?>
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/dynamic_quotations/approvals.php">
                                     <i class="far fa-thumbs-up"></i> Approvals</a>
                             <?php } ?>
+
                             <?php if ($db->user_data["usr_user_rights"] == 0) { ?>
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations/index.php">
                                     <i class="fas fa-cogs"></i> Administration</a>
                             <?php } ?>
+
                             <?php if ($db->user_data["usr_user_rights"] <= 2) { ?>
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations/underwriters.php">
                                     <i class="fas fa-cogs"></i> Underwriters</a>
                             <?php } ?>
+
                             <?php if ($db->user_data["usr_user_rights"] <= 2) { ?>
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/send_auto_emails/send_auto_emails.php">
                                     <i class="fas fa-envelope"></i> AutoEmails</a>
                             <?php } ?>
+
+                            <?php if ($db->user_data["usr_user_rights"] <= 2) { ?>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/dynamic_quotations/mc_marine_cargo/bordereaux.php">
+                                    <i class="fas fa-signal"></i> Bordereaux</a>
+                            <?php } ?>
+
                         </div>
                     </li>
 
@@ -182,6 +193,14 @@ function template_header()
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/settings/settings_update.php">
                                     <i class="fas fa-screwdriver"></i> System Settings</a>
+
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/tools/backup_db.php">
+                                    <i class="fas fa-database"></i> Backup DB</a>
+
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/tools/log_file_view.php">
+                                    <i class="fas fa-exclamation-triangle"></i> View Log File</a>
                             </div>
 
                         </li>

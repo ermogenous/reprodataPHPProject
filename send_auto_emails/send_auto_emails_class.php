@@ -320,6 +320,13 @@ class createNewAutoEmail
 
         $newID = 0;
         if ($this->error == false) {
+            //fixes
+            if ($newData['sae_primary_serial'] == ''){
+                unset($newData['primary_serial']);
+            }
+            if ($newData['sae_secondary_serial'] == ''){
+                unset($newData['secondary_serial']);
+            }
             $newID = $db->db_tool_insert_row('send_auto_emails', $newData, '', 1, 'sae_');
         }
 

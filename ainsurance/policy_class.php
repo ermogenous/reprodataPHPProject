@@ -22,6 +22,7 @@ class Policy
     private $validForActive = false;
     private $totalItems = 0;
     public $companyCommission;//holds the commission % based on the underwriter/type/company
+    public $commissionCalculation;
 
     public $error = false;
     public $errorDescription;
@@ -50,6 +51,7 @@ class Policy
         $commData = $db->query_fetch($sql);
         $typeCode = strtolower($this->policyData['inapol_type_code']);
         $this->companyCommission = $commData['inaunc_commission_'.$typeCode];
+        $this->commissionCalculation = $commData['inaunc_commission_calculation'];
 
         //if no record then redirect to policies for security
         if ($db->num_rows($result) < 1) {

@@ -27,7 +27,6 @@
 include("common.php");
 require_once($main["local_url"] . '/vendor/autoload.php');
 
-
 class Main
 {
 
@@ -594,10 +593,11 @@ class Main
         } else {
             $result = mysqli_query($this->db_handle, $sql)
             or die(
-            $this->error($sql . "<hr>" . $this->db_handle->error)
+                $this->error($sql . "<hr>" . $this->db_handle->error)
             );
             if ($this->db_handle->errno != 0) {
                 $this->error($sql . "<hr>" . $this->db_handle->error);
+
             }
 
             if (substr($sql, 0, 6) == 'SELECT') {
@@ -722,7 +722,6 @@ class Main
 
     public function error($string)
     {
-
         //if transaction is started then need to rollback
         if ($this->started_transaction == 1) {
             $this->rollback_transaction();
@@ -1760,8 +1759,8 @@ class Main
 
         //save file
         //$handle = fopen('db-backup-'.time().'-'.(md5(implode(',',$tables))).'.sql','w+');
-        $filename = 'db-backup-' . time();
-        $handle = fopen($filename . '.sql', 'w+');
+        $filename = 'db-backup-' . time().'.sql';
+        $handle = fopen($filename, 'w+');
         fwrite($handle, $return);
         fclose($handle);
         return $filename;
