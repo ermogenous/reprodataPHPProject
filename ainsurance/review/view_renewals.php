@@ -36,13 +36,15 @@ $db->show_header();
                     <?php $formValidator->echoFormParameters(); ?>>
                     <div class="row">
                         <div class="col-12 alert alert-primary text-center">
-                            <strong>Review Policies</strong>
+                            <strong>
+                                <?php echo $db->showLangText('Review Policies','Ανανέωσης Συμβολαίων');?>
+                            </strong>
                         </div>
                     </div>
                     <div class="row d-none d-md-block" style="height: 35px;"></div>
 
                     <div class="row">
-                        <label for="company" class="col-sm-2">Company</label>
+                        <label for="company" class="col-sm-2"><?php echo $db->showLangText('Company','Εταιρεία');?></label>
                         <div class="col-sm-3">
                             <select class="form-control" id="company" name="company">
                                 <option value="ALL">ALL</option>
@@ -77,7 +79,7 @@ $db->show_header();
                                 ]);
                             ?>
                         </div>
-                        <div class="col-sm-2">As At Date</div>
+                        <div class="col-sm-2"><?php echo $db->showLangText('As At Date','Μέχρι Ημερομηνία');?></div>
                         <div class="col-sm-3">
                             <input type="text" id="asAtDate" name="asAtDate"
                                    class="form-control" value="">
@@ -120,7 +122,9 @@ $db->show_header();
                     <!-- RESULTS --------------------------------------------------------------------------------------------RESULTS-->
                     <div class="row">
                         <div class="col-12 alert alert-primary text-center">
-                            <strong>Results</strong>
+                            <strong>
+                                <?php echo $db->showLangText('Results','Αποτελέσματα');?>
+                            </strong>
                         </div>
                     </div>
 
@@ -134,11 +138,11 @@ $db->show_header();
                                             <input type="checkbox" class="form-control" id="revertAllCheckBoxes"
                                                    onchange="revertAll();">
                                         </th>
-                                        <th scope="col">Policy</th>
-                                        <th scope="col">Customer</th>
-                                        <th scope="col">Item</th>
-                                        <th scope="col">Expiry</th>
-                                        <th scope="col">Balance</th>
+                                        <th scope="col"><?php echo $db->showLangText('Policy','Συμβόλαιο');?></th>
+                                        <th scope="col"><?php echo $db->showLangText('Customer','Πελάτης');?></th>
+                                        <th scope="col"><?php echo $db->showLangText('Item','Καλυμμένος Κίνδυνος');?></th>
+                                        <th scope="col"><?php echo $db->showLangText('Expiry','Λήξη');?></th>
+                                        <th scope="col"><?php echo $db->showLangText('Balance','Υπόλοιπο');?></th>
                                         <th scope="col"></th>
                                     </tr>
                                     </thead>
@@ -238,9 +242,9 @@ $db->show_header();
                                     <?php } ?>
                                         <tr>
                                             <td colspan="7">
-                                                <input type="button" value="Renew Selected" id="btnReviewSelected"
+                                                <input type="button" value="<?php echo $db->showLangText('Renew Selected','Ανανέωσε Επιλεγμένα');?>" id="btnReviewSelected"
                                                        class="btn btn-primary" onclick="renewSelected();">
-                                                <input type="button" value="Lapse Selected" id="btnLapseSelected"
+                                                <input type="button" value="<?php echo $db->showLangText('Lapse Selected','Lapse Επιλεγμένα');?>" id="btnLapseSelected"
                                                        class="btn btn-danger">
                                             </td>
                                         </tr>

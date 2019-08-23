@@ -119,7 +119,7 @@ function template_header()
                         </li>
                     <?php } ?>
 
-                    <?php if ($db->get_setting('ac_advanced_accounts_enable') == 1) { ?>
+                    <?php if ($db->get_setting('ac_advanced_accounts_enable') == 1 ) { ?>
                         <!-- Accounts -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"

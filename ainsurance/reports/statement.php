@@ -34,20 +34,22 @@ $db->show_header();
                     <?php $formValidator->echoFormParameters(); ?>>
                     <div class="row">
                         <div class="col-12 alert alert-primary text-center">
-                            <strong>Production Report</strong>
+                            <strong>
+                                <?php echo $db->showLangText('Statement','Δήλωση Λογαριασμού');?>
+                            </strong>
                         </div>
                     </div>
                     <div class="row d-none d-md-block" style="height: 35px;"></div>
 
                     <div class="row">
-                        <label for="statementFor" class="col-sm-3">Statement For:</label>
+                        <label for="statementFor" class="col-sm-3"><?php echo $db->showLangText('Statement For','Δήλωση Λογαριασμού για');?>:</label>
                         <div class="col-sm-3">
                             <select class="form-control" id="statementFor" name="statementFor">
                                 <option value="Customer"
-                                    <?php if ($_POST['statementFor'] == 'Customer') echo 'selected'; ?>>Customer
+                                    <?php if ($_POST['statementFor'] == 'Customer') echo 'selected'; ?>><?php echo $db->showLangText('Customer','Πελάτη');?>
                                 </option>
                                 <option value="Policy"
-                                    <?php if ($_POST['statementFor'] == 'Policy') echo 'selected'; ?>>Policy
+                                    <?php if ($_POST['statementFor'] == 'Policy') echo 'selected'; ?>><?php echo $db->showLangText('Policy','Συμβόλαιο');?>
                                 </option>
                             </select>
                             <?php
@@ -77,7 +79,7 @@ $db->show_header();
                     </div>
 
                     <div class="row">
-                        <label for="documentDateFrom" class="col-sm-3">Document Date From:</label>
+                        <label for="documentDateFrom" class="col-sm-3"><?php echo $db->showLangText('Document Date From','Ημερομηνία Πράξης από');?>:</label>
                         <div class="col-sm-2">
                             <input type="text" id="documentDateFrom" name="documentDateFrom"
                                    class="form-control" value="">
@@ -94,7 +96,7 @@ $db->show_header();
                             ?>
                         </div>
 
-                        <label for="documentDateTo" class="col-sm-1 text-right">To:</label>
+                        <label for="documentDateTo" class="col-sm-1 text-right"><?php echo $db->showLangText('To','Μέχρι');?>:</label>
                         <div class="col-sm-2">
                             <input type="text" id="documentDateTo" name="documentDateTo"
                                    class="form-control" value="">
@@ -121,7 +123,7 @@ $db->show_header();
                             <input name="action" type="hidden" id="action"
                                    value="search">
                             <input type="submit"
-                                   value="Search"
+                                   value="<?php echo $db->showLangText('Search','Προβολή');?>"
                                    class="btn btn-secondary" id="Submit">
                         </div>
                     </div>
@@ -135,7 +137,9 @@ $db->show_header();
                     <!-- RESULTS --------------------------------------------------------------------------------------------RESULTS-->
                     <div class="row">
                         <div class="col-12 alert alert-primary text-center">
-                            <strong>Statement</strong>
+                            <strong>
+                                <?php echo $db->showLangText('Statement','Δήλωση Λογαριασμού');?>
+                            </strong>
                         </div>
                     </div>
 
@@ -145,12 +149,12 @@ $db->show_header();
                                 <table class="table">
                                     <thead>
                                     <tr>
-                                        <th scope="col">Date</th>
-                                        <th scope="col">Customer</th>
-                                        <th scope="col">Policy</th>
-                                        <th scope="col">Type</th>
-                                        <th scope="col">Amount+/-</th>
-                                        <th scope="col">Balance</th>
+                                        <th scope="col"><?php echo $db->showLangText('Date','Ημερομηνία');?></th>
+                                        <th scope="col"><?php echo $db->showLangText('Customer','Πελάτης');?></th>
+                                        <th scope="col"><?php echo $db->showLangText('Policy','Συμβόλαιο');?></th>
+                                        <th scope="col"><?php echo $db->showLangText('Type','Είδος');?></th>
+                                        <th scope="col"><?php echo $db->showLangText('Amount+/-','Ποσο+/-');?></th>
+                                        <th scope="col"><?php echo $db->showLangText('Balance','Υπόλοιπο');?></th>
                                     </tr>
                                     </thead>
                                     <tbody>
@@ -394,7 +398,7 @@ $db->show_header();
                                     }
                                     ?>
                                     <tr>
-                                        <td colspan="4" align="right">Balance Brought Forward</td>
+                                        <td colspan="4" align="right"><?php echo $db->showLangText('Balance Brought Forward','Μεταφερθέν υπόλοιπο');?></td>
                                         <td></td>
                                         <td><?php echo $balanceBroughtForward;?></td>
                                     </tr>
@@ -419,7 +423,7 @@ $db->show_header();
                                         </tr>
                                     <?php } ?>
                                     <tr>
-                                        <td colspan="5" align="left">Total Records:<?php echo $totalRecords;?></td>
+                                        <td colspan="5" align="left"><?php echo $db->showLangText('Total Records','Συνολικές Εγγραφές');?>: <?php echo $totalRecords;?></td>
                                         <td><strong><?php echo $balance; ?></strong></td>
                                     </tr>
                                     </tbody>

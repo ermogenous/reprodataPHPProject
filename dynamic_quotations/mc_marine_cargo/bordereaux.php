@@ -44,7 +44,7 @@ if ($_POST['action'] == 'search') {
   ,ship.oqqit_rate_2 as valueCurrency
   ,ship.oqqit_rate_3 as insuredValue 
   ,ship.oqqit_rate_4 as commodity
-  ,ship.oqqit_rate_5 as coverageOption
+  ,ship.oqqit_rate_5 as exchangeRate
   ,ship.oqqit_rate_6 as conveyance
   ,ship.oqqit_rate_7 as convVesselName
   ,ship.oqqit_rate_9 as packShipMethod
@@ -60,6 +60,8 @@ if ($_POST['action'] == 'search') {
   ,cargo.oqqit_rate_3 as letterCredit
   ,cargo.oqqit_rate_5 as supplier
   ,cargo.oqqit_rate_6 as excess
+  ,cargo.oqqit_rate_7 as reference
+  ,cargo.oqqit_rate_8 as rate
   FROM 
   oqt_quotations
   JOIN oqt_quotations_items as ship ON oqq_quotations_ID = ship.oqqit_quotations_ID AND ship.oqqit_items_ID = 3
@@ -272,6 +274,7 @@ if ($_POST['action'] == 'search') {
                         <table class="table">
                             <thead>
                             <tr>
+                                <th scope="col">#</th>
                                 <th scope="col">Number</th>
                                 <th scope="col">Activation Date</th>
                                 <th scope="col">Shipment Date</th>
@@ -285,6 +288,7 @@ if ($_POST['action'] == 'search') {
                             while ($row = $db->fetch_assoc($result)) {
                                 ?>
                                 <tr>
+                                    <td><?php echo $row['oqq_quotations_ID']; ?></td>
                                     <td><?php echo $row['oqq_number']; ?></td>
                                     <td><?php echo $db->convert_date_format($row['oqq_last_update_date_time'], 'yyyy-mm-dd', 'dd/mm/yyyy', 1, 1); ?></td>
                                     <td><?php echo $db->convertDateToEU($row['shipmentDate']); ?></td>
@@ -340,6 +344,7 @@ function outputExcel($sql)
         ->setCellValue(++$str . '1', 'Client ID')
         ->setCellValue(++$str . '1', 'Insured Val Cur.')
         ->setCellValue(++$str . '1', 'Insured Val')
+        ->setCellValue(++$str . '1', 'Exchange Rate')
         ->setCellValue(++$str . '1', 'Commodity')
         ->setCellValue(++$str . '1', 'Conveyance')
         ->setCellValue(++$str . '1', 'Conv.Vessel Name')
@@ -355,7 +360,9 @@ function outputExcel($sql)
         ->setCellValue(++$str . '1', 'Letter of Credit')
         ->setCellValue(++$str . '1', 'Notes')
         ->setCellValue(++$str . '1', 'Supplier')
-        ->setCellValue(++$str . '1', 'Excess');
+        ->setCellValue(++$str . '1', 'Excess')
+        ->setCellValue(++$str . '1', 'Reference')
+        ->setCellValue(++$str . '1', 'Rate');
 //make all align of the row LEFT
     $spreadsheet->getActiveSheet()->getStyle('A1:' . $str . '1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 //make all row Bold
@@ -376,6 +383,7 @@ function outputExcel($sql)
             ->setCellValue(++$str . $line, $row['oqq_insureds_id'])
             ->setCellValue(++$str . $line, $row['valueCurrency'])
             ->setCellValue(++$str . $line, $row['insuredValue'])
+            ->setCellValue(++$str . $line, $row['exchangeRate'])
             ->setCellValue(++$str . $line, $row['commodity'])
             ->setCellValue(++$str . $line, $row['conveyance'])
             ->setCellValue(++$str . $line, $row['convVesselName'])
@@ -391,7 +399,9 @@ function outputExcel($sql)
             ->setCellValue(++$str . $line, $row['letterCredit'])
             ->setCellValue(++$str . $line, $row['oqq_extra_details'])
             ->setCellValue(++$str . $line, $row['supplier'])
-            ->setCellValue(++$str . $line, $row['excess']);
+            ->setCellValue(++$str . $line, $row['excess'])
+            ->setCellValue(++$str . $line, $row['reference'])
+            ->setCellValue(++$str . $line, $row['rate']);
 
         $spreadsheet->getActiveSheet()->getStyle('A1:' . $str . $line)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 
@@ -408,6 +418,9 @@ function outputExcel($sql)
             $stop = true;
         }
     }
+    $spreadsheet->getActiveSheet()->getColumnDimension('Z')->setAutoSize(true);
+    $spreadsheet->getActiveSheet()->getColumnDimension('AA')->setAutoSize(true);
+    $spreadsheet->getActiveSheet()->getColumnDimension('AB')->setAutoSize(true);
 
 //$spreadsheet->getActiveSheet()->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 

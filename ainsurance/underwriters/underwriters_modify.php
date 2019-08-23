@@ -85,7 +85,7 @@ if ($_POST["action"] == "insert") {
 }
 
 if ($_GET["lid"] != "") {
-    $data = $db->query_fetch("SELECT * FROM `ina_underwriters` WHERE `inaund_underwriter_ID` = " . $_GET["lid"]);
+    $data = $db->query_fetch("SELECT * FROM `ina_underwriters` JOIN users ON usr_users_ID = inaund_user_ID WHERE `inaund_underwriter_ID` = " . $_GET["lid"]);
 }
 
 $db->show_header();
@@ -104,7 +104,7 @@ $formValidator = new customFormValidator();
                     <div class="row alert alert-success text-center">
                         <div class="col-12">
                             <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
-                                &nbsp;Quotation Underwriter</b>
+                                &nbsp;Quotation Underwriter <?php echo $data['usr_name'];?></b>
                         </div>
                     </div>
 
@@ -172,7 +172,7 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="row">
-                        <label for="fld_user_ID" class="col-sm-3 col-form-label">Vertical Level</label>
+                        <label for="fld_vertical_level" class="col-sm-3 col-form-label">Vertical Level</label>
                         <div class="col-3">
                             <select name="fld_vertical_level" id="fld_vertical_level"
                                     class="form-control">
@@ -180,6 +180,45 @@ $formValidator = new customFormValidator();
                                     <option value="<?php echo $i;?>"><?php echo $i;?></option>
                                 <?php } ?>
                             </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label for="fld_subagent_ID" class="col-sm-3 col-form-label">Sub Agent</label>
+                        <div class="col-3">
+                            <select name="fld_subagent_ID" id="fld_subagent_ID"
+                                    class="form-control">
+                                <option value="0" <?php if ($data["inaund_subagent_ID"] == '0') echo "selected=\"selected\""; ?>>No</option>
+                                <option value="-1" <?php if ($data["inaund_subagent_ID"] == '-1') echo "selected=\"selected\""; ?>>Yes - Top</option>
+                                <option value="" disabled>------------</option>
+                                <?php
+                                $sql = 'SELECT * FROM
+                                ina_underwriters
+                                JOIN users ON usr_users_ID = inaund_user_ID
+                                WHERE
+                                inaund_user_ID != '.$_GET['lid'].'
+                                AND inaund_subagent_ID != 0
+                                ORDER BY usr_name ASC';
+                                $result = $db->query($sql);
+                                while ($row = $db->fetch_assoc($result)){
+                                ?>
+                                    <option value="<?php echo $row['inaund_underwriter_ID'];?>"
+                                        <?php if ($data["inaund_subagent_ID"] == $row['inaund_underwriter_ID']) echo "selected=\"selected\""; ?>>
+                                        <?php echo $row['usr_name'];?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            Applies only to advanced accounts.
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            If advanced accounts and not sub agent then the commissions percentages for each company are not used.<br>
+                            The ones from the insurance company will be used.
+                            <br>Yes-Top -> Subagent of the office.
+                            <br>Choose another underwriter this means its a subagent of a subagent
                         </div>
                     </div>
 
@@ -343,6 +382,29 @@ $formValidator = new customFormValidator();
                             <?php
                             $formValidator->addField([
                                 "fieldName" => "fld_use_medical",
+                                "fieldDataType" => "select",
+                                "required" => false,
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <label for="fld_use_travel"
+                               class="col-sm-9">Travel</label>
+                        <div class="col-sm-3" style="height: 45px;">
+                            <select name="fld_use_travel" id="fld_use_travel"
+                                    class="form-control">
+                                <option value="1" <?php if ($data['inaund_use_travel'] == '1') echo "selected=\"selected\""; ?>>
+                                    Yes
+                                </option>
+                                <option value="0" <?php if ($data['inaund_use_travel'] == '0' || $data['inaund_use_travel'] == '') echo "selected=\"selected\""; ?>>
+                                    No
+                                </option>
+                            </select>
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_use_travel",
                                 "fieldDataType" => "select",
                                 "required" => false,
                             ]);

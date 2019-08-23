@@ -101,7 +101,7 @@ if ($_GET['pid'] > 0) {
                                 $totalLines++;
                                 ?>
                                 <tr onclick="editLine(<?php echo $row["inapp_policy_payment_ID"] . "," . $policy->installmentID . ",'" . $_GET['type'] . "'"; ?>);">
-                                    <td scope="row"><?php echo $row["inapp_payment_date"]; ?></td>
+                                    <td scope="row"><?php echo $db->convertDateToEU($row["inapp_payment_date"]); ?></td>
                                     <td><?php echo $row["inapp_amount"]; ?></td>
                                     <td><?php echo $row["inapp_allocated_amount"]; ?></td>
                                     <td><?php echo $row["inapp_allocated_commission"]; ?></td>

@@ -15,7 +15,7 @@ if ($_GET['section'] == 'underwriter_commission_types_insurance_companies') {
 
     $sql = "SELECT
               inainc_insurance_company_ID as value, 
-              CONCAT(inainc_code, ' ', inainc_name) as label,
+              inainc_name as label,
               inainc_status as clo_status
               FROM 
               ina_underwriter_companies

@@ -34,16 +34,18 @@ $db->show_header();
                     <?php $formValidator->echoFormParameters(); ?>>
                     <div class="row">
                         <div class="col-12 alert alert-primary text-center">
-                            <strong>Production Report</strong>
+                            <strong>
+                                <?php echo $db->showLangText('Production Report','Αναφορά Παραγωγής');?>
+                            </strong>
                         </div>
                     </div>
                     <div class="row d-none d-md-block" style="height: 35px;"></div>
 
                     <div class="row">
-                        <label for="company" class="col-sm-3">Company</label>
+                        <label for="company" class="col-sm-3"><?php echo $db->showLangText('Company','Εταιρία');?></label>
                         <div class="col-sm-3">
                             <select class="form-control" id="company" name="company">
-                                <option value="ALL">ALL</option>
+                                <option value="ALL"><?php echo $db->showLangText('ALL','ΌΛΕΣ');?></option>
                                 <?php
                                 $sql = "SELECT * FROM 
                                   ina_underwriter_companies
@@ -77,7 +79,7 @@ $db->show_header();
                         </div>
                     </div>
                     <div class="row">
-                        <label for="financialDateFrom" class="col-sm-3">Financial Date From:</label>
+                        <label for="financialDateFrom" class="col-sm-3"><?php echo $db->showLangText('Financial Date From:','Λογιστική Ημερομηνία Από:');?></label>
                         <div class="col-sm-2">
                             <input type="text" id="financialDateFrom" name="financialDateFrom"
                                    class="form-control" value="">
@@ -94,7 +96,7 @@ $db->show_header();
                             ?>
                         </div>
 
-                        <label for="financialDateTo" class="col-sm-1 text-right">To:</label>
+                        <label for="financialDateTo" class="col-sm-1 text-right"><?php echo $db->showLangText('To:','Μέχρι:');?></label>
                         <div class="col-sm-2">
                             <input type="text" id="financialDateTo" name="financialDateTo"
                                    class="form-control" value="">
@@ -114,7 +116,7 @@ $db->show_header();
                     </div>
 
                     <div class="row">
-                        <label for="startingDateFrom" class="col-form-label col-sm-3">Starting Date From:</label>
+                        <label for="startingDateFrom" class="col-form-label col-sm-3"><?php echo $db->showLangText('Starting Date From:','Ημερομηνία Έναρξης Από:');?></label>
                         <div class="col-sm-2">
                             <input type="text" id="startingDateFrom" name="startingDateFrom"
                                    class="form-control" value="">
@@ -130,7 +132,7 @@ $db->show_header();
                                 ]);
                             ?>
                         </div>
-                        <label for="startingDateTo" class="col-sm-1 text-right">To:</label>
+                        <label for="startingDateTo" class="col-sm-1 text-right"><?php echo $db->showLangText('To:','Μέχρι:');?></label>
                         <div class="col-sm-2">
                             <input type="text" id="startingDateTo" name="startingDateTo"
                                    class="form-control" value="">
@@ -149,76 +151,76 @@ $db->show_header();
                     </div>
 
                     <div class="row">
-                        <label for="groupBy1" class="col-sm-3">Group By</label>
+                        <label for="groupBy1" class="col-sm-3"><?php echo $db->showLangText('Group By','Ομαδοποίηση');?></label>
                         <div class="col-sm-2">
                             <select class="form-control" id="groupBy1" name="groupBy1" onchange="checkGroupBy()">
-                                <option value="NONE" <?php if ($_POST['groupBy1'] == 'NONE') echo 'selected'; ?>>NONE
+                                <option value="NONE" <?php if ($_POST['groupBy1'] == 'NONE') echo 'selected'; ?>><?php echo $db->showLangText('NONE','');?>
                                 </option>
                                 <option value="Company" <?php if ($_POST['groupBy1'] == 'Company') echo 'selected'; ?>>
-                                    Company
+                                    <?php echo $db->showLangText('Company','Εταιρία');?>
                                 </option>
                                 <option value="Customer" <?php if ($_POST['groupBy1'] == 'Customer') echo 'selected'; ?>>
-                                    Customer
+                                    <?php echo $db->showLangText('Customer','Πελάτης');?>
                                 </option>
                                 <option value="Policy" <?php if ($_POST['groupBy1'] == 'Policy') echo 'selected'; ?>>
-                                    Policy
+                                    <?php echo $db->showLangText('Policy','Συμβόλαιο');?>
                                 </option>
                                 <option value="Type" <?php if ($_POST['groupBy1'] == 'Type') echo 'selected'; ?>>
-                                    Type
+                                    <?php echo $db->showLangText('Type','Είδος');?>
                                 </option>
                             </select>
                         </div>
                         <div class="col-sm-2">
                             <select class="form-control" id="groupBy2" name="groupBy2" onchange="checkGroupBy()">
-                                <option value="NONE" <?php if ($_POST['groupBy2'] == 'NONE') echo 'selected'; ?>>NONE
+                                <option value="NONE" <?php if ($_POST['groupBy2'] == 'NONE') echo 'selected'; ?>><?php echo $db->showLangText('NONE','Κανένα');?>
                                 </option>
                                 <option value="Company" <?php if ($_POST['groupBy2'] == 'Company') echo 'selected'; ?>>
-                                    Company
+                                    <?php echo $db->showLangText('Company','Εταιρία');?>
                                 </option>
                                 <option value="Customer" <?php if ($_POST['groupBy2'] == 'Customer') echo 'selected'; ?>>
-                                    Customer
+                                    <?php echo $db->showLangText('Customer','Πελάτης');?>
                                 </option>
                                 <option value="Policy" <?php if ($_POST['groupBy2'] == 'Policy') echo 'selected'; ?>>
-                                    Policy
+                                    <?php echo $db->showLangText('Policy','Συμβόλαιο');?>
                                 </option>
                                 <option value="Type" <?php if ($_POST['groupBy2'] == 'Type') echo 'selected'; ?>>
-                                    Type
+                                    <?php echo $db->showLangText('Type','Είδος');?>
                                 </option>
                             </select>
                         </div>
                         <div class="col-sm-2">
                             <select class="form-control" id="groupBy3" name="groupBy3" onchange="checkGroupBy()">
-                                <option value="NONE" <?php if ($_POST['groupBy3'] == 'NONE') echo 'selected'; ?>>NONE
+                                <option value="NONE" <?php if ($_POST['groupBy3'] == 'NONE') echo 'selected'; ?>><?php echo $db->showLangText('NONE','Κανένα');?>
                                 </option>
                                 <option value="Company" <?php if ($_POST['groupBy3'] == 'Company') echo 'selected'; ?>>
-                                    Company
+                                    <?php echo $db->showLangText('Company','Εταιρία');?>
                                 </option>
                                 <option value="Customer" <?php if ($_POST['groupBy3'] == 'Customer') echo 'selected'; ?>>
-                                    Customer
+                                    <?php echo $db->showLangText('Customer','Πελάτης');?>
                                 </option>
                                 <option value="Policy" <?php if ($_POST['groupBy3'] == 'Policy') echo 'selected'; ?>>
-                                    Policy
+                                    <?php echo $db->showLangText('Policy','Συμβόλαιο');?>
                                 </option>
                                 <option value="Type" <?php if ($_POST['groupBy3'] == 'Type') echo 'selected'; ?>>
-                                    Type
+                                    <?php echo $db->showLangText('Type','Είδος');?>
                                 </option>
                             </select>
                         </div>
                         <div class="col-sm-2">
                             <select class="form-control" id="groupBy4" name="groupBy4" onchange="checkGroupBy()">
-                                <option value="NONE" <?php if ($_POST['groupBy4'] == 'NONE') echo 'selected'; ?>>NONE
+                                <option value="NONE" <?php if ($_POST['groupBy4'] == 'NONE') echo 'selected'; ?>><?php echo $db->showLangText('NONE','Κανένα');?>
                                 </option>
                                 <option value="Company" <?php if ($_POST['groupBy4'] == 'Company') echo 'selected'; ?>>
-                                    Company
+                                    <?php echo $db->showLangText('Company','Εταιρία');?>
                                 </option>
                                 <option value="Customer" <?php if ($_POST['groupBy4'] == 'Customer') echo 'selected'; ?>>
-                                    Customer
+                                    <?php echo $db->showLangText('Customer','Πελάτης');?>
                                 </option>
                                 <option value="Policy" <?php if ($_POST['groupBy4'] == 'Policy') echo 'selected'; ?>>
-                                    Policy
+                                    <?php echo $db->showLangText('Policy','Συμβόλαιο');?>
                                 </option>
                                 <option value="Type" <?php if ($_POST['groupBy4'] == 'Type') echo 'selected'; ?>>
-                                    Type
+                                    <?php echo $db->showLangText('Type','Είδος');?>
                                 </option>
                             </select>
                         </div>
@@ -267,7 +269,7 @@ $db->show_header();
                             <input name="action" type="hidden" id="action"
                                    value="search">
                             <input type="submit"
-                                   value="Search"
+                                   value="<?php echo $db->showLangText('Search','Προβολή');?>"
                                    class="btn btn-secondary" id="Submit">
                         </div>
                     </div>
@@ -281,7 +283,7 @@ $db->show_header();
                     <!-- RESULTS --------------------------------------------------------------------------------------------RESULTS-->
                     <div class="row">
                         <div class="col-12 alert alert-primary text-center">
-                            <strong>Results</strong>
+                            <strong><?php echo $db->showLangText('Results','Αποτελέσματα');?></strong>
                         </div>
                     </div>
 
@@ -320,22 +322,22 @@ $db->show_header();
                                             if ($_POST['groupBy'.$i] == 'Company'){
                                                 $groupBy .= ',inainc_name';
                                                 $colField[$i] = 'inainc_name';
-                                                $colName[$i] = 'Company';
+                                                $colName[$i] = $db->showLangText('Company','Εταιρεία');
                                             }
                                             else if ($_POST['groupBy'.$i] == 'Customer'){
                                                 $groupBy .= ',cst_name,cst_surname';
                                                 $colField[$i] = 'cst_name';
-                                                $colName[$i] = 'Customer';
+                                                $colName[$i] = $db->showLangText('Customer','Πελάτης');
                                             }
                                             else if ($_POST['groupBy'.$i] == 'Policy'){
                                                 $groupBy .= ',inapol_policy_number';
                                                 $colField[$i] = 'inapol_policy_number';
-                                                $colName[$i] = 'Policy';
+                                                $colName[$i] = $db->showLangText('Policy','Συμβόλαιο');
                                             }
                                             else if ($_POST['groupBy'.$i] == 'Type'){
                                                 $groupBy .= ',inapol_type_code';
                                                 $colField[$i] = 'inapol_type_code';
-                                                $colName[$i] = 'Type';
+                                                $colName[$i] = $db->showLangText('Type','Ειδος');
                                             }
                                         }
                                     }
@@ -346,11 +348,11 @@ $db->show_header();
                                         <th scope="col"><?php echo $colName[2];?></th>
                                         <th scope="col"><?php echo $colName[3];?></th>
                                         <th scope="col"><?php echo $colName[4];?></th>
-                                        <th scope="col">Net Premium</th>
-                                        <th scope="col">Fees</th>
-                                        <th scope="col">Stamps</th>
-                                        <th scope="col">Commission</th>
-                                        <th scope="col">Gross Premium</th>
+                                        <th scope="col"><?php echo $db->showLangText('Net Premium','Καθαρά Ασφάλιστρα');?></th>
+                                        <th scope="col"><?php echo $db->showLangText('Fees','Δηκαιώματα');?></th>
+                                        <th scope="col"><?php echo $db->showLangText('Stamps','Χαρτόσημα');?></th>
+                                        <th scope="col"><?php echo $db->showLangText('Commission','Προμήθεια');?></th>
+                                        <th scope="col"><?php echo $db->showLangText('Gross Premium','Σύνολο');?></th>
                                     </tr>
                                     </thead>
                                     <tbody>

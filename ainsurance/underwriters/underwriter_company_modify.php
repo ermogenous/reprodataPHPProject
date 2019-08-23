@@ -200,6 +200,22 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
 
+                    <div class="form-group row">
+                        <label for="fld_commission_travel" class="col-sm-4">Commission Travel</label>
+                        <div class="col-sm-6">
+                            <input type="text" class="form-control" name="fld_commission_travel" id="fld_commission_travel"
+                                   value="<?php echo $data['inaunc_commission_travel'];?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_commission_travel",
+                                "fieldDataType" => "number",
+                                "required" => true,
+                                "invalidTextAutoGenerate" => true,
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+
 
                     <!-- BUTTONS -->
                     <div class="form-group row">

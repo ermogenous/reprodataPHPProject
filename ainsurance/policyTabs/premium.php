@@ -224,6 +224,14 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                         </div>
                     </div>
 
+                    <div class="row">
+                        <div class="col-sm-12">
+                            <?php
+                            $policy->getAccountTransactionsList();
+                            ?>
+                        </div>
+                    </div>
+
                 </form>
             </div>
         </div>

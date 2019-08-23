@@ -11,11 +11,18 @@ include("../../include/tables.php");
 $db = new Main();
 
 $table = new draw_table('ina_underwriters', 'usg_users_groups_ID ASC,usr_name ASC', '');
-$table->extra_from_section = 'JOIN users ON usr_users_ID = inaund_user_ID';
+$table->extra_select_section = '
+,
+(
+SELECT usr_name FROM users WHERE usr_users_ID = 
+(SELECT inaund_user_ID FROM ina_underwriters as subunder WHERE subunder.inaund_underwriter_ID = ina_underwriters.inaund_subagent_ID)
+)
+as clo_subagent_name
+';
+$table->extra_from_section = ' JOIN users ON usr_users_ID = inaund_user_ID';
 $table->extra_from_section .= ' JOIN users_groups ON usr_users_groups_ID = usg_users_groups_ID';
 
 $table->generate_data();
-
 $db->show_header();
 ?>
     <div class="container">
@@ -28,6 +35,7 @@ $db->show_header();
                     <td align="left"><?php $table->display_order_links('Name', 'usr_name'); ?></td>
                     <td align="center"><?php $table->display_order_links('Status', 'inaund_status'); ?></td>
                     <td align="center"><?php $table->display_order_links('V.Level', 'inaund_vertical_level'); ?></td>
+                    <td align="center"><?php $table->display_order_links('SubAgent', 'clo_subagent_name'); ?></td>
                     <td align="center">Commissions</td>
                     <td colspan="2" align="center"><a href="underwriters_modify.php">New</a></td>
                 </tr>
@@ -35,6 +43,9 @@ $db->show_header();
                 <tbody>
                 <?php
                 while ($row = $table->fetch_data()) {
+                    if ($row['inaund_subagent_ID'] == '-1'){
+                        $row['clo_subagent_name'] = 'Office Top';
+                    }
                     ?>
                     <tr onclick="editLine(<?php echo $row["inaund_underwriter_ID"]; ?>);">
                         <th scope="row"><?php echo $row["inaund_underwriter_ID"]; ?></th>
@@ -42,6 +53,7 @@ $db->show_header();
                         <td align="left"><?php echo $row["usr_name"]; ?></td>
                         <td align="center"><?php echo $row["inaund_status"]; ?></td>
                         <td align="center"><?php echo $row["inaund_vertical_level"]; ?></td>
+                        <td align="center"><?php echo $row["clo_subagent_name"]; ?></td>
                         <td align="center">
                             <a href="underwriter_companies.php?lid=<?php echo $row['inaund_underwriter_ID'];?>">
                                 <i class="fas fa-stream"></i>

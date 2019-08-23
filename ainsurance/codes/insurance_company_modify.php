@@ -15,7 +15,7 @@ if ($_POST["action"] == "insert") {
     $db->check_restriction_area('insert');
 
     $db->working_section = 'AInsurance Company Insert';
-    $db->db_tool_insert_row('ina_insurance_companies', $_POST, 'fld_',0, 'inainc_');
+    $db->db_tool_insert_row('ina_insurance_companies', $_POST, 'fld_', 0, 'inainc_');
     header("Location: insurance_companies.php");
     exit();
 
@@ -36,8 +36,7 @@ if ($_GET["lid"] != "") {
     $db->working_section = 'AInsurance Company Get data';
     $sql = "SELECT * FROM `ina_insurance_companies` WHERE `inainc_insurance_company_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
-}
-else {
+} else {
     $data['inainc_active'] = 'Active';
 }
 
@@ -50,8 +49,8 @@ $formValidator->showErrorList();
 ?>
 <div class="container">
     <div class="row">
-        <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
-        <div class="col-lg-6 col-md-6 col-xs-12 col-sm-12">
+        <div class="col-lg-2 col-md-2 hidden-xs hidden-sm"></div>
+        <div class="col-lg-8 col-md-2 col-xs-12 col-sm-12">
             <form name="myForm" id="myForm" method="post" action=""
                 <?php $formValidator->echoFormParameters(); ?>>
                 <div class="alert alert-dark text-center">
@@ -64,8 +63,12 @@ $formValidator->showErrorList();
                     <div class="col-sm-8">
                         <select name="fld_status" id="fld_status"
                                 class="form-control">
-                            <option value="Active" <?php if ($data['inainc_status'] == 'Active') echo 'selected';?>>Active</option>
-                            <option value="InActive" <?php if ($data['inainc_status'] == 'InActive') echo 'selected';?>>In-active</option>
+                            <option value="Active" <?php if ($data['inainc_status'] == 'Active') echo 'selected'; ?>>
+                                Active
+                            </option>
+                            <option value="InActive" <?php if ($data['inainc_status'] == 'InActive') echo 'selected'; ?>>
+                                In-active
+                            </option>
                         </select>
                         <?php
                         $formValidator->addField([
@@ -134,18 +137,48 @@ $formValidator->showErrorList();
                             <option value=""></option>
                             <?php
                             $btResult = $db->query("SELECT * FROM codes WHERE cde_type = 'Countries' ORDER BY cde_value ASC");
-                            while($bt = $db->fetch_assoc($btResult)){
+                            while ($bt = $db->fetch_assoc($btResult)) {
 
                                 ?>
-                                <option value="<?php echo $bt['cde_code_ID'];?>"
-                                    <?php if ($bt['cde_code_ID'] == $data['inainc_country_code_ID']) echo 'selected';?>>
-                                    <?php echo $bt['cde_value'];?>
+                                <option value="<?php echo $bt['cde_code_ID']; ?>"
+                                    <?php if ($bt['cde_code_ID'] == $data['inainc_country_code_ID']) echo 'selected'; ?>>
+                                    <?php echo $bt['cde_value']; ?>
                                 </option>
                             <?php } ?>
                         </select>
                         <?php
                         $formValidator->addField([
                             "fieldName" => "fld_country_code_ID",
+                            "fieldDataType" => "select",
+                            "required" => false,
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="fld_account_ID" class="col-sm-4 col-form-label">Account</label>
+                    <div class="col-sm-8">
+                        <select name="fld_account_ID" id="fld_account_ID"
+                                class="form-control"
+                                required>
+                            <option value=""></option>
+                            <?php
+                            $btResult = $db->query("
+                              SELECT * FROM ac_accounts 
+                              WHERE acacc_control = 0");
+                            while ($bt = $db->fetch_assoc($btResult)) {
+
+                                ?>
+                                <option value="<?php echo $bt['acacc_account_ID']; ?>"
+                                    <?php if ($bt['acacc_account_ID'] == $data['inainc_account_ID']) echo 'selected'; ?>>
+                                    <?php echo $bt['acacc_name']; ?>
+                                </option>
+                            <?php } ?>
+                        </select>
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_account_ID",
                             "fieldDataType" => "select",
                             "required" => false,
                         ]);
@@ -161,8 +194,8 @@ $formValidator->showErrorList();
 
                 <div class="row">
                     <label for="fld_use_motor"
-                           class="col-sm-9">Motor</label>
-                    <div class="col-sm-3" style="height: 45px;">
+                           class="col-sm-5">Motor</label>
+                    <div class="col-sm-4" style="height: 45px;">
                         <select name="fld_use_motor" id="fld_use_motor"
                                 class="form-control">
                             <option value="1" <?php if ($data['inainc_use_motor'] == '1') echo "selected=\"selected\""; ?>>
@@ -184,8 +217,8 @@ $formValidator->showErrorList();
 
                 <div class="row">
                     <label for="fld_use_fire"
-                           class="col-sm-9">Fire</label>
-                    <div class="col-sm-3" style="height: 45px;">
+                           class="col-sm-5">Fire</label>
+                    <div class="col-sm-4" style="height: 45px;">
                         <select name="fld_use_fire" id="fld_use_fire"
                                 class="form-control">
                             <option value="1" <?php if ($data['inainc_use_fire'] == '1') echo "selected=\"selected\""; ?>>
@@ -207,8 +240,8 @@ $formValidator->showErrorList();
 
                 <div class="row">
                     <label for="fld_use_pa"
-                           class="col-sm-9">Personal Accident</label>
-                    <div class="col-sm-3" style="height: 45px;">
+                           class="col-sm-5">Personal Accident</label>
+                    <div class="col-sm-4" style="height: 45px;">
                         <select name="fld_use_pa" id="fld_use_pa"
                                 class="form-control">
                             <option value="1" <?php if ($data['inainc_use_pa'] == '1') echo "selected=\"selected\""; ?>>
@@ -230,8 +263,8 @@ $formValidator->showErrorList();
 
                 <div class="row">
                     <label for="fld_use_el"
-                           class="col-sm-9">Employers Liability</label>
-                    <div class="col-sm-3" style="height: 45px;">
+                           class="col-sm-5">Employers Liability</label>
+                    <div class="col-sm-4" style="height: 45px;">
                         <select name="fld_use_el" id="fld_use_el"
                                 class="form-control">
                             <option value="1" <?php if ($data['inainc_use_el'] == '1') echo "selected=\"selected\""; ?>>
@@ -253,8 +286,8 @@ $formValidator->showErrorList();
 
                 <div class="row">
                     <label for="fld_use_pi"
-                           class="col-sm-9">Professional Indemnity</label>
-                    <div class="col-sm-3" style="height: 45px;">
+                           class="col-sm-5">Professional Indemnity</label>
+                    <div class="col-sm-4" style="height: 45px;">
                         <select name="fld_use_pi" id="fld_use_pi"
                                 class="form-control">
                             <option value="1" <?php if ($data['inainc_use_pi'] == '1') echo "selected=\"selected\""; ?>>
@@ -276,8 +309,8 @@ $formValidator->showErrorList();
 
                 <div class="row">
                     <label for="fld_use_pl"
-                           class="col-sm-9">Public Liability</label>
-                    <div class="col-sm-3" style="height: 45px;">
+                           class="col-sm-5">Public Liability</label>
+                    <div class="col-sm-4" style="height: 45px;">
                         <select name="fld_use_pl" id="fld_use_pl"
                                 class="form-control">
                             <option value="1" <?php if ($data['inainc_use_pl'] == '1') echo "selected=\"selected\""; ?>>
@@ -299,8 +332,8 @@ $formValidator->showErrorList();
 
                 <div class="row">
                     <label for="fld_use_medical"
-                           class="col-sm-9">Medical</label>
-                    <div class="col-sm-3" style="height: 45px;">
+                           class="col-sm-5">Medical</label>
+                    <div class="col-sm-4" style="height: 45px;">
                         <select name="fld_use_medical" id="fld_use_medical"
                                 class="form-control">
                             <option value="1" <?php if ($data['inainc_use_medical'] == '1') echo "selected=\"selected\""; ?>>
@@ -320,6 +353,171 @@ $formValidator->showErrorList();
                     </div>
                 </div>
 
+                <div class="row">
+                    <label for="fld_use_travel"
+                           class="col-sm-5">Travel</label>
+                    <div class="col-sm-4" style="height: 45px;">
+                        <select name="fld_use_travel" id="fld_use_travel"
+                                class="form-control">
+                            <option value="1" <?php if ($data['inainc_use_travel'] == '1') echo "selected=\"selected\""; ?>>
+                                Yes
+                            </option>
+                            <option value="0" <?php if ($data['inainc_use_travel'] == '0' || $data['inainc_use_travel'] == '') echo "selected=\"selected\""; ?>>
+                                No
+                            </option>
+                        </select>
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_use_travel",
+                            "fieldDataType" => "select",
+                            "required" => false,
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="row alert alert-primary">
+                    <div class="col-12">
+                        Commission % - Only applies to advanced accounts.
+                    </div>
+                </div>
+
+                <div class="row alert alert-info">
+                    <div class="col-12">
+                        The commissions Specified here will be the commissions used in the system.<br>
+                        In case of sub agents -> the sub agent will get portion of this percentage.<br>
+                        If in motor here is 25% and on the sub agent 10% then sub agent will get the 10 out of 25
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label for="fld_commission_motor"
+                           class="col-sm-5">Motor Commission %</label>
+                    <div class="col-sm-4" style="height: 45px;">
+                        <input type="text" id="fld_commission_motor" name="fld_commission_motor"
+                               class="form-control" value="<?php echo $data['inainc_commission_motor']; ?>">
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_commission_motor",
+                            "fieldDataType" => "number",
+                            "required" => false,
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label for="fld_commission_fire"
+                           class="col-sm-5">Fire</label>
+                    <div class="col-sm-4" style="height: 45px;">
+                        <input type="text" id="fld_commission_fire" name="fld_commission_fire"
+                               class="form-control" value="<?php echo $data['inainc_commission_fire']; ?>">
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_commission_fire",
+                            "fieldDataType" => "number",
+                            "required" => false,
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label for="fld_commission_pa"
+                           class="col-sm-5">Personal Accident</label>
+                    <div class="col-sm-4" style="height: 45px;">
+                        <input type="text" id="fld_commission_pa" name="fld_commission_pa"
+                               class="form-control" value="<?php echo $data['inainc_commission_pa']; ?>">
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_commission_pa",
+                            "fieldDataType" => "number",
+                            "required" => false,
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label for="fld_commission_el"
+                           class="col-sm-5">Employers Liability</label>
+                    <div class="col-sm-4" style="height: 45px;">
+                        <input type="text" id="fld_commission_el" name="fld_commission_el"
+                               class="form-control" value="<?php echo $data['inainc_commission_el']; ?>">
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_commission_el",
+                            "fieldDataType" => "number",
+                            "required" => false,
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label for="fld_commission_pi"
+                           class="col-sm-5">Professional Indemnity</label>
+                    <div class="col-sm-4" style="height: 45px;">
+                        <input type="text" id="fld_commission_pi" name="fld_commission_pi"
+                               class="form-control" value="<?php echo $data['inainc_commission_pi']; ?>">
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_commission_pi",
+                            "fieldDataType" => "number",
+                            "required" => false,
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label for="fld_commission_pl"
+                           class="col-sm-5">Public Liability</label>
+                    <div class="col-sm-4" style="height: 45px;">
+                        <input type="text" id="fld_commission_pl" name="fld_commission_pl"
+                               class="form-control" value="<?php echo $data['inainc_commission_pl']; ?>">
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_commission_pl",
+                            "fieldDataType" => "number",
+                            "required" => false,
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label for="fld_commission_medical"
+                           class="col-sm-5">Medical</label>
+                    <div class="col-sm-4" style="height: 45px;">
+                        <input type="text" id="fld_commission_medical" name="fld_commission_medical"
+                               class="form-control" value="<?php echo $data['inainc_commission_medical']; ?>">
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_commission_medical",
+                            "fieldDataType" => "number",
+                            "required" => false,
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <label for="fld_commission_travel"
+                           class="col-sm-5">Travel</label>
+                    <div class="col-sm-4" style="height: 45px;">
+                        <input type="text" id="fld_commission_travel" name="fld_commission_travel"
+                               class="form-control" value="<?php echo $data['inainc_commission_travel']; ?>">
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_commission_travel",
+                            "fieldDataType" => "number",
+                            "required" => false,
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
                 <div class="form-group row">
                     <label for="name" class="col-sm-4 col-form-label"></label>
                     <div class="col-sm-8">
@@ -327,15 +525,16 @@ $formValidator->showErrorList();
                                value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
                         <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
                         <input type="button" value="Back" class="btn btn-secondary"
-                               onclick="window.location.assign('insurance_companies.php')" >
-                        <input type="submit" name="Submit" id="Submit" value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Insurance Company"
+                               onclick="window.location.assign('insurance_companies.php')">
+                        <input type="submit" name="Submit" id="Submit"
+                               value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Insurance Company"
                                class="btn btn-secondary">
                     </div>
                 </div>
 
             </form>
         </div>
-        <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
+        <div class="col-lg-2 col-md-2 hidden-xs hidden-sm"></div>
     </div>
 </div>
 <?php

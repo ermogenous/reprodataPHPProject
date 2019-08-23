@@ -139,6 +139,7 @@ function getQuotationHTML($quotationID)
             $excess = $underwriterData['oqun_excess_other'];
         }
 
+
         //if the field 4_oqqit_rate_6 is empty then fill it with the underwriters commission.
         if ($sect2['oqqit_rate_6'] == ''){
             //update the db field with the excess from above
@@ -153,7 +154,6 @@ function getQuotationHTML($quotationID)
             //update the sect2 data
             $sect2['oqqit_rate_6'] = $excess;
         }
-
 
         $conditionsOfInsurance = getConditionsOfInsurance($sect1['oqqit_rate_4'],$sect1['oqqit_rate_13']);
 
@@ -360,26 +360,30 @@ function getQuotationHTML($quotationID)
                 <b>TERMINATION OF TRANSIT CLAUSE (TERRORISM)</b>
             </td>
         </tr>
+        
         <tr>
             <td colspan="3">
                 <b>This clause shall be paramount and shall override anything contained in this insurance inconsistent therewith.</b>
             </td>
         </tr>
+        
         <tr>
-            <td valign="top" width="25">1.</td>
+            <td valign="top" width="20">1.</td>
             <td colspan="2" align="justify">
             Notwithstanding any provision to the contrary contained in this Policy or the Clauses referred to therein, it is 
             agreed that in so far as the Policy covers loss of or damage to the subject-matter insured caused by any terrorist 
             or any person acting from a political motive, such cover is conditional upon the subject matter either
             </td>
         </tr>
+        
         <tr>
             <td></td>
-            <td width="25" valign="top">1.1</td>
-            <td align="justify">
+            <td width="20" valign="top">1.1</td>
+            <td width="860" align="justify">
                 As per the transit clauses contained within the Policy.<br>or
             </td>
         </tr>
+        
         <tr>
             <td></td>
             <td valign="top">1.2</td>
@@ -387,6 +391,7 @@ function getQuotationHTML($quotationID)
                 on delivery to the Consignee`s or other final warehouse or place of storage  at the destination named herein,
             </td>
         </tr>
+        
         <tr>
             <td></td>
             <td valign="top">1.3</td>
@@ -396,6 +401,7 @@ function getQuotationHTML($quotationID)
                 allocation or distribution, <br> or 
             </td>
         </tr>
+        
         <tr>
             <td></td>
             <td valign="top">1.4</td>
@@ -404,6 +410,7 @@ function getQuotationHTML($quotationID)
                 goods hereby insured from the oversea vessel at the final port of discharge, 
             </td>
         </tr>
+        
         <tr>
             <td></td>
             <td valign="top">1.5</td>
@@ -412,6 +419,7 @@ function getQuotationHTML($quotationID)
                 the aircraft at the final place of discharge, whichever shall first occur.  
             </td>
         </tr>
+        
         <tr>
             <td valign="top">2.</td>
             <td valign="top"></td>
@@ -421,6 +429,7 @@ function getQuotationHTML($quotationID)
                 continues during the ordinary course of that transit terminating again in accordance with the clause 1.  
             </td>
         </tr>
+        
         <tr>
             <td valign="top">3.</td>
             <td></td>
@@ -428,23 +437,27 @@ function getQuotationHTML($quotationID)
                 This clause is subject to English law and practice.
             </td>
         </tr>
+        
         <tr>
             <td colspan="3" align="center">
                 <b>CARGO ISM ENDORSEMENT</b>
             </td>
         </tr>
+        
         <tr>
             <td colspan="3">
                 Applicable to shipments on board Ro-Ro passenger ferries.<br>
                 Applicable with effect from 1 July 1998 to shipments on board:
             </td>
         </tr>
+        
         <tr>
             <td>1.</td>
             <td colspan="2">
                 Passenger vessels transporting more than 12 passengers and
             </td>
         </tr>
+        
         <tr>
             <td valign="top">2.</td>
             <td colspan="2" align="justify">
@@ -453,6 +466,7 @@ function getQuotationHTML($quotationID)
                 drilling units of 500 gt or more
             </td>
         </tr>
+        
         <tr>
             <td valign="top">3.</td>
             <td colspan="2" align="justify">
@@ -462,6 +476,7 @@ function getQuotationHTML($quotationID)
                 were aware, or in the ordinary course of business should have been aware: 
             </td>
         </tr>
+        
         <tr>
             <td></td>
             <td valign="top">(a)</td>
@@ -469,6 +484,7 @@ function getQuotationHTML($quotationID)
                 Either that such vessel was not certified in accordance with the ISM Code.
             </td>
         </tr>
+        
         <tr>
             <td></td>
             <td valign="top">(b)</td>
@@ -477,17 +493,20 @@ function getQuotationHTML($quotationID)
                 SOLAS Convention 1974 as amended.
             </td>
         </tr>
+        
         <tr>
             <td colspan="3" align="justify">
                 This exclusion shall not apply where this insurance has been assigned to the party claiming hereunder
                 who has bought or agreed to buy the subject matter insured in good faith under a binding contract.
             </td>
         </tr>
+        
         <tr>
             <td colspan="3" align="center"><br>
                 <b>CARGO ISM FORWARDING CHARGES CLAUSE</b>
             </td>
         </tr>
+        
         <tr>
             <td colspan="3" align="justify">
                 This insurance is extended to reimburse the Assured, up to the limit of the sum insured for the voyage,
@@ -497,6 +516,7 @@ function getQuotationHTML($quotationID)
                 where the voyage is terminated due either:
             </td>
         </tr>
+        
         <tr>
             <td valign="top">a)</td>
             <td colspan="2" align="justify">
@@ -504,6 +524,7 @@ function getQuotationHTML($quotationID)
                 or
             </td>
         </tr>
+        
         <tr>
             <td valign="top">b)</td>
             <td colspan="2" align="justify">
@@ -511,17 +532,20 @@ function getQuotationHTML($quotationID)
                 as required under the SOLAS Convention 1974 as amended.
             </td>
         </tr>
+        
         <tr>
             <td colspan="3" align="justify">
                 This clause, which does not apply to General Average or Salvage or Salvage Charges, is subject to all other 
                 terms conditions and exclusions contained in the policy.
             </td>
         </tr>
+        
         <tr>
             <td colspan="3" align="center">
                 <b>SANCTION LIMITATION AND EXCLUSION CLAUSE JC2010/014 (11/08/10)</b>
             </td>
         </tr>
+        
         <tr>
             <td colspan="3" align="justify">
                 No (re)insurer shall be deemed to provide cover and no (re)insurer shall be liable to pay any claim or 
@@ -531,6 +555,7 @@ function getQuotationHTML($quotationID)
                 United Kingdom or United States of America.
             </td>
         </tr>
+        
     </table>
     
     <br>

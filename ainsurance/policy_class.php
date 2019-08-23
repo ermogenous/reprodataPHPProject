@@ -27,6 +27,9 @@ class Policy
     public $error = false;
     public $errorDescription;
 
+    //Accounts
+    private $accountsUsed;
+
     function __construct($policyID)
     {
         global $db;
@@ -67,6 +70,12 @@ class Policy
 
         $result = $db->query_fetch('SELECT COUNT(*)as clo_total FROM ina_policy_items WHERE inapit_policy_ID = ' . $this->policyID);
         $this->totalItems = $result['clo_total'];
+
+        //check what type of accounts this has from settings
+        $this->accountsUsed = $db->get_setting('ac_advanced_accounts_enable');
+        if ($this->accountsUsed == 1){
+            $this->accountsUsed = 'Advanced';
+        }
 
     }
 
@@ -223,7 +232,7 @@ class Policy
     {
         global $db;
         if ($this->policyData['inapol_type_code'] == 'Motor') {
-            return $db->showLangText('Vehicles','Αυτοκήνιτα');
+            return $db->showLangText('Vehicles','Αυτοκίνητα');
         }
         else if ($this->policyData['inapol_type_code'] == 'Fire') {
             return $db->showLangText('Risk Location','Τοποθεσία Κινδύνου');
@@ -241,6 +250,9 @@ class Policy
             return $db->showLangText('Risk Location','Τοποθεσία Κινδύνου');
         }
         else if ($this->policyData['inapol_type_code'] == 'Medical') {
+            return $db->showLangText('Members','Άτομα');
+        }
+        else if ($this->policyData['inapol_type_code'] == 'Travel') {
             return $db->showLangText('Members','Άτομα');
         }
 
@@ -441,16 +453,6 @@ class Policy
         //$this->validForActive = true;
         //$this->errorDescription = 'Some error. Activate function needs build';
         return true;
-    }
-
-    private function issueAccountTransactions()
-    {
-        global $db;
-
-        //for basic accounts
-        if ($db->dbSettings['accounts']['value'] == 'basic') {
-
-        }
     }
 
     public function cancelPolicy($cancelDate, $premium, $fees, $commission)
@@ -1131,6 +1133,40 @@ class Policy
         return $return;
     }
 
+    //Advanced Accounts Functions
+    private function issueAccountTransactions()
+    {
+        global $db;
+
+        //for basic accounts
+        if ($db->dbSettings['accounts']['value'] == 'basic') {
+
+        }
+    }
+
+    public function getAccountTransactionsList(){
+        global $db;
+
+        if ($this->accountsUsed != 'Advanced'){
+            $this->errorDescription = 'Advanced Accounts are not enabled';
+            return '';
+        }
+
+        if ($this->policyData['inainc_account_ID'] == ''){
+            $this->error = true;
+            $this->errorDescription = 'No account defined for this company';
+            return $this->errorDescription;
+        }
+
+        //Company transactions
+        $companyAccountID = $this->policyData['inainc_account_ID'];
+        //get the name of the account
+        $companyAccountName = $db->query_fetch('SELECT acacc_name FROM ac_accounts WHERE acacc_account_ID = '.$companyAccountID);
+        $companyAccountName = $companyAccountName['acacc_name'];
+        echo $companyAccountName;
+
+
+    }
 
 }
 

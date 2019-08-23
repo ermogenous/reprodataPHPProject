@@ -78,7 +78,8 @@ $table->generate_data();
             Total Active: <?php echo $totalUsers['clo_total_users'];?>
             Total Users: <?php echo $table->total_rows;?>
         </div>
-        <div class="col-2"></div>
+        <div class="col-2">
+        </div>
     </div>
 </div>
 <script>

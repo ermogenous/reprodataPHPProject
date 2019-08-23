@@ -39,7 +39,7 @@ if ($_GET['pid'] > 0) {
                         <thead class="alert alert-success">
                         <tr>
                             <th scope="col"><?php $table->display_order_links('ID', 'inapit_policy_item_ID'); ?></th>
-                            <?php if ($_GET['type'] == 'Vehicles') { ?>
+                            <?php if ($_GET['type'] == 'Vehicle') { ?>
                                 <th scope="col"><?php $table->display_order_links($db->showLangText('Registration','Αρ.Εγγραφής'), 'inapit_vh_registration'); ?></th>
                                 <th scope="col"><?php $table->display_order_links($db->showLangText('Make','Κατασκευαστής'), 'inaic_name'); ?></th>
                                 <th scope="col"><?php $table->display_order_links($db->showLangText('Model','Μοντέλο'), 'inapit_vh_model'); ?></th>
@@ -68,7 +68,7 @@ if ($_GET['pid'] > 0) {
                             ?>
                             <tr onclick="editLine(<?php echo $row["inapit_policy_item_ID"] . "," . $_GET['pid'] . ",'" . $_GET['type'] . "'"; ?>);">
                                 <th scope="row"><?php echo $row["inapit_policy_item_ID"]; ?></th>
-                                <?php if ($_GET['type'] == 'Vehicles') { ?>
+                                <?php if ($_GET['type'] == 'Vehicle') { ?>
 
                                     <td><?php echo $row["inapit_vh_registration"]; ?></td>
                                     <td><?php echo $row["inaic_name"]; ?></td>

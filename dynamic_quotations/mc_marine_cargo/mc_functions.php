@@ -167,7 +167,7 @@ function mc_shipment_details_3()
         </label>
         <div class="col-sm-8">
             <select name="3_oqqit_rate_2" id="3_oqqit_rate_2"
-                    class="form-control">
+                    class="form-control" onchange="autoUpdateExchangeRate();">
                 <option value=""></option>
                 <?php
                 $sql = "SELECT * FROM codes WHERE cde_type = 'Currency' ORDER BY cde_value ASC";
@@ -191,11 +191,23 @@ function mc_shipment_details_3()
         </div>
     </div>
 
+    <script>
+        //update the exchange rate to 1 only if currency selected is EUR
+        function autoUpdateExchangeRate(){
+            let currency = $('#3_oqqit_rate_2').val();
+            console.log('#' + currency + '#');
+            if (currency == 'EUR'){
+                console.log('EUR');
+                $('#3_oqqit_rate_5').val('1');
+            }
+        }
+    </script>
+
     <div class="form-group row">
-        <label for="3_oqqit_rate_3" class="col-4">
+        <label for="3_oqqit_rate_3" class="col-sm-4">
             <?php show_quotation_text("Insured Value", "Insured Value"); ?>
         </label>
-        <div class="col-4">
+        <div class="col-sm-3">
             <input name="3_oqqit_rate_3" type="text" id="3_oqqit_rate_3"
                    class="form-control"
                    value="<?php echo $qitem_data["oqqit_rate_3"]; ?>">
@@ -206,6 +218,24 @@ function mc_shipment_details_3()
                     'fieldDataType' => 'integer',
                     'required' => true,
                     'invalidText' => show_quotation_text("Συμπληρώστε Insured Value.", "Must Enter Insured Value (Integer)no comma`s, no dots.", 'Return')
+                ]);
+            ?>
+        </div>
+
+        <label for="3_oqqit_rate_5" class="col-sm-3">
+            <?php show_quotation_text("Exchange Rate", "Exchange Rate"); ?>
+        </label>
+        <div class="col-sm-2">
+            <input name="3_oqqit_rate_5" type="text" id="3_oqqit_rate_5"
+                   class="form-control"
+                   value="<?php echo $qitem_data["oqqit_rate_5"]; ?>">
+            <?php
+            $formValidator->addField(
+                [
+                    'fieldName' => '3_oqqit_rate_5',
+                    'fieldDataType' => 'number',
+                    'required' => true,
+                    'invalidText' => show_quotation_text("Συμπληρώστε Exchange Rate.", "Must Enter Exchange Rate (Decimal)", 'Return')
                 ]);
             ?>
         </div>
@@ -387,7 +417,7 @@ function mc_shipment_details_3()
         </div>
     </div>
 
-    <div class="form-group row" id="ocean-vessel-name-div">
+    <div class="form-group row">
         <label for="3_oqqit_rate_14" class="col-4">
             <?php show_quotation_text("City of Origin", "City of Origin"); ?>
         </label>
@@ -477,7 +507,7 @@ function mc_shipment_details_3()
         </div>
     </div>
 
-    <div class="form-group row" id="ocean-vessel-name-div">
+    <div class="form-group row">
         <label for="3_oqqit_rate_15" class="col-4">
             <?php show_quotation_text("Destination City", "Destination City"); ?>
         </label>
@@ -497,7 +527,7 @@ function mc_shipment_details_3()
         </div>
     </div>
 
-    <div class="form-group row" id="ocean-vessel-name-div">
+    <div class="form-group row">
         <label for="3_oqqit_date_1" class="col-4">
             <?php show_quotation_text("Shipment Date", "Shipment Date"); ?>
         </label>
@@ -526,6 +556,25 @@ function mc_cargo_details_4()
 {
     global $db, $items_data, $qitem_data, $formValidator, $underwriter;
     ?>
+
+    <div class="form-group row">
+        <label for="4_oqqit_rate_7" class="col-4">
+            <?php show_quotation_text("Reference", "Reference"); ?>
+        </label>
+        <div class="col-8">
+            <input name="4_oqqit_rate_7" type="text" id="4_oqqit_rate_7"
+                   class="form-control"
+                   value="<?php echo $qitem_data["oqqit_rate_7"]; ?>">
+            <?php
+            $formValidator->addField(
+                [
+                    'fieldName' => '4_oqqit_rate_7',
+                    'fieldDataType' => 'text',
+                    'required' => false
+                ]);
+            ?>
+        </div>
+    </div>
 
     <div class="form-group row">
         <label for="4_oqqit_rate_5" class="col-sm-4 col-form-label">
@@ -622,6 +671,82 @@ function mc_cargo_details_4()
         </div>
     </div>
     <?php }//show if user rights <= 2 ?>
+
+    <?php
+    if ($db->user_data['usr_user_rights'] <= 2) { ?>
+    <div class="form-group row">
+        <label for="4_oqqit_rate_8" class="col-sm-4 col-form-label">
+            <?php show_quotation_text("Rate", "Rate"); ?>
+        </label>
+        <div class="col-sm-8">
+            <input type="text" name="4_oqqit_rate_8" id="4_oqqit_rate_8"
+                      class="form-control" value="<?php echo $qitem_data['oqqit_rate_8']; ?>">
+            <?php
+            $formValidator->addField(
+                [
+                    'fieldName' => '4_oqqit_rate_8',
+                    'fieldDataType' => 'number',
+                    'required' => false,
+                    'invalidText' => show_quotation_text("Συμπληρώστε Rate.", "Must Fill Rate", 'Return')
+                ]);
+            ?>
+        </div>
+    </div>
+    <?php }//show if user rights <= 2
+    else {
+        ?>
+        <input type="hidden" id="4_oqqit_rate_8" name="4_oqqit_rate_8" value="<?php echo $qitem_data['oqqit_rate_8']; ?>">
+        <?php
+    }//if user rights > 2 then show this
+    ?>
+
+        <script>
+            function updateRate(){
+                let commodity = $('#3_oqqit_rate_4').val();
+                let clause = $('input[name=3_oqqit_rate_13]:checked', '#myForm').val();
+                let rate = 0;
+                if (commodity == 'General Cargo & Merchandise'){
+                    rate = '<?php echo $underwriter["oqun_excess_general_cargo_rate"];?>';
+                }
+                else if (commodity == 'New/Used Vehicles'){
+                    rate = '<?php echo $underwriter["oqun_excess_vehicles_rate"];?>';
+                }
+                else if (commodity == 'Machinery'){
+                    rate = '<?php echo $underwriter["oqun_excess_machinery_rate"];?>';
+                }
+                else if (commodity == 'Temp. Controlled Cargo other than meat'){
+                    rate = '<?php echo $underwriter["oqun_excess_temp_no_meat_rate"];?>';
+                }
+                else if (commodity == 'Temp. Controlled Cargo Meat'){
+                    rate = '<?php echo $underwriter["oqun_excess_temp_meat_rate"];?>';
+                }
+                else if (commodity == 'Special Cover Mobile Phones, Electronic Equipment'){
+                    rate = '<?php echo $underwriter["oqun_excess_special_cover_rate"];?>';
+                }
+                else if (commodity == 'Personal Effects professionally packed'){
+                    rate = '<?php echo $underwriter["oqun_excess_pro_packed_rate"];?>';
+                }
+                else if (commodity == 'Personal Effects owner packed'){
+                    rate = '<?php echo $underwriter["oqun_excess_owner_packed_rate"];?>';
+                }
+                else if (commodity == 'Other'){
+                    rate = '<?php echo $underwriter["oqun_excess_other_rate"];?>';
+                }
+
+                if (clause == 'Clause C'){
+                    rate = '<?php echo $underwriter["oqun_icc_c_rate"];?>';
+                }
+                $('#4_oqqit_rate_8').val(rate);
+            }
+            //add event to commodity and conditions of insurance on change
+            $("#3_oqqit_rate_4").change(function(){
+                updateRate();
+            });
+            $("input[name=3_oqqit_rate_13]","#myForm").change(function(){
+                updateRate();
+            });
+        </script>
+
 
     <?php
 }
