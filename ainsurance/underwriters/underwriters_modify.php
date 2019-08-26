@@ -213,6 +213,38 @@ $formValidator = new customFormValidator();
                             Applies only to advanced accounts.
                         </div>
                     </div>
+
+                    <div class="row">
+                        <label for="fld_subagent_acc_ID" class="col-sm-4 col-form-label">Sub Agent Account</label>
+                        <div class="col-8">
+                            <select name="fld_subagent_acc_ID" id="fld_subagent_acc_ID"
+                                    class="form-control"
+                                    required>
+                                <option value=""></option>
+                                <?php
+                                $btResult = $db->query("
+                              SELECT * FROM ac_accounts 
+                              WHERE acacc_control = 0");
+                                while ($bt = $db->fetch_assoc($btResult)) {
+
+                                    ?>
+                                    <option value="<?php echo $bt['acacc_account_ID']; ?>"
+                                        <?php if ($bt['acacc_account_ID'] == $data['inaund_subagent_acc_ID']) echo 'selected'; ?>>
+                                        <?php echo $bt['acacc_code']." - ".$bt['acacc_name']; ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_subagent_acc_ID",
+                                "fieldDataType" => "select",
+                                "required" => false,
+                            ]);
+                            ?>
+                        </div>
+
+                    </div>
+
                     <div class="row">
                         <div class="col-12">
                             If advanced accounts and not sub agent then the commissions percentages for each company are not used.<br>

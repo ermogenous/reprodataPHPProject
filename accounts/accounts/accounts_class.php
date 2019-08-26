@@ -43,6 +43,25 @@ class AdvAccounts {
 
     }
 
+    /**
+     * @param $headerData -> [documentID,accountID,comments,fromModule,fromIDDescription,fromID]
+     * @param $linesData -> 2D Array [num][accountID,type,amount,reference]
+     * @return mixed
+     * List of transactions.
+     * accountID
+     * type -> Dr or Cr
+     * amount -> decimal value
+     * reference -> text
+     * example
+     * [1][accountID]
+     * [1][Dr]
+     * [1][10]
+     * [2][accountID]
+     * [2][Cr]
+     * [2][10]
+     */
+
+
     //GET FUNCTIONS
     public function getAccountID(){
         return $this->accountID;

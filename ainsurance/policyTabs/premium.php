@@ -8,6 +8,7 @@
 
 include("../../include/main.php");
 include('../policy_class.php');
+include("../../accounts/accounts/accounts_class.php");
 
 $db = new Main(1, 'UTF-8');
 $db->admin_title = "AInsurance Policy Items Premium";
@@ -28,6 +29,7 @@ if ($_POST['action'] == 'update') {
 
 //$data = $db->query_fetch("SELECT * FROM ina_policies WHERE inapol_policy_ID = " . $_GET['pid']);
 $policy = new Policy($_GET['pid']);
+$policyUnderwriter = $policy->getPolicyUnderwriterData();
 
 $db->show_empty_header();
 
@@ -110,6 +112,20 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                                 commission = commission.toFixed(2);
                                 $('#fld_commission').val(commission);
 
+                                //sub agent commission
+                                if (-1 == <?php echo $policyUnderwriter['inaund_subagent_ID'];?>){
+                                    console.log('Sub Agent exists');
+
+                                    let subCommPercent = '<?php echo $policyUnderwriter['clo_commission_percent'];?>';
+                                    subCommPercent = subCommPercent * 1;
+                                    let subCommission = 0;
+
+                                    subCommission = (premium * subCommPercent) / 100;
+                                    subCommission = subCommission.toFixed(2);
+                                    $('#fld_subagent_commission').val(subCommission);
+
+                                }
+
                             }
                         </script>
                     </div>
@@ -178,10 +194,30 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
 
                     </div>
 
+                    <?php
+                    if ($policyUnderwriter['inaund_subagent_ID'] == -1){
+                    ?>
                     <div class="form-group row">
-
-
+                        <label for="fld_subagent_commission"  class="col-sm-9 text-right col-form-label">
+                            Sub Agent Commission: <?php echo $policyUnderwriter['usr_name']." ".$policyUnderwriter['clo_commission_percent']."%";?>
+                        </label>
+                        <div class="col-sm-3">
+                            <input type="text" id="fld_subagent_commission" name="fld_subagent_commission"
+                                   class="form-control"
+                                   required onchange="updateGrossPremium();"
+                                   value="<?php echo $policy->policyData["inapol_subagent_commission"]; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_subagent_commission',
+                                    'fieldDataType' => 'number',
+                                    'required' => true,
+                                    'invalidText' => 'Sub Agent Commission is Required'
+                                ]);
+                            ?>
+                        </div>
                     </div>
+                    <?php } ?>
 
                     <div class="form-group row">
                         <div class="col-sm-5 col-form-label"></div>
@@ -226,8 +262,17 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
 
                     <div class="row">
                         <div class="col-sm-12">
+                            Accounts Transactions Console
+                            <textarea disabled style="width: 100%" rows="5"><?php
+                                if ($policy->policyData['inapol_status'] == 'Outstanding') {
+                                    $transactionData = $policy->getAccountTransactionsList();
+                                    foreach ($transactionData as $num => $trans){
+                                        echo $num." ".$trans['type']." - ".$trans['code']."-".$trans['name']." ".$trans['amount']."\n";
+                                    }
+                                }
+                                ?></textarea>
                             <?php
-                            $policy->getAccountTransactionsList();
+
                             ?>
                         </div>
                     </div>

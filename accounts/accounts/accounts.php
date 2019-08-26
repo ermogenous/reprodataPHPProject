@@ -8,7 +8,7 @@ $db->admin_title = "Accounts";
 $db->show_header();
 
 $table = new draw_table('ac_accounts','acacc_code','ASC');
-
+$table->per_page = 100;
 $table->generate_data();
 
 ?>

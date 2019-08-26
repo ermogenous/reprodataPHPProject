@@ -50,6 +50,20 @@ if ($_GET['action'] == 'delete') {
     }
 }
 
+if ($_GET['action'] == 'activate') {
+    $db->start_transaction();
+    $transaction = new AccountsTransaction($_GET['lid']);
+    if ($transaction->activateTransaction() == true) {
+        $db->generateSessionAlertSuccess('Transaction activated successfully');
+        $db->commit_transaction();
+        header("Location: transactions.php");
+        exit();
+    } else {
+        $db->generateAlertError($transaction->errorDescription);
+        $db->rollback_transaction();
+    }
+}
+
 
 if ($_GET['lid'] == '') {
     header('Location: transactions.php');
@@ -132,9 +146,9 @@ $db->show_header();
                                         class="btn inapolCancelledColor" onclick="unlockTransaction();">
                                     UnLock
                                 </button>
-                                <button type="button" value="Post" style="width: 150px;"
-                                        class="btn inapolEndorsenentColor" onclick="postTransaction();">
-                                    Post
+                                <button type="button" value="Activate" style="width: 150px;"
+                                        class="btn inapolEndorsenentColor" onclick="activateTransaction();">
+                                    Activate
                                 </button>
                                 <?php
                             }
@@ -177,9 +191,9 @@ $db->show_header();
             window.location.assign('transaction_modify.php?lid=<?php echo $_GET['lid'];?>');
         }
 
-        function postTransaction() {
-            if (confirm('Are you sure you want to UnLock this Transaction?')) {
-                window.location.assign('?action=post&pid=<?php echo $_GET['lid'];?>');
+        function activateTransaction() {
+            if (confirm('Are you sure you want to Activate this Transaction?')) {
+                window.location.assign('?action=activate&lid=<?php echo $_GET['lid'];?>');
             }
         }
 

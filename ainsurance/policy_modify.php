@@ -633,7 +633,7 @@ $db->show_header();
                                  aria-labelledby="prem-tab">
                                 <iframe src="policyTabs/premium.php?pid=<?php echo $_GET["lid"] . "&type=" . $policy->getInputType(); ?>"
                                         frameborder="0" id="premTab" name="premTab"
-                                        scrolling="0" width="100%" height="400"> </iframe>
+                                        scrolling="0" width="100%" height="450"> </iframe>
                             </div>
 
                             <div class="tab-pane fade" id="installments" role="tabpanel"

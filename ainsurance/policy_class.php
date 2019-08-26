@@ -23,9 +23,11 @@ class Policy
     private $totalItems = 0;
     public $companyCommission;//holds the commission % based on the underwriter/type/company
     public $commissionCalculation;
+    private $insuranceSettings;
 
     public $error = false;
     public $errorDescription;
+
 
     //Accounts
     private $accountsUsed;
@@ -34,6 +36,14 @@ class Policy
     {
         global $db;
         $this->policyID = $policyID;
+
+        //check what type of accounts this has from settings
+        $this->accountsUsed = $db->get_setting('ac_advanced_accounts_enable');
+        if ($this->accountsUsed == 1) {
+            $this->accountsUsed = 'Advanced';
+        }
+        $this->loadInsuranceSettings();
+
         $result = $db->query('
           SELECT * FROM 
           ina_policies 
@@ -43,24 +53,36 @@ class Policy
           inapol_underwriter_ID ' . $this->getAgentWhereClauseSql() . '
           AND inapol_policy_ID = ' . $policyID);
         $this->policyData = $db->fetch_assoc($result);
-
-        //find the underwriter company commission record
-        $sql = "SELECT
-        *
-        FROM
-        ina_underwriter_companies
-        WHERE inaunc_underwriter_ID = ".$this->policyData['inapol_underwriter_ID']."
-        AND inaunc_insurance_company_ID = ".$this->policyData['inapol_insurance_company_ID'];
-        $commData = $db->query_fetch($sql);
-        $typeCode = strtolower($this->policyData['inapol_type_code']);
-        $this->companyCommission = $commData['inaunc_commission_'.$typeCode];
-        $this->commissionCalculation = $commData['inaunc_commission_calculation'];
-
         //if no record then redirect to policies for security
         if ($db->num_rows($result) < 1) {
             header("Location: policies.php?notAllowed");
             exit();
         }
+
+
+        //get the company commission
+        //if advanced accounts then get it from companies
+        //if not advanced accounts then get it from the underwriter
+        $typeCode = strtolower($this->policyData['inapol_type_code']);
+        if ($this->accountsUsed == 'Advanced') {
+
+            $this->companyCommission = $this->policyData['inainc_commission_' . $typeCode];
+
+        } else {
+
+            //find the underwriter company commission record
+            $sql = "SELECT
+                    *
+                    FROM
+                    ina_underwriter_companies
+                    WHERE inaunc_underwriter_ID = " . $this->policyData['inapol_underwriter_ID'] . "
+                    AND inaunc_insurance_company_ID = " . $this->policyData['inapol_insurance_company_ID'];
+            $commData = $db->query_fetch($sql);
+            $this->companyCommission = $commData['inaunc_commission_' . $typeCode];
+
+        }
+
+        $this->commissionCalculation = $commData['inaunc_commission_calculation'];
 
         $this->installmentID = $this->policyData['inapol_installment_ID'];
 
@@ -70,12 +92,6 @@ class Policy
 
         $result = $db->query_fetch('SELECT COUNT(*)as clo_total FROM ina_policy_items WHERE inapit_policy_ID = ' . $this->policyID);
         $this->totalItems = $result['clo_total'];
-
-        //check what type of accounts this has from settings
-        $this->accountsUsed = $db->get_setting('ac_advanced_accounts_enable');
-        if ($this->accountsUsed == 1){
-            $this->accountsUsed = 'Advanced';
-        }
 
     }
 
@@ -126,6 +142,28 @@ class Policy
         $sql = "SELECT * FROM ina_underwriters WHERE inaund_user_ID = " . $db->user_data['usr_users_ID'];
         return $db->query_fetch($sql);
 
+    }
+
+    public function getPolicyUnderwriterData()
+    {
+        global $db;
+
+        $sql = "SELECT * FROM 
+                  ina_underwriters 
+                  JOIN users ON usr_users_ID = inaund_user_ID
+                  WHERE inaund_underwriter_ID = " . $this->policyData['inapol_underwriter_ID'];
+        $data = $db->query_fetch($sql);
+
+        //get commission
+        $typeCode = strtolower($this->policyData['inapol_type_code']);
+        $sql = "SELECT * FROM
+                  ina_underwriter_companies 
+                  WHERE
+                  inaunc_underwriter_ID = " . $this->policyData['inapol_underwriter_ID'] . "
+                  AND inaunc_insurance_company_ID = " . $this->policyData['inapol_insurance_company_ID'];
+        $commData = $db->query_fetch($sql);
+        $data['clo_commission_percent'] = $commData['inaunc_commission_' . $typeCode];
+        return $data;
     }
 
     public function getPeriodTotalPremiums()
@@ -232,28 +270,21 @@ class Policy
     {
         global $db;
         if ($this->policyData['inapol_type_code'] == 'Motor') {
-            return $db->showLangText('Vehicles','Αυτοκίνητα');
-        }
-        else if ($this->policyData['inapol_type_code'] == 'Fire') {
-            return $db->showLangText('Risk Location','Τοποθεσία Κινδύνου');
-        }
-        else if ($this->policyData['inapol_type_code'] == 'PA') {
-            return $db->showLangText('Members','Άτομα');
-        }
-        else if ($this->policyData['inapol_type_code'] == 'EL') {
-            return $db->showLangText('Members','Άτομα');
-        }
-        else if ($this->policyData['inapol_type_code'] == 'PI') {
-            return $db->showLangText('Members','Άτομα');
-        }
-        else if ($this->policyData['inapol_type_code'] == 'PL') {
-            return $db->showLangText('Risk Location','Τοποθεσία Κινδύνου');
-        }
-        else if ($this->policyData['inapol_type_code'] == 'Medical') {
-            return $db->showLangText('Members','Άτομα');
-        }
-        else if ($this->policyData['inapol_type_code'] == 'Travel') {
-            return $db->showLangText('Members','Άτομα');
+            return $db->showLangText('Vehicles', 'Αυτοκίνητα');
+        } else if ($this->policyData['inapol_type_code'] == 'Fire') {
+            return $db->showLangText('Risk Location', 'Τοποθεσία Κινδύνου');
+        } else if ($this->policyData['inapol_type_code'] == 'PA') {
+            return $db->showLangText('Members', 'Άτομα');
+        } else if ($this->policyData['inapol_type_code'] == 'EL') {
+            return $db->showLangText('Members', 'Άτομα');
+        } else if ($this->policyData['inapol_type_code'] == 'PI') {
+            return $db->showLangText('Members', 'Άτομα');
+        } else if ($this->policyData['inapol_type_code'] == 'PL') {
+            return $db->showLangText('Risk Location', 'Τοποθεσία Κινδύνου');
+        } else if ($this->policyData['inapol_type_code'] == 'Medical') {
+            return $db->showLangText('Members', 'Άτομα');
+        } else if ($this->policyData['inapol_type_code'] == 'Travel') {
+            return $db->showLangText('Members', 'Άτομα');
         }
 
         return $this->policyData['inapol_type_code'];
@@ -264,23 +295,17 @@ class Policy
     {
         if ($this->policyData['inapol_type_code'] == 'Motor') {
             return 'Vehicle';
-        }
-        else if ($this->policyData['inapol_type_code'] == 'Fire') {
+        } else if ($this->policyData['inapol_type_code'] == 'Fire') {
             return 'RiskLocation';
-        }
-        else if ($this->policyData['inapol_type_code'] == 'PA') {
+        } else if ($this->policyData['inapol_type_code'] == 'PA') {
             return 'Member';
-        }
-        else if ($this->policyData['inapol_type_code'] == 'EL') {
+        } else if ($this->policyData['inapol_type_code'] == 'EL') {
             return 'Member';
-        }
-        else if ($this->policyData['inapol_type_code'] == 'PI') {
+        } else if ($this->policyData['inapol_type_code'] == 'PI') {
             return 'Member';
-        }
-        else if ($this->policyData['inapol_type_code'] == 'PL') {
+        } else if ($this->policyData['inapol_type_code'] == 'PL') {
             return 'RiskLocation';
-        }
-        else if ($this->policyData['inapol_type_code'] == 'Medical') {
+        } else if ($this->policyData['inapol_type_code'] == 'Medical') {
             return 'Member';
         }
 
@@ -446,6 +471,11 @@ class Policy
                     'execute',
                     'inapol_');
 
+            }
+
+            //if advanced accounts send the transactions for commissions and sub agent commissions
+            if ($this->accountsUsed == 'Advanced'){
+                $this->insertAccountTransactions();
             }
         }
 
@@ -619,7 +649,7 @@ class Policy
             FROM
             ina_policies
             WHERE
-            inapol_installment_ID = '.$this->policyData['inapol_installment_ID'];
+            inapol_installment_ID = ' . $this->policyData['inapol_installment_ID'];
         $totalAmounts = $db->query_fetch($sql);
 
         $newData['inapol_premium'] = $totalAmounts['clo_premium'];
@@ -665,8 +695,8 @@ class Policy
             unset($newItemData['inapit_policy_item_ID']);
 
             //remove all the empty fields
-            foreach($newItemData as $name => $value){
-                if ($value == ''){
+            foreach ($newItemData as $name => $value) {
+                if ($value == '') {
                     unset($newItemData[$name]);
                 }
             }
@@ -1144,28 +1174,119 @@ class Policy
         }
     }
 
-    public function getAccountTransactionsList(){
+    private function loadInsuranceSettings()
+    {
+        global $db;
+        $this->insuranceSettings = $db->query_fetch('SELECT * FROM ina_settings');
+    }
+
+    public function getAccountTransactionsList()
+    {
         global $db;
 
-        if ($this->accountsUsed != 'Advanced'){
+        if ($this->accountsUsed != 'Advanced') {
             $this->errorDescription = 'Advanced Accounts are not enabled';
-            return '';
+            return [
+                "Error" => $this->errorDescription
+            ];
         }
 
-        if ($this->policyData['inainc_account_ID'] == ''){
+        if ($this->insuranceSettings['inaset_enable_acc_transactions'] != 1) {
+            $this->errorDescription = 'Auto Generate Accounting transactions is set to NO';
+            return [
+                "Error" => $this->errorDescription
+            ];
+        }
+
+        if ($this->policyData['inainc_account_ID'] == '') {
             $this->error = true;
             $this->errorDescription = 'No account defined for this company';
-            return $this->errorDescription;
+            return [
+                "Error" => $this->errorDescription
+            ];
         }
 
         //Company transactions
-        $companyAccountID = $this->policyData['inainc_account_ID'];
+        //1. Debit
+        $companyDrAccountID = $this->insuranceSettings['inaset_ins_comp_dr_acc_ID'];
+        $companyDrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $companyDrAccountID);
+        $companyDrAccountName = $companyDrAccountDetails['acacc_name'];
+        $companyDrAccountCode = $companyDrAccountDetails['acacc_code'];
+        $result[1]['type'] = 'Dr';
+        $result[1]['name'] = $companyDrAccountName;
+        $result[1]['code'] = $companyDrAccountCode;
+        $result[1]['accountID'] = $companyDrAccountID;
+        $result[1]['amount'] = $this->policyData['inapol_commission'];
+        //echo "Dr Account: ".$companyDrAccountCode." - ".$companyDrAccountName." Amount:".$result[1]['ammount']."<br>";
+
+        //2. Credit
+        $companyCrAccountID = $this->policyData['inainc_account_ID'];
         //get the name of the account
-        $companyAccountName = $db->query_fetch('SELECT acacc_name FROM ac_accounts WHERE acacc_account_ID = '.$companyAccountID);
-        $companyAccountName = $companyAccountName['acacc_name'];
-        echo $companyAccountName;
+        $companyCrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $companyCrAccountID);
+        $companyCrAccountName = $companyCrAccountDetails['acacc_name'];
+        $companyCrAccountCode = $companyCrAccountDetails['acacc_code'];
+        $result[2]['type'] = 'Cr';
+        $result[2]['name'] = $companyCrAccountName;
+        $result[2]['code'] = $companyCrAccountCode;
+        $result[2]['accountID'] = $companyCrAccountID;
+        $result[2]['amount'] = $this->policyData['inapol_commission'];
+        //echo "Cr Account: ".$companyCrAccountCode.' - '.$companyCrAccountName." Amount:".$result[2]['ammount']."<br>";
+
+        //Sub Agent Transactions
+        //First check if the agent is sub agent
+        $underwriterData = $this->getPolicyUnderwriterData();
+        //if -1 then is top sub agent
+        if ($underwriterData['inaund_subagent_ID'] == -1) {
+
+            //1.Dr
+            $subAgentDrAccountID = $underwriterData['inaund_subagent_acc_ID'];
+            $subAgentDrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $subAgentDrAccountID);
+            $subAgentDrAccountName = $subAgentDrAccountDetails['acacc_name'];
+            $subAgentDrAccountCode = $subAgentDrAccountDetails['acacc_code'];
+            $result[3]['type'] = 'Dr';
+            $result[3]['name'] = $subAgentDrAccountName;
+            $result[3]['code'] = $subAgentDrAccountCode;
+            $result[3]['accountID'] = $subAgentDrAccountID;
+            $result[3]['amount'] = $this->policyData['inapol_subagent_commission'];
+            //echo "<br>Dr Account: ".$subAgentDrAccountCode.' - '.$subAgentDrAccountName." Amount:".$result[3]['ammount']."<br>";
+
+            //2.Cr
+            $subAgentCrAccountID = $this->insuranceSettings['inaset_sub_agent_cr_acc_ID'];
+            $subAgentCrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $subAgentCrAccountID);
+            $subAgentCrAccountName = $subAgentCrAccountDetails['acacc_name'];
+            $subAgentCrAccountCode = $subAgentCrAccountDetails['acacc_code'];
+            $result[4]['type'] = 'Cr';
+            $result[4]['name'] = $subAgentCrAccountName;
+            $result[4]['code'] = $subAgentCrAccountCode;
+            $result[4]['accountID'] = $subAgentCrAccountID;
+            $result[4]['amount'] = $this->policyData['inapol_subagent_commission'];
+            //echo $result[4]['type']." Account: ".$subAgentCrAccountCode.' - '.$subAgentCrAccountName." Amount:".$result[4]['ammount']."<br>";
+
+        }
 
 
+        return $result;
+    }
+
+    private function insertAccountTransactions(){
+        global $db;
+        include('../accounts/transactions/transactions_class.php');
+
+        $transactions = $this->getAccountTransactionsList();
+        $headerData['documentID'] = $this->insuranceSettings['inaset_ins_comm_ac_document_ID'];
+        $headerData['accountID'] = $transactions[1]['accountID'];
+        $headerData['comments'] = 'Policy ID:'.$this->policyID." Commissions";
+        $headerData['fromModule'] = 'AInsurance';
+        $headerData['fromIDDescription'] = 'PolicyID';
+        $headerData['fromID'] = $this->policyID;
+
+        $transaction = new AccountsTransaction(0);
+        $result = $transaction->makeNewTransaction($headerData, $transactions);
+
+        if ($result == true){
+            $this->error = true;
+            $this->errorDescription = $transaction->errorDescription;
+        }
     }
 
 }

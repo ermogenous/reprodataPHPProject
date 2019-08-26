@@ -96,6 +96,29 @@ class AccountsTransaction
         return true;
     }
 
+    public function activateTransaction(){
+        global $db;
+
+        if ($this->transactionData['actrn_status'] != 'Locked'){
+            $this->error = true;
+            $this->errorDescription = 'Transaction must be locked to activate it';
+            return false;
+        }
+
+        //ALL OK PROCEED TO LOCK
+        $newData['status'] = 'Active';
+        $newData['activated_on'] = date('Y-m-d G:i:s');
+        $db->db_tool_update_row('ac_transactions', $newData,
+            'actrn_transaction_ID = '.$this->transactionID,
+            $this->transactionID,
+            '',
+            'execute',
+            'actrn_');
+
+        return true;
+
+    }
+
     public function unlockTransaction(){
         global $db;
         if ($this->transactionData['actrn_status'] != 'Locked'){
@@ -141,6 +164,106 @@ class AccountsTransaction
             'actrn_transaction_ID = '.$this->transactionID);
 
         return true;
+    }
+
+    public function makeNewTransaction($headerData,$linesData){
+        global $db;
+
+        $error['error'] = false;
+        $error['description'] = '';
+
+        //Validate the data
+        if ($headerData['documentID'] == ''){
+            $this->error = true;
+            $this->errorDescription = 'Must supply document ID';
+            return false;
+        }
+        if ($headerData['accountID'] == ''){
+            $this->error = true;
+            $this->errorDescription = 'Must supply account ID';
+            return false;
+        }
+
+        //Validate that all Dr/Cr leave a 0 balance
+        $dr = 0;
+        $cr = 0;
+
+        foreach ($linesData as $value){
+
+            if ($value['type'] == 'Dr'){
+                $dr += $value['amount'];
+            }
+            else if ($value['type'] == 'Cr'){
+                $cr += $value['amount'];
+            }
+            else {
+                $this->error = true;
+                $this->errorDescription = 'No value Dr/Cr is found';
+            }
+        }
+        if ($dr != $cr){
+            $this->error = true;
+            $this->errorDescription = 'Dr/Cr do not balance.';
+            return false;
+        }
+
+        //proceed to create the records
+        //1. create the header record in ac_transactions
+        $newData['document_ID'] = $headerData['documentID'];
+        $newData['account_ID'] = $headerData['accountID'];
+        $newData['comments'] = $headerData['comments'];
+        $newData['status'] = 'Outstanding';
+        $newData['transaction_date'] = date('Y-m-d');
+        $newData['reference_date'] = date('Y-m-d');
+        $newData['period'] = date('m');
+        $newData['year'] = date('Y');
+        $newData['from_module'] = $headerData['fromModule'];
+        $newData['from_ID_description'] = $headerData['fromIDDescription'];
+        $newData['from_ID'] = $headerData['fromID'];
+
+        //generate the number
+        $this->loadDocumentData($headerData['documentID']);
+        $newNumber = $db->buildNumber(
+            $this->documentData['acdoc_number_prefix'],
+            $this->documentData['acdoc_number_leading_zeros'],
+            $this->documentData['acdoc_number_last_used']);
+        //update the document
+        $docNewData['number_last_used'] = $this->documentData['acdoc_number_last_used']++;
+        $db->db_tool_update_row('ac_documents', $docNewData,
+            'acdoc_document_ID = '.$headerData['documentID'],
+            $headerData['documentID'],
+            '',
+            'execute',
+            'acdoc_');
+        $newData['transaction_number'] = $newNumber;
+
+        //insert the record
+        $newHeaderID = $db->db_tool_insert_row('ac_transactions', $newData,'',1,
+            'actrn_','execute');
+
+        $lineNumber = 0;
+        $drCr = 0;
+        foreach ($linesData as $value){
+            $lineNumber++;
+            if ($value['type'] == 'Dr'){
+                $drCr = 1;
+            }
+            else {
+                $drCr = -1;
+            }
+            $lineData['transaction_ID'] = $newHeaderID;
+            $lineData['account_ID'] = $value['accountID'];
+            $lineData['line_number'] = $lineNumber;
+            $lineData['dr_cr'] = $drCr;
+            $lineData['value'] = $value['amount'];
+            $lineData['reference'] = $value['reference'];
+
+            $db->db_tool_insert_row('ac_transaction_lines', $lineData,'',0,
+                'actrl_','execute');
+
+        }
+        return true;
+
     }
 
     public function insertAccountsTransaction($postData){

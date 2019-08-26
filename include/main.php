@@ -1842,11 +1842,10 @@ class Main
 
     function prepare_text_as_html($text)
     {
-        $return = str_replace("
-	", "
-	<br>", $text);
+        $return = str_replace(PHP_EOL, "<br>", $text);
 
-        $return = str_replace("\n", "\n<br>", $return);
+        $return = str_replace("\n", "<br>", $return);
+        $return = str_replace("\r", "<br>", $return);
         return $return;
     }
 

@@ -186,7 +186,8 @@ class customFormValidator
         }
 
 
-        $return = "FieldsErrors['" . $fieldData['fieldName'] . "'] = [];";
+        $return = "FieldsErrors['" . $fieldData['fieldName'] . "'] = [];
+        ";
         if ($fieldData['required'] == true) {
 
             //requiredAddedCustomCode

@@ -115,6 +115,12 @@ function template_header()
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/reports/statement.php">
                                     <i class="fas fa-table"></i> <?php echo $db->showLangText('Statement','Δήλωση Λογαριασμού');?></a>
 
+                                <?php if ($db->user_data["usr_user_rights"] == 0) { ?>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/ainsurance/ainsurance_settings.php">
+                                    <i class="fas fa-screwdriver"></i> <?php echo $db->showLangText('Settings','Ρυθμίσεις');?></a>
+                                <?php } ?>
+
                             </div>
                         </li>
                     <?php } ?>
