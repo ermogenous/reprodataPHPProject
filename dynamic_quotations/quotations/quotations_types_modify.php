@@ -718,6 +718,62 @@ $formValidator = new customFormValidator();
                                         </div>
                                     </div>
 
+                                    <div class="row">
+                                        <label for="fld_added_field_nationality" class="col-sm-3 col-form-label">
+                                            Nationality List:
+                                        </label>
+                                        <div class="col-sm-1">
+                                            <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                                   id="fld_added_field_nationality" name="fld_added_field_nationality"
+                                                <?php if ($data['oqqt_added_field_nationality'] == 1) echo 'checked'; ?>>
+                                        </div>
+                                        <label for="fld_added_field_nationality_required" class="col-sm-2 col-form-label">
+                                            Required:
+                                        </label>
+                                        <div class="col-sm-1">
+                                            <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                                   id="fld_added_field_nationality_required" name="fld_added_field_nationality_required"
+                                                <?php if ($data['oqqt_added_field_nationality_required'] == 1) echo 'checked'; ?>>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <label for="fld_added_field_dob" class="col-sm-3 col-form-label">
+                                            Date Of Birth:
+                                        </label>
+                                        <div class="col-sm-1">
+                                            <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                                   id="fld_added_field_dob" name="fld_added_field_dob"
+                                                <?php if ($data['oqqt_added_field_dob'] == 1) echo 'checked'; ?>>
+                                        </div>
+                                        <label for="fld_added_field_dob_required" class="col-sm-2 col-form-label">
+                                            Required:
+                                        </label>
+                                        <div class="col-sm-1">
+                                            <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                                   id="fld_added_field_dob_required" name="fld_added_field_dob_required"
+                                                <?php if ($data['oqqt_added_field_dob_required'] == 1) echo 'checked'; ?>>
+                                        </div>
+                                    </div>
+
+
+
+
+                                </div>
+
+                            </div>
+
+                            <div class="row">
+                                <label for="fld_identity_replace_text" class="col-sm-3 col-form-label">
+                                    Replace Identity Text with:
+                                </label>
+                                <div class="col-sm-7">
+                                    <input type="text" class="form-control"
+                                           id="fld_identity_replace_text" name="fld_identity_replace_text"
+                                           value="<?php echo $data['oqqt_identity_replace_text'];?>">
+                                </div>
+                                <div class="col-sm-2">
+                                    ENG||GRE
                                 </div>
                             </div>
 

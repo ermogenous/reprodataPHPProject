@@ -17,6 +17,8 @@ if ($_POST["action"] == "insert") {
 
     $_POST['fld_allow_quotations'] = '#1-' . $db->get_check_value($_POST['allow_mff']) . "#";
     $_POST['fld_allow_quotations'] .= '#2-' . $db->get_check_value($_POST['allow_mc']) . "#";
+    $_POST['fld_allow_quotations'] .= '#3-' . $db->get_check_value($_POST['allow_tr']) . "#";
+
 
     $db->db_tool_insert_row('oqt_quotations_underwriters', $_POST, 'fld_', 0, 'oqun_');
     $db->commit_transaction();
@@ -31,6 +33,24 @@ if ($_POST["action"] == "insert") {
 
     $_POST['fld_allow_quotations'] = '#1-' . $db->get_check_value($_POST['allow_mff']) . "#";
     $_POST['fld_allow_quotations'] .= '#2-' . $db->get_check_value($_POST['allow_mc']) . "#";
+    $_POST['fld_allow_quotations'] .= '#3-' . $db->get_check_value($_POST['allow_tr']) . "#";
+
+    $_POST['fld_tr_package_selection'] = '';
+    if ($_POST['packageBasic'] == 1){
+        $_POST['fld_tr_package_selection'] = '#basic#';
+    }
+    if ($_POST['packageStandard'] == 1){
+        $_POST['fld_tr_package_selection'] .= '#standard#';
+    }
+    if ($_POST['packageLuxury'] == 1){
+        $_POST['fld_tr_package_selection'] .= '#luxury#';
+    }
+    if ($_POST['packageSchengen'] == 1){
+        $_POST['fld_tr_package_selection'] .= '#schengen#';
+    }
+    if ($_POST['packageLimited'] == 1){
+        $_POST['fld_tr_package_selection'] .= '#limited#';
+    }
 
     //in case of change user
     //check if this user has quotations. if yes do not allow change
@@ -81,7 +101,6 @@ $formValidator = new customFormValidator();
                                 &nbsp;Quotation Underwriter</b>
                         </div>
                     </div>
-
 
                     <div class="form-group row">
                         <label for="fld_user_ID" class="col-sm-4 col-form-label">User</label>
@@ -145,437 +164,750 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
 
-                    <div class="row alert alert-success text-center">
-                        <div class="col-12">
-                            <b>Medical For Foreigners</b>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <label for="allow_mff" class="col-sm-4 col-form-label">
-                            Allow Medical For Foreigners
-                        </label>
-                        <div class="col-sm-1">
-                            <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
-                                   id="allow_mff" name="allow_mff"
-                                <?php if (strpos($data['oqun_allow_quotations'], '#1-1#') !== false) echo 'checked'; ?>>
-                        </div>
-                    </div>
+                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
 
-                    <div class="form-group row">
-                        <label for="fld_mf_age_restriction" class="col-sm-4 col-form-label">Age limit Inclusive</label>
-                        <div class="col-sm-4">
-                            <input name="fld_mf_age_restriction" type="text" id="fld_mf_age_restriction"
-                                   class="form-control"
-                                   value="<?php echo $data["oqun_mf_age_restriction"]; ?>">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="pills-medical-tab" data-toggle="pill" href="#pills-medical"
+                               role="tab"
+                               aria-controls="pills-medical" aria-selected="true">Medical For Foreigners</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-marine-tab" data-toggle="pill" href="#pills-marine"
+                               role="tab"
+                               aria-controls="pills-marine" aria-selected="true">Marine</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-travel-tab" data-toggle="pill" href="#pills-travel"
+                               role="tab"
+                               aria-controls="pills-travel" aria-selected="true">Travel</a>
+                        </li>
+
+                    </ul>
+
+                    <div class="tab-content" id="pills-tabContent">
+                        <div class="tab-pane fade show active" id="pills-medical" role="tabpanel"
+                             aria-labelledby="pills-medical-tab">
+                            <!-- MEDICAL FOR FOREIGNERS -->
+
+                            <div class="row alert alert-success text-center">
+                                <div class="col-12">
+                                    <b>Medical For Foreigners</b>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label for="allow_mff" class="col-sm-4 col-form-label">
+                                    Allow Medical For Foreigners
+                                </label>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                           id="allow_mff" name="allow_mff"
+                                        <?php if (strpos($data['oqun_allow_quotations'], '#1-1#') !== false) echo 'checked'; ?>>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="fld_mf_age_restriction" class="col-sm-4 col-form-label">Age limit
+                                    Inclusive</label>
+                                <div class="col-sm-4">
+                                    <input name="fld_mf_age_restriction" type="text" id="fld_mf_age_restriction"
+                                           class="form-control"
+                                           value="<?php echo $data["oqun_mf_age_restriction"]; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_mf_age_restriction",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Must provide a valid age limit",
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="tab-pane fade show" id="pills-marine" role="tabpanel"
+                             aria-labelledby="pills-marine-tab">
+                            <div class="row alert alert-success text-center">
+                                <div class="col-12">
+                                    <b>Marine Cargo</b>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label for="allow_mc" class="col-sm-4 col-form-label">
+                                    Allow Marine Cargo
+                                </label>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                           id="allow_mc" name="allow_mc"
+                                        <?php if (strpos($data['oqun_allow_quotations'], '#2-1#') !== false) echo 'checked'; ?>>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="fld_open_cover_number" class="col-sm-4 col-form-label">Open Cover
+                                    Number</label>
+                                <div class="col-sm-8">
+                                    <input name="fld_open_cover_number" type="text" id="fld_open_cover_number"
+                                           class="form-control"
+                                           value="<?php echo $data["oqun_open_cover_number"]; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_open_cover_number",
+                                        "fieldDataType" => "text",
+                                        "required" => false,
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
+
                             <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_mf_age_restriction",
-                                "fieldDataType" => "number",
-                                "required" => true,
-                                "invalidText" => "Must provide a valid age limit",
-                            ]);
+
+                            //default excesses
+                            $defExcGeneralCargo = $data["oqun_excess_general_cargo"] == '' ? 'Deductible €150 each and every loss.' : $data["oqun_excess_general_cargo"];
+                            $defExcVehicles = $data["oqun_excess_vehicles"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_vehicles"];
+                            $defExcMachinery = $data["oqun_excess_machinery"] == '' ? 'Deductible €150 each and every loss.' : $data["oqun_excess_machinery"];
+                            $defExcTempNoMeat = $data["oqun_excess_temp_no_meat"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_temp_no_meat"];
+                            $defExcTempMeat = $data["oqun_excess_temp_meat"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_temp_meat"];
+                            $defExcSpecialCover = $data["oqun_excess_special_cover"] == '' ? 'Deductible €250 or 1% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_special_cover"];
+                            $defExcProPacked = $data["oqun_excess_pro_packed"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_pro_packed"];
+                            $defExcOwnerPacked = $data["oqun_excess_owner_packed"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_owner_packed"];
+                            $defExcOther = $data["oqun_excess_general_cargo"] == '' ? '' : $data["oqun_excess_general_cargo"];
+
                             ?>
-                        </div>
-                    </div>
 
+                            <div class="form-group row">
+                                <label for="fld_excess_general_cargo" class="col-sm-5 col-form-label">Excess General
+                                    Cargo &
+                                    Merchandise</label>
+                                <div class="col-sm-5">
+                                    <input name="fld_excess_general_cargo" type="text" id="fld_excess_general_cargo"
+                                           class="form-control" maxlength="100"
+                                           value="<?php echo $defExcGeneralCargo; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_general_cargo",
+                                        "fieldDataType" => "text",
+                                        "required" => true,
+                                        "invalidText" => "Must provide excess",
+                                    ]);
+                                    ?>
+                                </div>
 
-                    <div class="row alert alert-success text-center">
-                        <div class="col-12">
-                            <b>Marine Cargo</b>
-                        </div>
-                    </div>
+                                <label for="fld_excess_general_cargo_rate" class="col-xl-1">Rate</label>
+                                <div class="col-xl-1">
+                                    <input name="fld_excess_general_cargo_rate" type="text"
+                                           id="fld_excess_general_cargo_rate"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_excess_general_cargo_rate']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_general_cargo_rate",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide rate",
+                                    ]);
+                                    ?>
+                                </div>
 
-                    <div class="row">
-                        <label for="allow_mc" class="col-sm-4 col-form-label">
-                            Allow Marine Cargo
-                        </label>
-                        <div class="col-sm-1">
-                            <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
-                                   id="allow_mc" name="allow_mc"
-                                <?php if (strpos($data['oqun_allow_quotations'], '#2-1#') !== false) echo 'checked'; ?>>
-                        </div>
-                    </div>
+                            </div>
 
-                    <div class="form-group row">
-                        <label for="fld_open_cover_number" class="col-sm-4 col-form-label">Open Cover Number</label>
-                        <div class="col-sm-8">
-                            <input name="fld_open_cover_number" type="text" id="fld_open_cover_number"
-                                   class="form-control"
-                                   value="<?php echo $data["oqun_open_cover_number"]; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_open_cover_number",
-                                "fieldDataType" => "text",
-                                "required" => false,
-                            ]);
-                            ?>
-                        </div>
-                    </div>
+                            <div class="form-group row">
+                                <label for="fld_excess_vehicles" class="col-sm-5 col-form-label">Excess New/Used
+                                    Vehicles</label>
+                                <div class="col-sm-5">
+                                    <input name="fld_excess_vehicles" type="text" id="fld_excess_vehicles"
+                                           class="form-control" maxlength="100"
+                                           value="<?php echo $defExcVehicles; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_vehicles",
+                                        "fieldDataType" => "text",
+                                        "required" => true,
+                                        "invalidText" => "Must provide excess",
+                                    ]);
+                                    ?>
+                                </div>
 
-                    <?php
+                                <label for="fld_excess_vehicles_rate" class="col-xl-1">Rate</label>
+                                <div class="col-xl-1">
+                                    <input name="fld_excess_vehicles_rate" type="text"
+                                           id="fld_excess_vehicles_rate"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_excess_vehicles_rate']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_vehicles_rate",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide rate",
+                                    ]);
+                                    ?>
+                                </div>
 
-                    //default excesses
-                    $defExcGeneralCargo = $data["oqun_excess_general_cargo"] == '' ? 'Deductible €150 each and every loss.' : $data["oqun_excess_general_cargo"];
-                    $defExcVehicles = $data["oqun_excess_vehicles"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_vehicles"];
-                    $defExcMachinery = $data["oqun_excess_machinery"] == '' ? 'Deductible €150 each and every loss.' : $data["oqun_excess_machinery"];
-                    $defExcTempNoMeat = $data["oqun_excess_temp_no_meat"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_temp_no_meat"];
-                    $defExcTempMeat = $data["oqun_excess_temp_meat"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_temp_meat"];
-                    $defExcSpecialCover = $data["oqun_excess_special_cover"] == '' ? 'Deductible €250 or 1% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_special_cover"];
-                    $defExcProPacked = $data["oqun_excess_pro_packed"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_pro_packed"];
-                    $defExcOwnerPacked = $data["oqun_excess_owner_packed"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_owner_packed"];
-                    $defExcOther = $data["oqun_excess_general_cargo"] == '' ? '' : $data["oqun_excess_general_cargo"];
+                            </div>
 
-                    ?>
+                            <div class="form-group row">
+                                <label for="fld_excess_machinery" class="col-sm-5 col-form-label">Excess
+                                    Machinery</label>
+                                <div class="col-sm-5">
+                                    <input name="fld_excess_machinery" type="text" id="fld_excess_machinery"
+                                           class="form-control" maxlength="100"
+                                           value="<?php echo $defExcMachinery; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_machinery",
+                                        "fieldDataType" => "text",
+                                        "required" => true,
+                                        "invalidText" => "Must provide excess",
+                                    ]);
+                                    ?>
+                                </div>
 
-                    <div class="form-group row">
-                        <label for="fld_excess_general_cargo" class="col-sm-5 col-form-label">Excess General Cargo &
-                            Merchandise</label>
-                        <div class="col-sm-5">
-                            <input name="fld_excess_general_cargo" type="text" id="fld_excess_general_cargo"
-                                   class="form-control" maxlength="100"
-                                   value="<?php echo $defExcGeneralCargo; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_excess_general_cargo",
-                                "fieldDataType" => "text",
-                                "required" => true,
-                                "invalidText" => "Must provide excess",
-                            ]);
-                            ?>
-                        </div>
+                                <label for="fld_excess_machinery_rate" class="col-xl-1">Rate</label>
+                                <div class="col-xl-1">
+                                    <input name="fld_excess_machinery_rate" type="text"
+                                           id="fld_excess_machinery_rate"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_excess_machinery_rate']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_machinery_rate",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide rate",
+                                    ]);
+                                    ?>
+                                </div>
 
-                        <label for="fld_excess_general_cargo_rate" class="col-xl-1">Rate</label>
-                        <div class="col-xl-1">
-                            <input name="fld_excess_general_cargo_rate" type="text"
-                                   id="fld_excess_general_cargo_rate"
-                                   class="form-control"
-                                   value="<?php echo $data['oqun_excess_general_cargo_rate']; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_excess_general_cargo_rate",
-                                "fieldDataType" => "number",
-                                "required" => true,
-                                "invalidText" => "Provide rate",
-                            ]);
-                            ?>
-                        </div>
+                            </div>
 
-                    </div>
+                            <div class="form-group row">
+                                <label for="fld_excess_temp_no_meat" class="col-sm-5 col-form-label">Excess
+                                    Temp.Controlled
+                                    Cargo other than meat</label>
+                                <div class="col-sm-5">
+                                    <input name="fld_excess_temp_no_meat" type="text" id="fld_excess_temp_no_meat"
+                                           class="form-control" maxlength="100"
+                                           value="<?php echo $defExcTempNoMeat; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_temp_no_meat",
+                                        "fieldDataType" => "text",
+                                        "required" => true,
+                                        "invalidText" => "Must provide excess",
+                                    ]);
+                                    ?>
+                                </div>
 
-                    <div class="form-group row">
-                        <label for="fld_excess_vehicles" class="col-sm-5 col-form-label">Excess New/Used
-                            Vehicles</label>
-                        <div class="col-sm-5">
-                            <input name="fld_excess_vehicles" type="text" id="fld_excess_vehicles"
-                                   class="form-control" maxlength="100"
-                                   value="<?php echo $defExcVehicles; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_excess_vehicles",
-                                "fieldDataType" => "text",
-                                "required" => true,
-                                "invalidText" => "Must provide excess",
-                            ]);
-                            ?>
-                        </div>
+                                <label for="fld_excess_temp_no_meat_rate" class="col-xl-1">Rate</label>
+                                <div class="col-xl-1">
+                                    <input name="fld_excess_temp_no_meat_rate" type="text"
+                                           id="fld_excess_temp_no_meat_rate"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_excess_temp_no_meat_rate']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_temp_no_meat_rate",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide rate",
+                                    ]);
+                                    ?>
+                                </div>
 
-                        <label for="fld_excess_vehicles_rate" class="col-xl-1">Rate</label>
-                        <div class="col-xl-1">
-                            <input name="fld_excess_vehicles_rate" type="text"
-                                   id="fld_excess_vehicles_rate"
-                                   class="form-control"
-                                   value="<?php echo $data['oqun_excess_vehicles_rate']; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_excess_vehicles_rate",
-                                "fieldDataType" => "number",
-                                "required" => true,
-                                "invalidText" => "Provide rate",
-                            ]);
-                            ?>
-                        </div>
+                            </div>
 
-                    </div>
+                            <div class="form-group row">
+                                <label for="fld_excess_temp_meat" class="col-sm-5 col-form-label">Excess Temp.Controlled
+                                    Cargo
+                                    meat</label>
+                                <div class="col-sm-5">
+                                    <input name="fld_excess_temp_meat" type="text" id="fld_excess_temp_meat"
+                                           class="form-control" maxlength="100"
+                                           value="<?php echo $defExcTempMeat; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_temp_meat",
+                                        "fieldDataType" => "text",
+                                        "required" => true,
+                                        "invalidText" => "Must provide excess",
+                                    ]);
+                                    ?>
+                                </div>
 
-                    <div class="form-group row">
-                        <label for="fld_excess_machinery" class="col-sm-5 col-form-label">Excess Machinery</label>
-                        <div class="col-sm-5">
-                            <input name="fld_excess_machinery" type="text" id="fld_excess_machinery"
-                                   class="form-control" maxlength="100"
-                                   value="<?php echo $defExcMachinery; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_excess_machinery",
-                                "fieldDataType" => "text",
-                                "required" => true,
-                                "invalidText" => "Must provide excess",
-                            ]);
-                            ?>
-                        </div>
+                                <label for="fld_excess_temp_meat_rate" class="col-xl-1">Rate</label>
+                                <div class="col-xl-1">
+                                    <input name="fld_excess_temp_meat_rate" type="text"
+                                           id="fld_excess_temp_meat_rate"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_excess_temp_meat_rate']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_temp_meat_rate",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide rate",
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
 
-                        <label for="fld_excess_machinery_rate" class="col-xl-1">Rate</label>
-                        <div class="col-xl-1">
-                            <input name="fld_excess_machinery_rate" type="text"
-                                   id="fld_excess_machinery_rate"
-                                   class="form-control"
-                                   value="<?php echo $data['oqun_excess_machinery_rate']; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_excess_machinery_rate",
-                                "fieldDataType" => "number",
-                                "required" => true,
-                                "invalidText" => "Provide rate",
-                            ]);
-                            ?>
-                        </div>
+                            <div class="form-group row">
+                                <label for="fld_excess_special_cover" class="col-sm-5 col-form-label">Excess Special
+                                    Cover
+                                    Mobile Phones, Electronic Equipment</label>
+                                <div class="col-sm-5">
+                                    <input name="fld_excess_special_cover" type="text" id="fld_excess_special_cover"
+                                           class="form-control" maxlength="100"
+                                           value="<?php echo $defExcSpecialCover; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_special_cover",
+                                        "fieldDataType" => "text",
+                                        "required" => true,
+                                        "invalidText" => "Must provide excess",
+                                    ]);
+                                    ?>
+                                </div>
 
-                    </div>
+                                <label for="fld_excess_special_cover_rate" class="col-xl-1">Rate</label>
+                                <div class="col-xl-1">
+                                    <input name="fld_excess_special_cover_rate" type="text"
+                                           id="fld_excess_special_cover_rate"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_excess_special_cover_rate']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_special_cover_rate",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide rate",
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
 
-                    <div class="form-group row">
-                        <label for="fld_excess_temp_no_meat" class="col-sm-5 col-form-label">Excess Temp.Controlled
-                            Cargo other than meat</label>
-                        <div class="col-sm-5">
-                            <input name="fld_excess_temp_no_meat" type="text" id="fld_excess_temp_no_meat"
-                                   class="form-control" maxlength="100"
-                                   value="<?php echo $defExcTempNoMeat; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_excess_temp_no_meat",
-                                "fieldDataType" => "text",
-                                "required" => true,
-                                "invalidText" => "Must provide excess",
-                            ]);
-                            ?>
-                        </div>
+                            <div class="form-group row">
+                                <label for="fld_excess_pro_packed" class="col-sm-5 col-form-label">Excess Personal
+                                    Effects
+                                    professionally packed</label>
+                                <div class="col-sm-5">
+                                    <input name="fld_excess_pro_packed" type="text" id="fld_excess_pro_packed"
+                                           class="form-control" maxlength="100"
+                                           value="<?php echo $defExcProPacked; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_pro_packed",
+                                        "fieldDataType" => "text",
+                                        "required" => true,
+                                        "invalidText" => "Must provide excess",
+                                    ]);
+                                    ?>
+                                </div>
 
-                        <label for="fld_excess_temp_no_meat_rate" class="col-xl-1">Rate</label>
-                        <div class="col-xl-1">
-                            <input name="fld_excess_temp_no_meat_rate" type="text"
-                                   id="fld_excess_temp_no_meat_rate"
-                                   class="form-control"
-                                   value="<?php echo $data['oqun_excess_temp_no_meat_rate']; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_excess_temp_no_meat_rate",
-                                "fieldDataType" => "number",
-                                "required" => true,
-                                "invalidText" => "Provide rate",
-                            ]);
-                            ?>
-                        </div>
+                                <label for="fld_excess_pro_packed_rate" class="col-xl-1">Rate</label>
+                                <div class="col-xl-1">
+                                    <input name="fld_excess_pro_packed_rate" type="text"
+                                           id="fld_excess_pro_packed_rate"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_excess_pro_packed_rate']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_pro_packed_rate",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide rate",
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
 
-                    </div>
+                            <div class="form-group row">
+                                <label for="fld_excess_owner_packed" class="col-sm-5 col-form-label">Excess Personal
+                                    Effects
+                                    owner packed</label>
+                                <div class="col-sm-5">
+                                    <input name="fld_excess_owner_packed" type="text" id="fld_excess_owner_packed"
+                                           class="form-control" maxlength="100"
+                                           value="<?php echo $defExcOwnerPacked; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_owner_packed",
+                                        "fieldDataType" => "text",
+                                        "required" => true,
+                                        "invalidText" => "Must provide excess",
+                                    ]);
+                                    ?>
+                                </div>
 
-                    <div class="form-group row">
-                        <label for="fld_excess_temp_meat" class="col-sm-5 col-form-label">Excess Temp.Controlled Cargo
-                            meat</label>
-                        <div class="col-sm-5">
-                            <input name="fld_excess_temp_meat" type="text" id="fld_excess_temp_meat"
-                                   class="form-control" maxlength="100"
-                                   value="<?php echo $defExcTempMeat; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_excess_temp_meat",
-                                "fieldDataType" => "text",
-                                "required" => true,
-                                "invalidText" => "Must provide excess",
-                            ]);
-                            ?>
-                        </div>
+                                <label for="fld_excess_owner_packed_rate" class="col-xl-1">Rate</label>
+                                <div class="col-xl-1">
+                                    <input name="fld_excess_owner_packed_rate" type="text"
+                                           id="fld_excess_owner_packed_rate"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_excess_owner_packed_rate']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_general_cargo_rate",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide rate",
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
 
-                        <label for="fld_excess_temp_meat_rate" class="col-xl-1">Rate</label>
-                        <div class="col-xl-1">
-                            <input name="fld_excess_temp_meat_rate" type="text"
-                                   id="fld_excess_temp_meat_rate"
-                                   class="form-control"
-                                   value="<?php echo $data['oqun_excess_temp_meat_rate']; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_excess_temp_meat_rate",
-                                "fieldDataType" => "number",
-                                "required" => true,
-                                "invalidText" => "Provide rate",
-                            ]);
-                            ?>
-                        </div>
-                    </div>
+                            <div class="form-group row">
+                                <label for="fld_excess_other" class="col-sm-5 col-form-label">Excess Other</label>
+                                <div class="col-sm-5">
+                                    <input name="fld_excess_other" type="text" id="fld_excess_other"
+                                           class="form-control" maxlength="100"
+                                           value="<?php echo $defExcOther; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_other",
+                                        "fieldDataType" => "text",
+                                        "required" => true,
+                                        "invalidText" => "Must provide excess",
+                                    ]);
+                                    ?>
+                                </div>
 
-                    <div class="form-group row">
-                        <label for="fld_excess_special_cover" class="col-sm-5 col-form-label">Excess Special Cover
-                            Mobile Phones, Electronic Equipment</label>
-                        <div class="col-sm-5">
-                            <input name="fld_excess_special_cover" type="text" id="fld_excess_special_cover"
-                                   class="form-control" maxlength="100"
-                                   value="<?php echo $defExcSpecialCover; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_excess_special_cover",
-                                "fieldDataType" => "text",
-                                "required" => true,
-                                "invalidText" => "Must provide excess",
-                            ]);
-                            ?>
-                        </div>
+                                <label for="fld_excess_other_rate" class="col-xl-1">Rate</label>
+                                <div class="col-xl-1">
+                                    <input name="fld_excess_other_rate" type="text"
+                                           id="fld_excess_other_rate"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_excess_other_rate']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_general_cargo_rate",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide rate",
+                                    ]);
+                                    ?>
+                                </div>
 
-                        <label for="fld_excess_special_cover_rate" class="col-xl-1">Rate</label>
-                        <div class="col-xl-1">
-                            <input name="fld_excess_special_cover_rate" type="text"
-                                   id="fld_excess_special_cover_rate"
-                                   class="form-control"
-                                   value="<?php echo $data['oqun_excess_special_cover_rate']; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_excess_special_cover_rate",
-                                "fieldDataType" => "number",
-                                "required" => true,
-                                "invalidText" => "Provide rate",
-                            ]);
-                            ?>
-                        </div>
-                    </div>
+                            </div>
 
-                    <div class="form-group row">
-                        <label for="fld_excess_pro_packed" class="col-sm-5 col-form-label">Excess Personal Effects
-                            professionally packed</label>
-                        <div class="col-sm-5">
-                            <input name="fld_excess_pro_packed" type="text" id="fld_excess_pro_packed"
-                                   class="form-control" maxlength="100"
-                                   value="<?php echo $defExcProPacked; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_excess_pro_packed",
-                                "fieldDataType" => "text",
-                                "required" => true,
-                                "invalidText" => "Must provide excess",
-                            ]);
-                            ?>
-                        </div>
+                            <div class="form-group row">
+                                <label for="fld_icc_c_rate" class="col-xl-5">ICC C Rate</label>
+                                <div class="col-xl-2">
+                                    <input name="fld_icc_c_rate" type="text"
+                                           id="fld_icc_c_rate"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_icc_c_rate']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_icc_c_rate",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide rate",
+                                    ]);
+                                    ?>
+                                </div>
 
-                        <label for="fld_excess_pro_packed_rate" class="col-xl-1">Rate</label>
-                        <div class="col-xl-1">
-                            <input name="fld_excess_pro_packed_rate" type="text"
-                                   id="fld_excess_pro_packed_rate"
-                                   class="form-control"
-                                   value="<?php echo $data['oqun_excess_pro_packed_rate']; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_excess_pro_packed_rate",
-                                "fieldDataType" => "number",
-                                "required" => true,
-                                "invalidText" => "Provide rate",
-                            ]);
-                            ?>
-                        </div>
-                    </div>
+                            </div>
 
-                    <div class="form-group row">
-                        <label for="fld_excess_owner_packed" class="col-sm-5 col-form-label">Excess Personal Effects
-                            owner packed</label>
-                        <div class="col-sm-5">
-                            <input name="fld_excess_owner_packed" type="text" id="fld_excess_owner_packed"
-                                   class="form-control" maxlength="100"
-                                   value="<?php echo $defExcOwnerPacked; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_excess_owner_packed",
-                                "fieldDataType" => "text",
-                                "required" => true,
-                                "invalidText" => "Must provide excess",
-                            ]);
-                            ?>
-                        </div>
-
-                        <label for="fld_excess_owner_packed_rate" class="col-xl-1">Rate</label>
-                        <div class="col-xl-1">
-                            <input name="fld_excess_owner_packed_rate" type="text"
-                                   id="fld_excess_owner_packed_rate"
-                                   class="form-control"
-                                   value="<?php echo $data['oqun_excess_owner_packed_rate']; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_excess_general_cargo_rate",
-                                "fieldDataType" => "number",
-                                "required" => true,
-                                "invalidText" => "Provide rate",
-                            ]);
-                            ?>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="fld_excess_other" class="col-sm-5 col-form-label">Excess Other</label>
-                        <div class="col-sm-5">
-                            <input name="fld_excess_other" type="text" id="fld_excess_other"
-                                   class="form-control" maxlength="100"
-                                   value="<?php echo $defExcOther; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_excess_other",
-                                "fieldDataType" => "text",
-                                "required" => true,
-                                "invalidText" => "Must provide excess",
-                            ]);
-                            ?>
-                        </div>
-
-                        <label for="fld_excess_other_rate" class="col-xl-1">Rate</label>
-                        <div class="col-xl-1">
-                            <input name="fld_excess_other_rate" type="text"
-                                   id="fld_excess_other_rate"
-                                   class="form-control"
-                                   value="<?php echo $data['oqun_excess_other_rate']; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_excess_general_cargo_rate",
-                                "fieldDataType" => "number",
-                                "required" => true,
-                                "invalidText" => "Provide rate",
-                            ]);
-                            ?>
-                        </div>
-
-                    </div>
-
-                    <div class="form-group row">
-                        <label for="fld_icc_c_rate" class="col-xl-5">ICC C Rate</label>
-                        <div class="col-xl-2">
-                            <input name="fld_icc_c_rate" type="text"
-                                   id="fld_icc_c_rate"
-                                   class="form-control"
-                                   value="<?php echo $data['oqun_icc_c_rate']; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_icc_c_rate",
-                                "fieldDataType" => "number",
-                                "required" => true,
-                                "invalidText" => "Provide rate",
-                            ]);
-                            ?>
+                            <div class="form-group row">
+                                <label for="fld_show_excess_replace" class="col-sm-5 col-form-label">Allow Excess
+                                    Replace</label>
+                                <div class="col-sm-2">
+                                    <select name="fld_show_excess_replace" id="fld_show_excess_replace"
+                                            class="form-control">
+                                        <option value="0" <?php if ($data['oqun_show_excess_replace'] == '0') echo 'selected'; ?>>
+                                            No
+                                        </option>
+                                        <option value="1" <?php if ($data['oqun_show_excess_replace'] == '1') echo 'selected'; ?>>
+                                            Yes
+                                        </option>
+                                    </select>
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_show_excess_replace",
+                                        "fieldDataType" => "select"
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
                         </div>
 
-                    </div>
+                        <div class="tab-pane fade show" id="pills-travel" role="tabpanel"
+                             aria-labelledby="pills-travel-tab">
+                            <div class="row alert alert-success text-center">
+                                <div class="col-12">
+                                    <b>Travel</b>
+                                </div>
+                            </div>
 
-                    <div class="form-group row">
-                        <label for="fld_show_excess_replace" class="col-sm-5 col-form-label">Allow Excess
-                            Replace</label>
-                        <div class="col-sm-2">
-                            <select name="fld_show_excess_replace" id="fld_show_excess_replace"
-                                    class="form-control">
-                                <option value="0" <?php if ($data['oqun_show_excess_replace'] == '0') echo 'selected'; ?>>
-                                    No
-                                </option>
-                                <option value="1" <?php if ($data['oqun_show_excess_replace'] == '1') echo 'selected'; ?>>
-                                    Yes
-                                </option>
-                            </select>
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_show_excess_replace",
-                                "fieldDataType" => "select"
-                            ]);
-                            ?>
+                            <div class="row form-group">
+                                <label for="allow_tr" class="col-sm-4 col-form-label">
+                                    Allow Travel
+                                </label>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                           id="allow_tr" name="allow_tr"
+                                        <?php if (strpos($data['oqun_allow_quotations'], '#3-1#') !== false) echo 'checked'; ?>>
+                                </div>
+                            </div>
+
+                            <div class="row form-group">
+                                <label for="fld_tr_show_prem" class="col-sm-4 col-form-label">
+                                    Show/Hide Premium on Schedule
+                                </label>
+                                <div class="col-sm-2">
+                                    <select name="fld_tr_show_prem" id="fld_tr_show_prem"
+                                            class="form-control">
+                                        <option value=""></option>
+                                        <option value="0" <?php if ($data['oqun_tr_show_prem'] == '0') echo 'selected'; ?>>
+                                            Hide
+                                        </option>
+                                        <option value="1" <?php if ($data['oqun_tr_show_prem'] == '1') echo 'selected'; ?>>
+                                            Show
+                                        </option>
+                                    </select>
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_show_prem",
+                                        "fieldDataType" => "select",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
+
+                            <div class="row form-group">
+                                <label for="" class="col-sm-4">Allow Packages</label>
+                                <div class="col-sm-8">
+
+                                    <div class="custom-control custom-checkbox custom-control-inline">
+                                        <input type="checkbox" class="custom-control-input" value="1"
+                                               id="packageBasic" name="packageBasic"
+                                        <?php if (strpos($data['oqun_tr_package_selection'],'#basic#') !== false) echo 'checked';?>>
+                                        <label class="custom-control-label" for="packageBasic">Basic</label>
+                                    </div>
+
+                                    <div class="custom-control custom-checkbox custom-control-inline">
+                                        <input type="checkbox" class="custom-control-input" value="1"
+                                               id="packageStandard" name="packageStandard"
+                                            <?php if (strpos($data['oqun_tr_package_selection'],'#standard#') !== false) echo 'checked';?>>
+                                        <label class="custom-control-label" for="packageStandard">Standard</label>
+                                    </div>
+
+                                    <div class="custom-control custom-checkbox custom-control-inline">
+                                        <input type="checkbox" class="custom-control-input" value="1"
+                                               id="packageLuxury" name="packageLuxury"
+                                            <?php if (strpos($data['oqun_tr_package_selection'],'#luxury#') !== false) echo 'checked';?>>
+                                        <label class="custom-control-label" for="packageLuxury">Luxury</label>
+                                    </div>
+
+                                    <div class="custom-control custom-checkbox custom-control-inline">
+                                        <input type="checkbox" class="custom-control-input" value="1"
+                                               id="packageSchengen" name="packageSchengen"
+                                            <?php if (strpos($data['oqun_tr_package_selection'],'#schengen#') !== false) echo 'checked';?>>
+                                        <label class="custom-control-label" for="packageSchengen">Schengen</label>
+                                    </div>
+
+                                    <div class="custom-control custom-checkbox custom-control-inline">
+                                        <input type="checkbox" class="custom-control-input" value="1"
+                                               id="packageLimited" name="packageLimited"
+                                            <?php if (strpos($data['oqun_tr_package_selection'],'#limited#') !== false) echo 'checked';?>>
+                                        <label class="custom-control-label" for="packageLimited">Limited</label>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="row form-group">
+                                <label for="fld_tr_basic_premium" class="col-sm-4 col-form-label">
+                                    Basic Package Per Day/Person Premium
+                                </label>
+                                <div class="col-sm-2">
+                                    <input name="fld_tr_basic_premium" type="text"
+                                           id="fld_tr_basic_premium"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_tr_basic_premium']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_basic_premium",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageBasic').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+                                <label for="fld_tr_basic_min_premium" class="col-sm-3 col-form-label">
+                                    Basic Minimum Policy Premium
+                                </label>
+                                <div class="col-sm-2">
+                                    <input name="fld_tr_basic_min_premium" type="text"
+                                           id="fld_tr_basic_min_premium"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_tr_basic_min_premium']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_basic_min_premium",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageBasic').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
+
+                            <div class="row form-group">
+                                <label for="fld_tr_standard_premium" class="col-sm-4 col-form-label">
+                                    Standard Package Per Day/Person Premium
+                                </label>
+                                <div class="col-sm-2">
+                                    <input name="fld_tr_standard_premium" type="text"
+                                           id="fld_tr_standard_premium"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_tr_standard_premium']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_standard_premium",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageStandard').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+                                <label for="fld_tr_standard_min_premium" class="col-sm-3 col-form-label">
+                                    Standard Minimum Policy Premium
+                                </label>
+                                <div class="col-sm-2">
+                                    <input name="fld_tr_standard_min_premium" type="text"
+                                           id="fld_tr_standard_min_premium"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_tr_standard_min_premium']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_standard_min_premium",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageStandard').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
+
+                            <div class="row form-group">
+                                <label for="fld_tr_luxury_premium" class="col-sm-4 col-form-label">
+                                    Luxury Package Per Day/Person Premium
+                                </label>
+                                <div class="col-sm-2">
+                                    <input name="fld_tr_luxury_premium" type="text"
+                                           id="fld_tr_luxury_premium"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_tr_luxury_premium']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_luxury_premium",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageLuxury').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+                                <label for="fld_tr_luxury_min_premium" class="col-sm-3 col-form-label">
+                                    Luxury Minimum Policy Premium
+                                </label>
+                                <div class="col-sm-2">
+                                    <input name="fld_tr_luxury_min_premium" type="text"
+                                           id="fld_tr_luxury_min_premium"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_tr_luxury_min_premium']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_luxury_min_premium",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageLuxury').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
+
+                            <div class="row form-group">
+                                <label for="fld_tr_schengen_premium" class="col-sm-4 col-form-label">
+                                    Schengen Package Per Day/Person Premium
+                                </label>
+                                <div class="col-sm-2">
+                                    <input name="fld_tr_schengen_premium" type="text"
+                                           id="fld_tr_schengen_premium"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_tr_schengen_premium']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_schengen_premium",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageSchengen').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+                                <label for="fld_tr_schengen_min_premium" class="col-sm-3 col-form-label">
+                                    Shengen Minimum Policy Premium
+                                </label>
+                                <div class="col-sm-2">
+                                    <input name="fld_tr_schengen_min_premium" type="text"
+                                           id="fld_tr_schengen_min_premium"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_tr_schengen_min_premium']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_schengen_min_premium",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageSchengen').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
+
+                            <div class="row form-group">
+                                <label for="fld_tr_limited_premiums" class="col-sm-4 col-form-label">
+                                    Limited Package Per Day/Person Premium
+                                </label>
+                                <div class="col-sm-2">
+                                    <input name="fld_tr_limited_premiums" type="text"
+                                           id="fld_tr_limited_premiums"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_tr_limited_premiums']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_limited_premiums",
+                                        "fieldDataType" => "text",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageLimited').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+                                <div class="col-sm-6 form-group">
+                                    Days#Total Premium||Days#Total Premium||... Example 30#15|| 30 days is 15eu premium
+                                </div>
+                            </div>
+
+
+                            <!-- TRAVEL END TAB -->
                         </div>
+
+                        <!-- CONTENTS TAB END-->
                     </div>
 
                     <!-- BUTTONS -->

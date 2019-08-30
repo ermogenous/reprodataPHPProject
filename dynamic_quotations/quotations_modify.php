@@ -371,7 +371,19 @@ $formValidator->addCustomCode("
 
                     <div class="form-group row">
                         <label for="insureds_id" class="col-sm-4 col-form-label">
-                            <?php show_quotation_text("Ταυτότητα", "Identity Card"); ?>
+                            <?php
+                            $idText = $quotation_type_data['oqqt_identity_replace_text'];
+                            if ($idText == ''){
+                                $idGreek = 'Ταυτότητα';
+                                $idEnglish = 'Identity Card';
+                            }
+                            else {
+                                $idText = explode('||',$idText);
+                                $idGreek = $idText[1];
+                                $idEnglish = $idText[0];
+                            }
+                            show_quotation_text($idGreek, $idEnglish);
+                            ?>
                         </label>
                         <div class="col-sm-8">
                             <input name="insureds_id" type="text" id="insureds_id"
@@ -409,6 +421,71 @@ $formValidator->addCustomCode("
                             ?>
                         </div>
                     </div>
+
+                    <?php if ($quotation_type_data['oqqt_added_field_nationality'] == 1) { ?>
+                        <div class="form-group row">
+                            <label for="nationality_ID" class="col-sm-4 col-form-label">
+                                <?php show_quotation_text("Ιθαγένεια", "Nationality"); ?>
+                            </label>
+                            <div class="col-sm-8">
+                                <select class="form-control" id="nationality_ID" name="nationality_ID">
+                                    <option value=""></option>
+                                    <?php
+                                    $sql = "SELECT * FROM codes WHERE cde_type = 'Countries' ORDER BY cde_value ASC";
+                                    $result = $db->query($sql);
+                                    while ($count = $db->fetch_assoc($result)){
+                                    ?>
+                                    <option value="<?php echo $count['cde_code_ID'];?>"
+                                        <?php if ($q_data['oqq_nationality_ID'] == $count['cde_code_ID']) echo "selected"; ?>
+                                    ><?php echo $count['cde_value'];?></option>
+                                    <?php } ?>
+                                </select>
+                                <?php
+                                $nationalityRequired = false;
+                                if ($quotation_type_data['oqqt_added_field_nationality_required'] == 1) {
+                                    $nationalityRequired = true;
+                                }
+
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'nationality_ID',
+                                        'fieldDataType' => 'select',
+                                        'required' => $nationalityRequired,
+                                        'invalidText' => show_quotation_text("Επιλέξατε Ιθαγένεια", "Must select nationality", 'Return')
+                                    ]);
+                                ?>
+                            </div>
+                        </div>
+                    <?php } ?>
+
+                    <?php if ($quotation_type_data['oqqt_added_field_dob'] == 1) { ?>
+                        <div class="form-group row">
+                            <label for="birthdate" class="col-sm-4 col-form-label">
+                                <?php show_quotation_text("Ημ. Γέννησης", "Date of Birth"); ?>
+                            </label>
+                            <div class="col-sm-8">
+                                <input name="birthdate" type="text" id="birthdate"
+                                       class="form-control"
+                                       value="">
+                                <?php
+                                $dobRequired = false;
+                                if ($quotation_type_data['oqqt_added_field_dob_required'] == 1) {
+                                    $dobRequired = true;
+                                }
+
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'birthdate',
+                                        'fieldDataType' => 'date',
+                                        'required' => $dobRequired,
+                                        'enableDatePicker' => true,
+                                        'datePickerValue' => $db->convertDateToEU($q_data["oqq_birthdate"]),
+                                        'invalidText' => show_quotation_text("Συμπληρώστε Ημ. Γέννησης.", "Must Enter Date of Birth", 'Return')
+                                    ]);
+                                ?>
+                            </div>
+                        </div>
+                    <?php } ?>
 
                     <?php if ($quotation_type_data['oqqt_added_field_mobile'] == 1) { ?>
                         <div class="form-group row">

@@ -32,6 +32,16 @@ if ($_GET["lid"] != "") {
       JOIN users ON usr_users_ID = inaund_user_ID
       WHERE inaunc_underwriter_company_ID = " . $_GET["lid"]
     );
+
+    //if advanced accounts and underwriter is sub agent get the commissions from the insurance companies
+    //to check that the commissions defined below is not more than the top commissions
+    $advancedAccounts = $db->get_setting('ac_advanced_accounts_enable');
+    if ($data['inaund_subagent_ID'] == -1 && $advancedAccounts == 1){
+        $compCommData = $db->query_fetch('
+            SELECT * FROM ina_insurance_companies WHERE inainc_insurance_company_ID = '.$data['inaunc_insurance_company_ID']
+        );
+    }
+
 }
 
 $db->show_header();
@@ -90,7 +100,7 @@ $formValidator = new customFormValidator();
 
                     <div class="form-group row">
                         <label for="fld_commission_motor" class="col-sm-4">Commission Motor</label>
-                        <div class="col-sm-6">
+                        <div class="col-sm-3">
                             <input type="text" class="form-control" name="fld_commission_motor" id="fld_commission_motor"
                                    value="<?php echo $data['inaunc_commission_motor'];?>">
                             <?php
@@ -102,11 +112,27 @@ $formValidator = new customFormValidator();
                             ]);
                             ?>
                         </div>
+                        <div class="col-sm-5">
+                            <?php if ($data['inaund_subagent_ID'] == -1 && $advancedAccounts == 1){ ?>
+                            <input type="text" class="form-control" name="comp_commission_motor" id="comp_commission_motor"
+                                   value="<?php echo $compCommData['inainc_commission_motor'];?>" style="width: 80px;" disabled>
+                            <?php
+                                $formValidator->addField([
+                                    "fieldName" => "comp_commission_motor",
+                                    "fieldDataType" => "number",
+                                    "required" => true,
+                                    "invalidText" => 'Motor commission cannot be more than top commission',
+                                    "requiredAddedCustomCode" => '|| ($("#fld_commission_motor").val()*1) > $("#comp_commission_motor").val()'
+                                ]);
+                            }
+                            ?>
+                        </div>
                     </div>
+
 
                     <div class="form-group row">
                         <label for="fld_commission_fire" class="col-sm-4">Commission Fire</label>
-                        <div class="col-sm-6">
+                        <div class="col-sm-3">
                             <input type="text" class="form-control" name="fld_commission_fire" id="fld_commission_fire"
                                    value="<?php echo $data['inaunc_commission_fire'];?>">
                             <?php
@@ -118,11 +144,26 @@ $formValidator = new customFormValidator();
                             ]);
                             ?>
                         </div>
+                        <div class="col-sm-5">
+                            <?php if ($data['inaund_subagent_ID'] == -1 && $advancedAccounts == 1){ ?>
+                                <input type="text" class="form-control" name="comp_commission_fire" id="comp_commission_fire"
+                                       value="<?php echo $compCommData['inainc_commission_fire'];?>" style="width: 80px;" disabled>
+                            <?php
+                                $formValidator->addField([
+                                    "fieldName" => "comp_commission_fire",
+                                    "fieldDataType" => "number",
+                                    "required" => true,
+                                    "invalidText" => 'Fire commission cannot be more than top commission',
+                                    "requiredAddedCustomCode" => '|| ($("#fld_commission_fire").val()*1) > $("#comp_commission_fire").val()'
+                                ]);
+                            }
+                            ?>
+                        </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="fld_commission_pa" class="col-sm-4">Commission PA</label>
-                        <div class="col-sm-6">
+                        <div class="col-sm-3">
                             <input type="text" class="form-control" name="fld_commission_pa" id="fld_commission_pa"
                                    value="<?php echo $data['inaunc_commission_pa'];?>">
                             <?php
@@ -134,11 +175,26 @@ $formValidator = new customFormValidator();
                             ]);
                             ?>
                         </div>
+                        <div class="col-sm-5">
+                            <?php if ($data['inaund_subagent_ID'] == -1 && $advancedAccounts == 1){ ?>
+                                <input type="text" class="form-control" name="comp_commission_pa" id="comp_commission_pa"
+                                       value="<?php echo $compCommData['inainc_commission_pa'];?>" style="width: 80px;" disabled>
+                            <?php
+                                $formValidator->addField([
+                                    "fieldName" => "comp_commission_pa",
+                                    "fieldDataType" => "number",
+                                    "required" => true,
+                                    "invalidText" => 'PA commission cannot be more than top commission',
+                                    "requiredAddedCustomCode" => '|| ($("#fld_commission_pa").val()*1) > $("#comp_commission_pa").val()'
+                                ]);
+                            }
+                            ?>
+                        </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="fld_commission_el" class="col-sm-4">Commission EL</label>
-                        <div class="col-sm-6">
+                        <div class="col-sm-3">
                             <input type="text" class="form-control" name="fld_commission_el" id="fld_commission_el"
                                    value="<?php echo $data['inaunc_commission_el'];?>">
                             <?php
@@ -150,11 +206,26 @@ $formValidator = new customFormValidator();
                             ]);
                             ?>
                         </div>
+                        <div class="col-sm-5">
+                            <?php if ($data['inaund_subagent_ID'] == -1 && $advancedAccounts == 1){ ?>
+                                <input type="text" class="form-control" name="comp_commission_el" id="comp_commission_el"
+                                       value="<?php echo $compCommData['inainc_commission_el'];?>" style="width: 80px;" disabled>
+                            <?php
+                                $formValidator->addField([
+                                    "fieldName" => "comp_commission_el",
+                                    "fieldDataType" => "number",
+                                    "required" => true,
+                                    "invalidText" => 'EL commission cannot be more than top commission',
+                                    "requiredAddedCustomCode" => '|| ($("#fld_commission_el").val()*1) > $("#comp_commission_el").val()'
+                                ]);
+                            }
+                            ?>
+                        </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="fld_commission_pi" class="col-sm-4">Commission PI</label>
-                        <div class="col-sm-6">
+                        <div class="col-sm-3">
                             <input type="text" class="form-control" name="fld_commission_pi" id="fld_commission_pi"
                                    value="<?php echo $data['inaunc_commission_pi'];?>">
                             <?php
@@ -166,11 +237,26 @@ $formValidator = new customFormValidator();
                             ]);
                             ?>
                         </div>
+                        <div class="col-sm-5">
+                            <?php if ($data['inaund_subagent_ID'] == -1 && $advancedAccounts == 1){ ?>
+                                <input type="text" class="form-control" name="comp_commission_pi" id="comp_commission_pi"
+                                       value="<?php echo $compCommData['inainc_commission_pi'];?>" style="width: 80px;" disabled>
+                            <?php
+                                $formValidator->addField([
+                                    "fieldName" => "comp_commission_pi",
+                                    "fieldDataType" => "number",
+                                    "required" => true,
+                                    "invalidText" => 'PI commission cannot be more than top commission',
+                                    "requiredAddedCustomCode" => '|| ($("#fld_commission_pi").val()*1) > $("#comp_commission_pi").val()'
+                                ]);
+                            }
+                            ?>
+                        </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="fld_commission_pl" class="col-sm-4">Commission PL</label>
-                        <div class="col-sm-6">
+                        <div class="col-sm-3">
                             <input type="text" class="form-control" name="fld_commission_pl" id="fld_commission_pl"
                                    value="<?php echo $data['inaunc_commission_pl'];?>">
                             <?php
@@ -182,11 +268,26 @@ $formValidator = new customFormValidator();
                             ]);
                             ?>
                         </div>
+                        <div class="col-sm-5">
+                            <?php if ($data['inaund_subagent_ID'] == -1 && $advancedAccounts == 1){ ?>
+                                <input type="text" class="form-control" name="comp_commission_pl" id="comp_commission_pl"
+                                       value="<?php echo $compCommData['inainc_commission_pl'];?>" style="width: 80px;" disabled>
+                            <?php
+                                $formValidator->addField([
+                                    "fieldName" => "comp_commission_pl",
+                                    "fieldDataType" => "number",
+                                    "required" => true,
+                                    "invalidText" => 'PL commission cannot be more than top commission',
+                                    "requiredAddedCustomCode" => '|| ($("#fld_commission_pl").val()*1) > $("#comp_commission_pl").val()'
+                                ]);
+                            }
+                            ?>
+                        </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="fld_commission_medical" class="col-sm-4">Commission Medical</label>
-                        <div class="col-sm-6">
+                        <div class="col-sm-3">
                             <input type="text" class="form-control" name="fld_commission_medical" id="fld_commission_medical"
                                    value="<?php echo $data['inaunc_commission_medical'];?>">
                             <?php
@@ -198,11 +299,26 @@ $formValidator = new customFormValidator();
                             ]);
                             ?>
                         </div>
+                        <div class="col-sm-5">
+                            <?php if ($data['inaund_subagent_ID'] == -1 && $advancedAccounts == 1){ ?>
+                                <input type="text" class="form-control" name="comp_commission_medical" id="comp_commission_medical"
+                                       value="<?php echo $compCommData['inainc_commission_medical'];?>" style="width: 80px;" disabled>
+                            <?php
+                                $formValidator->addField([
+                                    "fieldName" => "comp_commission_medical",
+                                    "fieldDataType" => "number",
+                                    "required" => true,
+                                    "invalidText" => 'Medical commission cannot be more than top commission',
+                                    "requiredAddedCustomCode" => '|| ($("#fld_commission_medical").val()*1) > $("#comp_commission_medical").val()'
+                                ]);
+                            }
+                            ?>
+                        </div>
                     </div>
 
                     <div class="form-group row">
                         <label for="fld_commission_travel" class="col-sm-4">Commission Travel</label>
-                        <div class="col-sm-6">
+                        <div class="col-sm-3">
                             <input type="text" class="form-control" name="fld_commission_travel" id="fld_commission_travel"
                                    value="<?php echo $data['inaunc_commission_travel'];?>">
                             <?php
@@ -212,6 +328,21 @@ $formValidator = new customFormValidator();
                                 "required" => true,
                                 "invalidTextAutoGenerate" => true,
                             ]);
+                            ?>
+                        </div>
+                        <div class="col-sm-5">
+                            <?php if ($data['inaund_subagent_ID'] == -1 && $advancedAccounts == 1){ ?>
+                                <input type="text" class="form-control" name="comp_commission_travel" id="comp_commission_travel"
+                                       value="<?php echo $compCommData['inainc_commission_travel'];?>" style="width: 80px;" disabled>
+                            <?php
+                                $formValidator->addField([
+                                    "fieldName" => "comp_commission_travel",
+                                    "fieldDataType" => "number",
+                                    "required" => true,
+                                    "invalidText" => 'Travel commission cannot be more than top commission',
+                                    "requiredAddedCustomCode" => '|| ($("#fld_commission_travel").val()*1) > $("#comp_commission_travel").val()'
+                                ]);
+                            }
                             ?>
                         </div>
                     </div>
