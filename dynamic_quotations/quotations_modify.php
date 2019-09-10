@@ -21,7 +21,11 @@ if ($_GET["quotation"] != "") {
     $q_data = $db->query_fetch("SELECT * FROM oqt_quotations WHERE oqq_quotations_ID = " . $_GET["quotation"]);
     $quote = new dynamicQuotation($_GET['quotation']);
     $quotation_type_data = $quote->quotationData();
-
+    $quotationUnderwriter = $db->query_fetch(
+            'SELECT * FROM 
+                  oqt_quotations_underwriters 
+                  WHERE oqun_user_ID = ' . $q_data['oqq_users_ID']
+    );
     //check if this quotation exists
     if ($quote->quotationData()['oqq_quotations_ID'] == '') {
         header("Location: quotations.php");
@@ -32,6 +36,7 @@ if ($_GET["quotation"] != "") {
     //get the quotation type details
     $quotation_type_data = $db->query_fetch("SELECT * FROM oqt_quotations_types WHERE oqqt_quotations_types_ID = " . $_GET["quotation_type"]);
     $quote = new dynamicQuotation($_GET['quotation']);
+    $quotationUnderwriter = $underwriter;
 }
 
 //first check if the user is allowed to view this quotation
@@ -205,7 +210,7 @@ $formValidator->addCustomCode("
     }
     
 ");
-
+$formValidator->showErrorList();
 
 ?>
 <script language="JavaScript" type="text/javascript">
@@ -373,12 +378,11 @@ $formValidator->addCustomCode("
                         <label for="insureds_id" class="col-sm-4 col-form-label">
                             <?php
                             $idText = $quotation_type_data['oqqt_identity_replace_text'];
-                            if ($idText == ''){
+                            if ($idText == '') {
                                 $idGreek = 'Ταυτότητα';
                                 $idEnglish = 'Identity Card';
-                            }
-                            else {
-                                $idText = explode('||',$idText);
+                            } else {
+                                $idText = explode('||', $idText);
                                 $idGreek = $idText[1];
                                 $idEnglish = $idText[0];
                             }
@@ -433,11 +437,11 @@ $formValidator->addCustomCode("
                                     <?php
                                     $sql = "SELECT * FROM codes WHERE cde_type = 'Countries' ORDER BY cde_value ASC";
                                     $result = $db->query($sql);
-                                    while ($count = $db->fetch_assoc($result)){
-                                    ?>
-                                    <option value="<?php echo $count['cde_code_ID'];?>"
-                                        <?php if ($q_data['oqq_nationality_ID'] == $count['cde_code_ID']) echo "selected"; ?>
-                                    ><?php echo $count['cde_value'];?></option>
+                                    while ($count = $db->fetch_assoc($result)) {
+                                        ?>
+                                        <option value="<?php echo $count['cde_code_ID']; ?>"
+                                            <?php if ($q_data['oqq_nationality_ID'] == $count['cde_code_ID']) echo "selected"; ?>
+                                        ><?php echo $count['cde_value']; ?></option>
                                     <?php } ?>
                                 </select>
                                 <?php
@@ -672,23 +676,26 @@ $formValidator->addCustomCode("
                     }
                     ?>
 
-                    <div class="alert alert-success">
-                        <div class="row">
-                            <div class="col-12 text-center">
-                                <?php
-                                if ($items_data['oqit_disable_expansion'] == 0) {
-                                    ?>
-                                    +/-
-                                <?php } ?>
-                                <input name="plusminus_hidden_<?php echo $items_data["oqit_items_ID"]; ?>" type="hidden"
-                                       id="plusminus_hidden_<?php echo $items_data["oqit_items_ID"]; ?>"
-                                       value="<?php echo $hidden_value; ?>"/>
-                                <b>
-                                    <?php echo show_quotation_text($items_data["oqit_label_gr"], $items_data["oqit_label_en"]); ?>
-                                </b>
+                    <?php if ($items_data['oqit_hide_name_bar'] != 1) { ?>
+                        <div class="alert alert-success">
+                            <div class="row">
+                                <div class="col-12 text-center">
+                                    <?php
+                                    if ($items_data['oqit_disable_expansion'] == 0) {
+                                        ?>
+                                        +/-
+                                    <?php } ?>
+                                    <input name="plusminus_hidden_<?php echo $items_data["oqit_items_ID"]; ?>"
+                                           type="hidden"
+                                           id="plusminus_hidden_<?php echo $items_data["oqit_items_ID"]; ?>"
+                                           value="<?php echo $hidden_value; ?>"/>
+                                    <b>
+                                        <?php echo show_quotation_text($items_data["oqit_label_gr"], $items_data["oqit_label_en"]); ?>
+                                    </b>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    <?php } ?>
 
                     <div class="container-fluid"
                          id="section1_div<?php echo $items_data["oqit_items_ID"]; ?>">
@@ -763,7 +770,6 @@ $formValidator->addCustomCode("
             </form>
         </div>
         <div class="d-none col-md-1"></div>
-
 
 
     </div>

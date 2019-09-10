@@ -12,6 +12,9 @@ if ($_GET["lid"] != "") {
 	,(oqq_fees + oqq_stamps + oqq_premium)as clo_total_price 
 	,oqqt_print_layout
 	,oqqt_enable_premium
+	,oqq_fees
+	,oqq_stamps
+	,oqq_premium
 	FROM 
 	oqt_quotations 
 	JOIN oqt_quotations_types ON oqqt_quotations_types_ID = oqq_quotations_type_ID
@@ -70,7 +73,8 @@ $db->show_header();
                     ?>
                     <div class="row">
                         <div class="col-5 text-right"><strong>Total Price </strong></div>
-                        <div class="col-7">€<?php echo $data["clo_total_price"]; ?></div>
+                        <div class="col-7">€<?php echo $data["clo_total_price"]
+                                ." (Premium:€".$data['oqq_premium']." Fees:€".$data['oqq_fees']." Stamps:€".$data['oqq_stamps'].")"; ?></div>
                     </div>
                 <?php } ?>
 

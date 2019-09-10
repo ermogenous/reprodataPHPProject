@@ -255,6 +255,13 @@ function quotation_price_calculation($quotation_id)
 
             }//insured amount found
 
+            //date values
+            if (substr($name,0,10) == 'oqit_date_'){
+                $num = substr($name, 10);
+                $rate = $qitem_data["oqqit_date_" . $num];
+                $result_amount_values[$item["oqit_items_ID"]]['date_'.$num]['rate'] = $rate;
+            }
+
         }//foreach all fields
 
     }//while loops items
@@ -264,15 +271,18 @@ function quotation_price_calculation($quotation_id)
 
     //step 4 add up the values from the array
     $premium = 0;
+    $detailed_result = '';
     foreach ($result_amount as $item_id => $qitems_array) {
 
         foreach ($qitems_array as $section_id => $item_premium) {
 
             //echo $item_id." -> ".$section_id." = ".$item_premium."<br>";
             //echo "<b>".$item_id."-".$section_id."</b> (".$qitem_data["oqit_insured_amount_".$section_id].") A-><b>".$result_amount_values[$item_id][$section_id]['amount']."</b> Res=>&#8364;<b>".$item_premium."</b><br>";
-            if ($item_id != 'ALL') {
+            if ($result_amount != 'ALL') {
                 $premium += $item_premium;
-                $detailed_result .= "\n<b>" . $item_id . "-" . $section_id . "</b> A-><b>" . $result_amount_values[$item_id][$section_id]['amount'] . "*(" . $result_amount_values[$item_id][$section_id]['rate'] . ")</b>=>&#8364;<b>" . $item_premium . "</b> (" . $result_amount_values[$item_id][$section_id]['item_amount'] . ")<br>";
+                if ($item_premium > 0) {
+                    $detailed_result .= "\n<b>" . $item_id . "-" . $section_id . "</b> A-><b>" . $result_amount_values[$item_id][$section_id]['amount'] . "*(" . $result_amount_values[$item_id][$section_id]['rate'] . ")</b>=>&#8364;<b>" . $item_premium . "</b> (" . $result_amount_values[$item_id][$section_id]['item_amount'] . ")<br>";
+                }
             }
 
         }//foreach all the sections of the item
@@ -289,7 +299,9 @@ function quotation_price_calculation($quotation_id)
     $fees = $q_data["oqqt_fees"];
     $stamps = $q_data["oqqt_stamps"];
     $premium = round($premium, 2);
-    $fees = quotation_price_find_fees($fees, $q_data["oqqt_premium_rounding"], $premium, $stamps);
+    $customFeesStamps = quotation_price_find_fees_stamps($fees, $q_data["oqqt_premium_rounding"], $premium, $stamps);
+    $fees = $customFeesStamps['fees'];
+    $stamps = $customFeesStamps['stamps'];
 
 
 //echo "<BR>PREMIUM -> ".$premium."<br> Fees ->".$fees." <br>Stamps ->".$stamps;;
@@ -334,27 +346,34 @@ function quotation_price_calculation_Get_rate_sum($rate, $amount)
     return $result;
 }
 
-function quotation_price_find_fees($fees, $fees_rounding_style, $premium, $stamps)
+function quotation_price_find_fees_stamps($fees, $fees_rounding_style, $premium, $stamps)
 {
     $premium = round($premium, 2);
     $fees = round($fees, 2);
     $stamps = round($stamps, 2);
+    $result['fees'] = $fees;
+    $result['stamps'] = $stamps;
 
     if ($fees_rounding_style == "NoRounding") {
-        $result = $fees;
+        $result['fees'] = $fees;
     } else if ($fees_rounding_style == "RoundUpFees") {
 
         $total = $fees + $premium + $stamps;
         $total2 = ceil($total);
-        $result = $total2 - $total + $fees;
+        $result['fees'] = $total2 - $total + $fees;
 
     } else if ($fees_rounding_style == "RoundDownFees") {
-        $result = $premium;
+        //i think this needs fixing
+        $result['fees'] = $premium;
     } else if ($fees_rounding_style == "CustomFees") {
-        $result = get_custom_fees_amount($stamps, $fees, $premium);
+        $data['stamps'] = $stamps;
+        $data['fees'] = $fees;
+        $data['premium'] = $premium;
+        $result = get_custom_fees_amount($data);
     }
 
-    $result = round($result, 2);
+    $result['fees'] = round($result['fees'], 2);
+    $result['stamps'] = round($result['stamps'], 2);
 
     return $result;
 }

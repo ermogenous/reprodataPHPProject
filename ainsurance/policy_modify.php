@@ -129,12 +129,22 @@ $db->show_header();
                                     onchange="loadInsuranceCompanies();">
                                 <option value=""></option>
                                 <?php
+                                //if user rights <= 2 then show all underwriters. Else show only in same group
+                                if ($db->user_data['usr_user_rights'] <= 2){
+                                    $groupFilter = '';
+                                }
+                                else {
+                                    $groupFilter = 'AND usg_users_groups_ID = '.$db->user_data['usr_users_groups_ID'];
+                                }
                                 $sql = "SELECT * FROM ina_underwriters
                                         JOIN users ON usr_users_ID = inaund_user_ID
                                         JOIN users_groups ON usr_users_groups_ID = usg_users_groups_ID
-                                        WHERE usg_users_groups_ID = " . $db->user_data['usr_users_groups_ID'] . " 
+                                        WHERE
+                                        1=1 
+                                        ".$groupFilter." 
                                         AND inaund_status = 'Active' 
                                         ORDER BY usr_name ASC";
+                                echo $sql;
                                 $result = $db->query($sql);
                                 while ($underwriter = $db->fetch_assoc($result)) {
                                     ?>

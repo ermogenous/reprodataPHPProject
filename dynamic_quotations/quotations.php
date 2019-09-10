@@ -134,6 +134,7 @@ if ($_GET["price_id"] != "") {
 
 
         function show_hide_hidden_info(ID) {
+            ignoreEdit = true;
 
             if (document.getElementById('quot_info_id_' + ID).style.display == 'none') {
                 document.getElementById('quot_info_id_' + ID).style.display = 'block';
@@ -141,7 +142,6 @@ if ($_GET["price_id"] != "") {
             else {
                 document.getElementById('quot_info_id_' + ID).style.display = 'none';
             }
-
         }
     </script>
     <div class="container-fluid">
@@ -426,6 +426,9 @@ if ($_GET["price_id"] != "") {
                 else {
                     window.location.assign('quotations_show.php?price_id=' + quotation);
                 }
+            }
+            else {
+                ignoreEdit = false;
             }
         }
 

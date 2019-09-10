@@ -305,7 +305,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
             //every time this page loads reload the premium tab
             parent.window.frames['installmentsTab'].location.reload(true);
             <?php } ?>
-
+            $('#premTab', window.parent.document).height('550px');
             //check if commission field is empty or zero then calculate
             if ($('#fld_commission').val() == ''){
                 calculateCommission();

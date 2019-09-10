@@ -22,14 +22,19 @@
 
     }
 
-    var membersSelectionList = ["5_oqqit_rate_5","5_oqqit_rate_10"];
+    var membersSelectionList =
+        ["6_oqqit_rate_1",
+            "6_oqqit_rate_6",
+            "6_oqqit_rate_11",
+            "7_oqqit_rate_1",
+            "7_oqqit_rate_6",
+            "7_oqqit_rate_11",
+            "8_oqqit_rate_1",
+            "8_oqqit_rate_6",
+            "8_oqqit_rate_11"];
 
     function showHideMembers(id) {
-        selectionField = membersSelectionList[((id*1) -1)];
-        //first check if the previous member is open
-        let previous = (id * 1) - 1;
-
-
+        selectionField = membersSelectionList[((id * 1) - 1)];
 
         if ($('#' + selectionField).val() == '1') {
             $('#member_' + id + '_contents').hide();
@@ -38,10 +43,20 @@
             $('#' + selectionField).val('0');
         }
         else {
-            $('#member_' + id + '_contents').show();
-            $('#member_' + id + '_plus').hide();
-            $('#member_' + id + '_minus').show();
-            $('#' + selectionField).val('1');
+            var previous = 0;
+            if (id >= 2){
+                previous = id - 2;
+            }
+
+            if ($('#' + membersSelectionList[previous]).val() == '1' || previous == 0){
+                //console.log('only now show');
+                $('#member_' + id + '_contents').show();
+                $('#member_' + id + '_plus').hide();
+                $('#member_' + id + '_minus').show();
+                $('#' + selectionField).val('1');
+            }
+
+
         }
 
     }
@@ -49,10 +64,10 @@
     function checkAllMembersShowHide() {
 
 
-        $.each(membersSelectionList ,function (index,value){
+        $.each(membersSelectionList, function (index, value) {
             index++;
             //make opposite
-            if ($('#' + value).val() == '1'){
+            if ($('#' + value).val() == '1') {
                 $('#' + value).val('0');
             }
             else {
@@ -65,5 +80,6 @@
 
     $(document).ready(function () {
         checkAllMembersShowHide();
+        packageSelection();
     });
 </script>

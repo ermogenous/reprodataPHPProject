@@ -141,6 +141,22 @@ $db->show_header();
                         </div>
                     </div>
 
+                    <div class="form-group row">
+                        <label for="fld_hide_name_bar" class="col-sm-4 col-form-label">Hide Name Banner</label>
+                        <div class="col-sm-4">
+                            <select name="fld_hide_name_bar" id="fld_hide_name_bar"
+                                    class="form-control"
+                                    required>
+                                <option value="0" <?php if ($data["oqit_hide_name_bar"] == '0') echo "selected=\"selected\""; ?>>
+                                    No
+                                </option>
+                                <option value="1" <?php if ($data["oqit_hide_name_bar"] == '1') echo "selected=\"selected\""; ?>>
+                                    Yes
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="row">
                         <div class="col-12 text-center"><b>Fields</b></div>
                     </div>

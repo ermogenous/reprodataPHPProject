@@ -1,37 +1,36 @@
 <?php
 function getQuotationHTML($quotationID)
 {
-    global $db, $main;
+    global $db, $main, $quotationUnderwriter;
 
-    $quotationData = $db->query_fetch('SELECT * FROM oqt_quotations WHERE oqq_quotations_ID = ' . $quotationID);
+    $quotationData = $db->query_fetch('
+            SELECT *, (SELECT cde_value FROM codes WHERE cde_code_ID = oqq_nationality_ID) as clo_nationality 
+            FROM oqt_quotations WHERE oqq_quotations_ID = ' . $quotationID);
 
 //section 1 ========================================================================================================================================SECTION 1
-    $sect1 = $db->query_fetch("SELECT *
-                                        ,(SELECT cde_value FROM codes WHERE cde_code_ID = oqqit_rate_5)as clo_insured_country
-                                        ,(SELECT cde_value FROM codes WHERE cde_code_ID = oqqit_rate_3)as clo_insured_occupation
-                                        FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $quotationID . " AND oqqit_items_ID = 1");
-    $sect2 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $quotationID . " AND oqqit_items_ID = 2");
+    $sect1 = $db->query_fetch('
+        SELECT *,
+        (SELECT cde_value FROM codes WHERE cde_code_ID = oqqit_rate_1)as clo_destination
+        FROM oqt_quotations_items WHERE oqqit_quotations_ID = ' . $quotationID . ' AND oqqit_items_ID = 5');
+    $sect2 = $db->query_fetch("
+        SELECT *,
+        (SELECT cde_value FROM codes WHERE cde_code_ID = oqqit_rate_4)as clo_member_1_nationality,
+        (SELECT cde_value FROM codes WHERE cde_code_ID = oqqit_rate_9)as clo_member_2_nationality,
+        (SELECT cde_value FROM codes WHERE cde_code_ID = oqqit_rate_14)as clo_member_3_nationality
+        FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $quotationID . " AND oqqit_items_ID = 6");
+    $sect3 = $db->query_fetch("
+        SELECT *,
+        (SELECT cde_value FROM codes WHERE cde_code_ID = oqqit_rate_4)as clo_member_4_nationality,
+        (SELECT cde_value FROM codes WHERE cde_code_ID = oqqit_rate_9)as clo_member_5_nationality,
+        (SELECT cde_value FROM codes WHERE cde_code_ID = oqqit_rate_14)as clo_member_6_nationality
+        FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $quotationID . " AND oqqit_items_ID = 7");
+    $sect4 = $db->query_fetch("
+        SELECT *,
+        (SELECT cde_value FROM codes WHERE cde_code_ID = oqqit_rate_4)as clo_member_7_nationality,
+        (SELECT cde_value FROM codes WHERE cde_code_ID = oqqit_rate_9)as clo_member_8_nationality,
+        (SELECT cde_value FROM codes WHERE cde_code_ID = oqqit_rate_14)as clo_member_9_nationality
+        FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $quotationID . " AND oqqit_items_ID = 8");
 
-    //find the package
-    $pack1Html = '<input type="checkbox">';
-    $pack2Html = '<input type="checkbox">';
-    $pack3Html = '<input type="checkbox">';
-    if ($sect2['oqqit_insured_amount_1'] == '1'){
-        $pack1Html = '<input type="checkbox" checked="checked">';
-    }else if ($sect2['oqqit_insured_amount_1'] == '2'){
-        $pack2Html = '<input type="checkbox" checked="checked">';
-    }
-    else if ($sect2['oqqit_insured_amount_1'] == '3'){
-        $pack3Html = '<input type="checkbox" checked="checked">';
-    }
-
-    //el
-    $elPackage = '<input type="checkbox">';
-    $socialSecurity = '';
-    if ($sect2['oqqit_insured_amount_2'] == 1){
-        $elPackage = '<input type="checkbox" checked="checked">';
-        $socialSecurity = $sect2['oqqit_rate_3']."/".$sect2['oqqit_rate_4']."/".$sect2['oqqit_rate_5'];
-    }
 
     //certificate number
     if ($quotationData['oqq_status'] != 'Active'){
@@ -49,6 +48,15 @@ function getQuotationHTML($quotationID)
         $stamp = '<img src="images/full_stamp_signature.png" width="140">';
     }
 
+    //geographical area names
+    $geoArea = '';
+    if ($sect1['oqqit_rate_2'] == 'WorldExcl'){
+        $geoArea = 'Worldwide (excluding U.S.A & Canada / Παγκόσμια (εκτός Η.Π.Α & Καναδά)';
+    }
+    else if($sect1['oqqit_rate_2'] == 'WorldWide'){
+        $geoArea = 'Worldwide / Παγκόσμια';
+    }
+
     $html = '
 <style>
 .tableTdBorder td{
@@ -56,6 +64,19 @@ function getQuotationHTML($quotationID)
     padding:5px;
     font-size: 12px;
     font-family: Tahoma;
+}
+.normalFonts{
+    font-size: 12px;
+    font-family: Tahoma;
+}
+.tableNoTdBorder td{
+    border:0px solid #FFFFFF;
+    padding:0px;
+    font-size: 12px;
+    font-family: Tahoma;
+}
+.elementPageBreak{
+    page-break-before: always;
 }
 
 </style>
@@ -67,63 +88,61 @@ function getQuotationHTML($quotationID)
             <td width="33%" align="right"><img src="' . $db->admin_layout_url . '/images/LLOYDS-Logo.png"></td>
         </tr>
         <tr>
-            <td colspan="3" align="center"><b>PROPOSAL & EVIDENCE OF INSURANCE / ΠΡΟΤΑΣΗ & ΑΠΟΔΕΙΞΗ ΑΣΦΑΛΙΣΗΣ</b></td>
+            <td colspan="3" align="center"><b>PROPOSAL & EVIDENCE OF TRAVEL INSURANCE / ΠΡΟΤΑΣΗ & ΑΠΟΔΕΙΞΗ ΑΣΦΑΛΙΣΗΣ ΤΑΞΙΔΙΟΥ</b></td>
+        </tr>
+    </table>
+    
+    <table class="tableTdBorder" width="900" cellspacing="0" cellpadding="0">
+        <tr>
+            <td align="center">
+            Name of First Applicant<br>
+            Όνομα Πρώτου Αιτούντος
+            </td>
+            <td align="center">
+                Passport No or ID<br>
+                Αριθμός Διαβατηρίου ή Ταυτότητα
+            </td>
+            <td align="center">
+                Nationality<br>
+                Ιθαγένεια
+            </td>
+            <td align="center">
+                Date of Birth<br>
+                Ημ. Γεννήσεως
+            </td>
+        </tr>
+        <tr>
+            <td align="center">
+                '.$quotationData['oqq_insureds_name'].'
+            </td>
+            <td align="center">
+                '.$quotationData['oqq_insureds_id'].'
+            </td>
+            <td align="center">
+                '.$quotationData['clo_nationality'].'
+            </td>
+            <td align="center">
+                '.$db->convertDateToEU($quotationData['oqq_birthdate']).'
+            </td>
         </tr>
     </table>
     
     <table class="tableTdBorder" width="900" cellpadding="0" cellspacing="0">
         <tr>
-            <td width="270">
-                <b>POLICYHOLDER / ΣΥΜΒΑΛΛΟΜΕΝΟΣ</b>	
-            </td>
-            <td colspan="4">
-                ' . $quotationData['oqq_insureds_name'] . '
+            <td width="5%" colspan="2">
+                Address / Διεύθυνση: &nbsp;
+                '.$quotationData['oqq_insureds_address'].', '.$quotationData['oqq_insureds_postal_code'].'
             </td>
         </tr>
         <tr>
-            <td>Identity Card or Company Reg. Number<br>Ταυτότητα ή Αριθμός Εγγραφής Εταιρείας</td>
-            <td colspan="4">' . $quotationData['oqq_insureds_id'] . '</td>
-        </tr>
-        <tr>
-            <td rowspan="2">Address / Διεύθυνση</td>        
-            <td colspan="4"> ' . $quotationData['oqq_insureds_address'] . '</td>        
-        </tr>
-        <tr>
-            <td width="100">City / Πόλη</td>
-            <td width="170">' . $quotationData['oqq_insureds_city'] . '</td>
-            <td width="130">Post Code / Κώδικας</td>
-            <td>' . $quotationData['oqq_insureds_postal_code'] . '</td>
-        </tr>
-        <tr>
-            <td>Home Telephone Number / Τηλέφωνο Οικίας</td>        
-            <td colspan="2">' . $quotationData['oqq_insureds_tel'] . '</td>        
-            <td>Mobile Number  Αριθμός Κινητού</td>        
-            <td>' . $quotationData['oqq_insureds_mobile'] . '</td>        
-        </tr>
-     </table>
-     <div style="height: 5px;"></div>
-     <table class="tableTdBorder" width="900" cellpadding="0" cellspacing="0">
-        <tr>
-            <td width="270"><b>INSURED / ΑΣΦΑΛΙΖΟΜΕΝΟΣ</b></td>
-            <td colspan="3">' . $sect1['oqqit_rate_1'] . '</td>        
-        </tr>
-        <tr>
-            <td>Place of Usual Business<br>Τόπος Συνήθους Εργασίας</td>        
-            <td width="270">' . $sect1['oqqit_rate_2'] . '</td>        
-            <td width="130">Occupation / Επάγγελμα</td>        
-            <td width="">' . $sect1['clo_insured_occupation'] . '</td>
-        </tr>
-        <tr>
-            <td>Passport Number / Αριθμός Διαβατηρίου</td>        
-            <td>' . $sect1['oqqit_rate_4'] . '</td>
-            <td>Country / Χώρα</td>        
-            <td>' . $sect1['clo_insured_country'] . '</td>
-        </tr>
-        <tr>
-            <td>Date of Birth / Ημερομηνία Γέννησης</td>        
-            <td>'.$db->convert_date_format($sect1['oqqit_date_1'], 'yyyy-mm-dd', 'dd/mm/yyyy').'</td>
-            <td>Gender / Γένος</td>        
-            <td>' . getGenre($sect1['oqqit_rate_6']) . '</td>
+            <td>
+                Telephone / Τηλέφωνο: &nbsp;
+                '.$quotationData['oqq_insureds_tel'].'
+            </td>
+            <td>
+                Destination / Προορισμός: &nbsp;
+                '.$sect1['clo_destination'].'
+            </td>
         </tr>
     </table>
     
@@ -131,11 +150,78 @@ function getQuotationHTML($quotationID)
     
     <table class="tableTdBorder" width="900" cellpadding="0" cellspacing="0">
         <tr>
-            <td width="30%">Period of Insurance / Περίοδος Ασφάλισης</td>
-            <td width="100">From / Από</td>
-            <td width="170">'.$db->convert_date_format($quotationData['oqq_starting_date'], 'yyyy-mm-dd', 'dd/mm/yyyy',1,0).'</td>
-            <td width="130">Το / Μέχρι</td>
-            <td>'.$db->convert_date_format($quotationData['oqq_expiry_date'], 'yyyy-mm-dd', 'dd/mm/yyyy',1,0).'</td>
+            <td align="center">
+                Names of other Applicants<br>
+                Ονόματα Άλλων Αιτητών
+            </td>
+            <td align="center">
+                Passport No or I.D.<br>
+                Αιθμός Διαβατηρίου ή Ταυτότητα
+            </td>
+            <td align="center">
+                Nationality<br>
+                Ιθαγένεια
+            </td>
+            <td align="center">
+                Date of Birth<br>
+                Ημ. Γεννήσεως
+            </td>
+        </tr>
+        <tr>
+            <td align="center">'.($sect2['oqqit_rate_1']== '1'? $sect2['oqqit_rate_2']:"&nbsp;").'</td>
+            <td align="center">'.($sect2['oqqit_rate_1']== '1'? $sect2['oqqit_rate_3']:"").'</td>
+            <td align="center">'.($sect2['oqqit_rate_1']== '1'? $sect2['clo_member_1_nationality']:"").'</td>
+            <td align="center">'.($sect2['oqqit_rate_1']== '1'? $db->convertDateToEU($sect2['oqqit_date_1']):"").'</td>
+        </tr>
+        <tr>
+            <td align="center">'.($sect2['oqqit_rate_6']== '1'? $sect2['oqqit_rate_7']:"&nbsp;").'</td>
+            <td align="center">'.($sect2['oqqit_rate_6']== '1'? $sect2['oqqit_rate_8']:"").'</td>
+            <td align="center">'.($sect2['oqqit_rate_6']== '1'? $sect2['clo_member_2_nationality']:"").'</td>
+            <td align="center">'.($sect2['oqqit_rate_6']== '1'? $db->convertDateToEU($sect2['oqqit_date_2']):"").'</td>
+        </tr>
+        <tr>
+            <td align="center">'.($sect2['oqqit_rate_11']== '1'? $sect2['oqqit_rate_12']:"&nbsp;").'</td>
+            <td align="center">'.($sect2['oqqit_rate_11']== '1'? $sect2['oqqit_rate_13']:"").'</td>
+            <td align="center">'.($sect2['oqqit_rate_11']== '1'? $sect2['clo_member_3_nationality']:"").'</td>
+            <td align="center">'.($sect2['oqqit_rate_11']== '1'? $db->convertDateToEU($sect2['oqqit_date_3']):"").'</td>
+        </tr>
+        
+        <tr>
+            <td align="center">'.($sect3['oqqit_rate_1']== '1'? $sect3['oqqit_rate_2']:"&nbsp;").'</td>
+            <td align="center">'.($sect3['oqqit_rate_1']== '1'? $sect3['oqqit_rate_3']:"").'</td>
+            <td align="center">'.($sect3['oqqit_rate_1']== '1'? $sect3['clo_member_4_nationality']:"").'</td>
+            <td align="center">'.($sect3['oqqit_rate_1']== '1'? $db->convertDateToEU($sect3['oqqit_date_1']):"").'</td>
+        </tr>
+        <tr>
+            <td align="center">'.($sect3['oqqit_rate_6']== '1'? $sect3['oqqit_rate_7']:"&nbsp;").'</td>
+            <td align="center">'.($sect3['oqqit_rate_6']== '1'? $sect3['oqqit_rate_8']:"").'</td>
+            <td align="center">'.($sect3['oqqit_rate_6']== '1'? $sect3['clo_member_5_nationality']:"").'</td>
+            <td align="center">'.($sect3['oqqit_rate_6']== '1'? $db->convertDateToEU($sect3['oqqit_date_2']):"").'</td>
+        </tr>
+        <tr>
+            <td align="center">'.($sect3['oqqit_rate_11']== '1'? $sect3['oqqit_rate_12']:"&nbsp;").'</td>
+            <td align="center">'.($sect3['oqqit_rate_11']== '1'? $sect3['oqqit_rate_13']:"").'</td>
+            <td align="center">'.($sect3['oqqit_rate_11']== '1'? $sect3['clo_member_6_nationality']:"").'</td>
+            <td align="center">'.($sect3['oqqit_rate_11']== '1'? $db->convertDateToEU($sect3['oqqit_date_3']):"").'</td>
+        </tr>
+        
+        <tr>
+            <td align="center">'.($sect4['oqqit_rate_1']== '1'? $sect4['oqqit_rate_2']:"&nbsp;").'</td>
+            <td align="center">'.($sect4['oqqit_rate_1']== '1'? $sect4['oqqit_rate_3']:"").'</td>
+            <td align="center">'.($sect4['oqqit_rate_1']== '1'? $sect4['clo_member_7_nationality']:"").'</td>
+            <td align="center">'.($sect4['oqqit_rate_1']== '1'? $db->convertDateToEU($sect4['oqqit_date_1']):"").'</td>
+        </tr>
+        <tr>
+            <td align="center">'.($sect4['oqqit_rate_6']== '1'? $sect4['oqqit_rate_7']:"&nbsp;").'</td>
+            <td align="center">'.($sect4['oqqit_rate_6']== '1'? $sect4['oqqit_rate_8']:"").'</td>
+            <td align="center">'.($sect4['oqqit_rate_6']== '1'? $sect4['clo_member_8_nationality']:"").'</td>
+            <td align="center">'.($sect4['oqqit_rate_6']== '1'? $db->convertDateToEU($sect4['oqqit_date_2']):"").'</td>
+        </tr>
+        <tr>
+            <td align="center">'.($sect4['oqqit_rate_11']== '1'? $sect4['oqqit_rate_12']:"&nbsp;").'</td>
+            <td align="center">'.($sect4['oqqit_rate_11']== '1'? $sect4['oqqit_rate_13']:"").'</td>
+            <td align="center">'.($sect4['oqqit_rate_11']== '1'? $sect4['clo_member_9_nationality']:"").'</td>
+            <td align="center">'.($sect4['oqqit_rate_11']== '1'? $db->convertDateToEU($sect4['oqqit_date_3']):"").'</td>
         </tr>
     </table>
     
@@ -143,98 +229,149 @@ function getQuotationHTML($quotationID)
     
     <table class="tableTdBorder" width="900" cellpadding="0" cellspacing="0">
         <tr>
-            <td width="20" style="border-right: 0px solid;"></td>
-            <td width="580" align="center" style="border-left: 0px solid;"><b>SCHEDULE OF BENEFITS / ΠΙΝΑΚΑΣ ΠΑΡΟΧΩΝ</b></td>
-            <td width="100" align="center"><b>PLAN A<br>ΣΧΕΔΙΟ Α</b></td>
-            <td width="100" align="center"><b>PLAN B<br>ΣΧΕΔΙΟ Β</b></td>
-            <td width="100" align="center"><b>PLAN C<br>ΣΧΕΔΙΟ Γ</b></td>
+            <td>
+                Geographical Area / Γεωγραφική Περιοχή: &nbsp;
+                '.$geoArea.'
+            </td>
+            <td>
+                Package / Πακέτο: &nbsp;
+                '.$sect1['oqqit_rate_4'].'
+            </td>
+        </tr>
+    </table>
+    
+    <div style="height: 5px;"></div>
+    
+    <table class="normalFonts" width="900" cellpadding="0" cellspacing="0">
+        <tr>
+            <td valign="top">
+                <strong>
+                Period of Insurance:
+                </strong>  
+            </td>
+            <td>
+                Shall commence at the time of leaving The Republic of Cyprus and shall terminate on return thereto on completion 
+                of the journey or holiday.
+            </td>
         </tr>
         <tr>
-            <td style="border-right: 0px solid;" valign="top"><b>1.</b></td>
-            <td style="border-left: 0px solid;">
-                <b>
-                MAXIMUM LIMIT PER ACCIDENT OR ILLNESS IN RESPECT OF IN-HOSPITAL TREATMENT<br>
-                ΑΝΩΤΑΤΟ ΠΟΣΟ ΚΑΤΑ ΑΣΘΕΝΕΙΑ Ή ΑΤΥΧΗΜΑ ΕΝΤΟΣ ΝΟΣΟΚΟΜΕΙΟΥ
-                </b>
+            <td valign="top">
+                <strong>
+                Περίοδος Ασφάλισης:&nbsp;&nbsp;
+                </strong> 
+            </td>
+            <td>
+                Θα αρχίζει κατά την αναχώρηση από τη Κυπριακή Δημοκρατία και θα τερματίχεται κατά την επιστροφή
+                σε αυτή με την συμπλήρωση του ταξιδού ή δακοπών.
+            </td>
+        </tr>
+    </table>
+    
+    <div style="height: 5px;"></div>
+    
+    <table class="normalFonts" width="900" cellpadding="0" cellspacing="0">
+        <tr>
+            <td width="350">
+                <strong>
+                Period of Insurance / Περίοδος Ασφάλισης<br>
+                Maximum Period 90 days/ Μέγιστη Περίοδος 90 Μέρες &nbsp;&nbsp;
+                </strong>
+            </td>
+            <td width="250" valign="top">
+                '.$sect1['oqqit_rate_5'].' Days / Μέρες
+            </td>
+            <td width="300" valign="top">
+                From / Από: '.$db->convertDateToEU($sect1['oqqit_date_1']).'
+                '.($sect1['oqqit_rate_3'] == 'Yes' ? '<br><strong>Winter Sports Coverage:</strong> Included':'').'
+            </td>
+            
+        </tr>
+    </table>
+    
+    <div style="height: 5px;"></div>
+    
+    <table class="normalFonts" width="900" cellpadding="0" cellspacing="0">
+        <tr>
+            <td width="300">
+                <strong>
+                Notification of Claims and Circumstances to<br>
+                Κοινοποίηση Απαιτήσεων και Γεγονότα στους
+                </strong>
+            </td>
+            <td valign="top" width="400">
+                Kemter Insurance Agencies Sub-Agencies and Consultants Ltd
+            </td>
+            <td valign="top" width="200">
+                claims@kemterinsurance.com
+            </td>
+        </tr>
+    </table>
+    
+    '.($quotationUnderwriter['oqun_tr_show_prem'] == '1' ? '
+    <table class="normalFonts" width="900" cellpadding="0" cellspacing="0">
+        <tr>
+            <td>
+            <strong>Total Amount Payable:</strong>
+             €'.($quotationData['oqq_premium'] + $quotationData['oqq_stamps'] + $quotationData['oqq_fees']).' 
+            </td>
+        </tr>
+    </table>
+    ':'').'
+    
+    <div style="height: 10px;"></div>
+    
+    <table class="normalFonts" width="900" cellpadding="0" cellspacing="0">
+        <tr>
+            <td>
+                In the event of a serious <strong>illness</strong> or <strong>injury</strong> during <strong>Your Trip </strong>
+                which will require hospitalisation, in the first instance <strong>You</strong> must notify <strong>Our</strong>
+                Medical Assistance Company.<br>
+                Σε περίπτωση σοβαρής <strong>Ασθένειας</strong> ή <strong>Τραυματισμού</strong> κατά τη διάρκεια του <strong>Ταξιδιού σας</strong>
+                που θα απαιτήσει νοσηλεία σε νοσοκομείο, πρέπει πρώτα να ενημερώσετε την Ιατρική Εταιρεία Βοήθειας.<br>
                 <br>
-                &bull; &nbsp;&nbsp; Per in-hospital treatment/ Για Ενδονοσοκομειακή Περίθαλψη<br> 
-                &bull; &nbsp;&nbsp; Per period of insurance and per person / Κατά περίοδο ασφάλισης και κατά άτομο<br>
-                
-                <b>1a. Hospitalization</b> (Room & Board) per day 
-                <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>ΗΜΕΡΗΣΙΑ ΝΟΣΗΛΕΙΑ</b> (Δωμάτιο & Τροφή) για κάθε μέρα<br>
-                <b>1b. Hospitalization</b> (Room & Board) per day Intensive Care 
-                <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>ΗΜΕΡΗΣΙΑ ΝΟΣΗΛΕΙΑ</b> (Δωμάτιο & Τροφή) για κάθε μέρα σε μονάδα Εντατικής Παρακολούθησης
-            </td>
-            <td align="center" valign="top">Euro/€<br><br>8.600<br>13.700<br><br>70<br>175</td>
-            <td align="center" valign="top">Euro/€<br><br>8.600<br>13.700<br><br>70<br>175</td>
-            <td align="center" valign="top">Euro/€<br><br>12.000<br>18.000<br><br>100<br>300</td>
-        </tr>
-        <tr>
-            <td style="border-right: 0px solid;" valign="top"><b>2.</b></td>
-            <td style="border-left: 0px solid;">
-            <b>MAXIMUM LIMIT PER ACCIDENT OR ILLNESS PER OUT-HOSPITAL TREATMENT<br>
-            ΑΝΩΤΑΤΟ ΠΟΣΟ ΚΑΤΑ ΑΣΘΕΝΕΙΑ Ή ΑΤΥΧΗΜΑ ΕΚΤΟΣ ΝΟΣΟΚΟΜΕΙΟΥ</b><br>
-            &bull; &nbsp;&nbsp; Per Out-hospital treatment / Για Εξωνοσοκομειακή Περίθαλψη<br>
-            &bull; &nbsp;&nbsp; Per period of insurance and per person / Κατά περίοδο ασφάλισης και κατά άτομο<br>
+                Tel. / Τηλ.: +44 20 3640 6820
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                Fax. / Φαξ.: +44 20 8481 7721
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                E-mail / Ηλεκτρονική Διεύθυνση: internationlhealthcare@healix.com
+                <br>
+                <br>
+                By signing this application,  you are confirming that you are in good health and not traveling from
+                Medical Reasons, furthermore, please disclose any other facts that may influence the acceptance
+                of the risk. On acceptance of the Application and payment, a Schedule will be issued and together
+                With the Proposal shall be the basis of this contract.
+                <br>
+                Με την υπογραφή σας σε αυτή τη αίτηση επιβεβαιώνετε ότι είστε σε καλή υγεία και δεν 
+                ταξιδεύετε για ιατρικούς λόγους, επίσης παρακαλώ αναφέρετε οποιαδήποτε άλλα γεγονότα
+                που τυχόν επηρεάζουν την αποδοχή του κινδύνου. Με την αποδοχή της αίτησης και τη
+                καταβολή του ασφαλίστρου, θα εκδοθεί ο Πίνακας του Ασφαλιστηρίου που μαζί με την Αίτηση 
+                θα αποτελούν αναπόσπαστο μέρος του Ασφαλιστηρίου συμβολαίου
+                <br>
+                <br>
+                <strong>Data Protection Act</strong>
+                Any information provided will be processed. Any information provided to Us regarding You or any Person
+                Insured will be processed by UD in compliance with the provisions of the Processing of Personal Data
+                (Protection of the Individual) Regulation (EU) 2016/679, as amended each time, for the purpose of 
+                providing insurance and handling claims or complaints, if any. This may necessitate providing such information
+                to third parties.
+                <br>
+                <strong>Προστασία Δεδομένων</strong>
+                <br>
+                Οι όποιες πληροφορίες για Σας ή οποιοδήποτε ασφαλισμένο πρόσωπο δίνονται σε Μας, 
+                θα τυγχάνουν επεξεργασίας από Εμάς, σε συμμόρφωση με τις πρόνοιες του Γενικού Κανονισμού Προστασίας 
+                Δεδομένων (ΕΕ) 2016/679 θς εκάστοτε τροποποιείται, για σκοπούς παροχής ασφάλισης και χειρισμού των 
+                απαιτήσεων ή παραπόνων, αν υπάρξουν. Για αυτό, ενδέχεται να χρειαστεί να δοθούν αυτές οι πληροφορίες 
+                και σε τρίτους.
 
-            <b>2a.    MAXIMUM AMOUNT PER DOCTOR’S VISIT / ΑΝΩΤΑΤΟ ΠΟΣΟ ΚΑΤΑ ΙΑΤΡΙΚΗ ΕΠΙΣΚΕΨΗ</b>
+                
             </td>
-            <td align="center" valign="top"><br>685<br>1.750<br><br>20</td>
-            <td align="center" valign="top"><br>---<br>---<br><br>---</td>
-            <td align="center" valign="top"><br>1.000<br>2.500<br><br>50</td>
-        </tr>
-        <tr>
-            <td style="border-right: 0px solid;" valign="top"><b>3.</b></td>
-            <td style="border-left: 0px solid;">
-            <b>MATERNITY COVER (Normal or Caesarean Section)<br>ΩΦΕΛΗΜΑ ΤΟΚΕΤΟΥ (Φυσιολογικός ή με καισαρική τομή)</b><br>
-            Maximum limit up to / Ανώτατο όριο μέχρι:<br>
-            The benefit is payable only if delivery takes place at least 10 months from the commencement of cover or inclusion of the Insured Person in the Policy. Το ωφέλημα είναι πληρωτέο νοουμένου ότι ο τοκετός γίνεται τουλάχιστον 10 μήνες μετά την έναρξη του Ασφαλιστηρίου ή την ένταξη του Ασφαλισμένου Προσώπου στο Ασφαλιστήριο
-            </td>
-            <td align="center" valign="top"><br><br>515</td>
-            <td align="center" valign="top"><br><br>515</td>
-            <td align="center" valign="top"><br><br>800</td>
-        </tr>
-        <tr>
-            <td style="border-right: 0px solid;"><b>4.</b></td>
-            <td style="border-left: 0px solid;">
-            <b>TRANSPORTATION OF CORPSE / ΜΕΤΑΦΟΡΑΣ ΣΩΡΟΥ</b>
-            </td>
-            <td align="center" valign="top">3.450</td>
-            <td align="center" valign="top">3.450</td>
-            <td align="center" valign="top">5.000</td>
-        </tr>
-        <tr>
-            <td style="border-right: 0px solid;"></td>
-            <td style="border-left: 0px solid;" align="right"><b>Plan Selection / Επιλογή Σχεδίου</b></td>
-            <td align="center">'.$pack1Html.'</td>
-            <td align="center">'.$pack2Html.'</td>
-            <td align="center">'.$pack3Html.'</td>
         </tr>
     </table>
-    <div style="height: 7px;"></div>
-    <div style="font-size: 10px; width: 900px; text-align: justify;">
-        This <b>Schedule of Benefits</b> forms an integral part of <b>Medical Insurance Policy KMIPW 11 2017</b> This Policy will be renewed for an 
-        additional period with the same terms and conditions that exist at the time of renewal subject to the premium being prepaid. 
-        / <b>Ο Πίνακας Παροχών</b> αποτελεί αναπόσπαστο μέρος του <b>Ασφαλιστηρίου Ιατροφαρμακευτικής Περίθαλψης KMIPW 11 2017</b> Το Ασφαλιστήριο 
-        θα ανανεωθεί αυτόματα για ακόμη μια ασφαλιστική περίοδο με τους όρους και τις προϋποθέσεις που θα ισχύουν κατά την ημερομηνία 
-        ανανέωσης του και νοουμένου ότι το ασφάλιστρο ανανέωσης θα προπληρωθεί.<br>
-        <div style="height: 7px;"></div>
-        Co-insurance / Συνασφάλιση : Up to 65 years of age / Μέχρι 65 ετών &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;10% on all Claims / 10% σε όλες τις απαιτήσεις<br>
-        <div style="height: 7px;"></div>
-    </div>
-    <div style="font-size: 10px; width: 900px; text-align: left">
-        Employers Liability Coverage / Κάλυψη Ευθύνη Εργοδότη: '.$elPackage.'
-        &nbsp;&nbsp;
-        Employer’s Registration Number / Αριθμό Μητρώου Εργοδότη: '.$socialSecurity.'
-        <br>
-        <br>
-        <br>
-        <br>
-        Policyholder Signature / Υπογραφή Συμβαλλόμενου ____________________________________________ 
-        Date / Ημερομηνία: ________________________
-    </div>
- 
+        
+    
+    
+    <div style="height: 50px;"></div>
+    
     <div style="font-size: 10px;">
         <table style="font-size: 10px;" width="100%">
             <tr>
@@ -265,7 +402,838 @@ function getQuotationHTML($quotationID)
     <div style="font-size: 10px;" align="center">
         P.O.Box 53538, 3033 Limassol Tel.:+357 25755952 Fax: +357 25755953 E-mail: kemter@kemterinsurance.com
     </div>
+    
+    
+    <div class="elementPageBreak">
+    
+    '.($sect1['oqqit_rate_4'] != 'Limited' ? '
+    <table class="tableTdBorder" width="900" cellpadding="0" cellspacing="0">
+        <tr>
+            <td width="820" style="background-color: olivedrab">
+                <strong>PLAN NAME</strong>
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td width="80" style="background-color: #BFE0BE" align="center">Basic</td>':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td width="80" style="background-color: #BFE0BE" align="center">Standard</td>':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td width="80" style="background-color: #BFE0BE" align="center">Luxury</td>':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td width="80" style="background-color: #BFE0BE" align="center">Schengen Visa</td>':'').'
+        </tr>
+        <tr>
+            <td>
+                Emergency medical & travel expenses<br>
+                Deductible per claimant
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                €100.000<br>
+                <div style="color: red">€100</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                €200.000<br>
+                <div style="color: red">€100</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                €250.000<br>
+                <div style="color: red">€100</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                €50.000<br>
+                <div style="color: red">€100</div>
+            </td>
+            ':'').'
+        </tr>
         
+        <tr>
+            <td>
+                Emergency medical evacuation & Repatriation of mortal remains
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                €100.000
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                €200.000
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                €250.000
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                €50.000
+            </td>
+            ':'').'
+        </tr>
+        
+        <tr>
+            <td>
+                Funeral Expenses
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                €10.000
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                €10.000
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                €10.000
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                €5.000
+            </td>
+            ':'').'
+        </tr>
+        
+        <tr>
+            <td>
+            
+                <table class="tableNoTdBorder" width="820" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td valign="top" width="410">Hospital Inconvenience Expenses</td>
+                        <td width="410">
+                            <strong>
+                                Daily Limit:<br>
+                                Maximum Limit:
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                €25<br>
+                <div style="color: red">€1.500</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                €50<br>
+                <div style="color: red">€2.500</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                €100<br>
+                <div style="color: red">€5.000</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                Deleted
+            </td>
+            ':'').'
+        </tr>
+        
+        <tr>
+            <td>
+            
+                <table class="tableNoTdBorder" width="820" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td valign="top" width="410" colspan="2">
+                            <strong>
+                                Personal Accident
+                            </strong>
+                            <br>
+                            1 Accidental Death<br>
+                            2. <strong>Loss of Limb</strong> (one limb) or <strong>Loss of Sight</strong> (one eye)<br>
+                            3. <strong>Loss of Limb</strong> (two limbs) or <strong>Loss of Sight</strong> (both eyes)<br>
+                            4. <strong>Permanent Total Disablement</strong><br>
+                            In no case shall <strong>Our</strong> liability exceed the largest <strong>Benefit Amount</strong>
+                            applicable under any one of the Benefits above.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td width="410" valign="top">
+                            <strong>For Insured Persons under the age of sixteen (16):</strong><br>
+                            <strong>For Insured Persons over the age of sixty-five (65):</strong><br>
+                        </td>
+                        <td width="410">
+                        Benefit 1 is limited to €5.000 and Benefits 2,3, and 4 are reduced by 50%.<br>
+                        Benefit 1 is limited to €5.000 and Benefits 2 and 3 are reduced by 50%, Benefit 4
+                        (<strong>Permanent Total Disablement</strong>) is deleted.
+                        </td>
+                    </tr>
+                </table>
+                
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center" valign="top">
+                <br>
+                €50.000<br>
+                €50.000<br>
+                €50.000<br>
+                €50.000
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center" valign="top">
+                <br>
+                €100.000<br>
+                €100.000<br>
+                €100.000<br>
+                €100.000
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center" valign="top">
+                <br>
+                €150.000<br>
+                €150.000<br>
+                €150.000<br>
+                €150.000
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center" valign="top">
+                <br>
+                €20.000<br>
+                €20.000<br>
+                €20.000<br>
+                €20.000
+            </td>
+            ':'').'
+        </tr>
+        
+        <tr>
+            <td>
+            
+                <table class="tableNoTdBorder" width="820" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td valign="top" width="410">
+                            Trip Cancellation
+                        </td>
+                        <td width="410">
+                            <strong>
+                                <br>
+                                Excess for each and every claim
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                €5.000<br>
+                <div style="color: red">€100</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                €5.000<br>
+                <div style="color: red">€100</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                €5.000<br>
+                <div style="color: red">€100</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                €500<br>
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+        </tr>
+        
+        <tr>
+            <td>
+            
+                <table class="tableNoTdBorder" width="820" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td valign="top" width="410">
+                            Trip Delay
+                        </td>
+                        <td width="410">
+                            Hourly Limit:<br>
+                            Maximum Limit:<br>
+                            <strong>Excess for each and every claim</strong>                            
+                        </td>
+                    </tr>
+                </table>
+                
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                €25<br>
+                €100<br>
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                €50<br>
+                €300<br>
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                €100<br>
+                €600<br>
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                €25<br>
+                €100<br>
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+        </tr>
+        
+        <tr>
+            <td>
+            
+                <table class="tableNoTdBorder" width="820" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td valign="top" width="410">
+                            Missed Departure
+                        </td>
+                        <td width="410">
+                            <strong>
+                                <br>
+                                Excess for each and every claim
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                €500<br>
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                €750<br>
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                €1.000<br>
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                Deleted
+            </td>
+            ':'').'
+        </tr>
+        
+        <tr>
+            <td>
+            
+                <table class="tableNoTdBorder" width="820" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td valign="top" width="410">
+                            Missed Connection
+                        </td>
+                        <td width="410">
+                            <strong>
+                                <br>
+                                Excess for each and every claim
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                €500<br>
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                €750<br>
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                €1.000<br>
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                Deleted
+            </td>
+            ':'').'
+        </tr>
+        
+        <tr>
+            <td>
+            
+                <table class="tableNoTdBorder" width="820" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td valign="top" width="410">
+                            Baggage Delay
+                        </td>
+                        <td width="410">
+                            <strong>
+                                <br>
+                                Excess for each and every claim
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                €250<br>
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                €500<br>
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                €750<br>
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                €250<br>
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+        </tr>
+        
+        <tr>
+            <td>
+            
+                <table class="tableNoTdBorder" width="820" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td valign="top" width="410">
+                            Loss/Damage of baggage & personal effects<br>
+                            Single Aricle Limit
+                        </td>
+                        <td width="410">
+                            <strong>
+                                <br>
+                                <br>
+                                Excess for each and every claim
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                €500<br>
+                €350
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                €1.000<br>
+                €350
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                €2.000<br>
+                €350
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                €500<br>
+                €350
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+        </tr>
+        
+        <tr>
+            <td>
+            
+                <table class="tableNoTdBorder" width="820" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td valign="top" width="410">
+                            Loss of Money
+                        </td>
+                        <td width="410">
+                            <strong>
+                                <br>
+                                Excess for each and every claim
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                €500<br>
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                €1.000<br>
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                €1.000<br>
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                Deleted
+            </td>
+            ':'').'
+        </tr>
+        
+        <tr>
+            <td>
+            
+                <table class="tableNoTdBorder" width="820" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td valign="top" width="410">
+                            Loss of travel documents
+                        </td>
+                        <td width="410">
+                            <strong>
+                                <br>
+                                Excess for each and every claim
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                €100<br>
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                €250<br>
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                €350<br>
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                €100<br>
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+        </tr>
+        
+        <tr>
+            <td>
+            
+                <table class="tableNoTdBorder" width="820" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td valign="top" width="410">
+                            Legal Expenses
+                        </td>
+                        <td width="410">
+                                <br>
+                                Aggregae Limit:<br>
+                            <strong>
+                                Excess for each and every claim
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                €25.000<br>
+                €25.000
+                <div style="color: red">€100</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                €25.000<br>
+                €25.000
+                <div style="color: red">€100</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                €25.000<br>
+                €25.000
+                <div style="color: red">€100</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                €25.000<br>
+                €25.000
+                <div style="color: red">€100</div>
+            </td>
+            ':'').'
+        </tr>
+        
+        <tr>
+            <td>
+            
+                <table class="tableNoTdBorder" width="820" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td valign="top" width="410">
+                            Hi-jack and Kidnap
+                        </td>
+                        <td width="410">
+                                Daily Limit:<br>
+                                Maximum Limit:<br>
+                            <strong>
+                                Excess for each and every claim
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+                
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                €200<br>
+                €5.000
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                €200<br>
+                €5.000
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                €200<br>
+                €5.000
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                €200<br>
+                €2.000
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+        </tr>
+        
+        <tr>
+            <td>
+                Emergency medical assistance
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                Included
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                Included
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                Included
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                Included
+            </td>
+            ':'').'
+        </tr>
+        
+    </table>
+    
+    <div style="height: 20px;"></div>
+    
+    <table class="tableTdBorder" width="900" cellpadding="0" cellspacing="0">
+        <tr>
+            <td>
+                <strong>Winter Sports Optional Coverage (included only if selected)</strong>
+            </td>
+            <td width="80"></td>
+        </tr>
+        
+        <tr>
+            <td>
+                <table class="tableNoTdBorder" width="820" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td valign="top" width="410">
+                            Avalanche
+                        </td>
+                        <td width="410">
+                            <strong>
+                                <br>
+                                Excess for each and every claim
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                €250<br>
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                €250<br>
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                €250<br>
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                Not Included
+            </td>
+            ':'').'
+        </tr>
+        
+        <tr>
+            <td>
+                <table class="tableNoTdBorder" width="820" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td valign="top" width="410">
+                            Equipment Hire
+                        </td>
+                        <td width="410">
+                                Daily Limit:<br>
+                                Maximum Limit:<br>
+                            <strong>
+                                Excess for each and every claim
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                €25<br>
+                €250
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                €25<br>
+                €250
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                €25<br>
+                €250
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                Not Included
+            </td>
+            ':'').'
+        </tr>
+        
+        <tr>
+            <td>
+                <table class="tableNoTdBorder" width="820" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td valign="top" width="410">
+                            Lift Pass
+                        </td>
+                        <td width="410">
+                            <strong>
+                                <br>
+                                Excess for each and every claim
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                €200<br>
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                €200<br>
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                €200<br>
+                <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                Not Included
+            </td>
+            ':'').'
+        </tr>
+        
+        <tr>
+            <td>
+                <table class="tableNoTdBorder" width="820" cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td valign="top" width="410">
+                            Piste Closure
+                        </td>
+                        <td width="410">
+                                Daily Limit:<br>
+                                Maximum Limit:<br>
+                            <strong>
+                                Excess for each and every claim
+                            </strong>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            '.($sect1['oqqit_rate_4'] == 'Basic'? '<td align="center">
+                €25<br>
+                €250<br>
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Standard'? '<td align="center">
+                €25<br>
+                €250<br>
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td align="center">
+                €25<br>
+                €250<br>
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
+                Not Included
+            </td>
+            ':'').'
+        </tr>
+        
+    </table>
+    ':'
+    <table class="tableTdBorder" width="900" cellpadding="0" cellspacing="0">
+        <tr>
+            <td width="820" style="background-color: #BFE0BE">
+                <strong>PLAN NAME</strong>
+            </td>
+            <td width="80" style="background-color: #BFE0BE" align="center">Limited</td>
+        </tr>
+        
+        <tr>
+            <td>
+                Baggage / Αποσκευές
+            </td>
+            <td align="center">
+                €500
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Personal Accident / Προσωπικά Ατυχήματα
+            </td>
+            <td align="center">
+                €20.000
+            </td>
+        </tr>
+        <tr>
+            <td>
+                Medical Expenses / Ιατρικά Έξοδα
+            </td>
+            <td align="center">
+                €1.000
+            </td>
+        </tr>
+    </table>
+    ').'
+    
  </div>
     ';
 

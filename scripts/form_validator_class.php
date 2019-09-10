@@ -14,6 +14,7 @@ class customFormValidator
     private $fieldCode = '';
     private $needIsDateFunction = false;
     private $needCompare2DatesFunction = false;
+    private $needYearsFrom2DatesFunction = false;
     private $needEmailValidationFunction = false;
     private $needIntegerOnlyValidationFunction = false;
     private $customCode = [];
@@ -32,6 +33,13 @@ class customFormValidator
     public function showErrorList()
     {
         $this->showErrorList = 1;
+    }
+
+    public function includeCompare2DatesFunction(){
+        $this->needCompare2DatesFunction = true;
+    }
+    public function includeYearsFrom2DatesFunction(){
+        $this->needYearsFrom2DatesFunction = true;
     }
 
     /**
@@ -55,6 +63,8 @@ class customFormValidator
         //validateEmail: Validates if the email has the right format
         //minNumber: decimal -> number cannot be lower than this (inclusive)
         //maxNumber: decimal -> number cannot be higher than this (inclusive)
+        //allowedNumberList: list of numbers in array that is allowed to be used [20,40,23,18,101etc] if list is empty [] then ignore
+        //allowedNumberListCSCode: added custom code for the allowedNumberList
         if ($fieldData['fieldName'] == '') {
             echo "<div class='alert alert-danger'>Must provide fieldName in newField</div>";
             exit();
@@ -109,7 +119,8 @@ class customFormValidator
             if ($fieldData['fieldDataType'] == 'radio') {
                 echo '<div class="invalid-feedback" id="' . $fieldData['fieldName'] . '-invalid-text">' . $fieldData['invalidText'] . '</div>';
             } else {
-                echo '<div class="invalid-feedback">' . $fieldData['invalidText'] . '</div>';
+                //echo '<div class="invalid-feedback">' . $fieldData['invalidText'] . '</div>';
+                echo '<div class="invalid-feedback" id="' . $fieldData['fieldName'] . '-invalid-text">' . $fieldData['invalidText'] . '</div>';
             }
         } else {
 
@@ -234,7 +245,7 @@ class customFormValidator
         if ($fieldData['required'] == true && $fieldData['fieldDataType'] == 'date') {
             $this->needIsDateFunction = true;
             $return .= "
-            if (isDate($('#" . $fieldData['fieldName'] . "').val())){
+            if (isDate($('#" . $fieldData['fieldName'] . "').val()) || $('#" . $fieldData['fieldName'] . "').val() == ''){
                 //if is-invalid already exists then another check hit. do not make as valid.
                 if ($('#" . $fieldData['fieldName'] . "').hasClass('is-invalid') != true){
                     $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
@@ -345,6 +356,32 @@ class customFormValidator
                             $('#" . $fieldData['fieldName'] . "').removeClass('is-invalid');
                         }
                     }
+                ";
+            }
+
+            if (!empty($fieldData['allowedNumberList'])){
+                //make the array list
+                foreach($fieldData['allowedNumberList'] as $value){
+                    $jsif .= " $('#" . $fieldData['fieldName'] . "').val() != '".$value."' &&";
+                }
+                $jsif = $db->remove_last_char($jsif);
+                $jsif = $db->remove_last_char($jsif);
+                
+                $return .= "
+                if (".$jsif." ".$fieldData['allowedNumberListCSCode']."){
+                    $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
+                    $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
+                    FormErrorFound = true;
+                    ErrorList.push('" . $fieldData['fieldName'] . " -> Number not in list ');
+                }
+                else {
+                    //if is-invalid already exists then another check hit. do not make as valid.
+                    if ($('#" . $fieldData['fieldName'] . "').hasClass('is-invalid') != true){
+                        $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
+                        $('#" . $fieldData['fieldName'] . "').removeClass('is-invalid');
+                    }
+                }
+                
                 ";
             }
         }
@@ -509,6 +546,106 @@ class customFormValidator
 
             ";
         }
+
+        if ($this->needYearsFrom2DatesFunction == true){
+            echo "
+            
+            function getYearsFromDates(dFrom, dTo, whatToReturn = 'Years'){
+
+    var fromSplit = dFrom.split('/');
+    var toSplit = dTo.split('/');
+
+    var dateTo = new Date(
+        toSplit[2],
+        toSplit[1],
+        toSplit[0]
+    );
+
+    var yearNow = dateTo.getFullYear();
+    var monthNow = dateTo.getMonth();
+    var dateNow = dateTo.getDate();
+    //date must be mm/dd/yyyy
+    var dob = new Date(
+        fromSplit[2],
+        fromSplit[1]-1,
+        fromSplit[0]
+    );
+
+    var yearDob = dob.getFullYear();
+    var monthDob = dob.getMonth();
+    var dateDob = dob.getDate();
+    var age = {};
+    var ageString = '';
+    var yearString = '';
+    var monthString = '';
+    var dayString = '';
+
+
+    yearAge = yearNow - yearDob;
+
+    if (monthNow >= monthDob)
+        var monthAge = monthNow - monthDob;
+    else {
+        yearAge--;
+        var monthAge = 12 + monthNow -monthDob;
+    }
+
+    if (dateNow >= dateDob)
+        var dateAge = dateNow - dateDob;
+    else {
+        monthAge--;
+        var dateAge = 31 + dateNow - dateDob;
+
+        if (monthAge < 0) {
+            monthAge = 11;
+            yearAge--;
+        }
+    }
+
+    age = {
+        years: yearAge,
+        months: monthAge,
+        days: dateAge
+    };
+
+    if ( age.years > 1 ) yearString = \" years\";
+    else yearString = \" year\";
+    if ( age.months> 1 ) monthString = \" months\";
+    else monthString = \" month\";
+    if ( age.days > 1 ) dayString = \" days\";
+    else dayString = \" day\";
+
+
+    if ( (age.years > 0) && (age.months > 0) && (age.days > 0) )
+        ageString = age.years + yearString + \", \" + age.months + monthString + \", and \" + age.days + dayString + \" old.\";
+    else if ( (age.years == 0) && (age.months == 0) && (age.days > 0) )
+        ageString = \"Only \" + age.days + dayString + \" old!\";
+    else if ( (age.years > 0) && (age.months == 0) && (age.days == 0) )
+        ageString = age.years + yearString + \" old. Happy Birthday!!\";
+    else if ( (age.years > 0) && (age.months > 0) && (age.days == 0) )
+        ageString = age.years + yearString + \" and \" + age.months + monthString + \" old.\";
+    else if ( (age.years == 0) && (age.months > 0) && (age.days > 0) )
+        ageString = age.months + monthString + \" and \" + age.days + dayString + \" old.\";
+    else if ( (age.years > 0) && (age.months == 0) && (age.days > 0) )
+        ageString = age.years + yearString + \" and \" + age.days + dayString + \" old.\";
+    else if ( (age.years == 0) && (age.months > 0) && (age.days == 0) )
+        ageString = age.months + monthString + \" old.\";
+    else ageString = \"Oops! Could not calculate age!\";
+
+    if (whatToReturn == 'Years'){
+        return age.years;
+    }
+    if (whatToReturn == 'AgeString'){
+        return ageString;
+    }
+    else {
+        return age.years;
+    }
+}
+            
+            ";
+        }
+
         if ($this->needEmailValidationFunction == true) {
             echo '
             function validateEmail($email) {

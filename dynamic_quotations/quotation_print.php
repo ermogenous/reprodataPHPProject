@@ -23,6 +23,12 @@ JOIN oqt_quotations_types ON oqqt_quotations_types_ID = oqq_quotations_type_ID
 WHERE oqq_quotations_ID = " . $_GET["quotation"];
 $qdata = $db->query_fetch($sql);
 
+$quotationUnderwriter = $db->query_fetch(
+    'SELECT * FROM 
+                  oqt_quotations_underwriters 
+                  WHERE oqun_user_ID = ' . $qdata['oqq_users_ID']
+);
+
 $quote = new dynamicQuotation($_GET['quotation']);
 
 //get the quotation print file
