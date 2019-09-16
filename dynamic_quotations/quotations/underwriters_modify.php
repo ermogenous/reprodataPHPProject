@@ -654,6 +654,23 @@ $formValidator = new customFormValidator();
                                 </div>
                             </div>
 
+                            <div class="form-group row">
+                                <label for="fld_tr_open_cover_number" class="col-sm-4 col-form-label">Open Cover
+                                    Number</label>
+                                <div class="col-sm-8">
+                                    <input name="fld_tr_open_cover_number" type="text" id="fld_tr_open_cover_number"
+                                           class="form-control"
+                                           value="<?php echo $data["oqun_tr_open_cover_number"]; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_open_cover_number",
+                                        "fieldDataType" => "text",
+                                        "required" => false,
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
+
                             <div class="row form-group">
                                 <label for="fld_tr_show_prem" class="col-sm-4 col-form-label">
                                     Show/Hide Premium on Schedule
@@ -724,10 +741,10 @@ $formValidator = new customFormValidator();
                             </div>
 
                             <div class="row form-group">
-                                <label for="fld_tr_basic_premium" class="col-sm-4 col-form-label">
-                                    Basic Package Per Day/Person Premium
+                                <label for="fld_tr_basic_premium" class="col-sm-3 col-form-label">
+                                    Basic Package Per Day/Person Pr.
                                 </label>
-                                <div class="col-sm-2">
+                                <div class="col-sm-1">
                                     <input name="fld_tr_basic_premium" type="text"
                                            id="fld_tr_basic_premium"
                                            class="form-control text-center"
@@ -745,7 +762,7 @@ $formValidator = new customFormValidator();
                                 <label for="fld_tr_basic_min_premium" class="col-sm-3 col-form-label">
                                     Basic Minimum Policy Premium
                                 </label>
-                                <div class="col-sm-2">
+                                <div class="col-sm-1">
                                     <input name="fld_tr_basic_min_premium" type="text"
                                            id="fld_tr_basic_min_premium"
                                            class="form-control text-center"
@@ -760,13 +777,51 @@ $formValidator = new customFormValidator();
                                     ]);
                                     ?>
                                 </div>
+
+                                <label for="fld_tr_basic_fees" class="col-sm-1 col-form-label text-right">
+                                    Fees
+                                </label>
+                                <div class="col-sm-1">
+                                    <input name="fld_tr_basic_fees" type="text"
+                                           id="fld_tr_basic_fees"
+                                           class="form-control text-center"
+                                           value="<?php echo $data['oqun_tr_basic_fees']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_basic_fees",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageBasic').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+
+                                <label for="fld_tr_basic_stamps" class="col-sm-1 col-form-label text-right">
+                                    Stamps
+                                </label>
+                                <div class="col-sm-1">
+                                    <input name="fld_tr_basic_stamps" type="text"
+                                           id="fld_tr_basic_stamps"
+                                           class="form-control text-center"
+                                           value="<?php echo $data['oqun_tr_basic_stamps']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_basic_stamps",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageBasic').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
                             </div>
 
                             <div class="row form-group">
-                                <label for="fld_tr_standard_premium" class="col-sm-4 col-form-label">
-                                    Standard Package Per Day/Person Premium
+                                <label for="fld_tr_standard_premium" class="col-sm-3 col-form-label">
+                                    Standard Package Per Day/Person Pr.
                                 </label>
-                                <div class="col-sm-2">
+                                <div class="col-sm-1">
                                     <input name="fld_tr_standard_premium" type="text"
                                            id="fld_tr_standard_premium"
                                            class="form-control text-center"
@@ -784,7 +839,7 @@ $formValidator = new customFormValidator();
                                 <label for="fld_tr_standard_min_premium" class="col-sm-3 col-form-label">
                                     Standard Minimum Policy Premium
                                 </label>
-                                <div class="col-sm-2">
+                                <div class="col-sm-1">
                                     <input name="fld_tr_standard_min_premium" type="text"
                                            id="fld_tr_standard_min_premium"
                                            class="form-control text-center"
@@ -799,13 +854,51 @@ $formValidator = new customFormValidator();
                                     ]);
                                     ?>
                                 </div>
+
+                                <label for="fld_tr_standard_fees" class="col-sm-1 col-form-label text-right">
+                                    Fees
+                                </label>
+                                <div class="col-sm-1">
+                                    <input name="fld_tr_standard_fees" type="text"
+                                           id="fld_tr_standard_fees"
+                                           class="form-control text-center"
+                                           value="<?php echo $data['oqun_tr_standard_fees']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_standard_fees",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageBasic').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+
+                                <label for="fld_tr_standard_stamps" class="col-sm-1 col-form-label text-right">
+                                    Stamps
+                                </label>
+                                <div class="col-sm-1">
+                                    <input name="fld_tr_standard_stamps" type="text"
+                                           id="fld_tr_standard_stamps"
+                                           class="form-control text-center"
+                                           value="<?php echo $data['oqun_tr_standard_stamps']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_standard_stamps",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageBasic').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
                             </div>
 
                             <div class="row form-group">
-                                <label for="fld_tr_luxury_premium" class="col-sm-4 col-form-label">
-                                    Luxury Package Per Day/Person Premium
+                                <label for="fld_tr_luxury_premium" class="col-sm-3 col-form-label">
+                                    Luxury Package Per Day/Person Pr.
                                 </label>
-                                <div class="col-sm-2">
+                                <div class="col-sm-1">
                                     <input name="fld_tr_luxury_premium" type="text"
                                            id="fld_tr_luxury_premium"
                                            class="form-control text-center"
@@ -820,10 +913,11 @@ $formValidator = new customFormValidator();
                                     ]);
                                     ?>
                                 </div>
+
                                 <label for="fld_tr_luxury_min_premium" class="col-sm-3 col-form-label">
                                     Luxury Minimum Policy Premium
                                 </label>
-                                <div class="col-sm-2">
+                                <div class="col-sm-1">
                                     <input name="fld_tr_luxury_min_premium" type="text"
                                            id="fld_tr_luxury_min_premium"
                                            class="form-control text-center"
@@ -838,13 +932,51 @@ $formValidator = new customFormValidator();
                                     ]);
                                     ?>
                                 </div>
+
+                                <label for="fld_tr_luxury_fees" class="col-sm-1 col-form-label text-right">
+                                    Fees
+                                </label>
+                                <div class="col-sm-1">
+                                    <input name="fld_tr_luxury_fees" type="text"
+                                           id="fld_tr_luxury_fees"
+                                           class="form-control text-center"
+                                           value="<?php echo $data['oqun_tr_luxury_fees']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_luxury_fees",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageBasic').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+
+                                <label for="fld_tr_luxury_stamps" class="col-sm-1 col-form-label text-right">
+                                    Stamps
+                                </label>
+                                <div class="col-sm-1">
+                                    <input name="fld_tr_luxury_stamps" type="text"
+                                           id="fld_tr_luxury_stamps"
+                                           class="form-control text-center"
+                                           value="<?php echo $data['oqun_tr_luxury_stamps']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_luxury_stamps",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageBasic').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
                             </div>
 
                             <div class="row form-group">
-                                <label for="fld_tr_schengen_premium" class="col-sm-4 col-form-label">
-                                    Schengen Package Per Day/Person Premium
+                                <label for="fld_tr_schengen_premium" class="col-sm-3 col-form-label">
+                                    Schengen Package Per Day/Person Pr.
                                 </label>
-                                <div class="col-sm-2">
+                                <div class="col-sm-1">
                                     <input name="fld_tr_schengen_premium" type="text"
                                            id="fld_tr_schengen_premium"
                                            class="form-control text-center"
@@ -859,10 +991,11 @@ $formValidator = new customFormValidator();
                                     ]);
                                     ?>
                                 </div>
+
                                 <label for="fld_tr_schengen_min_premium" class="col-sm-3 col-form-label">
                                     Shengen Minimum Policy Premium
                                 </label>
-                                <div class="col-sm-2">
+                                <div class="col-sm-1">
                                     <input name="fld_tr_schengen_min_premium" type="text"
                                            id="fld_tr_schengen_min_premium"
                                            class="form-control text-center"
@@ -877,20 +1010,77 @@ $formValidator = new customFormValidator();
                                     ]);
                                     ?>
                                 </div>
+
+                                <label for="fld_tr_schengen_fees" class="col-sm-1 col-form-label text-right">
+                                    Fees
+                                </label>
+                                <div class="col-sm-1">
+                                    <input name="fld_tr_schengen_fees" type="text"
+                                           id="fld_tr_schengen_fees"
+                                           class="form-control text-center"
+                                           value="<?php echo $data['oqun_tr_schengen_fees']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_schengen_fees",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageBasic').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+
+                                <label for="fld_tr_schengen_stamps" class="col-sm-1 col-form-label text-right">
+                                    Stamps
+                                </label>
+                                <div class="col-sm-1">
+                                    <input name="fld_tr_schengen_stamps" type="text"
+                                           id="fld_tr_schengen_stamps"
+                                           class="form-control text-center"
+                                           value="<?php echo $data['oqun_tr_schengen_stamps']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_schengen_stamps",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageBasic').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
                             </div>
 
                             <div class="row form-group">
-                                <label for="fld_tr_limited_premiums" class="col-sm-4 col-form-label">
-                                    Limited Package Per Day/Person Premium
+                                <label for="fld_tr_limited_premium" class="col-sm-3 col-form-label">
+                                    Limited Package Per Day/Person Pr.
                                 </label>
-                                <div class="col-sm-2">
-                                    <input name="fld_tr_limited_premiums" type="text"
-                                           id="fld_tr_limited_premiums"
+                                <div class="col-sm-1">
+                                    <input name="fld_tr_limited_premium" type="text"
+                                           id="fld_tr_limited_premium"
                                            class="form-control text-center"
-                                           value="<?php echo $data['oqun_tr_limited_premiums']; ?>">
+                                           value="<?php echo $data['oqun_tr_limited_premium']; ?>">
                                     <?php
                                     $formValidator->addField([
-                                        "fieldName" => "fld_tr_limited_premiums",
+                                        "fieldName" => "fld_tr_limited_premium",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageLimited').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+
+                                <label for="fld_tr_limited_min_premium" class="col-sm-3 col-form-label">
+                                    Limited Minimum <strong>Member</strong> Premium
+                                </label>
+                                <div class="col-sm-1">
+                                    <input name="fld_tr_limited_min_premium" type="text"
+                                           id="fld_tr_limited_min_premium"
+                                           class="form-control text-center"
+                                           value="<?php echo $data['oqun_tr_limited_min_premium']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_limited_min_premium",
                                         "fieldDataType" => "text",
                                         "required" => true,
                                         "invalidTextAutoGenerate" => true,
@@ -898,48 +1088,45 @@ $formValidator = new customFormValidator();
                                     ]);
                                     ?>
                                 </div>
-                                <div class="col-sm-6 form-group">
-                                    Days#Total Premium||Days#Total Premium||... Example 30#15|| 30 days is 15eu premium
-                                </div>
-                            </div>
 
-                            <div class="row form-group">
-                                <label for="fld_tr_limited_premiums" class="col-sm-4 col-form-label">
-                                    Policy Fees
+                                <label for="fld_tr_limited_fees" class="col-sm-1 col-form-label text-right">
+                                    Fees
                                 </label>
-                                <div class="col-sm-2">
-                                    <input name="fld_tr_fees" type="text"
-                                           id="fld_tr_fees"
+                                <div class="col-sm-1">
+                                    <input name="fld_tr_limited_fees" type="text"
+                                           id="fld_tr_limited_fees"
                                            class="form-control text-center"
-                                           value="<?php echo $data['oqun_tr_fees']; ?>">
+                                           value="<?php echo $data['oqun_tr_limited_fees']; ?>">
                                     <?php
                                     $formValidator->addField([
-                                        "fieldName" => "fld_tr_fees",
+                                        "fieldName" => "fld_tr_limited_fees",
                                         "fieldDataType" => "number",
                                         "required" => true,
                                         "invalidTextAutoGenerate" => true,
-                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageLimited').is(':checked')"
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageBasic').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
-                                <label for="fld_tr_stamps" class="col-sm-4 col-form-label">
-                                    Policy Stamps
+
+                                <label for="fld_tr_limited_stamps" class="col-sm-1 col-form-label text-right">
+                                    Stamps
                                 </label>
-                                <div class="col-sm-2">
-                                    <input name="fld_tr_stamps" type="text"
-                                           id="fld_tr_stamps"
+                                <div class="col-sm-1">
+                                    <input name="fld_tr_limited_stamps" type="text"
+                                           id="fld_tr_limited_stamps"
                                            class="form-control text-center"
-                                           value="<?php echo $data['oqun_tr_stamps']; ?>">
+                                           value="<?php echo $data['oqun_tr_limited_stamps']; ?>">
                                     <?php
                                     $formValidator->addField([
-                                        "fieldName" => "fld_tr_stamps",
+                                        "fieldName" => "fld_tr_limited_stamps",
                                         "fieldDataType" => "number",
                                         "required" => true,
                                         "invalidTextAutoGenerate" => true,
-                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageLimited').is(':checked')"
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageBasic').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
+
                             </div>
 
 

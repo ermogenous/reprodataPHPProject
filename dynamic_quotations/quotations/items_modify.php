@@ -35,12 +35,18 @@ if ($_GET["lid"] != "") {
 }
 
 $db->show_header();
+
+
+include('../../scripts/form_validator_class.php');
+$formValidator = new customFormValidator();
+$formValidator->setFormName('myForm');
 ?>
     <div class="container">
         <div class="row">
             <div class="col-lg-2 col-md-2 hidden-xs hidden-sm"></div>
             <div class="col-lg-8 col-md-8 col-xs-12 col-sm-12">
-                <form name="myForm" id="myForm" method="post" action="" onsubmit="">
+                <form name="myForm" id="myForm" method="post" action=""
+                    <?php $formValidator->echoFormParameters(); ?>>
                     <div class="alert alert-dark text-center">
                         <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
                             &nbsp;Quotation Type</b>
@@ -255,8 +261,8 @@ $db->show_header();
                                    onclick="window.location.assign('items.php')">
                             <input type="submit" name="Submit" id="Submit"
                                    value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Quotation Type Item"
-                                   class="btn btn-secondary"
-                                   onclick="submitForm()">
+                                   class="btn btn-secondary">
+
                         </div>
                     </div>
 
@@ -264,17 +270,8 @@ $db->show_header();
             </div>
         </div>
     </div>
-    <script>
-        function submitForm() {
-            frm = document.getElementById('myForm');
-            if (frm.checkValidity() === false) {
 
-            }
-            else {
-                document.getElementById('Submit').disabled = true
-            }
-        }
-    </script>
 <?php
+$formValidator->output();
 $db->show_footer();
 ?>

@@ -31,6 +31,8 @@ function getQuotationHTML($quotationID)
         (SELECT cde_value FROM codes WHERE cde_code_ID = oqqit_rate_14)as clo_member_9_nationality
         FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $quotationID . " AND oqqit_items_ID = 8");
 
+    //underwriter open cover number
+    $underwriterOpenCoverNumber = '';
 
     //certificate number
     if ($quotationData['oqq_status'] != 'Active'){
@@ -46,7 +48,14 @@ function getQuotationHTML($quotationID)
         $draftImage = '';
         $signature = '<img src="images/santamas_signature_200.png" width="200">';
         $stamp = '<img src="images/full_stamp_signature.png" width="140">';
+
+        if ($quotationUnderwriter['oqun_tr_open_cover_number'] != '' && strlen($quotationUnderwriter['oqun_tr_open_cover_number']) >= 5){
+            $underwriterOpenCoverNumber = "<br>Open Cover Number: ".$quotationUnderwriter['oqun_tr_open_cover_number'];
+        }
     }
+
+
+
 
     //geographical area names
     $geoArea = '';
@@ -84,7 +93,7 @@ function getQuotationHTML($quotationID)
     <table width="900" style="font-size: 14px;">
         <tr>
             <td width="33%"><img src="' . $db->admin_layout_url . '/images/Kemter-Logo-WhiteBG-300x60.png"></td>        
-            <td width="34%" align="center">Certificate Number<br>Αριθμός Πιστοποιητικού<br><b>'.$certificateNumber.'</b></td>
+            <td width="34%" align="center">Certificate Number<br>Αριθμός Πιστοποιητικού<br><b>'.$certificateNumber.' '.$underwriterOpenCoverNumber.'</b></td>
             <td width="33%" align="right"><img src="' . $db->admin_layout_url . '/images/LLOYDS-Logo.png"></td>
         </tr>
         <tr>
@@ -406,16 +415,16 @@ function getQuotationHTML($quotationID)
     
     <div class="elementPageBreak">
     
-    '.($sect1['oqqit_rate_4'] != 'Limited' ? '
     <table class="tableTdBorder" width="900" cellpadding="0" cellspacing="0">
         <tr>
-            <td width="820" style="background-color: olivedrab">
+            <td width="820" style="background-color: #BFE0BE">
                 <strong>PLAN NAME</strong>
             </td>
             '.($sect1['oqqit_rate_4'] == 'Basic'? '<td width="80" style="background-color: #BFE0BE" align="center">Basic</td>':'').'
             '.($sect1['oqqit_rate_4'] == 'Standard'? '<td width="80" style="background-color: #BFE0BE" align="center">Standard</td>':'').'
             '.($sect1['oqqit_rate_4'] == 'Luxury'? '<td width="80" style="background-color: #BFE0BE" align="center">Luxury</td>':'').'
             '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td width="80" style="background-color: #BFE0BE" align="center">Schengen Visa</td>':'').'
+            '.($sect1['oqqit_rate_4'] == 'Limited'? '<td width="80" style="background-color: #BFE0BE" align="center">Limited</td>':'').'
         </tr>
         <tr>
             <td>
@@ -442,6 +451,11 @@ function getQuotationHTML($quotationID)
                 <div style="color: red">€100</div>
             </td>
             ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Limited'? '<td align="center">
+                €1.000<br>
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
         </tr>
         
         <tr>
@@ -464,6 +478,10 @@ function getQuotationHTML($quotationID)
                 €50.000
             </td>
             ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Limited'? '<td align="center">
+                Not Included
+            </td>
+            ':'').'
         </tr>
         
         <tr>
@@ -484,6 +502,10 @@ function getQuotationHTML($quotationID)
             ':'').'
             '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
                 €5.000
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Limited'? '<td align="center">
+                Not Included
             </td>
             ':'').'
         </tr>
@@ -521,6 +543,10 @@ function getQuotationHTML($quotationID)
             ':'').'
             '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
                 Deleted
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Limited'? '<td align="center">
+                Not Included
             </td>
             ':'').'
         </tr>
@@ -589,6 +615,14 @@ function getQuotationHTML($quotationID)
                 €20.000
             </td>
             ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Limited'? '<td align="center" valign="top">
+                <br>
+                €20.000<br>
+                €20.000<br>
+                €20.000<br>
+                €20.000
+            </td>
+            ':'').'
         </tr>
         
         <tr>
@@ -627,6 +661,10 @@ function getQuotationHTML($quotationID)
             '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
                 €500<br>
                 <div style="color: red">€50</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Limited'? '<td align="center">
+                Not Included
             </td>
             ':'').'
         </tr>
@@ -672,6 +710,10 @@ function getQuotationHTML($quotationID)
                 <div style="color: red">Nil</div>
             </td>
             ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Limited'? '<td align="center">
+                Not Included
+            </td>
+            ':'').'
         </tr>
         
         <tr>
@@ -709,6 +751,10 @@ function getQuotationHTML($quotationID)
             ':'').'
             '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
                 Deleted
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Limited'? '<td align="center">
+                Not Included
             </td>
             ':'').'
         </tr>
@@ -750,6 +796,10 @@ function getQuotationHTML($quotationID)
                 Deleted
             </td>
             ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Limited'? '<td align="center">
+                Not Included
+            </td>
+            ':'').'
         </tr>
         
         <tr>
@@ -787,6 +837,11 @@ function getQuotationHTML($quotationID)
             ':'').'
             '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
                 €250<br>
+                <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Limited'? '<td align="center">
+                €500<br>
                 <div style="color: red">Nil</div>
             </td>
             ':'').'
@@ -836,6 +891,10 @@ function getQuotationHTML($quotationID)
                 <div style="color: red">€50</div>
             </td>
             ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Limited'? '<td align="center">
+                Not Included
+            </td>
+            ':'').'
         </tr>
         
         <tr>
@@ -873,6 +932,10 @@ function getQuotationHTML($quotationID)
             ':'').'
             '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
                 Deleted
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Limited'? '<td align="center">
+                Not Included
             </td>
             ':'').'
         </tr>
@@ -913,6 +976,10 @@ function getQuotationHTML($quotationID)
             '.($sect1['oqqit_rate_4'] == 'Schengen'? '<td align="center">
                 €100<br>
                 <div style="color: red">Nil</div>
+            </td>
+            ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Limited'? '<td align="center">
+                Not Included
             </td>
             ':'').'
         </tr>
@@ -960,6 +1027,10 @@ function getQuotationHTML($quotationID)
                 <div style="color: red">€100</div>
             </td>
             ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Limited'? '<td align="center">
+                Not Included
+            </td>
+            ':'').'
         </tr>
         
         <tr>
@@ -1005,6 +1076,10 @@ function getQuotationHTML($quotationID)
                 <div style="color: red">Nil</div>
             </td>
             ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Limited'? '<td align="center">
+                Not Included
+            </td>
+            ':'').'
         </tr>
         
         <tr>
@@ -1027,11 +1102,16 @@ function getQuotationHTML($quotationID)
                 Included
             </td>
             ':'').'
+            '.($sect1['oqqit_rate_4'] == 'Limited'? '<td align="center">
+                Not Included
+            </td>
+            ':'').'
         </tr>
         
     </table>
     
     <div style="height: 20px;"></div>
+    '.($sect1['oqqit_rate_4'] != 'Limited'? '
     
     <table class="tableTdBorder" width="900" cellpadding="0" cellspacing="0">
         <tr>
@@ -1197,42 +1277,7 @@ function getQuotationHTML($quotationID)
             ':'').'
         </tr>
         
-    </table>
-    ':'
-    <table class="tableTdBorder" width="900" cellpadding="0" cellspacing="0">
-        <tr>
-            <td width="820" style="background-color: #BFE0BE">
-                <strong>PLAN NAME</strong>
-            </td>
-            <td width="80" style="background-color: #BFE0BE" align="center">Limited</td>
-        </tr>
-        
-        <tr>
-            <td>
-                Baggage / Αποσκευές
-            </td>
-            <td align="center">
-                €500
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Personal Accident / Προσωπικά Ατυχήματα
-            </td>
-            <td align="center">
-                €20.000
-            </td>
-        </tr>
-        <tr>
-            <td>
-                Medical Expenses / Ιατρικά Έξοδα
-            </td>
-            <td align="center">
-                €1.000
-            </td>
-        </tr>
-    </table>
-    ').'
+    </table>':'').'
     
  </div>
     ';

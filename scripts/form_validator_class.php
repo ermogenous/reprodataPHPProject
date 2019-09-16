@@ -550,8 +550,8 @@ class customFormValidator
         if ($this->needYearsFrom2DatesFunction == true){
             echo "
             
-            function getYearsFromDates(dFrom, dTo, whatToReturn = 'Years'){
-
+    function getYearsFromDates(dFrom, dTo, whatToReturn = 'Years'){
+    
     var fromSplit = dFrom.split('/');
     var toSplit = dTo.split('/');
 
@@ -570,6 +570,9 @@ class customFormValidator
         fromSplit[1]-1,
         fromSplit[0]
     );
+
+    var totalTimeDiff = dateTo.getTime() - dob.getTime();
+    var totalDays = Math.floor(totalTimeDiff / (1000 * 3600 * 24));
 
     var yearDob = dob.getFullYear();
     var monthDob = dob.getMonth();
@@ -635,8 +638,11 @@ class customFormValidator
     if (whatToReturn == 'Years'){
         return age.years;
     }
-    if (whatToReturn == 'AgeString'){
+    else if (whatToReturn == 'AgeString'){
         return ageString;
+    }
+    else if (whatToReturn == 'totalDays'){
+        return totalDays;
     }
     else {
         return age.years;

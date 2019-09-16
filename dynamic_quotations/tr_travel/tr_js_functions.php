@@ -33,23 +33,36 @@
             "8_oqqit_rate_6",
             "8_oqqit_rate_11"];
 
-    function showHideMembers(id) {
+    function showHideMembers(id, action = 'auto') {
         selectionField = membersSelectionList[((id * 1) - 1)];
 
         if ($('#' + selectionField).val() == '1') {
-            $('#member_' + id + '_contents').hide();
-            $('#member_' + id + '_plus').show();
-            $('#member_' + id + '_minus').hide();
-            $('#' + selectionField).val('0');
+            if (action == 'auto') {
+                $('#member_' + id + '_contents').hide();
+                $('#member_' + id + '_plus').show();
+                $('#member_' + id + '_minus').hide();
+                $('#' + selectionField).val('0');
+            }
+            else {
+                if (confirm('<?php show_quotation_text('Το μέλος αυτό θα αφαιρεθεί απο την κάλυψη. Είσαι σίγουρος?','This will remove this member from the cover. Are you sure?');?>') || action == 'auto') {
+                    $('#member_' + id + '_contents').hide();
+                    $('#member_' + id + '_plus').show();
+                    $('#member_' + id + '_minus').hide();
+                    $('#' + selectionField).val('0');
+                }
+            }
+
         }
         else {
             var previous = 0;
-            if (id >= 2){
+            if (id >= 2) {
                 previous = id - 2;
             }
 
-            if ($('#' + membersSelectionList[previous]).val() == '1' || previous == 0){
-                //console.log('only now show');
+            //console.log("Previous ID:"+previous + ' ID=' + id + ' Previous Selection:' + membersSelectionList[previous] + "->" +  $('#' + membersSelectionList[previous]).val() );
+
+            //check if the previous is open
+            if ($('#' + membersSelectionList[previous]).val() == '1' || previous == 0) {
                 $('#member_' + id + '_contents').show();
                 $('#member_' + id + '_plus').hide();
                 $('#member_' + id + '_minus').show();
@@ -81,5 +94,8 @@
     $(document).ready(function () {
         checkAllMembersShowHide();
         packageSelection();
+        geographicalAreaOnChange();
+        winterSportsOnChange();
+        destinationOnChange();
     });
 </script>

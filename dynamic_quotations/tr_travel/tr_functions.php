@@ -10,6 +10,7 @@ function tr_travel_information()
     $formValidator->addCustomCode('
         
         let todayDate = new Date();
+        let todayDateEU = (todayDate.getDate() + "/" + todayDate.getMonth() + "/" + todayDate.getFullYear());
         let clientAge = getYearsFromDates(
             $("#birthdate").val(),
             (todayDate.getDate() + "/" + todayDate.getMonth() + "/" + todayDate.getFullYear())
@@ -23,20 +24,79 @@ function tr_travel_information()
             ErrorList.push("birthdate -> Lower than 18 ");
         }
         
-        if (clientAge > 75){
-            $("#birthdate-invalid-text").html("Age must under 76");
+        if (clientAge >= 75){
+            $("#birthdate-invalid-text").html("Age must under 75");
             $("#birthdate").addClass("is-invalid");
             $("#birthdate").removeClass("is-valid");
             FormErrorFound = true;
-            ErrorList.push("birthdate -> Higher than 75 ");
+            ErrorList.push("birthdate -> Higher than 74 ");
         }
         
-    
+        //fill the expiration date
+        let departure = $("#5_oqqit_date_1").val();
+        let departureSplit = departure.split("/");
+        let expiry = new Date(departureSplit[2],departureSplit[1]-1,departureSplit[0]);
+        let totalDays = $("#5_oqqit_rate_5").val();
+        let clientDestError = false;
+        expiry.setDate(expiry.getDate() + (totalDays*1));
+        $("#expiry_date").val(expiry.getDate() + "/" + expiry.getMonth() + "/" + expiry.getFullYear());
+        
+        //if destination = client/member nationality generate error
+        let destinationError = "'.show_quotation_text('Ο προορισμός και η ιθαγένεια συμβαλλομένου δεν μπορούν να είναι οι ίδιοι', 'Destination & Policyholder Nationality cannot be the same','return').'";
+        if ($("#5_oqqit_rate_1").val() == $("#nationality_ID").val()){
+            console.log("Client error");
+            $("#destination-invalid-text").html(destinationError);
+            $("#destination").addClass("is-invalid");
+            $("#destination").removeClass("is-valid");
+            FormErrorFound = true;
+            ErrorList.push("destination -> Client Nationality is equal to Destination");
+            clientDestError = true;
+        }
+        
+        //members - destination = nationality generate error
+        let memebrsList = [
+            "6_oqqit_rate_4",
+            "6_oqqit_rate_9",
+            "6_oqqit_rate_14",
+            "7_oqqit_rate_4",
+            "7_oqqit_rate_9",
+            "7_oqqit_rate_14",
+            "8_oqqit_rate_4",
+            "8_oqqit_rate_9",
+            "8_oqqit_rate_14",
+        ];
+        destinationError = "'.show_quotation_text('Ο προορισμός και η ιθαγένεια μέλους δεν μπορούν να είναι οι ίδιοι', 'Destination & Member Nationality cannot be the same','return').'";
+        let destMemberError = false;
+        var i;
+        for (i=0; i<=8; i++){
+        
+            if ( $("#" + memebrsList[i]).val() == $("#5_oqqit_rate_1").val()){
+                //console.log(memebrsList[i] + " => " + $("#" + memebrsList[i]).val() + " == " + $("#6_oqqit_rate_4").val());
+                destMemberError = true;
+            }
+        }
+        if (destMemberError == true){
+            //console.log("Member error");
+            $("#destination-invalid-text").html(destinationError);
+            $("#destination").addClass("is-invalid");
+            $("#destination").removeClass("is-valid");
+            FormErrorFound = true;
+            ErrorList.push("destination -> Client Nationality is equal to Destination");
+        }
+        else if (clientDestError == false){
+            $("#destination-invalid-text").html(destinationError);
+            $("#destination").addClass("is-valid");
+            $("#destination").removeClass("is-invalid");
+        }
+        
     ');
 
     ?>
 
     <div class="form-group row">
+
+        <input type="hidden" name="expiry_date" id="expiry_date" value="">
+
         <label for="5_oqqit_rate_4" class="col-sm-4 col-form-label">
             <?php show_quotation_text("Πακέτο", "Package"); ?>
         </label>
@@ -88,18 +148,39 @@ function tr_travel_information()
     </div>
 
     <script>
-        function packageSelection(){
+        function packageSelection() {
             let selectedPackage = $('#5_oqqit_rate_4').val();
             //console.log(selectedPackage);
-            if (selectedPackage == 'Limited'){
-                $('#limitedPackText').show();
+            if (selectedPackage == 'Limited') {
                 //limit destination to russia
-                $('#5_oqqit_rate_1').val(309);
-                $('#5_oqqit_rate_1').attr('readonly', true);
+                $('#destination').val(309);
+                destinationOnChange();
+                $('#destination').attr('disabled', true);
+
+                //limit geographical area to worldwide excluding
+                $('#geographicalArea').val('WorldExcl');
+                $('#geographicalArea').attr('disabled', true);
+
+                //limit winter sports
+                $('#winterSports').val('No');
+                $('#winterSports').attr('disabled', true);
+            }
+            else if (selectedPackage == 'Schengen') {
+                $('#winterSports').val('No');
+                $('#winterSports').attr('disabled', true);
+
+                $('#destination').attr('disabled', false);
+                $('#geographicalArea').attr('disabled', false);
             }
             else {
-                $('#5_oqqit_rate_1').attr('readonly', false);
+                $('#destination').attr('disabled', false);
+                $('#geographicalArea').attr('disabled', false);
+                $('#winterSports').attr('disabled', false);
+
             }
+            destinationOnChange();
+            geographicalAreaOnChange();
+            winterSportsOnChange();
         }
     </script>
 
@@ -119,7 +200,8 @@ function tr_travel_information()
                     'enableDatePicker' => true,
                     'datePickerValue' => $db->convertDateToEU($qitem_data['oqqit_date_1']),
                     'required' => true,
-                    'invalidTextAutoGenerate' => true
+                    'invalidTextAutoGenerate' => show_quotation_text('Καταχώρησε Ημ. Αναχώρησης', 'Must enter Departure Date'),
+                    'dateMinDate' => date('d/m/Y')
                 ]);
             ?>
         </div>
@@ -132,19 +214,8 @@ function tr_travel_information()
         </label>
         <div class="col-sm-3">
             <input name="5_oqqit_rate_5" type="text" id="5_oqqit_rate_5"
-                   class="form-control text-center" value="<?php echo $qitem_data['oqqit_rate_5'];?>">
+                   class="form-control text-center" value="<?php echo $qitem_data['oqqit_rate_5']; ?>">
             <?php
-            $limitedText = $quotationUnderwriter['oqun_tr_limited_premiums'];
-            $limitedOptions = explode('||',$limitedText);
-            $daysOutput = '';
-            $validatorCustCode = '';
-            $validatorCustCodeList = [];
-            foreach($limitedOptions as $value){
-                $list = explode('#',$value);
-                $daysOutput .= $list[0].',';
-                $validatorCustCodeList[] = $list[0];
-            }
-            $daysOutput = $db->remove_last_char($daysOutput);
 
             $formValidator->addField(
                 [
@@ -152,13 +223,10 @@ function tr_travel_information()
                     'fieldDataType' => 'number',
                     'minNumber' => 1,
                     'required' => true,
-                    'invalidTextAutoGenerate' => true,
-                    'allowedNumberList' => $validatorCustCodeList,
-                    'allowedNumberListCSCode' => '&& $("#5_oqqit_rate_4").val() == "Limited"'
+                    'invalidTextAutoGenerate' => true
                 ]);
             ?>
         </div>
-        <div class="col-sm-4" id="limitedPackText" style="display: none;">Only <?php echo $daysOutput; ?> days</div>
     </div>
 
     <div class="form-group row">
@@ -166,7 +234,9 @@ function tr_travel_information()
             <?php show_quotation_text("Προορισμός", "Destination"); ?>
         </label>
         <div class="col-sm-8">
-            <select name="5_oqqit_rate_1" id="5_oqqit_rate_1"
+            <input type="hidden" id="5_oqqit_rate_1" name="5_oqqit_rate_1"
+                   value="<?php echo $qitem_data['oqqit_rate_1']; ?>">
+            <select name="destination" id="destination" onchange="destinationOnChange();"
                     class="form-control">
                 <option value=""></option>
                 <?php
@@ -183,7 +253,7 @@ function tr_travel_information()
             <?php
             $formValidator->addField(
                 [
-                    'fieldName' => '5_oqqit_rate_1',
+                    'fieldName' => 'destination',
                     'fieldDataType' => 'select',
                     'required' => true,
                     'invalidTextAutoGenerate' => true
@@ -191,6 +261,12 @@ function tr_travel_information()
             ?>
         </div>
     </div>
+    <script>
+        function destinationOnChange() {
+            var destinationID = $('#destination').val();
+            $('#5_oqqit_rate_1').val(destinationID);
+        }
+    </script>
 
 
     <div class="form-group row">
@@ -199,9 +275,10 @@ function tr_travel_information()
         </label>
         <div class="col-sm-8">
 
-
-            <select name="5_oqqit_rate_2" id="5_oqqit_rate_2"
-                    class="form-control">
+            <input type="hidden" name="5_oqqit_rate_2" id="5_oqqit_rate_2"
+                   value="<?php echo $qitem_data['oqqit_rate_2']; ?>">
+            <select name="geographicalArea" id="geographicalArea"
+                    class="form-control" onchange="geographicalAreaOnChange();">
                 <option value=""></option>
                 <option value="WorldExcl" <?php if ($qitem_data['oqqit_rate_2'] == 'WorldExcl') echo 'selected'; ?>>
                     <?php echo $db->showLangText('Worldwide (Excluding U.S.A & Canada)', 'Παγκόσμια (εκτός Η.Π.Α & Καναδά)'); ?>
@@ -213,12 +290,18 @@ function tr_travel_information()
             <?php
             $formValidator->addField(
                 [
-                    'fieldName' => '5_oqqit_rate_2',
+                    'fieldName' => 'geographicalArea',
                     'fieldDataType' => 'select',
                     'required' => true,
                     'invalidTextAutoGenerate' => true
                 ]);
             ?>
+            <script>
+                function geographicalAreaOnChange() {
+                    var geoArea = $('#geographicalArea').val();
+                    $('#5_oqqit_rate_2').val(geoArea);
+                }
+            </script>
         </div>
     </div>
 
@@ -228,9 +311,10 @@ function tr_travel_information()
         </label>
         <div class="col-sm-8">
 
-
-            <select name="5_oqqit_rate_3" id="5_oqqit_rate_3"
-                    class="form-control">
+            <input type="hidden" id="5_oqqit_rate_3" name="5_oqqit_rate_3"
+                   value="<?php echo $qitem_data['oqqit_rate_3']; ?>">
+            <select name="winterSports" id="winterSports"
+                    class="form-control" onchange="winterSportsOnChange();">
                 <option value="No" <?php if ($qitem_data['oqqit_rate_3'] == 'No') echo 'selected'; ?>>
                     <?php echo $db->showLangText('No', 'Οχι'); ?>
                 </option>
@@ -241,7 +325,7 @@ function tr_travel_information()
             <?php
             $formValidator->addField(
                 [
-                    'fieldName' => '5_oqqit_rate_3',
+                    'fieldName' => 'winterSports',
                     'fieldDataType' => 'select',
                     'required' => true,
                     'invalidTextAutoGenerate' => true
@@ -249,7 +333,68 @@ function tr_travel_information()
             ?>
         </div>
     </div>
+    <script>
+        function winterSportsOnChange() {
+            var winterSports = $('#winterSports').val();
+            $('#5_oqqit_rate_3').val(winterSports);
+        }
 
+        let membersError = [];
+        function validateMemberAge(dobName){
+
+            let dob = $('#' + dobName).val();
+            //validate if prober date
+            dobSplit = dob.split('/');
+            let day = false;
+            let month = false;
+            let year = false;
+            if (dobSplit[0] > 0 && dobSplit[0] <= 31){
+                day = true;
+            }
+            if (dobSplit[1] > 0 && dobSplit[1] <= 12){
+                month = true;
+            }
+            if (dobSplit[2] > 1900 && dobSplit[2] <= 2100){
+                year = true;
+            }
+
+            if (day && month && year){
+
+                let todayDate = new Date();
+                let todayDateEU = (todayDate.getDate() + "/" + todayDate.getMonth() + "/" + todayDate.getFullYear());
+                let totalDays = getYearsFromDates($("#" + dobName).val(),todayDateEU,"totalDays");
+                let years = getYearsFromDates($("#" + dobName).val(),todayDateEU);
+
+                //check if less than 14 days
+                if (totalDays <= 14){
+                    $('#' + dobName + '-invalid-text').html("Age must be more than 14 days");
+                    $('#' + dobName).addClass('is-invalid');
+                    $('#' + dobName).removeClass('is-valid');
+
+                    membersError[dobName] = true;
+
+                }
+                else if (years >= 75){
+                    $('#' + dobName + '-invalid-text').html("Age must be less than 75");
+                    $('#' + dobName).addClass('is-invalid');
+                    $('#' + dobName).removeClass('is-valid');
+
+                    membersError[dobName] = true;
+                }
+                else {
+                    $('#' + dobName).addClass('is-valid');
+                    $('#' + dobName).removeClass('is-invalid');
+                    membersError[dobName] = false;
+                }
+            }
+
+
+        }
+
+        //make red info under client-address
+        $('#insureds_address_invalid_tooltip').html("<?php echo show_quotation_text('Μόνιμοι κάτοικοι Κύπρου μόνο', 'Cyprus permanent residents only');?>");
+        $('#insureds_address_invalid_tooltip').show();
+    </script>
 
     <?php
 
@@ -360,8 +505,11 @@ function showMemberHTML($id, $selectionField, $fieldNames)
     ?>
 
     <div class="row form-group alert alert-success" id="member_<?php echo $id; ?>_line">
-        <div class="col-sm-12 text-center" onclick="showHideMembers(<?php echo $id; ?>);" style="cursor: pointer;">
-            <strong>Member <?php echo $id; ?></strong>
+        <div class="col-sm-12 text-center" onclick="showHideMembers(<?php echo $id; ?>,'manual');"
+             style="cursor: pointer;">
+            <strong>
+                <?php echo show_quotation_text('Μέλος ' . $id, 'Member ' . $id); ?>
+            </strong>
             <i class="far fa-plus-square" id="member_<?php echo $id; ?>_plus" style="display: none"></i>
             <i class="far fa-minus-square" id="member_<?php echo $id; ?>_minus" style="display: none"></i>
             <input type="hidden" id="<?php echo $selectionField; ?>" name="<?php echo $selectionField; ?>"
@@ -453,7 +601,7 @@ function showMemberHTML($id, $selectionField, $fieldNames)
             </label>
             <div class="col-sm-8">
                 <input name="<?php echo $fieldNames['dob']; ?>" type="text" id="<?php echo $fieldNames['dob']; ?>"
-                       class="form-control">
+                       class="form-control" onkeyup="validateMemberAge('<?php echo $fieldNames['dob'];?>');">
                 <?php
                 $formValidator->addField(
                     [
@@ -463,7 +611,7 @@ function showMemberHTML($id, $selectionField, $fieldNames)
                         'datePickerValue' => $db->convertDateToEU($qitem_data[substr($fieldNames['dob'], 2)]),
                         'required' => true,
                         'invalidTextAutoGenerate' => true,
-                        'requiredAddedCustomCode' => '&& $("#' . $selectionField . '").val() == "1"'
+                        'requiredAddedCustomCode' => '&& $("#' . $selectionField . '").val() == "1" || membersError["'.$fieldNames['dob'].'"] == true'
                     ]);
                 ?>
             </div>
@@ -487,12 +635,7 @@ function insured_amount_custom_rates($array, $values, $quotation_id)
     //get the rate based on the package
     $package = strtolower($values[5][4]['rate']);
     $packageRate = 0;
-    if ($package == 'limited'){
-        $packageRate = $quotationUnderwriter['oqun_tr_limited_premiums'];
-    }
-    else {
-        $packageRate = $quotationUnderwriter['oqun_tr_' . $package . '_premium'];
-    }
+    $packageRate = $quotationUnderwriter['oqun_tr_' . $package . '_premium'];
 
     //array of the field to use
     $membersArray[1] = ['item' => 6, 'selected' => 1, 'prem' => 2, 'bod' => 'date_1'];
@@ -505,10 +648,10 @@ function insured_amount_custom_rates($array, $values, $quotation_id)
     $membersArray[8] = ['item' => 8, 'selected' => 6, 'prem' => 7, 'bod' => 'date_2'];
     $membersArray[9] = ['item' => 8, 'selected' => 11, 'prem' => 12, 'bod' => 'date_3'];
 
-    //calculate the members
+    //check the members
     $totalMembers = 1; //policy holder is always counted
-    for($i=1; $i <= 9; $i++){
-        if ($values[$membersArray[$i]['item']][$membersArray[$i]['selected']]['rate'] == '1'){
+    for ($i = 1; $i <= 9; $i++) {
+        if ($values[$membersArray[$i]['item']][$membersArray[$i]['selected']]['rate'] == '1') {
             $totalMembers++;
             $members[$i]['used'] = 1;
             //check age
@@ -525,104 +668,90 @@ function insured_amount_custom_rates($array, $values, $quotation_id)
     $totalDays = $values[5][5]['rate'];
 
     //find the minimum policy premium
-    $minPremium = $quotationUnderwriter['oqun_tr_'.$package.'_min_premium'];
+    $minPremium = $quotationUnderwriter['oqun_tr_' . $package . '_min_premium'];
 
-    //check if the package is limited
-    if ($package == 'limited') {
-        $allRates = explode('||',$packageRate);
-        //find the one used
-        foreach($allRates as $rate){
-            $rateSplit = explode('#',$rate);
-            if ($rateSplit[0] == $totalDays){
-                $packageRate = $rateSplit[1];
-            }
-        }
-        //set the total days to 1 cause the rate of limited is not per day
-        $totalDays = 1;
-    }
-
+    $totalPremium = 0;
     //find premium per client/member
     //1.Client
     $array[5][6] = ($totalDays * $packageRate);
     //worldwide loading 50%
-    if ($values[5][2]['rate'] == 'WorldWide'){
-        $array[5][6] += ($totalDays * $packageRate) * 0.5;
+    if ($values[5][2]['rate'] == 'WorldWide') {
+        $array[5][6] += $array[5][6] * 0.5;
     }
 
     //wintersport loading 100%
-    if ($values[5][3]['rate'] == 'Yes'){
-        $array[5][6] += ($totalDays * $packageRate);
+    if ($values[5][3]['rate'] == 'Yes') {
+        $array[5][6] += $array[5][6];
     }
+    //check limited min premium
+    if ($values[5][4]['rate'] == 'Limited') {
+        if ($minPremium > $array[5][6]) {
+            $array[5][6] = $minPremium;
+        }
+    }
+    $totalPremium += $array[5][6];
 
 
     //2. Members
-    for ($i=1; $i <= 9 ; $i++){
-        if ($members[$i]['used'] == 1){
-            $basicPremium = $totalDays * $packageRate;
-            $memberPremium = $basicPremium;
-
-            //if age < 16 then 50% discount
-            if ($members[$i]['age'] < 16){
-                $basicPremium = $basicPremium * 0.5;
-                $memberPremium = $basicPremium;
-            }
+    for ($i = 1; $i <= 9; $i++) {
+        if ($members[$i]['used'] == 1) {
+            $memberPremium = $totalDays * $packageRate;
+            //echo "Total Days:" . $totalDays . " Rate:" . $packageRate . "<br>";//exit();
 
             //if worldwide then 50% loading
-            if ($values[5][2]['rate'] == 'WorldWide'){
-                $memberPremium += $basicPremium * 0.5;
+            if ($values[5][2]['rate'] == 'WorldWide') {
+                //echo "Worldwide applied<br>";
+                $memberPremium += $memberPremium * 0.5;
             }
 
             //if wintersport then 100% loading
-            if ($values[5][3]['rate'] == 'Yes'){
-                $memberPremium += $basicPremium;
+            if ($values[5][3]['rate'] == 'Yes') {
+                //echo "Wintersport applied<br>";
+                $memberPremium += $memberPremium;
             }
 
+            //if age < 16 then 50% discount
+            if ($members[$i]['age'] < 16) {
+                //echo "Age Discount applied<br>";
+                $memberPremium = $memberPremium * 0.5;
+            }
+
+            //if package = limited then the min premium applies to each person
+            if ($values[5][4]['rate'] == 'Limited') {
+                if ($minPremium > $memberPremium) {
+                    //echo "Limited min premium applied:" . $memberPremium . " -> " . $minPremium;
+                    //exit();
+                    $memberPremium = $minPremium;
+                }
+            }
+
+
             $array[$membersArray[$i]['item']][$membersArray[$i]['prem']] = $memberPremium;
+            $totalPremium += $memberPremium;
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    echo "Package: ".$package."<br>";
-    echo "Package Rate: ".$packageRate."<br>";
-    echo "Total Members: ".$totalMembers."<br>";
-    echo "Total Days: ".$totalDays."<br>";
-    echo "Min Premium: ".$minPremium."<br>";
-
-
-    //CHECK FOR LOADINGS
-
-    //winter sport loading
-    if ($values[5][3]['rate'] == 'Yes'){
-        //$winterSportsLoading = $totalPremium * .5;
-        //$array[5][3] = $winterSportsLoading;
+    //3. Check policy min premium. Applies when package is not limited
+    if ($values[5][4]['rate'] != 'Limited') {
+        if ($minPremium > $totalPremium){
+            $array[5][7] = $minPremium - $totalPremium;
+        }
     }
-
 
     return $array;
 }
 
-function get_custom_fees_amount($data){
+function get_custom_fees_amount($data)
+{
 
-    global $quotationUnderwriter;
-    $data['stamps'] = $quotationUnderwriter['oqun_tr_stamps'];
-    $data['fees'] = $quotationUnderwriter['oqun_tr_fees'];
+    global $quotationUnderwriter,$result_amount_values;
+
+    $package = strtolower($result_amount_values[5][4]['rate']);
+    $dbFeesFieldName = 'oqun_tr_'.$package.'_fees';
+    $dbStampsFieldName = 'oqun_tr_'.$package.'_stamps';
+
+    $data['stamps'] = $quotationUnderwriter[$dbStampsFieldName];
+    $data['fees'] = $quotationUnderwriter[$dbFeesFieldName];
 
     return $data;
 }

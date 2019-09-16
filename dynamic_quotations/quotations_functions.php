@@ -307,7 +307,7 @@ function quotation_price_calculation($quotation_id)
 //echo "<BR>PREMIUM -> ".$premium."<br> Fees ->".$fees." <br>Stamps ->".$stamps;;
 
 //update the datail_price_array with fees and stamps
-    $detailed_result .= "Fees:" . $fees . "\n<br>Stamps:" . $stamps;
+    $detailed_result .= "Fees: €" . $fees . "\n<br>Stamps: €" . $stamps . "\n<br>Net Premium: €".$premium."\n<br>Gross Premium: €".($premium+$fees+$stamps);
     $return["premium"] = $premium;
     $return["fees"] = $fees;
     $return["stamps"] = $stamps;
