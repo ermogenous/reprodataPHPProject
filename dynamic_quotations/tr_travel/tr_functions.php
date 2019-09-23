@@ -39,7 +39,7 @@ function tr_travel_information()
         let totalDays = $("#5_oqqit_rate_5").val();
         let clientDestError = false;
         expiry.setDate(expiry.getDate() + (totalDays*1));
-        $("#expiry_date").val(expiry.getDate() + "/" + expiry.getMonth() + "/" + expiry.getFullYear());
+        $("#expiry_date").val(expiry.getDate() + "/" + ((expiry.getMonth()*1)+1) + "/" + expiry.getFullYear());
         
         //if destination = client/member nationality generate error
         let destinationError = "'.show_quotation_text('Ο προορισμός και η ιθαγένεια συμβαλλομένου δεν μπορούν να είναι οι ίδιοι', 'Destination & Policyholder Nationality cannot be the same','return').'";
@@ -201,9 +201,13 @@ function tr_travel_information()
                     'datePickerValue' => $db->convertDateToEU($qitem_data['oqqit_date_1']),
                     'required' => true,
                     'invalidTextAutoGenerate' => show_quotation_text('Καταχώρησε Ημ. Αναχώρησης', 'Must enter Departure Date'),
-                    'dateMinDate' => date('d/m/Y')
+                    'dateMinDate' => date('d/m/Y'),
+                    'dateMaxDate' => date('d/m/Y', mktime(0, 0, 0, date('m'), (date('d') + 45), date('Y'))),
                 ]);
             ?>
+        </div>
+        <div class="col-sm-5 text-danger">
+            <?php echo show_quotation_text("Όχι προγενέστερη απο Σήμερα. <br>Όχι μεταγενέστερη 45 μέρες απο σήμερα.","Not before today. Not after 45 days from today.");?>
         </div>
     </div>
 

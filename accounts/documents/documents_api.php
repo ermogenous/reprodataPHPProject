@@ -30,7 +30,11 @@ else if ($_GET['section'] == 'searchDocuments') {
             ,CONCAT(acdoc_code,' - ',acdoc_name) as label
             ,acdoc_document_ID as value
             ,ac_documents.* 
-            FROM ac_documents WHERE acdoc_code LIKE '%" . $_GET["term"] . "%'";
+            FROM ac_documents 
+            WHERE 
+            acdoc_code LIKE '%" . $_GET["term"] . "%'
+            OR acdoc_name LIKE '%" . $_GET["term"] . "%'
+            ";
     $result = $db->query($sql);
     while ($row = $db->fetch_assoc($result)){
         

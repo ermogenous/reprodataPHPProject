@@ -89,6 +89,14 @@ function template_header()
                                     <i class="fas fa-truck-moving"></i> New Marine Cargo</a>
                             <?php } ?>
 
+                            <?php
+                            if (strpos($underwriter['oqun_allow_quotations'], '#3-1#') !== false) {
+                                ?>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations_modify.php?quotation_type=3">
+                                    <i class="fas fa-plane-departure"></i> New Travel</a>
+                            <?php } ?>
+
                             <?php if ($db->user_data["usr_user_rights"] <= 2) { ?>
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/dynamic_quotations/approvals.php">

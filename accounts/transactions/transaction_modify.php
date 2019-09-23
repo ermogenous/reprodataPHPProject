@@ -748,7 +748,7 @@ $totalAccountLines = 15;
                             <input type="button" value="Back" class="btn btn-secondary"
                                    onclick="window.location.assign('transactions.php')">
                             <input type="submit" name="Submit" id="Submit"
-                                   value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Account"
+                                   value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Transaction"
                                    class="btn btn-primary">
                         </div>
                     </div>

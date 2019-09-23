@@ -26,12 +26,15 @@ if ($_POST["action"] == "insert") {
 
 if ($_GET["lid"] != "") {
 
-    $sql = "SELECT * FROM `ac_accounts` WHERE `acacc_account_ID` = " . $_GET["lid"];
-    $data = $db->query_fetch($sql);
-    $balance = $data["acacc_balance"];
+    //$sql = "SELECT * FROM `ac_accounts` WHERE `acacc_account_ID` = " . $_GET["lid"];
+    //$data = $db->query_fetch($sql);
+
+    $account = new AdvAccounts($_GET["lid"]);
+    $data = $account->getAccountData();
+
 
 } else {
-    $balance = 0;
+    //$balance = 0;
 }
 
 $formValidator = new customFormValidator();
@@ -64,6 +67,12 @@ $db->show_header();
                         <a class="nav-link" id="pills-other-tab" data-toggle="pill" href="#pills-other"
                            role="tab"
                            aria-controls="pills-other" aria-selected="true">Other</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-balance-tab" data-toggle="pill" href="#pills-balance"
+                           role="tab"
+                           aria-controls="pills-balance" aria-selected="true">Balances</a>
                     </li>
 
                 </ul>
@@ -127,10 +136,10 @@ $db->show_header();
                                     <option value="0">Root</option>
                                     <?php
                                         $controlAccountsList = AdvAccounts::getControlAccountList();
-                                        foreach($controlAccountsList as $account){
+                                        foreach($controlAccountsList as $acct){
                                     ?>
-                                    <option value="<?php echo $account['acacc_account_ID'];?>" <?php if ($data['acacc_parent_ID'] == '1') echo 'selected'; ?>>
-                                        <?php echo $account['acacc_code']." - ".$account['acacc_name'];?>
+                                    <option value="<?php echo $acct['acacc_account_ID'];?>" <?php if ($data['acacc_parent_ID'] == '1') echo 'selected'; ?>>
+                                        <?php echo $acct['acacc_code']." - ".$acct['acacc_name'];?>
                                     </option>
                                     <?php } ?>
                                 </select>
@@ -357,6 +366,34 @@ $db->show_header();
 
                     </div>
 
+                    <div class="tab-pane fade show" id="pills-balance" role="tabpanel"
+                         aria-labelledby="pills-balance-tab">
+                        <!-- OTHER ------------------------------------------------------------------------------------------------------------------------------------------------OTHER TAB-->
+                        <?php
+                        $balances = $account->getAccountBalance();
+                        ?>
+                        <div class="row">
+                            <div class="col-3"></div>
+                            <div class="col-6">
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        Posted Transactions Balance: €<?php echo $balances['Active'];?>
+                                    </li>
+                                    <li class="list-group-item">
+                                        Locked Transactions Balance: €<?php echo $balances['Locked'];?>
+                                    </li>
+                                    <li class="list-group-item">
+                                        Outstanding Transactions Balance: €<?php echo $balances['Outstanding'];?>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-3"></div>
+
+                        </div>
+                        <div class="row">
+                            <div class="col-12" style="height: 25px;"></div>
+                        </div>
+                    </div>
 
                 </div>
 

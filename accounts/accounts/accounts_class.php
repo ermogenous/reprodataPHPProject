@@ -75,4 +75,30 @@ class AdvAccounts {
     public function getErrorDescription(){
         return $this->errorDescription;
     }
+
+    public function getAccountBalance(){
+        global $db;
+
+        $sql = "
+            SELECT
+            SUM(IF (actrn_status = 'Active', actrl_dr_cr * actrl_value,0))as clo_active_balance,
+            SUM(IF (actrn_status = 'Outstanding', actrl_dr_cr * actrl_value,0))as clo_outstanding_balance,
+            SUM(IF (actrn_status = 'Locked', actrl_dr_cr * actrl_value,0))as clo_locked_balance,
+            SUM(actrl_dr_cr * actrl_value) as clo_total_balance
+            FROM
+            ac_transactions
+            JOIN ac_transaction_lines ON actrn_transaction_ID = actrl_transaction_ID
+            WHERE
+            actrn_status IN ('Active','Outstanding','Locked')
+            AND actrl_account_ID = ".$this->accountID;
+        $result = $db->query_fetch($sql);
+        $return = [
+            "Active" => $result['clo_active_balance'] == ''?0:$result['clo_active_balance'],
+            "Locked" => $result['clo_locked_balance'] == ''?0:$result['clo_locked_balance'],
+            "Outstanding" => $result['clo_outstanding_balance'] == ''?0:$result['clo_outstanding_balance'],
+            "Total" => $result['clo_total_balance'] == ''?0:$result['clo_total_balance']
+        ];
+        //print_r($return);
+        return $return;
+    }
 }

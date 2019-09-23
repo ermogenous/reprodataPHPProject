@@ -24,6 +24,7 @@ class customFormValidator
     private $formName = 'myForm';
 
     private $showErrorList = 0;
+    private $showErrorInDiv = false;
 
 
     function __construct()
@@ -40,6 +41,15 @@ class customFormValidator
     }
     public function includeYearsFrom2DatesFunction(){
         $this->needYearsFrom2DatesFunction = true;
+    }
+
+    public function generateErrorDescriptionDiv(){
+        $this->showErrorInDiv = true;
+        echo '
+        <div class="row">
+            <div class="col-12 alert alert-warning" id="formValidatorErrorDescriptionDiv">Error Here</div>
+        </div>
+        ';
     }
 
     /**
@@ -231,7 +241,9 @@ class customFormValidator
                 $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                 FormErrorFound = true;
-                ErrorList.push('" . $fieldData['fieldName'] . " -> Other Empty ');
+                ErrorList.push('" . $fieldData['fieldName'] . " -> Others Empty ');
+                //ErrorList.push($(\"label[for='" . $fieldData['fieldName'] . "']\").html() + ' -> Others Empty ');
+                
             }
             else {
                 $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
@@ -475,6 +487,7 @@ class customFormValidator
                             console.log('Error validation');
                             console.log(ErrorList);
                         }
+                        
                         event.preventDefault();
                         event.stopPropagation();
                     }

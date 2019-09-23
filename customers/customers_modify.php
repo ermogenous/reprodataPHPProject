@@ -70,6 +70,7 @@ $balance = new aInsuranceBalance($_GET['lid']);
 
 $formValidator = new customFormValidator();
 $formValidator->setFormName('myForm');
+$formValidator->showErrorList();
 
 $db->enable_jquery_ui();
 $db->show_header();
@@ -471,6 +472,7 @@ $db->show_header();
                             </div>
                         </div>
 
+                        <?php $formValidator->generateErrorDescriptionDiv();?>
 
                         <div class="form-group row">
                             <label for="name" class="col-sm-4 col-form-label"></label>
