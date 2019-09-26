@@ -56,7 +56,12 @@ $table->extras = '1=1';
 if ($_SESSION['dyqt_filter']) {
 
     if ($_SESSION['dyqt_filter_number'] != '') {
-        $table->extras .= " AND oqq_number LIKE '%" . $_SESSION['dyqt_filter_number'] . "%'";
+        $table->extras .= " AND (
+        oqq_number LIKE '%" . $_SESSION['dyqt_filter_number'] . "%' 
+        OR oqq_insureds_id LIKE '%".$_SESSION['dyqt_filter_number']."%' 
+        OR oqq_insureds_tel LIKE '%".$_SESSION['dyqt_filter_number']."%'
+        OR oqq_insureds_mobile LIKE '%".$_SESSION['dyqt_filter_number']."%'
+        )";
     }
 
     $statusFilterNum = 0;
@@ -174,7 +179,7 @@ if ($_GET["price_id"] != "") {
                             <div class="col-4">
                                 <div class="row">
                                     <div class="col-5">
-                                        <label for="flt_number">Number</label>
+                                        <label for="flt_number">Search</label>
                                     </div>
                                     <div class="col-7">
                                         <input type="text" class="form-control"
@@ -339,17 +344,17 @@ if ($_GET["price_id"] != "") {
                                         <td><?php echo $db->convert_date_format($row["oqq_expiry_date"],'yyyy-mm-dd','dd/mm/yyyy',1,0); ?></td>
                                         <td>
                                             <a href="quotations_show.php?lid=<?php echo $row["oqq_quotations_ID"]; ?>">
-                                                <i class="fas fa-info-circle"></i>
+                                                <i class="fas fa-info-circle" title="View Info"></i>
                                             </a>
 
                                             <?php if ($row['oqq_status'] == 'Outstanding') { ?>
                                                 <a href="quotations_modify.php?quotation_type=<?php echo $row["oqq_quotations_type_ID"]; ?>&quotation=<?php echo $row["oqq_quotations_ID"]; ?>"><i
-                                                            class="fas fa-edit"></i></a>&nbsp
+                                                            class="fas fa-edit" title="Edit"></i></a>&nbsp
                                             <?php } ?>
                                             <?php if ($row['oqq_status'] == 'Outstanding') { ?>
                                                 <a href="quotations_delete.php?quotation_type=<?php echo $row["oqq_quotations_type_ID"]; ?>&quotation=<?php echo $row["oqq_quotations_ID"]; ?>"
                                                    onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this quotation?');"><i
-                                                            class="fas fa-minus-circle"></i></a>&nbsp
+                                                            class="fas fa-minus-circle" title="Delete"></i></a>&nbsp
                                             <?php } ?>
                                             <?php if ($row['oqq_status'] == 'Active' ||
                                                 (
@@ -362,27 +367,27 @@ if ($_GET["price_id"] != "") {
                                                 <a target="_blank"
                                                    href="quotation_print.php?quotation=<?php echo $row["oqq_quotations_ID"]; ?>&pdf=1"
                                                    onclick="ignoreEdit = true;">
-                                                    <i class="far fa-file-pdf"></i>
+                                                    <i class="far fa-file-pdf" title="View PDF"></i>
                                                 </a>
                                             <?php } ?>
 
                                             <?php if ($row['oqq_status'] == 'Outstanding' || $row['oqq_status'] == 'Approved') { ?>
                                                 <a href="#">
-                                                    <i class="fas fa-lock"
+                                                    <i class="fas fa-lock" title="Activate"
                                                        onclick="activateQuotation(<?php echo $row["oqq_quotations_ID"]; ?>);"></i>
                                                 </a>
                                             <?php } ?>
 
                                             <?php if ($showRenewal == true) { ?>
                                                 <a href="#">
-                                                    <i class="fas fa-retweet"
+                                                    <i class="fas fa-retweet" title="Renew"
                                                        onclick="renewQuotation(<?php echo $row["oqq_quotations_ID"]; ?>);"></i>
                                                 </a>
                                             <?php } ?>
 
                                             <?php if ($row['oqq_status'] == 'Active' && $db->user_data['usr_user_rights'] <= 2 && $row['oqqt_enable_cancellation'] == 1) { ?>
                                                 <a href="quotation_cancellation.php?lid=<?php echo $row['oqq_quotations_ID']; ?>">
-                                                    <i class="fas fa-times-circle"></i>
+                                                    <i class="fas fa-times-circle" title="Cancel"></i>
                                                 </a>
                                             <?php } ?>
 

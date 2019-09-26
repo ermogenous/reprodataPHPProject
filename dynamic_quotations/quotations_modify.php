@@ -117,16 +117,20 @@ if ($_POST["action"] == "save") {
             }//all items
 
             //update the quotations price
-            //ge thte result in an array 'premium' 'fees' 'stamps'
+            //get the result in an array 'premium' 'fees' 'stamps'
             $premium_result = quotation_price_calculation($quotation_id);
             $sql = "UPDATE oqt_quotations SET 
-		oqq_fees = " . $premium_result["fees"] . " , 
-		oqq_stamps = " . $premium_result["stamps"] . " , 
-		oqq_premium = " . $premium_result["premium"] . ",
-		oqq_custom_premium1 = '" . $premium_result["custom_premium1"] . "',
-		oqq_custom_premium2 = '" . $premium_result["custom_premium2"] . "',
-		oqq_detail_price_array = '" . $premium_result["detailed_result"] . "' WHERE oqq_quotations_ID = " . $quotation_id;
-            $db->query($sql);
+		        oqq_fees = " . $premium_result["fees"] . " , 
+		        oqq_stamps = " . $premium_result["stamps"] . " , 
+		        oqq_premium = " . $premium_result["premium"] . ",
+		        oqq_custom_premium1 = '" . $premium_result["custom_premium1"] . "',
+		        oqq_custom_premium2 = '" . $premium_result["custom_premium2"] . "',
+		        oqq_detail_price_array = '" . $premium_result["detailed_result"] . "' WHERE oqq_quotations_ID = " . $quotation_id;
+
+            //only update the premium if the calculation type is not Manual
+            if ($q_data['oqq_calculation_type'] != 'Manual'){
+                $db->query($sql);
+            }
 
             //check for approval
             $quote = new dynamicQuotation($quotation_id);

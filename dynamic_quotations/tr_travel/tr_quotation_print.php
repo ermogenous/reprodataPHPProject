@@ -375,7 +375,7 @@ function getQuotationHTML($quotationID)
         
     
     
-    <div style="height: 50px;"></div>
+    <div style="height: 20px;"></div>
     
     <div style="font-size: 10px;">
         <table style="font-size: 10px;" width="100%">
@@ -475,7 +475,7 @@ function getQuotationHTML($quotationID)
             </td>
             ' : '') . '
             ' . ($sect1['oqqit_rate_4'] == 'Limited' ? '<td align="center">
-                Not Included
+                €1.000
             </td>
             ' : '') . '
         </tr>
@@ -501,7 +501,7 @@ function getQuotationHTML($quotationID)
             </td>
             ' : '') . '
             ' . ($sect1['oqqit_rate_4'] == 'Limited' ? '<td align="center">
-                Not Included
+                €1.000
             </td>
             ' : '') . '
         </tr>

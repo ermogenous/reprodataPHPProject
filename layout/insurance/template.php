@@ -154,9 +154,14 @@ function template_header()
                                     <i class="fas fa-file-alt"></i> Documents Maintenance</a>
 
                                 <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/accounts/categories/categories.php">
-                                    <i class="fas fa-th-list"></i> Categories Maintenance</a>
+                                   href="<?php echo $main["site_url"]; ?>/accounts/account_types/account_types.php">
+                                    <i class="fas fa-th-list"></i> Account Types Maintenance</a>
 
+                                <?php if ($db->user_data['usr_user_rights'] <= 2) { ?>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/accounts/accounts_settings.php">
+                                    <i class="fas fa-screwdriver"></i> Accounts Settings</a>
+                                <?php } ?>
                             </div>
                         </li>
                     <?php } ?>

@@ -16,6 +16,8 @@ function tr_travel_information()
             (todayDate.getDate() + "/" + todayDate.getMonth() + "/" + todayDate.getFullYear())
         );
         
+        '.($db->user_data['usr_user_rights'] <= 2? '/*Advanced user - Allow any age*/clientAge = 20;':'').'
+        
         if (clientAge < 18){
             $("#birthdate-invalid-text").html("Age must be over 18");
             $("#birthdate").addClass("is-invalid");
@@ -193,6 +195,15 @@ function tr_travel_information()
             <input name="5_oqqit_date_1" type="text" id="5_oqqit_date_1"
                    class="form-control text-center">
             <?php
+
+            $minDate = '';
+            if ($db->user_data['usr_user_rights'] <= 2){
+                $minDate = '01/01/1900';
+            }
+            else {
+                $minDate = date('d/m/Y');
+            }
+
             $formValidator->addField(
                 [
                     'fieldName' => '5_oqqit_date_1',
@@ -201,7 +212,7 @@ function tr_travel_information()
                     'datePickerValue' => $db->convertDateToEU($qitem_data['oqqit_date_1']),
                     'required' => true,
                     'invalidTextAutoGenerate' => show_quotation_text('Καταχώρησε Ημ. Αναχώρησης', 'Must enter Departure Date'),
-                    'dateMinDate' => date('d/m/Y'),
+                    'dateMinDate' => $minDate,
                     'dateMaxDate' => date('d/m/Y', mktime(0, 0, 0, date('m'), (date('d') + 45), date('Y'))),
                 ]);
             ?>
