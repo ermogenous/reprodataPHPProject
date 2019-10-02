@@ -106,7 +106,7 @@ function tr_travel_information()
 
 
             <select name="5_oqqit_rate_4" id="5_oqqit_rate_4" onchange="packageSelection();"
-                    class="form-control">
+                    class="form-control" title="<?php show_quotation_text("Πακέτο", "Package"); ?>">
                 <?php if (strpos($underwriter['oqun_tr_package_selection'], '#basic#') !== false) { ?>
                     <option value="Basic" <?php if ($qitem_data['oqqit_rate_4'] == 'Basic') echo 'selected'; ?>>
                         Basic
@@ -193,7 +193,7 @@ function tr_travel_information()
         </label>
         <div class="col-sm-3">
             <input name="5_oqqit_date_1" type="text" id="5_oqqit_date_1"
-                   class="form-control text-center">
+                   class="form-control text-center" title="<?php show_quotation_text("Ημ. Αναχώρησης", "Departure Date"); ?>">
             <?php
 
             $minDate = '';
@@ -228,7 +228,7 @@ function tr_travel_information()
             <?php show_quotation_text("Περίοδος Ασφάλισης (μέρες)", "Period of Insurance (days)"); ?>
         </label>
         <div class="col-sm-3">
-            <input name="5_oqqit_rate_5" type="text" id="5_oqqit_rate_5"
+            <input name="5_oqqit_rate_5" type="text" id="5_oqqit_rate_5" title="<?php show_quotation_text("Περίοδος Ασφάλισης (μέρες)", "Period of Insurance (days)"); ?>"
                    class="form-control text-center" value="<?php echo $qitem_data['oqqit_rate_5']; ?>">
             <?php
 
@@ -249,7 +249,7 @@ function tr_travel_information()
             <?php show_quotation_text("Προορισμός", "Destination"); ?>
         </label>
         <div class="col-sm-8">
-            <input type="hidden" id="5_oqqit_rate_1" name="5_oqqit_rate_1"
+            <input type="hidden" id="5_oqqit_rate_1" name="5_oqqit_rate_1" title="<?php show_quotation_text("Προορισμός", "Destination"); ?>"
                    value="<?php echo $qitem_data['oqqit_rate_1']; ?>">
             <select name="destination" id="destination" onchange="destinationOnChange();"
                     class="form-control">
@@ -292,7 +292,7 @@ function tr_travel_information()
 
             <input type="hidden" name="5_oqqit_rate_2" id="5_oqqit_rate_2"
                    value="<?php echo $qitem_data['oqqit_rate_2']; ?>">
-            <select name="geographicalArea" id="geographicalArea"
+            <select name="geographicalArea" id="geographicalArea" title="<?php show_quotation_text("Γεωγραφική Περιοχή", "Geographical Area"); ?>"
                     class="form-control" onchange="geographicalAreaOnChange();">
                 <option value=""></option>
                 <option value="WorldExcl" <?php if ($qitem_data['oqqit_rate_2'] == 'WorldExcl') echo 'selected'; ?>>
@@ -326,7 +326,7 @@ function tr_travel_information()
         </label>
         <div class="col-sm-8">
 
-            <input type="hidden" id="5_oqqit_rate_3" name="5_oqqit_rate_3"
+            <input type="hidden" id="5_oqqit_rate_3" name="5_oqqit_rate_3" title="<?php show_quotation_text("Χειμερινά Σπόρ", "Winter Sports"); ?>"
                    value="<?php echo $qitem_data['oqqit_rate_3']; ?>">
             <select name="winterSports" id="winterSports"
                     class="form-control" onchange="winterSportsOnChange();">
@@ -539,7 +539,7 @@ function showMemberHTML($id, $selectionField, $fieldNames)
             </label>
             <div class="col-sm-8">
                 <input name="<?php echo $fieldNames['name']; ?>" type="text" id="<?php echo $fieldNames['name']; ?>"
-                       class="form-control"
+                       class="form-control" title="<?php show_quotation_text("Μέλος ".$id." Όνομα", "Member ".$id." Name"); ?>"
                        value="<?php echo $qitem_data[substr($fieldNames['name'], 2)]; ?>">
                 <?php
                 $formValidator->addField(
@@ -562,7 +562,7 @@ function showMemberHTML($id, $selectionField, $fieldNames)
             </label>
             <div class="col-sm-8">
                 <input name="<?php echo $fieldNames['id']; ?>" type="text" id="<?php echo $fieldNames['id']; ?>"
-                       class="form-control"
+                       class="form-control" title="<?php show_quotation_text("Μέλος ".$id." Αρ. Διαβατηρίου η Ταυτότητα", "Member ".$id." Passport No. or I.D."); ?>"
                        value="<?php echo $qitem_data[substr($fieldNames['id'], 2)]; ?>">
                 <?php
                 $formValidator->addField(
@@ -583,7 +583,7 @@ function showMemberHTML($id, $selectionField, $fieldNames)
                 <?php show_quotation_text("Ιθαγένεια", "Nationality"); ?>
             </label>
             <div class="col-sm-8">
-                <select class="form-control"
+                <select class="form-control" title="<?php show_quotation_text("Μέλος ".$id." Ιθαγένεια", "Member ".$id." Nationality"); ?>"
                         id="<?php echo $fieldNames['nationality']; ?>" name="<?php echo $fieldNames['nationality']; ?>">
                     <option value=""></option>
                     <?php
@@ -612,10 +612,11 @@ function showMemberHTML($id, $selectionField, $fieldNames)
         <div class="row form-group">
 
             <label for="<?php echo $fieldNames['dob']; ?>" class="col-sm-4 col-form-label">
-                <?php show_quotation_text(" Ημ. Γέννησης", "Date of Birth"); ?>
+                <?php show_quotation_text(" Ημ. Γέννησης", " Date of Birth"); ?>
             </label>
             <div class="col-sm-8">
                 <input name="<?php echo $fieldNames['dob']; ?>" type="text" id="<?php echo $fieldNames['dob']; ?>"
+                       title="<?php show_quotation_text("Μέλος ".$id." Ημ. Γέννησης", "Member ".$id." Date of Birth"); ?>"
                        class="form-control" onkeyup="validateMemberAge('<?php echo $fieldNames['dob'];?>');">
                 <?php
                 $formValidator->addField(

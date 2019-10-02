@@ -160,6 +160,33 @@ $formValidator = new customFormValidator();
                 </div>
 
                 <div class="form-group row">
+                    <label for="fld_has_label" class="col-sm-4 col-form-label">Has Label</label>
+                    <div class="col-sm-8">
+                        <select name="fld_has_label" id="fld_has_label"
+                                class="form-control">
+                            <option value="No" <?php if ($data['vit_has_label'] == 'No') echo 'selected'; ?>>
+                                No
+                            </option>
+                            <option value="Small" <?php if ($data['vit_has_label'] == 'Small') echo 'selected'; ?>>
+                                Small
+                            </option>
+                            <option value="Large" <?php if ($data['vit_has_label'] == 'Large') echo 'selected'; ?>>
+                                Large
+                            </option>
+                        </select>
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'fld_has_label',
+                                'fieldDataType' => 'select',
+                                'required' => true,
+                                'invalidText' => 'Select if it has label'
+                            ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="form-group row">
                     <label for="fld_bottle_size" class="col-sm-4 col-form-label">Bottle Size</label>
                     <div class="col-sm-8">
                         <select name="fld_bottle_size" id="fld_bottle_size"

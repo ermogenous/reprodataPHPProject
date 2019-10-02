@@ -14,14 +14,15 @@ $db->admin_title = "Vitamins";
 
 $db->show_header();
 
-$table = new draw_table('vitamins', 'vit_vitamin_ID', 'ASC');
+$table = new draw_table('vitamins', 'vit_code', 'ASC');
+$table->per_page = 150;
 
 $table->generate_data();
 
 ?>
 
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-lg-1"></div>
         <div class="col-lg-10">
@@ -34,6 +35,7 @@ $table->generate_data();
                         <th scope="col"><?php $table->display_order_links('Code', 'vit_code'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Name', 'vit_name'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Retail', 'vit_retail'); ?></th>
+                        <th scope="col"><?php $table->display_order_links('Last Update', 'vit_last_update_date_time'); ?></th>
                         <th scope="col">
                             <a href="vitamin_modify.php">
                                 <i class="fas fa-plus-circle"></i>
@@ -50,6 +52,7 @@ $table->generate_data();
                             <td><?php echo $row["vit_code"]; ?></td>
                             <td><?php echo $row["vit_name"]; ?></td>
                             <td><?php echo $row["vit_retail"]; ?></td>
+                            <td><?php echo $db->convert_date_format($row["vit_last_update_date_time"],'yyyy-mm-dd','dd/mm/yyyy',1,1); ?></td>
                             <td>
                                 <a href="vitamin_modify.php?lid=<?php echo $row["vit_vitamin_ID"]; ?>"><i
                                         class="fas fa-edit"></i></a>&nbsp

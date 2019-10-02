@@ -378,6 +378,7 @@ $formValidator->showErrorList();
                         <?php } ?>
                     </div>
 
+                    <?php if ($quotation_type_data['oqqt_added_field_identity'] == 1) { ?>
                     <div class="form-group row">
                         <label for="insureds_id" class="col-sm-4 col-form-label">
                             <?php
@@ -398,18 +399,24 @@ $formValidator->showErrorList();
                                    class="form-control"
                                    value="<?php echo $q_data["oqq_insureds_id"]; ?>">
                             <?php
+                            $identityRequired = false;
+                            if ($quotation_type_data['oqqt_added_field_identity_required'] == 1) {
+                                $identityRequired = true;
+                            }
                             $formValidator->addField(
                                 [
                                     'fieldName' => 'insureds_id',
                                     'fieldDataType' => 'text',
-                                    'required' => true,
+                                    'required' => $identityRequired,
                                     'invalidText' => show_quotation_text("Συμπληρώστε Ταυτότητα.", "Must Enter Identity Card", 'Return')
                                 ]);
                             ?>
 
                         </div>
                     </div>
+                    <?php } ?>
 
+                    <?php if ($quotation_type_data['oqqt_added_field_telephone'] == 1) { ?>
                     <div class="form-group row">
                         <label for="insureds_tel" class="col-sm-4 col-form-label">
                             <?php show_quotation_text("Τηλέφωνο", "Telephone"); ?>
@@ -419,16 +426,21 @@ $formValidator->showErrorList();
                                    class="form-control"
                                    value="<?php echo $q_data["oqq_insureds_tel"]; ?>">
                             <?php
+                            $telephoneRequired = false;
+                            if ($quotation_type_data['oqqt_added_field_telephone_required'] == 1) {
+                                $telephoneRequired = true;
+                            }
                             $formValidator->addField(
                                 [
                                     'fieldName' => 'insureds_tel',
                                     'fieldDataType' => 'text',
-                                    'required' => true,
+                                    'required' => $telephoneRequired,
                                     'invalidText' => show_quotation_text("Συμπληρώστε Τηλέφωνο.", "Must Enter Telephone", 'Return')
                                 ]);
                             ?>
                         </div>
                     </div>
+                    <?php } ?>
 
                     <?php if ($quotation_type_data['oqqt_added_field_nationality'] == 1) { ?>
                         <div class="form-group row">
@@ -740,6 +752,10 @@ $formValidator->showErrorList();
                         </div>
                     </div>
                 <?php } ?>
+
+                <?php
+                $formValidator->generateErrorDescriptionDiv();
+                ?>
 
                 <!-- BUTTONS -->
                 <div class="form-group row">

@@ -47,7 +47,7 @@ class customFormValidator
         $this->showErrorInDiv = true;
         echo '
         <div class="row">
-            <div class="col-12 alert alert-warning" id="formValidatorErrorDescriptionDiv">Error Here</div>
+            <div class="col-12 alert alert-warning" id="formValidatorErrorDescriptionDiv" style="display: none;">Error Here</div>
         </div>
         ';
     }
@@ -227,6 +227,7 @@ class customFormValidator
                 $('#" . $fieldData['fieldName'] . "-invalid-text').show();
                 FormErrorFound = true;
                 ErrorList.push('" . $fieldData['fieldName'] . " -> Radio Empty');
+                ErrorListFull.push($('#".$fieldData['fieldName']."').attr('title') + ' - Empty ');
             }
             else {
                 $('#" . $fieldData['fieldName'] . "').addClass('is-valid');
@@ -242,7 +243,7 @@ class customFormValidator
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                 FormErrorFound = true;
                 ErrorList.push('" . $fieldData['fieldName'] . " -> Others Empty ');
-                //ErrorList.push($(\"label[for='" . $fieldData['fieldName'] . "']\").html() + ' -> Others Empty ');
+                ErrorListFull.push($('#".$fieldData['fieldName']."').attr('title') + ' - Empty ');
                 
             }
             else {
@@ -269,6 +270,7 @@ class customFormValidator
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                 FormErrorFound = true;
                 ErrorList.push('" . $fieldData['fieldName'] . " -> If Valid Date ');
+                ErrorListFull.push($('#".$fieldData['fieldName']."').attr('title') + ' - Invalid Date ');
             }
             ";
         }
@@ -282,6 +284,7 @@ class customFormValidator
                     FormErrorFound = true;
                     FieldsErrors['" . $fieldData['fieldName'] . "']['dateMin'] = false;
                     ErrorList.push('" . $fieldData['fieldName'] . " -> Minimum Date ');
+                    ErrorListFull.push($('#".$fieldData['fieldName']."').attr('title') + ' - Date Lower than expected ');
                 }
                 else {
                     //if is-invalid already exists then another check hit. do not make as valid.
@@ -303,6 +306,7 @@ class customFormValidator
                     $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                     FormErrorFound = true;
                     ErrorList.push('" . $fieldData['fieldName'] . " -> Maximum Date ');
+                    ErrorListFull.push($('#".$fieldData['fieldName']."').attr('title') + ' - Date higher than expected ');
                 }
                 else {
                     //if is-invalid already exists then another check hit. do not make as valid.
@@ -330,6 +334,7 @@ class customFormValidator
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                 FormErrorFound = true;
                 ErrorList.push('" . $fieldData['fieldName'] . " -> If is numeric');
+                ErrorListFull.push($('#".$fieldData['fieldName']."').attr('title') + ' - Not numeric ');
             }
             ";
 
@@ -341,6 +346,8 @@ class customFormValidator
                         $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                         FormErrorFound = true;
                         ErrorList.push('" . $fieldData['fieldName'] . " -> Min Number ');
+                        ErrorListFull.push($('#".$fieldData['fieldName']."').attr('title') + ' - Number lower than expected ');
+                        
                     }
                     else {
                         //if is-invalid already exists then another check hit. do not make as valid.
@@ -360,6 +367,7 @@ class customFormValidator
                         $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                         FormErrorFound = true;
                         ErrorList.push('" . $fieldData['fieldName'] . " -> Max Number ');
+                        ErrorListFull.push($('#".$fieldData['fieldName']."').attr('title') + ' - Number higher than expected ');
                     }
                     else {
                         //if is-invalid already exists then another check hit. do not make as valid.
@@ -385,6 +393,7 @@ class customFormValidator
                     $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                     FormErrorFound = true;
                     ErrorList.push('" . $fieldData['fieldName'] . " -> Number not in list ');
+                    ErrorListFull.push($('#".$fieldData['fieldName']."').attr('title') + ' - Number not allowed ');
                 }
                 else {
                     //if is-invalid already exists then another check hit. do not make as valid.
@@ -406,6 +415,7 @@ class customFormValidator
                         $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                         FormErrorFound = true;
                         ErrorList.push('" . $fieldData['fieldName'] . " -> Invalid Integer ');
+                        ErrorListFull.push($('#".$fieldData['fieldName']."').attr('title') + ' - Number not integer ');
                     }
                     else {
                         //if is-invalid already exists then another check hit. do not make as valid.
@@ -430,6 +440,7 @@ class customFormValidator
                     $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                     FormErrorFound = true;
                     ErrorList.push('" . $fieldData['fieldName'] . " -> Invalid Email ');
+                    ErrorListFull.push($('#".$fieldData['fieldName']."').attr('title') + ' - Invalid Email ');
                 }
             ";
         }
@@ -457,7 +468,9 @@ class customFormValidator
  var FormErrorFound = false;
  var FieldsErrors = [];
  var ErrorList = [];
+ var ErrorListFull = [];
  var showErrorList = '" . $this->showErrorList . "';
+ var showErrorListInDiv = '".$this->showErrorInDiv."';
      (function () {
         'use strict';
         window.addEventListener('load', function () {
@@ -477,6 +490,7 @@ class customFormValidator
                     FormErrorFound = false;
                     //clear errorList
                     ErrorList = [];
+                    ErrorListFull = [];
 
                     " . $fieldsValidationsText . "
                     " . $customCode . "
@@ -486,6 +500,30 @@ class customFormValidator
                         if (showErrorList == '1'){
                             console.log('Error validation');
                             console.log(ErrorList);
+                            //console.log(ErrorListFull);
+                        }
+                        
+                        if (showErrorListInDiv == '1'){
+                            let errorFullListHtml = '';
+                            let errorFullListHtmlNum = 0;
+                            $.each(ErrorListFull,function (index,value){
+                                errorFullListHtmlNum++;
+                                
+                                if (errorFullListHtmlNum > 1){
+                                    errorFullListHtml = errorFullListHtml + '<br>';
+                                }
+                                
+                                errorFullListHtml = errorFullListHtml + value;
+                            });
+                            
+                            
+                            if (errorFullListHtmlNum > 0){
+                                $('#formValidatorErrorDescriptionDiv').show();
+                                $('#formValidatorErrorDescriptionDiv').html(errorFullListHtml);
+                            }
+                            else {
+                                $('#formValidatorErrorDescriptionDiv').hide();
+                            }
                         }
                         
                         event.preventDefault();

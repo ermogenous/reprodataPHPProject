@@ -8,6 +8,12 @@ if ($_POST["action"] == "insert") {
     $db->working_section = 'Insert new quotations type';
     $db->start_transaction();
 
+    $_POST['fld_added_field_identity'] = $db->get_check_value($_POST['fld_added_field_identity']);
+    $_POST['fld_added_field_identity_required'] = $db->get_check_value($_POST['fld_added_field_identity_required']);
+
+    $_POST['fld_added_field_telephone'] = $db->get_check_value($_POST['fld_added_field_telephone']);
+    $_POST['fld_added_field_telephone_required'] = $db->get_check_value($_POST['fld_added_field_telephone_required']);
+
     $_POST['fld_added_field_email'] = $db->get_check_value($_POST['fld_added_field_email']);
     $_POST['fld_added_field_contact_person'] = $db->get_check_value($_POST['fld_added_field_contact_person']);
     $_POST['fld_added_field_extra_details'] = $db->get_check_value($_POST['fld_added_field_extra_details']);
@@ -33,6 +39,12 @@ if ($_POST["action"] == "insert") {
     $db->check_restriction_area('update');
     $db->working_section = 'Modify quotations type';
     $db->start_transaction();
+
+    $_POST['fld_added_field_identity'] = $db->get_check_value($_POST['fld_added_field_identity']);
+    $_POST['fld_added_field_identity_required'] = $db->get_check_value($_POST['fld_added_field_identity_required']);
+
+    $_POST['fld_added_field_telephone'] = $db->get_check_value($_POST['fld_added_field_telephone']);
+    $_POST['fld_added_field_telephone_required'] = $db->get_check_value($_POST['fld_added_field_telephone_required']);
 
     $_POST['fld_added_field_email'] = $db->get_check_value($_POST['fld_added_field_email']);
     $_POST['fld_added_field_contact_person'] = $db->get_check_value($_POST['fld_added_field_contact_person']);
@@ -623,6 +635,24 @@ $formValidator = new customFormValidator();
                                 </div>
                                 <div class="col-sm-8">
                                     <div class="row">
+                                        <label for="fld_added_field_identity" class="col-sm-3 col-form-label">
+                                            Identity:
+                                        </label>
+                                        <div class="col-sm-1">
+                                            <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                                   id="fld_added_field_identity" name="fld_added_field_identity"
+                                                <?php if ($data['oqqt_added_field_identity'] == 1) echo 'checked'; ?>>
+                                        </div>
+                                        <label for="fld_added_field_identity_required" class="col-sm-2 col-form-label">
+                                            Required:
+                                        </label>
+                                        <div class="col-sm-1">
+                                            <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                                   id="fld_added_field_identity_required" name="fld_added_field_identity_required"
+                                                <?php if ($data['oqqt_added_field_identity_required'] == 1) echo 'checked'; ?>>
+                                        </div>
+                                    </div>
+                                    <div class="row">
                                         <label for="fld_added_field_email" class="col-sm-3 col-form-label">
                                             Email:
                                         </label>
@@ -677,6 +707,25 @@ $formValidator = new customFormValidator();
                                             <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
                                                    id="fld_added_field_extra_details_required" name="fld_added_field_extra_details_required"
                                                 <?php if ($data['oqqt_added_field_extra_details_required'] == 1) echo 'checked'; ?>>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <label for="fld_added_field_telephone" class="col-sm-3 col-form-label">
+                                            Telephone:
+                                        </label>
+                                        <div class="col-sm-1">
+                                            <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                                   id="fld_added_field_telephone" name="fld_added_field_telephone"
+                                                <?php if ($data['oqqt_added_field_telephone'] == 1) echo 'checked'; ?>>
+                                        </div>
+                                        <label for="fld_added_field_telephone_required" class="col-sm-2 col-form-label">
+                                            Required:
+                                        </label>
+                                        <div class="col-sm-1">
+                                            <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                                   id="fld_added_field_telephone_required" name="fld_added_field_telephone_required"
+                                                <?php if ($data['oqqt_added_field_telephone_required'] == 1) echo 'checked'; ?>>
                                         </div>
                                     </div>
 
