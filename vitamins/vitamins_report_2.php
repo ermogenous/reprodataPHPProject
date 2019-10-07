@@ -160,7 +160,7 @@ if ($_POST['hideBar'] != 'Yes') {
                         <th scope="col">WS Profit</th>
                         <th scope="col">Retail Profit</th>
                         <?php } ?>
-                        <th scope="col">Market Prices</th>
+                        <th scope="col">Description</th>
 
                     </tr>
                     </thead>
@@ -226,7 +226,7 @@ if ($_POST['hideBar'] != 'Yes') {
 
                         ?>
                         <tr onclick="editLine(<?php echo $row["vit_vitamin_ID"]; ?>);">
-                            <td><?php echo $row["vit_description"]; ?></td>
+                            <td><?php echo $row["vit_name"]; ?></td>
                             <td><?php echo $row["vit_bottle_size"]."/".$row['vit_quantity']; ?></td>
                             <?php if ($_POST['hideCost'] != 'Yes'){?>
                             <td><?php echo round($gbpCostWS,2); ?></td>
@@ -238,7 +238,7 @@ if ($_POST['hideBar'] != 'Yes') {
                             <td><?php echo round($wsProfit,2); ?></td>
                             <td><?php echo round($rtProfit,2); ?></td>
                             <?php } ?>
-                            <td><?php echo $row["vit_market_prices"]; ?></td>
+                            <td><?php echo $row["vit_description"]; ?></td>
 
                         </tr>
                         <?php

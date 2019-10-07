@@ -754,7 +754,7 @@ $formValidator->showErrorList();
                 <?php } ?>
 
                 <?php
-                $formValidator->generateErrorDescriptionDiv();
+                //$formValidator->generateErrorDescriptionDiv();
                 ?>
 
                 <!-- BUTTONS -->

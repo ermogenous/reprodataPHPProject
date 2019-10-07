@@ -4,6 +4,9 @@
  * User: micac
  * Date: 21/3/2019
  * Time: 10:59 ΠΜ
+ *
+ * Updates:
+ * 2/10/2019 - generateErrorDescriptionDiv() a div that will show all the errors found in the form. can be used anywhere in the page
  */
 
 
@@ -43,11 +46,17 @@ class customFormValidator
         $this->needYearsFrom2DatesFunction = true;
     }
 
-    public function generateErrorDescriptionDiv(){
+    /**
+     * This will generate a div that will hold all the errors found in the form
+     * You will need to define a title for each field so it will capture and shown in the div.
+     * You can control the language in the title
+     * Execute this function exactly where you want the div to be shown
+     */
+    public function generateErrorDescriptionDiv($classDescription = 'alert alert-warning'){
         $this->showErrorInDiv = true;
         echo '
         <div class="row">
-            <div class="col-12 alert alert-warning" id="formValidatorErrorDescriptionDiv" style="display: none;">Error Here</div>
+            <div class="col-12 '.$classDescription.'" id="formValidatorErrorDescriptionDiv" style="display: none;">Error Here</div>
         </div>
         ';
     }

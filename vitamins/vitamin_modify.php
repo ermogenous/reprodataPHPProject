@@ -144,9 +144,8 @@ $formValidator = new customFormValidator();
                 <div class="form-group row">
                     <label for="fld_description" class="col-sm-4 col-form-label">Description</label>
                     <div class="col-sm-8">
-                        <input name="fld_description" type="text" id="fld_description"
-                               class="form-control"
-                               value="<?php echo $data["vit_description"]; ?>">
+                        <textarea name="fld_description" type="text" id="fld_description"
+                                  class="form-control"><?php echo $data["vit_description"]; ?></textarea>
                         <?php
                         $formValidator->addField(
                             [
