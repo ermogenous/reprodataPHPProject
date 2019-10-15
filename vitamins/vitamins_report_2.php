@@ -227,13 +227,13 @@ if ($_POST['hideBar'] != 'Yes') {
                         ?>
                         <tr onclick="editLine(<?php echo $row["vit_vitamin_ID"]; ?>);">
                             <td><?php echo $row["vit_name"]; ?></td>
-                            <td><?php echo $row["vit_bottle_size"]."/".$row['vit_quantity']; ?></td>
+                            <td align="center"><?php echo $row["vit_bottle_size"]."/".$row['vit_quantity']; ?></td>
                             <?php if ($_POST['hideCost'] != 'Yes'){?>
                             <td><?php echo round($gbpCostWS,2); ?></td>
                             <td><?php echo round($gbpCostRetail,2); ?></td>
                             <?php } ?>
-                            <td><?php echo $wholeSale; ?></td>
-                            <td><?php echo $retail; ?></td>
+                            <td align="center"><?php echo $wholeSale; ?></td>
+                            <td align="center"><?php echo $retail; ?></td>
                             <?php if ($_POST['hideCost'] != 'Yes'){?>
                             <td><?php echo round($wsProfit,2); ?></td>
                             <td><?php echo round($rtProfit,2); ?></td>

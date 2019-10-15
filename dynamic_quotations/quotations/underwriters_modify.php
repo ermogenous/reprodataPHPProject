@@ -36,19 +36,19 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_allow_quotations'] .= '#3-' . $db->get_check_value($_POST['allow_tr']) . "#";
 
     $_POST['fld_tr_package_selection'] = '';
-    if ($_POST['packageBasic'] == 1){
+    if ($_POST['packageBasic'] == 1) {
         $_POST['fld_tr_package_selection'] = '#basic#';
     }
-    if ($_POST['packageStandard'] == 1){
+    if ($_POST['packageStandard'] == 1) {
         $_POST['fld_tr_package_selection'] .= '#standard#';
     }
-    if ($_POST['packageLuxury'] == 1){
+    if ($_POST['packageLuxury'] == 1) {
         $_POST['fld_tr_package_selection'] .= '#luxury#';
     }
-    if ($_POST['packageSchengen'] == 1){
+    if ($_POST['packageSchengen'] == 1) {
         $_POST['fld_tr_package_selection'] .= '#schengen#';
     }
-    if ($_POST['packageLimited'] == 1){
+    if ($_POST['packageLimited'] == 1) {
         $_POST['fld_tr_package_selection'] .= '#limited#';
     }
 
@@ -106,8 +106,7 @@ $formValidator = new customFormValidator();
                         <label for="fld_user_ID" class="col-sm-4 col-form-label">User</label>
                         <div class="col-sm-5">
                             <select name="fld_user_ID" id="fld_user_ID"
-                                    class="form-control"
-                                    required>
+                                    class="form-control">
                                 <option value="">Please select User</option>
                                 <?php
                                 $sql = '
@@ -144,8 +143,7 @@ $formValidator = new customFormValidator();
                         </div>
                         <div class="col-sm-3">
                             <select name="fld_status" id="fld_status"
-                                    class="form-control"
-                                    required>
+                                    class="form-control">
                                 <option value="Active" <?php if ($data["oqun_status"] == 'Active') echo "selected=\"selected\""; ?>>
                                     Active
                                 </option>
@@ -161,6 +159,40 @@ $formValidator = new customFormValidator();
                                 "invalidText" => "Select Status",
                             ]);
                             ?>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label for="fld_view_group_ID" class="col-sm-4 col-form-label">
+                            Can also view everything under this group
+                        </label>
+                        <div class="col-sm-3">
+                            <select name="fld_view_group_ID" id="fld_view_group_ID"
+                                    class="form-control">
+                                <option value="0" <?php if ($data["oqun_view_group_ID"] == '0' || $data["oqun_view_group_ID"] == '') echo "selected=\"selected\""; ?>>
+                                    None
+                                </option>
+                                <?php
+                                $sql = "SELECT * FROM users_groups WHERE usg_active = 1 AND usg_users_groups_ID > 2 ORDER BY usg_group_name ASC";
+                                $result = $db->query($sql);
+                                while ($group = $db->fetch_assoc($result)) {
+                                    ?>
+                                    <option value="<?php echo $group['usg_users_groups_ID'];?>" <?php if ($data["oqun_view_group_ID"] == $group['usg_users_groups_ID']) echo "selected=\"selected\""; ?>>
+                                        <?php echo $group['usg_group_name']; ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_view_group_ID",
+                                "fieldDataType" => "select",
+                                "required" => true,
+                                "invalidTextAutoGenerate" => true,
+                            ]);
+                            ?>
+                        </div>
+                        <div class="col-sm-5">
+                            This underwriter will be able to see quotations of users under this group
                         </div>
                     </div>
 
@@ -705,35 +737,35 @@ $formValidator = new customFormValidator();
                                     <div class="custom-control custom-checkbox custom-control-inline">
                                         <input type="checkbox" class="custom-control-input" value="1"
                                                id="packageBasic" name="packageBasic"
-                                        <?php if (strpos($data['oqun_tr_package_selection'],'#basic#') !== false) echo 'checked';?>>
+                                            <?php if (strpos($data['oqun_tr_package_selection'], '#basic#') !== false) echo 'checked'; ?>>
                                         <label class="custom-control-label" for="packageBasic">Basic</label>
                                     </div>
 
                                     <div class="custom-control custom-checkbox custom-control-inline">
                                         <input type="checkbox" class="custom-control-input" value="1"
                                                id="packageStandard" name="packageStandard"
-                                            <?php if (strpos($data['oqun_tr_package_selection'],'#standard#') !== false) echo 'checked';?>>
+                                            <?php if (strpos($data['oqun_tr_package_selection'], '#standard#') !== false) echo 'checked'; ?>>
                                         <label class="custom-control-label" for="packageStandard">Standard</label>
                                     </div>
 
                                     <div class="custom-control custom-checkbox custom-control-inline">
                                         <input type="checkbox" class="custom-control-input" value="1"
                                                id="packageLuxury" name="packageLuxury"
-                                            <?php if (strpos($data['oqun_tr_package_selection'],'#luxury#') !== false) echo 'checked';?>>
+                                            <?php if (strpos($data['oqun_tr_package_selection'], '#luxury#') !== false) echo 'checked'; ?>>
                                         <label class="custom-control-label" for="packageLuxury">Luxury</label>
                                     </div>
 
                                     <div class="custom-control custom-checkbox custom-control-inline">
                                         <input type="checkbox" class="custom-control-input" value="1"
                                                id="packageSchengen" name="packageSchengen"
-                                            <?php if (strpos($data['oqun_tr_package_selection'],'#schengen#') !== false) echo 'checked';?>>
+                                            <?php if (strpos($data['oqun_tr_package_selection'], '#schengen#') !== false) echo 'checked'; ?>>
                                         <label class="custom-control-label" for="packageSchengen">Schengen</label>
                                     </div>
 
                                     <div class="custom-control custom-checkbox custom-control-inline">
                                         <input type="checkbox" class="custom-control-input" value="1"
                                                id="packageLimited" name="packageLimited"
-                                            <?php if (strpos($data['oqun_tr_package_selection'],'#limited#') !== false) echo 'checked';?>>
+                                            <?php if (strpos($data['oqun_tr_package_selection'], '#limited#') !== false) echo 'checked'; ?>>
                                         <label class="custom-control-label" for="packageLimited">Limited</label>
                                     </div>
 

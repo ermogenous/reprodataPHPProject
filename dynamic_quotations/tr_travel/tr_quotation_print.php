@@ -448,7 +448,7 @@ function getQuotationHTML($quotationID)
             </td>
             ' : '') . '
             ' . ($sect1['oqqit_rate_4'] == 'Limited' ? '<td align="center">
-                €1.000<br>
+                €1.500<br>
                 <div style="color: red">€100</div>
             </td>
             ' : '') . '
@@ -538,7 +538,7 @@ function getQuotationHTML($quotationID)
             </td>
             ' : '') . '
             ' . ($sect1['oqqit_rate_4'] == 'Schengen' ? '<td align="center">
-                Deleted
+                Not Included
             </td>
             ' : '') . '
             ' . ($sect1['oqqit_rate_4'] == 'Limited' ? '<td align="center">
@@ -746,7 +746,7 @@ function getQuotationHTML($quotationID)
             </td>
             ' : '') . '
             ' . ($sect1['oqqit_rate_4'] == 'Schengen' ? '<td align="center">
-                Deleted
+                Not Included
             </td>
             ' : '') . '
             ' . ($sect1['oqqit_rate_4'] == 'Limited' ? '<td align="center">
@@ -789,7 +789,7 @@ function getQuotationHTML($quotationID)
             </td>
             ' : '') . '
             ' . ($sect1['oqqit_rate_4'] == 'Schengen' ? '<td align="center">
-                Deleted
+                Not Included
             </td>
             ' : '') . '
             ' . ($sect1['oqqit_rate_4'] == 'Limited' ? '<td align="center">
@@ -928,7 +928,7 @@ function getQuotationHTML($quotationID)
             </td>
             ' : '') . '
             ' . ($sect1['oqqit_rate_4'] == 'Schengen' ? '<td align="center">
-                Deleted
+                Not Included
             </td>
             ' : '') . '
             ' . ($sect1['oqqit_rate_4'] == 'Limited' ? '<td align="center">

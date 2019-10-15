@@ -41,7 +41,17 @@ else if ($_GET['section'] == 'getFirstAccountByID') {
     $db->update_log_file_custom($sql, 'Accounts Account API: getAccountByID');
 
 }
+else if ($_GET['section'] == 'searchAccountSubTypesByType'){
+    $sql = 'SELECT * FROM ac_account_types WHERE actpe_active = "Active" AND actpe_type = "SubType" 
+            AND actpe_owner_ID = '.$_GET['value'].'
+            ORDER BY actpe_code ASC';
+    $result = $db->query($sql);
+    while ($row = $db->fetch_assoc($result)){
+        $data[] = $row;
+    }
 
+    $db->update_log_file_custom($sql, 'Accounts API:searchAccountSubTypesByType');
+}
 else {
     $db->update_log_file_custom('NONE', 'Accounts Account API:none');
 }

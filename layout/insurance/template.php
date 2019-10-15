@@ -13,8 +13,12 @@ function template_header()
         <LINK REL="SHORTCUT ICON" HREF="<?php echo $main["site_url"]; ?>/favicon.png">
         <link rel="stylesheet" href="<?php echo $db->admin_layout_url; ?>style.css" rel="stylesheet">
 
-        <link rel="stylesheet" href="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/css/bootstrap.min.css"
-              rel="stylesheet">
+        <link rel="stylesheet" href="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/css/bootstrap.min.css">
+
+        <!--
+        <link rel="stylesheet" href="<?php echo $main["site_url"]; ?>/layout/font-awesome.min.css">
+        -->
+
         <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
               integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
               crossorigin="anonymous">
@@ -27,6 +31,59 @@ function template_header()
         <!-- More Head -->
         <?php echo $db->admin_more_head; ?>
         <script src="<?php echo $db->admin_layout_url; ?>customScript.js"></script>
+
+
+        <style>
+
+            .dropdown-submenu {
+                position: relative;
+            }
+
+            .dropdown-submenu>a:after {
+                content: "\f0da";
+                float: right;
+                border: none;
+                font-family: 'FontAwesome';
+            }
+
+            .dropdown-submenu>.dropdown-menu {
+                top: 0;
+                left: 100%;
+                margin-top: 0px;
+                margin-left: 0px;
+            }
+
+            .dropdown-toggle::after {
+                display: none;
+            }
+
+        </style>
+
+        <script>
+
+            $(function() {
+                // ------------------------------------------------------- //
+                // Multi Level dropdowns
+                // ------------------------------------------------------ //
+                $("ul.dropdown-menu [data-toggle='dropdown']").on("click", function(event) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    $(this).siblings().toggleClass("show");
+
+
+                    if (!$(this).next().hasClass('show')) {
+                        $(this).parents('.dropdown-menu').first().find('.show').removeClass("show");
+                    }
+                    $(this).parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function(e) {
+                        $('.dropdown-submenu .show').removeClass("show");
+                    });
+
+                });
+            });
+
+        </script>
+
 
     </head>
     <body>
@@ -63,22 +120,27 @@ function template_header()
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                            data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-users"></i> <?php echo $db->showLangText('Customers','Πελάτες');?>
+                            <i class="fas fa-users"></i> <?php echo $db->showLangText('Customers', 'Πελάτες'); ?>
+                            <i class="fas fa-caret-down"></i>
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/customers/customers.php"><i
-                                        class="fas fa-eye"></i> <?php echo $db->showLangText('View Customers','Προβολή Πελατών');?></a>
+                                        class="fas fa-eye"></i> <?php echo $db->showLangText('View Customers', 'Προβολή Πελατών'); ?>
+                            </a>
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/customers/customers_modify.php"><i
-                                        class="fas fa-plus-circle"></i> <?php echo $db->showLangText('New Customer','Δημιουργία Πελάτη');?></a>
+                                        class="fas fa-plus-circle"></i> <?php echo $db->showLangText('New Customer', 'Δημιουργία Πελάτη'); ?>
+                            </a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/customers/customer_groups.php"><i
-                                        class="fas fa-eye"></i> <?php echo $db->showLangText('View Customer Groups','Προβολή Ομάδες Πελατών');?></a>
+                                        class="fas fa-eye"></i> <?php echo $db->showLangText('View Customer Groups', 'Προβολή Ομάδες Πελατών'); ?>
+                            </a>
                             <a class="dropdown-item"
                                href="<?php echo $main["site_url"]; ?>/customers/customer_groups_modify.php"><i
-                                        class="fas fa-plus-circle"></i> <?php echo $db->showLangText('New Customer Group','Δημιουργία Ομάδας Πελατών');?></a>
+                                        class="fas fa-plus-circle"></i> <?php echo $db->showLangText('New Customer Group', 'Δημιουργία Ομάδας Πελατών'); ?>
+                            </a>
                         </div>
                     </li>
 
@@ -88,49 +150,58 @@ function template_header()
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-clipboard-list"></i> <?php echo $db->showLangText('Agent Insurance','Ασφαληστικό');?>
+                                <i class="fas fa-clipboard-list"></i> <?php echo $db->showLangText('Agent Insurance', 'Ασφαληστικό'); ?>
+                                <i class="fas fa-caret-down"></i>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/policies.php">
-                                    <i class="far fa-calendar-alt"></i> <?php echo $db->showLangText('View Policies','Προβολή Συμβολαίων');?></a>
+                                    <i class="far fa-calendar-alt"></i> <?php echo $db->showLangText('View Policies', 'Προβολή Συμβολαίων'); ?>
+                                </a>
 
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/policy_modify.php">
-                                    <i class="far fa-calendar-alt"></i> <?php echo $db->showLangText('New Policy','Νέο Συμβόλαιο');?></a>
+                                    <i class="far fa-calendar-alt"></i> <?php echo $db->showLangText('New Policy', 'Νέο Συμβόλαιο'); ?>
+                                </a>
 
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/review/view_renewals.php">
-                                    <i class="fas fa-retweet"></i> <?php echo $db->showLangText('Review','Ανανεώσεις');?></a>
+                                    <i class="fas fa-retweet"></i> <?php echo $db->showLangText('Review', 'Ανανεώσεις'); ?>
+                                </a>
 
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/unallocated/unallocated.php">
-                                    <i class="fas fa-wallet"></i> <?php echo $db->showLangText('View UnAllocated','Προβολή Μη Κατανεμημένων');?></a>
+                                    <i class="fas fa-wallet"></i> <?php echo $db->showLangText('View UnAllocated', 'Προβολή Μη Κατανεμημένων'); ?>
+                                </a>
 
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/reports/production_report.php">
-                                    <i class="fas fa-table"></i> <?php echo $db->showLangText('Production Report','Αναφορά Παραγωγής');?></a>
+                                    <i class="fas fa-table"></i> <?php echo $db->showLangText('Production Report', 'Αναφορά Παραγωγής'); ?>
+                                </a>
 
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/reports/statement.php">
-                                    <i class="fas fa-table"></i> <?php echo $db->showLangText('Statement','Δήλωση Λογαριασμού');?></a>
+                                    <i class="fas fa-table"></i> <?php echo $db->showLangText('Statement', 'Δήλωση Λογαριασμού'); ?>
+                                </a>
 
                                 <?php if ($db->user_data["usr_user_rights"] == 0) { ?>
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/ainsurance/ainsurance_settings.php">
-                                    <i class="fas fa-screwdriver"></i> <?php echo $db->showLangText('Settings','Ρυθμίσεις');?></a>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/ainsurance/ainsurance_settings.php">
+                                        <i class="fas fa-screwdriver"></i> <?php echo $db->showLangText('Settings', 'Ρυθμίσεις'); ?>
+                                    </a>
                                 <?php } ?>
 
                             </div>
                         </li>
                     <?php } ?>
 
-                    <?php if ($db->get_setting('ac_advanced_accounts_enable') == 1 ) { ?>
+                    <?php if ($db->get_setting('ac_advanced_accounts_enable') == 1) { ?>
                         <!-- Accounts -->
+                        <!--
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-clipboard-list"></i> Accounts
+                                <i class="fas fa-clipboard-list"></i> Accounts <i class="fas fa-caret-down"></i>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item"
@@ -150,6 +221,10 @@ function template_header()
                                     <i class="fas fa-book"></i> Make Journal Entry</a>
 
                                 <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/accounts/reports/reports.php">
+                                    <i class="fas fa-book"></i> Reports</a>
+
+                                <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/accounts/documents/documents.php">
                                     <i class="fas fa-file-alt"></i> Documents Maintenance</a>
 
@@ -158,12 +233,103 @@ function template_header()
                                     <i class="fas fa-th-list"></i> Account Types Maintenance</a>
 
                                 <?php if ($db->user_data['usr_user_rights'] <= 2) { ?>
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/accounts/accounts_settings.php">
-                                    <i class="fas fa-screwdriver"></i> Accounts Settings</a>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/accounts/accounts_settings.php">
+                                        <i class="fas fa-screwdriver"></i> Accounts Settings</a>
                                 <?php } ?>
                             </div>
                         </li>
+                        -->
+
+
+                        <li class="nav-item dropdown">
+                            <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                               class="nav-link dropdown-toggle">
+                                <i class="fas fa-clipboard-list"></i> Accounts <i class="fas fa-caret-down"></i>
+                            </a>
+                            <ul aria-labelledby="dropdownMenu1" class="dropdown-menu border-0 shadow">
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/accounts/accounts/accounts.php">
+                                        <i class="far fa-calendar-alt"></i> View Accounts</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/accounts/transactions/transaction_modify.php">
+                                        <i class="fas fa-plus"></i> Issue Transaction</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/accounts/transactions/transactions.php">
+                                        <i class="far fa-calendar-alt"></i> View Transactions</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/accounts/transactions/make_journal_entry.php">
+                                        <i class="fas fa-book"></i> Make Journal Entry</a>
+                                </li>
+
+                                <li class="dropdown-divider"></li>
+
+                                <!-- Level two dropdown-->
+                                <li class="dropdown-submenu">
+                                    <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown"
+                                       aria-haspopup="true"
+                                       aria-expanded="false" class="dropdown-item dropdown-toggle">
+                                        <i class="far fa-file-alt"></i> Reports &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                    <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
+                                        <li>
+                                            <a tabindex="-1" href="<?php echo $main["site_url"]; ?>/accounts/reports/balance_sheet/balance_sheet_default.php" class="dropdown-item">Balance Sheet Default</a>
+                                        </li>
+                                        <li>
+                                            <a tabindex="-1" href="<?php echo $main["site_url"]; ?>/accounts/reports/profit_loss/profit_loss_default.php" class="dropdown-item">Profit & Loss Default</a>
+                                        </li>
+
+                                        <!-- Level three dropdown-->
+                                        <li class="dropdown-submenu">
+                                            <a id="dropdownMenu3" href="#" role="button" data-toggle="dropdown"
+                                               aria-haspopup="true" aria-expanded="false"
+                                               class="dropdown-item dropdown-toggle">
+                                                level 2 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<i
+                                                        class="fas fa-chevron-right"></i>
+                                            </a>
+                                            <ul aria-labelledby="dropdownMenu3" class="dropdown-menu border-0 shadow">
+                                                <li><a href="#" class="dropdown-item">3rd level</a></li>
+                                                <li><a href="#" class="dropdown-item">3rd level</a></li>
+                                            </ul>
+                                        </li>
+                                        <!-- End Level three -->
+
+                                        <li><a href="#" class="dropdown-item"></a></li>
+                                        <li><a href="#" class="dropdown-item">level 2</a></li>
+                                    </ul>
+                                </li>
+                                <!-- End Level two -->
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/accounts/documents/documents.php">
+                                        <i class="fas fa-file-alt"></i> Documents Maintenance</a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/accounts/account_types/account_types.php">
+                                        <i class="fas fa-th-list"></i> Account Types Maintenance</a>
+                                </li>
+                                <?php if ($db->user_data['usr_user_rights'] <= 2) { ?>
+                                    <li>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/accounts/accounts_settings.php">
+                                        <i class="fas fa-screwdriver"></i> Accounts Settings</a>
+                                    </li>
+                                <?php } ?>
+                            </ul>
+                        </li>
+
+
                     <?php } ?>
 
                     <!-- USERS -->
@@ -171,7 +337,7 @@ function template_header()
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-users"></i>
+                                <i class="fas fa-users"></i> <i class="fas fa-caret-down"></i>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item" href="<?php echo $main["site_url"]; ?>/users/users.php"><i
@@ -207,7 +373,7 @@ function template_header()
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                IA<i class="fas fa-cogs"></i>
+                                IA<i class="fas fa-cogs"></i> <i class="fas fa-caret-down"></i>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item"
@@ -239,7 +405,7 @@ function template_header()
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="fas fa-cogs"></i>
+                                <i class="fas fa-cogs"></i> <i class="fas fa-caret-down"></i>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item"
@@ -450,7 +616,7 @@ if ($db->admin_layout_printer != 'yes')
                     </div>
                     <div class="row">
                         <div class="col-12">
-                            <a href="?switchLang=<?php if ($db->user_data['usr_default_lang'] == 'eng') echo 'gre'; else echo 'eng';?>">
+                            <a href="?switchLang=<?php if ($db->user_data['usr_default_lang'] == 'eng') echo 'gre'; else echo 'eng'; ?>">
                                 <?php if ($db->user_data['usr_default_lang'] == 'eng') { ?> Αλλαγή Γλώσσας σε Ελληνικά<?php } ?>
                                 <?php if ($db->user_data['usr_default_lang'] == 'gre') { ?> Switch Language to English<?php } ?>
                             </a>

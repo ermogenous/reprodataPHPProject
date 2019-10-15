@@ -39,11 +39,12 @@ if ($_GET["lid"] != "") {
 
 $formValidator = new customFormValidator();
 $formValidator->setFormName('myForm');
+$db->enable_rxjs_lite();
 
 $db->show_header();
 ?>
 
-<div class="container">
+<div class="container-fluid">
     <div class="row">
         <div class="col-1 d-none d-sm-block"></div>
         <div class="col-12 col-sm-10">
@@ -135,12 +136,12 @@ $db->show_header();
                                         class="form-control">
                                     <option value="0">Root</option>
                                     <?php
-                                        $controlAccountsList = AdvAccounts::getControlAccountList();
-                                        foreach($controlAccountsList as $acct){
-                                    ?>
-                                    <option value="<?php echo $acct['acacc_account_ID'];?>" <?php if ($data['acacc_parent_ID'] == '1') echo 'selected'; ?>>
-                                        <?php echo $acct['acacc_code']." - ".$acct['acacc_name'];?>
-                                    </option>
+                                    $controlAccountsList = AdvAccounts::getControlAccountList();
+                                    foreach ($controlAccountsList as $acct) {
+                                        ?>
+                                        <option value="<?php echo $acct['acacc_account_ID']; ?>" <?php if ($data['acacc_parent_ID'] == '1') echo 'selected'; ?>>
+                                            <?php echo $acct['acacc_code'] . " - " . $acct['acacc_name']; ?>
+                                        </option>
                                     <?php } ?>
                                 </select>
                                 <?php
@@ -190,40 +191,28 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_type" class="col-sm-2 col-form-label">Type</label>
+                            <label for="fld_account_type_ID" class="col-sm-2 col-form-label">Type</label>
                             <div class="col-sm-4">
-                                <select name="fld_type" id="fld_type"
-                                        class="form-control">
+                                <select name="fld_account_type_ID" id="fld_account_type_ID"
+                                        class="form-control" onchange="loadSubTypesPromise();">
                                     <option value=""></option>
-                                    <option value="Fixed Assets" <?php if ($data['acacc_type'] == 'Fixed Assets') echo 'selected'; ?>>
-                                        Fixed Assets
-                                    </option>
-                                    <option value="Investments" <?php if ($data['acacc_type'] == 'Investments') echo 'selected'; ?>>
-                                        Investments
-                                    </option>
-                                    <option value="Current Assets" <?php if ($data['acacc_type'] == 'Current Assets') echo 'selected'; ?>>
-                                        Current Assets
-                                    </option>
-                                    <option value="Current Liabilities" <?php if ($data['acacc_type'] == 'Current Liabilities') echo 'selected'; ?>>
-                                        Current Liabilities
-                                    </option>
-                                    <option value="Long Term Liabilities" <?php if ($data['acacc_type'] == 'Long Term Liabilities') echo 'selected'; ?>>
-                                        Long Term Liabilities
-                                    </option>
-                                    <option value="Capital & Reserves" <?php if ($data['acacc_type'] == 'Capital & Reserves') echo 'selected'; ?>>
-                                        Capital & Reserves
-                                    </option>
-                                    <option value="Profit & Loss" <?php if ($data['acacc_type'] == 'Profit & Loss') echo 'selected'; ?>>
-                                        Profit & Loss
-                                    </option>
-                                    <option value="Expenses" <?php if ($data['acacc_type'] == 'Expenses') echo 'selected'; ?>>
-                                        Expenses
-                                    </option>
+                                    <?php
+                                    $sql = 'SELECT * FROM ac_account_types WHERE actpe_type = "Type" AND actpe_active = "Active" ORDER BY actpe_name ASC';
+                                    $result = $db->query($sql);
+                                    while ($type = $db->fetch_assoc($result)) {
+                                        ?>
+                                        <option value="<?php echo $type['actpe_account_type_ID']; ?>"
+                                            <?php if ($data['acacc_account_type_ID'] == $type['actpe_account_type_ID']) echo 'selected'; ?>>
+                                            <?php echo $type['actpe_code'] . " - " . $type['actpe_name']; ?>
+                                        </option>
+                                        <?php
+                                    }
+                                    ?>
                                 </select>
                                 <?php
                                 $formValidator->addField(
                                     [
-                                        'fieldName' => 'fld_type',
+                                        'fieldName' => 'fld_account_type_ID',
                                         'fieldDataType' => 'select',
                                         'required' => true,
                                         'invalidTextAutoGenerate' => true
@@ -255,8 +244,106 @@ $db->show_header();
                         </div>
 
 
-                    </div>
+                        <div class="form-group row">
+                            <label for="fld_account_sub_type_ID" class="col-sm-2 col-form-label">Sub-Type</label>
+                            <div class="col-sm-4">
+                                <select name="fld_account_sub_type_ID" id="fld_account_sub_type_ID"
+                                        class="form-control">
+                                    <option value=""></option>
+                                    <?php
+                                    if ($_GET['lid'] != '' && $data['acacc_account_sub_type_ID'] > 0) {
+                                        $sql = 'SELECT * FROM ac_account_types WHERE actpe_account_type_ID = ' . $data['acacc_account_sub_type_ID'];
+                                        $selectedSubTypeID = $db->query_fetch($sql);
 
+                                        ?>
+                                        <option value="<?php echo $selectedSubTypeID['actpe_account_type_ID']; ?>"
+                                                selected>
+                                            <?php echo $selectedSubTypeID['actpe_code'] . " - " . $selectedSubTypeID['actpe_name']; ?>
+                                        </option>
+                                        <?php
+                                    }
+                                    ?>
+                                </select>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_account_sub_type_ID',
+                                        'fieldDataType' => 'select',
+                                        'required' => true,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
+                            </div>
+                            <div class="col-sm-6">
+                                <img src="../../images/icon_spinner_transparent.gif" height="35px" style="display: none"
+                                     id="type_spinner">
+                                <img src="../../images/icon_correct_green.gif" height="35px" style="display: none"
+                                     id="type_correct">
+                                <img src="../../images/icon_error_x_red.gif" height="35px" style="display: none"
+                                     id="type_error">
+                                <div id="typeErrorField"></div>
+                            </div>
+                        </div>
+                        <script>
+                            <?php
+                            echo $formValidator::getPromiseJSCode(
+                                [
+                                    'source' => '../accounts/accounts_api.php?section=searchAccountSubTypesByType',
+                                    'functionName' => 'loadSubTypesPromise()',
+                                    'sourceField' => '"#fld_account_type_ID"',
+                                    'spinnerIcon' => '"#type_spinner"',
+                                    'errorIcon' => '"#typeError"',
+                                    'correctIcon' => '"#typeCorrect"',
+                                    'errorField' => '"#typeErrorField"',
+                                    'errorText' => 'Error finding sub types',
+                                    'ifDataJSCode' => '
+                                    loadSubTypes(data);
+                                    ',
+                                    'ifNoDataJSCode' => '
+                                    loadSubTypes(data);
+                                    '
+                                ]);
+                            ?>
+
+                            function loadSubTypes(list) {
+                                //get theone from the db
+                                let selectedSubTypeID = '<?php echo $data['acacc_account_sub_type_ID'];?>';
+
+                                //first empty the select subTypes
+                                $('#fld_account_sub_type_ID').empty();
+
+                                $('#fld_account_sub_type_ID').append(
+                                    new Option(' ', '')
+                                );
+
+                                if ($('#fld_control').val() == '1') {
+                                    $('#fld_account_sub_type_ID').append(
+                                        new Option('Control Account', '-1')
+                                    );
+                                }
+                                //else {
+                                $.each(list, function (index, value) {
+                                    $('#fld_account_sub_type_ID').append(
+                                        new Option(value['actpe_code'] + ' - ' + value['actpe_name'], value['actpe_account_type_ID'])
+                                    );
+                                });
+                                //}
+                                if (selectedSubTypeID != '') {
+                                    if (selectedSubTypeID == '-1') {
+                                        $('#fld_account_sub_type_ID').val(-1);
+                                    }
+                                    else {
+                                        $('#fld_account_sub_type_ID').val(selectedSubTypeID);
+                                    }
+                                }
+
+                            }
+
+                            $(document).ready(function () {
+                                loadSubTypesPromise();
+                            });
+                        </script>
+                    </div>
                     <div class="tab-pane fade show" id="pills-other" role="tabpanel"
                          aria-labelledby="pills-other-tab">
                         <!-- OTHER ------------------------------------------------------------------------------------------------------------------------------------------------OTHER TAB-->
@@ -370,20 +457,22 @@ $db->show_header();
                          aria-labelledby="pills-balance-tab">
                         <!-- OTHER ------------------------------------------------------------------------------------------------------------------------------------------------OTHER TAB-->
                         <?php
-                        $balances = $account->getAccountBalance();
+                        if ($_GET['lid'] > 0) {
+                            $balances = $account->getAccountBalance();
+                        }
                         ?>
                         <div class="row">
                             <div class="col-3"></div>
                             <div class="col-6">
                                 <ul class="list-group">
                                     <li class="list-group-item">
-                                        Posted Transactions Balance: €<?php echo $balances['Active'];?>
+                                        Posted Transactions Balance: €<?php echo $balances['Active']; ?>
                                     </li>
                                     <li class="list-group-item">
-                                        Locked Transactions Balance: €<?php echo $balances['Locked'];?>
+                                        Locked Transactions Balance: €<?php echo $balances['Locked']; ?>
                                     </li>
                                     <li class="list-group-item">
-                                        Outstanding Transactions Balance: €<?php echo $balances['Outstanding'];?>
+                                        Outstanding Transactions Balance: €<?php echo $balances['Outstanding']; ?>
                                     </li>
                                 </ul>
                             </div>

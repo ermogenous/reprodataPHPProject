@@ -92,6 +92,18 @@ class dynamicQuotation
         //check if needs approval
         $this->checkForApproval();
 
+        //check if this user is allowed to activate. Only the user who created it or admins can activate
+        $this->getUnderwriterData();
+        if ($db->user_data["usr_users_ID"] != $this->quotationData["oqq_users_ID"] && $db->user_data["usr_user_rights"] >= 3) {
+            //if ($this->underwriterData['oqun_view_group_ID'] > 0 && $this->underwriterData['oqun_view_group_ID'] == $this->quotationData['usr_users_groups_ID']){
+                //user is allowed
+            //}
+            //else {
+                $this->error = true;
+                $this->errorDescription = 'You are not allowed to activate this '.$this->getQuotationType();
+            //}
+        }
+
         //$this->error = true;
         //$this->errorDescription .= ' test';
 

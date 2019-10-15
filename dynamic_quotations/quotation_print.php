@@ -29,7 +29,28 @@ $quotationUnderwriter = $db->query_fetch(
                   WHERE oqun_user_ID = ' . $qdata['oqq_users_ID']
 );
 
+$underwriter = $db->query_fetch('SELECT * FROM oqt_quotations_underwriters WHERE oqun_user_ID = ' . $db->user_data['usr_users_ID']);
 $quote = new dynamicQuotation($_GET['quotation']);
+
+//check if the user has access to see this quotation
+if ($db->user_data["usr_users_ID"] != $quote->quotationData()["oqq_users_ID"] && $db->user_data["usr_user_rights"] >= 3) {
+    //check if this underwriter has access to see quotations of other groups
+    if ($underwriter['oqun_view_group_ID'] > 0 && $underwriter['oqun_view_group_ID'] == $quote->quotationData()['usr_users_groups_ID']){
+        //do nothing
+    }
+    else {
+        header("Location: quotations.php");
+        exit();
+    }
+}
+
+
+
+
+
+
+
+
 
 //get the quotation print file
 //print_r($qdata);

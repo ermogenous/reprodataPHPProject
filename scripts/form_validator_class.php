@@ -824,8 +824,10 @@ class customFormValidator
         }
         if ($settings['errorText'] == '') {
             $errorText = '$('.$settings['errorField'].').html("Error finding the account");';
+            $correctShow .= '$('.$settings['errorField'].').html("");';
         } else {
             $errorText = '$('.$settings['errorField'].').html("' . $settings['errorText'] . '");';
+            $correctShow .= '$('.$settings['errorField'].').html("");';
         }
 
         $return = '

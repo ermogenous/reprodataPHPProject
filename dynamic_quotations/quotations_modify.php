@@ -42,8 +42,15 @@ if ($_GET["quotation"] != "") {
 //first check if the user is allowed to view this quotation
 if ($_GET["quotation"] != "") {
     if ($db->user_data["usr_users_ID"] != $q_data["oqq_users_ID"] && $db->user_data["usr_user_rights"] >= 3) {
-        header("Location: quotations.php");
-        exit();
+        //check if the underwriter has access to view this group users
+        if ($underwriter['oqun_view_group_ID'] > 0 && $underwriter['oqun_view_group_ID'] == $quote->quotationData()['usr_users_groups_ID']){
+            //do nothing
+            $disableForm = true;
+        }
+        else {
+            header("Location: quotations.php?notAllowed");
+            exit();
+        }
     }
 }//if not new quotation
 
@@ -197,6 +204,10 @@ if ($quote->quotationData()['oqq_status'] != 'Outstanding' && $_GET['quotation']
     else {
         $allowEditAdvanced = true;
     }
+}
+//check if to disable form
+if ($disableForm == true){
+    $formValidator->disableForm();
 }
 $formValidator->addCustomCode("
     if ($('#warningDivSection').html() != '' && FormErrorFound == false){

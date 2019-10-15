@@ -7,6 +7,9 @@ $db = new Main();
 //activate quotation
 if ($_GET['action'] == 'activate' && $_GET['lid'] > 0) {
     $quote = new dynamicQuotation($_GET['lid']);
+
+    //check if user is allowed
+
     $db->start_transaction();
     if ($quote->activate() == true) {
         $db->generateSessionAlertSuccess($quote->getQuotationType() . " activated successfully");
@@ -97,7 +100,19 @@ if ($db->user_data["usr_user_rights"] <= 2) {
     } else {
         $table->extras .= " AND oqq_users_ID = " . $db->user_data["usr_users_ID"];
     }
-} else {
+}
+else if ($underwriter['oqun_view_group_ID'] > 0) {
+
+    if ($_SESSION["dyqt_filter_user"] != '' && $_SESSION["dyqt_filter_user"] != 'ALL') {
+        $table->extras .= " AND oqq_users_ID = " . $_SESSION["dyqt_filter_user"];
+    } else if ($_SESSION["dyqt_filter_user"] == 'ALL') {
+        $table->extras .= " AND oqq_users_ID = " . $db->user_data["usr_users_ID"];
+    } else {
+        $table->extras .= " AND oqq_users_ID = " . $db->user_data["usr_users_ID"];
+    }
+
+}
+else {
     $table->extras .= " AND oqq_users_ID = " . $db->user_data["usr_users_ID"];
 }
 
@@ -158,18 +173,25 @@ if ($_GET["price_id"] != "") {
                     <form action="" method="post">
 
                         <div class="row">
-                            <?php if ($db->user_data['usr_user_rights'] <= 2) { ?>
+                            <?php
+                            if ($db->user_data['usr_user_rights'] <= 2 || $underwriter['oqun_view_group_ID'] > 0) { ?>
                                 <div class="col-4">
                                     <input name="filter_user_action" id="filter_user_action" type="hidden"
                                            value="change"/>
                                     <select name="filter_user_selected" id="filter_user_selected"
                                             class="form-control">
-                                        <option value="ALL">ALL</option>
+                                        <option value="ALL"><?php if ($db->user_data['usr_user_rights'] <= 2) echo 'ALL'; else echo 'Mine';?></option>
                                         <?php
-                                        $all_users = $db->query("SELECT * FROM users ORDER BY usr_name ASC");
+                                        if ($db->user_data['usr_user_rights'] <= 2) {
+                                            $all_users = $db->query("SELECT * FROM users ORDER BY usr_name ASC");
+                                        }
+                                        //when underwriter has access to see quotations of a specific group of users
+                                        else {
+                                            $all_users = $db->query("SELECT * FROM users WHERE usr_users_groups_ID = ".$underwriter['oqun_view_group_ID']." ORDER BY usr_name ASC");
+                                        }
                                         while ($user_info = $db->fetch_assoc($all_users)) {
                                             ?>
-                                            <option value="<?php echo $user_info["usr_users_ID"]; ?>" <?php if ($_SESSION["quotations_user_filter"] == $user_info["usr_users_ID"]) { ?> selected="selected" <?php } ?>><?php echo $user_info["usr_name"]; ?></option>
+                                            <option value="<?php echo $user_info["usr_users_ID"]; ?>" <?php if ($_SESSION['dyqt_filter_user'] == $user_info["usr_users_ID"]) { ?> selected="selected" <?php } ?>><?php echo $user_info["usr_name"]; ?></option>
                                             <?php
                                         }
                                         ?>
