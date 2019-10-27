@@ -73,7 +73,15 @@ $table->generate_data();
             </div>
             <div class="col-1 d-none d-lg-block"></div>
         </div>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-8 text-center">
+                <?php echo $table->show_per_page_links();?>
+            </div>
+            <div class="col-md-2"></div>
+        </div>
     </div>
+
     <script>
 
         var ignoreEdit = false;

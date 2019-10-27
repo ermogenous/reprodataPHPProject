@@ -39,14 +39,14 @@ function template_header()
                 position: relative;
             }
 
-            .dropdown-submenu>a:after {
+            .dropdown-submenu > a:after {
                 content: "\f0da";
                 float: right;
                 border: none;
                 font-family: 'FontAwesome';
             }
 
-            .dropdown-submenu>.dropdown-menu {
+            .dropdown-submenu > .dropdown-menu {
                 top: 0;
                 left: 100%;
                 margin-top: 0px;
@@ -61,11 +61,11 @@ function template_header()
 
         <script>
 
-            $(function() {
+            $(function () {
                 // ------------------------------------------------------- //
                 // Multi Level dropdowns
                 // ------------------------------------------------------ //
-                $("ul.dropdown-menu [data-toggle='dropdown']").on("click", function(event) {
+                $("ul.dropdown-menu [data-toggle='dropdown']").on("click", function (event) {
                     event.preventDefault();
                     event.stopPropagation();
 
@@ -75,7 +75,7 @@ function template_header()
                     if (!$(this).next().hasClass('show')) {
                         $(this).parents('.dropdown-menu').first().find('.show').removeClass("show");
                     }
-                    $(this).parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function(e) {
+                    $(this).parents('li.nav-item.dropdown.show').on('hidden.bs.dropdown', function (e) {
                         $('.dropdown-submenu .show').removeClass("show");
                     });
 
@@ -116,6 +116,14 @@ function template_header()
                         <a class="nav-link" href="<?php echo $main["site_url"]; ?>/login.php?action=logout"><i
                                     class="fas fa-sign-out-alt"></i> </a>
                     </li>
+
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?php echo $main["site_url"]; ?>/synthesis/web_service_test.php">
+                            SynTest</a>
+                    </li>
+
+
                     <!-- CUSTOMERS -->
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -250,6 +258,12 @@ function template_header()
                             <ul aria-labelledby="dropdownMenu1" class="dropdown-menu border-0 shadow">
                                 <li>
                                     <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/accounts/entities/entities.php">
+                                        <i class="fas fa-users"></i> View Entites</a>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item"
                                        href="<?php echo $main["site_url"]; ?>/accounts/accounts/accounts.php">
                                         <i class="far fa-calendar-alt"></i> View Accounts</a>
                                 </li>
@@ -283,10 +297,14 @@ function template_header()
                                     </a>
                                     <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
                                         <li>
-                                            <a tabindex="-1" href="<?php echo $main["site_url"]; ?>/accounts/reports/balance_sheet/balance_sheet_default.php" class="dropdown-item">Balance Sheet Default</a>
+                                            <a tabindex="-1"
+                                               href="<?php echo $main["site_url"]; ?>/accounts/reports/balance_sheet/balance_sheet_default.php"
+                                               class="dropdown-item">Balance Sheet Default</a>
                                         </li>
                                         <li>
-                                            <a tabindex="-1" href="<?php echo $main["site_url"]; ?>/accounts/reports/profit_loss/profit_loss_default.php" class="dropdown-item">Profit & Loss Default</a>
+                                            <a tabindex="-1"
+                                               href="<?php echo $main["site_url"]; ?>/accounts/reports/profit_loss/profit_loss_default.php"
+                                               class="dropdown-item">Profit & Loss Default</a>
                                         </li>
 
                                         <!-- Level three dropdown-->
@@ -321,9 +339,9 @@ function template_header()
                                 </li>
                                 <?php if ($db->user_data['usr_user_rights'] <= 2) { ?>
                                     <li>
-                                    <a class="dropdown-item"
-                                       href="<?php echo $main["site_url"]; ?>/accounts/accounts_settings.php">
-                                        <i class="fas fa-screwdriver"></i> Accounts Settings</a>
+                                        <a class="dropdown-item"
+                                           href="<?php echo $main["site_url"]; ?>/accounts/accounts_settings.php">
+                                            <i class="fas fa-screwdriver"></i> Accounts Settings</a>
                                     </li>
                                 <?php } ?>
                             </ul>
@@ -425,6 +443,12 @@ function template_header()
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/tools/log_file_view.php">
                                     <i class="fas fa-exclamation-triangle"></i> View Log File</a>
+
+                                <?php if ($db->user_data['usr_users_ID'] == 1) { ?>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/vitamins/vitamins.php">
+                                        <i class="fas fa-exclamation-triangle"></i> Vitamins</a>
+                                <?php } ?>
                             </div>
 
                         </li>

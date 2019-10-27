@@ -84,6 +84,7 @@ class customFormValidator
         //maxNumber: decimal -> number cannot be higher than this (inclusive)
         //allowedNumberList: list of numbers in array that is allowed to be used [20,40,23,18,101etc] if list is empty [] then ignore
         //allowedNumberListCSCode: added custom code for the allowedNumberList
+
         if ($fieldData['fieldName'] == '') {
             echo "<div class='alert alert-danger'>Must provide fieldName in newField</div>";
             exit();
@@ -92,7 +93,6 @@ class customFormValidator
         $this->inputFieldsList[] = $fieldData;
 
         $this->echoDatePickerScriptCode($fieldData);
-
 
         $this->echoInvalidText($fieldData);
 
@@ -868,6 +868,5 @@ class customFormValidator
         return $return;
 
     }
-
 
 }

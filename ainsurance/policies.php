@@ -38,7 +38,7 @@ if ($_POST['srgCustomer'] != '') {
 }
 
 $table->generate_data();
-
+echo $table->sql;
 //find how many users are under this user
 $underwriter = Policy::getUnderwriterData();
 $sql = "

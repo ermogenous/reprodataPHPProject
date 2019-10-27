@@ -116,7 +116,7 @@ $totalAccountLines = 15;
             <?php if ($_GET['lid'] > 0) {?>
             //load the document
             documentAutoSelect();
-            loadAccountByCode();
+            loadEntity();
             <?php } ?>
 
         });
@@ -151,7 +151,7 @@ $totalAccountLines = 15;
                             if ($data['actrn_status'] == 'Outstanding') {
                                 ?>
                                 <input type="button" class="btn btn-secondary" value="Lock"
-                                       onclick="window.location.assign('transaction_change_status.php?action=issueLock&lid=<?php echo $data['actrn_transaction_ID'];?>')"/>
+                                       onclick="window.location.assign('transaction_change_status.php?action=issueLock&lid=<?php echo $data['actrn_transaction_ID']; ?>')"/>
                                 <?php
                             }
                             ?>
@@ -323,14 +323,14 @@ $totalAccountLines = 15;
 
                     <div class="form-group row">
                         <label for="accountCode" class="col-sm-2 col-form-label">
-                            Account &nbsp;
+                            Entity &nbsp;
                             <img src="../../images/icon_list_transparent.gif" height="20" style="cursor: pointer;"
                                  id="accountOverlayOpener">
                         </label>
                         <div class="col-sm-3">
                             <input name="accountCode" type="text" id="accountCode"
                                    value="<?php echo $data["acacc_code"]; ?>"
-                                   class="form-control" onchange="loadAccountByCode();"/>
+                                   class="form-control" onchange="loadEntity();"/>
                             <?php
                             $formValidator->addField(
                                 [
@@ -378,12 +378,12 @@ $totalAccountLines = 15;
                                 },
                                 select: function (event, ui) {
                                     $('#accountCode').val(ui.item.document_code);
-                                    loadAccountByCode();
+                                    loadEntity();
                                     return false;
                                 }
                             });
 
-                            function loadAccountByCode() {
+                            function loadEntity() {
                                 let accCode = $('#accountCode').val();
                                 let inputCode = $('#accountCode').val();
 
@@ -449,7 +449,7 @@ $totalAccountLines = 15;
                             window.loadAccount = function (code) {
                                 $("#accountCode").val(code);
                                 $("#accountDialog").dialog("close");
-                                loadAccountByCode();
+                                loadEntity();
                             }
                         </script>
 
@@ -483,54 +483,65 @@ $totalAccountLines = 15;
 
                     for ($i = 1; $i <= $totalAccountLines; $i++) {
                         echo '
-                            <div id="accountLinesDiv_' . $i . '" class="row" style="display: none;">
-                                <input type="hidden" id="activeLine_' . $i . '" name="activeLine_' . $i . '" value="0">
-                                <div class="col-sm-1 m-0 p-0">
-                                ' . $i . '
-                                <i class="fas fa-minus-circle" style="cursor: pointer" onclick="deleteAccountLine(' . $i . ');"></i>
-                                </div>
-                                <div class="col-sm-2 m-0 p-0">
-                                    <input type="text" name="accLineAccount_' . $i . '" id="accLineAccount_' . $i . '"
-                                        value="" class="form-control" onchange="loadLineAccount(' . $i . ');"/>
-                                        ';
-                        $formValidator->addField(
-                            [
-                                'fieldName' => 'accLineAccount_' . $i,
-                                'fieldDataType' => 'text',
-                                'required' => true,
-                                'invalidText' => 'Enter Account',
-                                'requiredAddedCustomCode' => '&& $("#activeLine_' . $i . '").val() == "1"',
-                            ]);
-                        echo $formValidator::getAutoCompleteJSCode('accLineAccount_' . $i,
-                            [
-                                'source' => '../accounts/accounts_api.php?section=searchAccounts',
-                                'minLength' => 1,
-                                'selectCode' => '$("#accLineAccount_' . $i . '").val(ui.item.document_code);'
-                            ]);
+                            <div id="accountLinesDiv_' . $i . '" class="container-fluid" style="display: none;">
+                                <div class="row">
+                                    <input type="hidden" id="activeLine_' . $i . '" name="activeLine_' . $i . '" value="0">
+                                    <div class="col-sm-1 m-0 p-0">
+                                    ' . $i . '
+                                    <i class="fas fa-minus-circle" style="cursor: pointer" onclick="deleteAccountLine(' . $i . ');"></i>
+                                    </div>
+                                    <div class="col-sm-2 m-0 p-0">
+                                        <input type="text" name="accLineAccount_' . $i . '" id="accLineAccount_' . $i . '"
+                                            value="" class="form-control" onchange="loadLineAccount(' . $i . ');"/>
+                                            ';
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'accLineAccount_' . $i,
+                                    'fieldDataType' => 'text',
+                                    'required' => true,
+                                    'invalidText' => 'Enter Account',
+                                    'requiredAddedCustomCode' => '&& $("#activeLine_' . $i . '").val() == "1"',
+                                ]);
+                            echo $formValidator::getAutoCompleteJSCode('accLineAccount_' . $i,
+                                [
+                                    'source' => '../accounts/accounts_api.php?section=searchAccounts',
+                                    'minLength' => 1,
+                                    'selectCode' => '$("#accLineAccount_' . $i . '").val(ui.item.document_code);'
+                                ]);
 
-                        echo '
-                                </div>
-                                <div class="col-sm-4 m-0 p-0 d-inline-block">
-                                    <div id="accountLineNameErrorText_' . $i . '"></div>
-                                    <table>
-                                        <tr>
-                                            <td>
-                                                <img src="../../images/icon_spinner_transparent.gif" height="25px" style="display: none" id="lineSpinner_' . $i . '">
-                                                <img src="../../images/icon_correct_green.gif" height="25px" style="display: none" id="lineCorrect_' . $i . '">
-                                                <img src="../../images/icon_error_x_red.gif" height="25px" style="display: none" id="lineError_' . $i . '">
-                                            </td>
-                                            <td>
-                                                <input type="hidden" id="accLine_account_ID_' . $i . '" name="accLine_account_ID_' . $i . '" value="">
-                                                <div id="accountLineName_' . $i . '" style="font-size: 12px;"></div>
-                                            </td>
-                                        </tr>
-                                    </table>
+                            echo '
+                                    </div>
                                     
-                                    
+                                    <div class="col-sm-9"></div>
+                                
+                                
                                 </div>
-                                <div class="col-sm-1 m-0 p-0">
-                                    <input type="text" name="accLine_debit_' . $i . '" id="accLine_debit_' . $i . '"
-                                        value="" class="form-control" onkeyup="checkDebitCreditField(' . $i . ')"/>';
+                                <div class="row">
+                                    <div class="col-sm-3"></div>
+                                
+                                
+                                
+                                    <div class="col-sm-4 m-0 p-0 d-inline-block">
+                                        <div id="accountLineNameErrorText_' . $i . '"></div>
+                                        <table>
+                                            <tr>
+                                                <td>
+                                                    <img src="../../images/icon_spinner_transparent.gif" height="25px" style="display: none" id="lineSpinner_' . $i . '">
+                                                    <img src="../../images/icon_correct_green.gif" height="25px" style="display: none" id="lineCorrect_' . $i . '">
+                                                    <img src="../../images/icon_error_x_red.gif" height="25px" style="display: none" id="lineError_' . $i . '">
+                                                </td>
+                                                <td>
+                                                    <input type="hidden" id="accLine_account_ID_' . $i . '" name="accLine_account_ID_' . $i . '" value="">
+                                                    <div id="accountLineName_' . $i . '" style="font-size: 12px;"></div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        
+                                        
+                                    </div>
+                                    <div class="col-sm-1 m-0 p-0">
+                                        <input type="text" name="accLine_debit_' . $i . '" id="accLine_debit_' . $i . '"
+                                            value="" class="form-control" onkeyup="checkDebitCreditField(' . $i . ')"/>';
                         $formValidator->addField(
                             [
                                 'fieldName' => 'accLine_debit_' . $i,
@@ -540,10 +551,10 @@ $totalAccountLines = 15;
                                 'requiredAddedCustomCode' => '&& $("#activeLine_' . $i . '").val() == "1" && $("#accLine_credit_' . $i . '").val() == "" ',
                             ]);
                         echo '
-                                </div>
-                                <div class="col-sm-1 m-0 p-0">
-                                    <input type="text" name="accLine_credit_' . $i . '" id="accLine_credit_' . $i . '"
-                                        value="" class="form-control" onkeyup="checkDebitCreditField(' . $i . ')"/>';
+                                    </div>
+                                    <div class="col-sm-1 m-0 p-0">
+                                        <input type="text" name="accLine_credit_' . $i . '" id="accLine_credit_' . $i . '"
+                                            value="" class="form-control" onkeyup="checkDebitCreditField(' . $i . ')"/>';
                         $formValidator->addField(
                             [
                                 'fieldName' => 'accLine_credit_' . $i,
@@ -551,16 +562,16 @@ $totalAccountLines = 15;
                                 'required' => true,
                                 'invalidText' => 'Enter Cr.',
                                 'requiredAddedCustomCode' => '
-                                    && $("#activeLine_' . $i . '").val() == "1" 
-                                    && $("#accLine_debit_' . $i . '").val() == ""
-                                     
-                                ',
+                                        && $("#activeLine_' . $i . '").val() == "1" 
+                                        && $("#accLine_debit_' . $i . '").val() == ""
+                                         
+                                    ',
                             ]);
                         echo '
-                                </div>
-                                <div class="col-sm-3 m-0 p-0">
-                                    <input type="text" name="accLine_reference_' . $i . '" id="accLine_reference_' . $i . '"
-                                        value="" class="form-control"/>';
+                                    </div>
+                                    <div class="col-sm-3 m-0 p-0">
+                                        <input type="text" name="accLine_reference_' . $i . '" id="accLine_reference_' . $i . '"
+                                            value="" class="form-control"/>';
                         $formValidator->addField(
                             [
                                 'fieldName' => 'accLine_reference_' . $i,
@@ -568,8 +579,9 @@ $totalAccountLines = 15;
                                 'required' => false
                             ]);
                         echo '
-                                
-                                </div>                            
+                                    
+                                    </div>                            
+                                </div>
                             </div>';
                     }
                     ?>

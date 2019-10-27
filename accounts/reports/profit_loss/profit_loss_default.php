@@ -27,6 +27,37 @@ if ($_POST['action'] == 'sbSearch'){
     $dateFrom = $db->convertDateToUS($_POST['sbDateFrom']);
     $dateTo = $db->convertDateToUS($_POST['sbDateTo']);
 
+    echo "<br><hr>Left: ".$dateFrom." - ".$dateTo;
+
+    //find same period in previous year
+    $dateFromSplit = explode('-',$dateFrom);
+    $dateToSplit = explode('-',$dateTo);
+    $dateFromPrevious = ($dateFromSplit[0] - 1).'-'.$dateFromSplit[1]."-".$dateFromSplit[2];
+    $dateToPrevious = ($dateToSplit[0] - 1)."-".$dateToSplit[1]."-".$dateToSplit[2];
+    echo "<br><hr>Right: ".$dateFromPrevious." - ".$dateToPrevious;
+
+    $currentSql = getSql($dateFrom, $dateTo);
+    $previousSql = getSql($dateFromPrevious,$dateToPrevious);
+
+    echo "<br><br><br></br>".$db->prepare_text_as_html($sql);
+    $currentResult = $db->query($currentSql);
+    while ($row = $db->fetch_assoc($currentResult)){
+        $data[$row['AccountName']] += $row['value'];
+    }
+
+    print_r($data);
+
+
+}
+
+?>
+
+
+
+
+<?php
+
+function getSql($dateFrom, $dateTo){
     $sql = "
 
     SELECT
@@ -51,6 +82,7 @@ if ($_POST['action'] == 'sbSearch'){
     WHERE
     actrn_status = 'Active'
     AND actrn_transaction_date >= '".$dateFrom."'
+    AND actrn_transaction_date <= '".$dateTo."'
     AND acc_type.actpe_category IN ('OperatingRevenue','OperatingExpenses')
     
     GROUP BY
@@ -59,22 +91,8 @@ if ($_POST['action'] == 'sbSearch'){
 		,TypeName
     
     ";
-    //echo "<br><br><br></br>".$db->prepare_text_as_html($sql);
-    $result = $db->query($sql);
-    while ($row = $db->fetch_assoc($result)){
-        $data[$row['TypeName']] += $row['value'];
-    }
-
-    print_r($data);
-
-
+    return $sql;
 }
 
-?>
-
-
-
-
-<?php
 $db->show_footer();
 ?>

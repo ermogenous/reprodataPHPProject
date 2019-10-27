@@ -177,9 +177,12 @@ $formValidator = new customFormValidator();
                             <select name="fld_vertical_level" id="fld_vertical_level"
                                     class="form-control">
                                 <?php for ($i = 0; $i <= 10; $i++) { ?>
-                                    <option value="<?php echo $i;?>"><?php echo $i;?></option>
+                                    <option value="<?php echo $i;?>" <?php if ($i == $data['inaund_vertical_level']) echo "selected";?>><?php echo $i;?></option>
                                 <?php } ?>
                             </select>
+                        </div>
+                        <div class="col-6">
+                            Applies in the same user group
                         </div>
                     </div>
 

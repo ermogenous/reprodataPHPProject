@@ -99,6 +99,27 @@ if ($_POST['hideBar'] != 'Yes') {
                             ]);
                         ?>
                     </div>
+                    <label for="showHideDescription" class="col-2 col-form-label">Description</label>
+                    <div class="col-2">
+                        <select name="showHideDescription" id="showHideDescription"
+                                class="form-control">
+                            <option value="Show" <?php if ($_POST['showHideDescription'] == 'Show') echo 'selected'; ?>>
+                                Show
+                            </option>
+                            <option value="Hide" <?php if ($_POST['showHideDescription'] == 'Hide') echo 'selected'; ?>>
+                                Hide
+                            </option>
+                        </select>
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'showHideDescription',
+                                'fieldDataType' => 'select',
+                                'required' => true,
+                                'invalidText' => 'Select Type'
+                            ]);
+                        ?>
+                    </div>
                 </div>
                 <div class="row form-group">
                     <label for="wholeRetail" class="col-4 col-form-label">Cost WholeSale OR Retail</label>
@@ -116,6 +137,28 @@ if ($_POST['hideBar'] != 'Yes') {
                         $formValidator->addField(
                             [
                                 'fieldName' => 'wholeRetail',
+                                'fieldDataType' => 'select',
+                                'required' => true,
+                                'invalidText' => 'Select Type'
+                            ]);
+                        ?>
+                    </div>
+
+                    <label for="showHideMarket" class="col-3 col-form-label">Market Values</label>
+                    <div class="col-2">
+                        <select name="showHideMarket" id="showHideMarket"
+                                class="form-control">
+                            <option value="Hide" <?php if ($_POST['showHideMarket'] == 'Hide') echo 'selected'; ?>>
+                                Hide
+                            </option>
+                            <option value="Show" <?php if ($_POST['showHideMarket'] == 'Show') echo 'selected'; ?>>
+                                Show
+                            </option>
+                        </select>
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'showHideMarket',
                                 'fieldDataType' => 'select',
                                 'required' => true,
                                 'invalidText' => 'Select Type'
@@ -160,7 +203,12 @@ if ($_POST['hideBar'] != 'Yes') {
                         <th scope="col">WS Profit</th>
                         <th scope="col">Retail Profit</th>
                         <?php } ?>
+                        <?php if ($_POST['showHideDescription'] != 'Hide'){?>
                         <th scope="col">Description</th>
+                        <?php } ?>
+                        <?php if ($_POST['showHideMarket'] == 'Show'){?>
+                            <th scope="col">Market</th>
+                        <?php } ?>
 
                     </tr>
                     </thead>
@@ -238,7 +286,13 @@ if ($_POST['hideBar'] != 'Yes') {
                             <td><?php echo round($wsProfit,2); ?></td>
                             <td><?php echo round($rtProfit,2); ?></td>
                             <?php } ?>
+                            <?php if ($_POST['showHideDescription'] != 'Hide'){ ?>
                             <td><?php echo $row["vit_description"]; ?></td>
+                            <?php } ?>
+
+                            <?php if ($_POST['showHideMarket'] == 'Show'){ ?>
+                                <td><?php echo $row["vit_market_prices"]; ?></td>
+                            <?php } ?>
 
                         </tr>
                         <?php

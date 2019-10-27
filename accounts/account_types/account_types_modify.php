@@ -153,14 +153,14 @@ $db->show_header();
                         <div class="col-sm-6">
                             <select id="fld_category" name="fld_category" onchange="autoCategory();"
                                     class="form-control">
+                                <option value=""></option>
                                 <option value="FixedAsset" <?php if ($data['actpe_category'] == 'FixedAsset') echo 'selected';?>>Fixed Asset</option>
-                                <option value="Investment" <?php if ($data['actpe_category'] == 'Investment') echo 'selected';?>>Investment</option>
                                 <option value="CurrentAsset" <?php if ($data['actpe_category'] == 'CurrentAsset') echo 'selected';?>>Current Asset</option>
                                 <option value="CurrentLiability" <?php if ($data['actpe_category'] == 'CurrentLiability') echo 'selected';?>>Current Liability</option>
                                 <option value="LongTermLiability" <?php if ($data['actpe_category'] == 'LongTermLiability') echo 'selected';?>>Long Term Liability</option>
-                                <option value="CapitalReserves" <?php if ($data['actpe_category'] == 'CapitalReserves') echo 'selected';?>>Capital & Reserves</option>
-                                <option value="OperatingRevenue" <?php if ($data['actpe_category'] == 'OperatingRevenue') echo 'selected';?>>Operating Revenue</option>
-                                <option value="OperatingExpenses" <?php if ($data['actpe_category'] == 'OperatingExpenses') echo 'selected';?>>Operating Expenses</option>
+                                <option value="CapitalReserve" <?php if ($data['actpe_category'] == 'CapitalReserve') echo 'selected';?>>Capital & Reserve</option>
+                                <option value="Revenue" <?php if ($data['actpe_category'] == 'Revenue') echo 'selected';?>>Revenue</option>
+                                <option value="Expense" <?php if ($data['actpe_category'] == 'Expense') echo 'selected';?>>Expense</option>
                             </select>
                             <?php
                             $formValidator->addField(

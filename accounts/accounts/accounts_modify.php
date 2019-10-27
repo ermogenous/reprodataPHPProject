@@ -139,7 +139,7 @@ $db->show_header();
                                     $controlAccountsList = AdvAccounts::getControlAccountList();
                                     foreach ($controlAccountsList as $acct) {
                                         ?>
-                                        <option value="<?php echo $acct['acacc_account_ID']; ?>" <?php if ($data['acacc_parent_ID'] == '1') echo 'selected'; ?>>
+                                        <option value="<?php echo $acct['acacc_account_ID']; ?>" <?php if ($data['acacc_parent_ID'] == $acct['acacc_account_ID']) echo 'selected'; ?>>
                                             <?php echo $acct['acacc_code'] . " - " . $acct['acacc_name']; ?>
                                         </option>
                                     <?php } ?>
@@ -154,25 +154,6 @@ $db->show_header();
                                     ]);
                                 ?>
                             </div>
-                        </div>
-
-                        <div class="form-group row">
-                            <label for="fld_code" class="col-sm-2 col-form-label">Code</label>
-                            <div class="col-sm-4">
-                                <input name="fld_code" type="text" id="fld_code"
-                                       value="<?php echo $data["acacc_code"]; ?>"
-                                       class="form-control"/>
-                                <?php
-                                $formValidator->addField(
-                                    [
-                                        'fieldName' => 'fld_code',
-                                        'fieldDataType' => 'text',
-                                        'required' => true,
-                                        'invalidTextAutoGenerate' => true
-                                    ]);
-                                ?>
-                            </div>
-
                             <label for="fld_name" class="col-sm-2 col-form-label">Name</label>
                             <div class="col-sm-4">
                                 <input name="fld_name" type="text" id="fld_name"
@@ -197,7 +178,7 @@ $db->show_header();
                                         class="form-control" onchange="loadSubTypesPromise();">
                                     <option value=""></option>
                                     <?php
-                                    $sql = 'SELECT * FROM ac_account_types WHERE actpe_type = "Type" AND actpe_active = "Active" ORDER BY actpe_name ASC';
+                                    $sql = 'SELECT * FROM ac_account_types WHERE actpe_type = "Type" AND actpe_active = "Active" ORDER BY actpe_code ASC';
                                     $result = $db->query($sql);
                                     while ($type = $db->fetch_assoc($result)) {
                                         ?>
@@ -241,10 +222,11 @@ $db->show_header();
                                     ]);
                                 ?>
                             </div>
+
                         </div>
 
-
                         <div class="form-group row">
+
                             <label for="fld_account_sub_type_ID" class="col-sm-2 col-form-label">Sub-Type</label>
                             <div class="col-sm-4">
                                 <select name="fld_account_sub_type_ID" id="fld_account_sub_type_ID"
@@ -258,7 +240,7 @@ $db->show_header();
                                         ?>
                                         <option value="<?php echo $selectedSubTypeID['actpe_account_type_ID']; ?>"
                                                 selected>
-                                            <?php echo $selectedSubTypeID['actpe_code'] . " - " . $selectedSubTypeID['actpe_name']; ?>
+                                            <?php echo $selectedSubTypeID['actpe_code'] . "-" . $selectedSubTypeID['actpe_name']; ?>
                                         </option>
                                         <?php
                                     }
@@ -283,66 +265,114 @@ $db->show_header();
                                      id="type_error">
                                 <div id="typeErrorField"></div>
                             </div>
-                        </div>
-                        <script>
-                            <?php
-                            echo $formValidator::getPromiseJSCode(
-                                [
-                                    'source' => '../accounts/accounts_api.php?section=searchAccountSubTypesByType',
-                                    'functionName' => 'loadSubTypesPromise()',
-                                    'sourceField' => '"#fld_account_type_ID"',
-                                    'spinnerIcon' => '"#type_spinner"',
-                                    'errorIcon' => '"#typeError"',
-                                    'correctIcon' => '"#typeCorrect"',
-                                    'errorField' => '"#typeErrorField"',
-                                    'errorText' => 'Error finding sub types',
-                                    'ifDataJSCode' => '
+                            <script>
+                                <?php
+                                echo $formValidator::getPromiseJSCode(
+                                    [
+                                        'source' => '../accounts/accounts_api.php?section=searchAccountSubTypesByType',
+                                        'functionName' => 'loadSubTypesPromise()',
+                                        'sourceField' => '"#fld_account_type_ID"',
+                                        'spinnerIcon' => '"#type_spinner"',
+                                        'errorIcon' => '"#typeError"',
+                                        'correctIcon' => '"#typeCorrect"',
+                                        'errorField' => '"#typeErrorField"',
+                                        'errorText' => 'Error finding sub types',
+                                        'ifDataJSCode' => '
                                     loadSubTypes(data);
                                     ',
-                                    'ifNoDataJSCode' => '
+                                        'ifNoDataJSCode' => '
                                     loadSubTypes(data);
                                     '
-                                ]);
-                            ?>
+                                    ]);
+                                ?>
 
-                            function loadSubTypes(list) {
-                                //get theone from the db
-                                let selectedSubTypeID = '<?php echo $data['acacc_account_sub_type_ID'];?>';
+                                function loadSubTypes(list) {
+                                    //get theone from the db
+                                    let selectedSubTypeID = '<?php echo $data['acacc_account_sub_type_ID'];?>';
 
-                                //first empty the select subTypes
-                                $('#fld_account_sub_type_ID').empty();
+                                    //first empty the select subTypes
+                                    $('#fld_account_sub_type_ID').empty();
 
-                                $('#fld_account_sub_type_ID').append(
-                                    new Option(' ', '')
-                                );
-
-                                if ($('#fld_control').val() == '1') {
                                     $('#fld_account_sub_type_ID').append(
-                                        new Option('Control Account', '-1')
+                                        new Option(' ', '')
                                     );
+
+                                    if ($('#fld_control').val() == '1') {
+                                        $('#fld_account_sub_type_ID').append(
+                                            new Option('Control Account', '-1')
+                                        );
+                                    }
+                                    //else {
+                                    $.each(list, function (index, value) {
+                                        $('#fld_account_sub_type_ID').append(
+                                            new Option(value['actpe_code'] + '-' + value['actpe_name'], value['actpe_account_type_ID'])
+                                        );
+                                    });
+                                    //}
+                                    if (selectedSubTypeID != '') {
+                                        if (selectedSubTypeID == '-1') {
+                                            $('#fld_account_sub_type_ID').val(-1);
+                                        }
+                                        else {
+                                            $('#fld_account_sub_type_ID').val(selectedSubTypeID);
+                                        }
+                                    }
+                                    validateAccountCode();
+
                                 }
-                                //else {
-                                $.each(list, function (index, value) {
-                                    $('#fld_account_sub_type_ID').append(
-                                        new Option(value['actpe_code'] + ' - ' + value['actpe_name'], value['actpe_account_type_ID'])
-                                    );
+
+                                $(document).ready(function () {
+                                    loadSubTypesPromise();
                                 });
-                                //}
-                                if (selectedSubTypeID != '') {
-                                    if (selectedSubTypeID == '-1') {
-                                        $('#fld_account_sub_type_ID').val(-1);
+                            </script>
+
+                        </div>
+
+
+                        <div class="form-group row">
+
+                            <label for="fld_code" class="col-sm-2 col-form-label">Code</label>
+                            <div class="col-sm-4">
+                                <input name="fld_code" type="text" id="fld_code"
+                                       value="<?php echo $data["acacc_code"]; ?>" onkeyup="validateAccountCode();"
+                                       class="form-control"/>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_code',
+                                        'fieldDataType' => 'text',
+                                        'required' => true,
+                                        'requiredAddedCustomCode' => ' || $("#codeValidation").val() == "error"',
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
+                            </div>
+                            <div class="col-sm6" id="codeValidationDiv"></div>
+                            <input type="hidden" id="codeValidation" name="codeValidation" value="">
+                            <script>
+                                function validateAccountCode() {
+                                    let code = $('#fld_code').val();
+                                    let subType = $('#fld_account_sub_type_ID option:selected').text();
+                                    let subTypeSplit = subType.split("-");
+                                    let totalSubTypeChars = subTypeSplit[0].length;
+                                    let codePart = code.substring(0,4);
+                                    if (codePart != subTypeSplit[0]){
+                                        $('#codeValidationDiv').html('Invalid code. Should start with ' + subTypeSplit[0]);
+                                        $('#codeValidation').val('error');
                                     }
                                     else {
-                                        $('#fld_account_sub_type_ID').val(selectedSubTypeID);
+                                        //correct
+                                        $('#codeValidationDiv').html('');
+                                        $('#codeValidation').val('');
                                     }
                                 }
+                                $(document).ready(function () {
+                                    validateAccountCode();
+                                });
+                            </script>
 
-                            }
+                        </div>
 
-                            $(document).ready(function () {
-                                loadSubTypesPromise();
-                            });
-                        </script>
                     </div>
                     <div class="tab-pane fade show" id="pills-other" role="tabpanel"
                          aria-labelledby="pills-other-tab">

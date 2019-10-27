@@ -72,6 +72,17 @@ $table->generate_data();
         <div class="col-lg-1"></div>
     </div>
 </div>
+
+<div class="container">
+    <div class="row">
+        <div class="col-sm-2"></div>
+        <div class="col-sm-8">
+            <a href="vitamins_report_1.php">Report 1</a>
+            <a href="vitamins_report_2.php">Report 2</a>
+        </div>
+        <div class="col-sm-2"></div>
+    </div>
+</div>
 <script>
     var ignoreEdit = false;
     function editLine(id){
