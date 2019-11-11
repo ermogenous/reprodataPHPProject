@@ -15,17 +15,17 @@ $db->apiGetReadHeaders();
 if ($_GET['section'] == 'searchEntityByAnything'){
     $sql = "
     SELECT
-    *
+    acet_name as value
     FROM
     ac_entities
     WHERE
-    acet_name LIKE '%".$_GET['value']."%'
-    OR acet_description LIKE '%".$_GET['value']."%'
-    OR acet_mobile LIKE '%".$_GET['value']."%'
-    OR acet_work_tel LIKE '%".$_GET['value']."%'
-    OR acet_fax LIKE '%".$_GET['value']."%'
-    OR acet_email LIKE '%".$_GET['value']."%'
-    OR acet_website LIKE '%".$_GET['value']."%'
+    acet_name LIKE '%".$_GET['term']."%'
+    OR acet_description LIKE '%".$_GET['term']."%'
+    OR acet_mobile LIKE '%".$_GET['term']."%'
+    OR acet_work_tel LIKE '%".$_GET['term']."%'
+    OR acet_fax LIKE '%".$_GET['term']."%'
+    OR acet_email LIKE '%".$_GET['term']."%'
+    OR acet_website LIKE '%".$_GET['term']."%'
     ";
     $result = $db->query($sql);
     while ($row = $db->fetch_assoc($result)){

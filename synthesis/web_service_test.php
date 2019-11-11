@@ -9,10 +9,10 @@
 include('../include/main.php');
 include('synthesis_class.php');
 
-$db = new Main(0);
+$db = new Main();
 
 $syn = new Synthesis();
-
+$syn->getToken();
 
 
 
@@ -50,20 +50,22 @@ $db->show_header();
     <?php
     if ($_GET['action'] == 'getAccountList') {
         $accountList = $syn->getAccountList();
-        for($i=0; $i <= $accountList['totalRows']; $i++){
+        for($i=0; $i < $accountList['totalRows']; $i++){
         ?>
         <div class="row">
             <div class="col-2"></div>
             <div class="col-2">
-                <?php echo $accountList['rows'][$i]['ccac_acct_code'];?>
+                <?php echo $accountList[$i]->ccac_acct_code;?>
             </div>
             <div class="col-3">
-                <?php echo $accountList['rows'][$i]['ccac_long_desc'];?>
+                <?php echo $accountList[$i]->ccac_long_desc;?>
             </div>
             <div class="col-3">
-                <?php echo $accountList['rows'][$i]['ccad_long_desc'];?>
+                <?php echo $accountList[$i]->ccad_long_desc;?>
             </div>
-            <div class="col-2"></div>
+            <div class="col-2">
+                <a href="web_service_modify_account.php?lid=<?php echo $accountList[$i]->ccac_acct_code;?>">Modify</a>
+            </div>
         </div>
 
         <?php

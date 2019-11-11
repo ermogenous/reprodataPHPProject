@@ -32,10 +32,11 @@ $table->generate_data();
                     <thead class="alert alert-success">
                     <tr>
                         <th scope="col"><?php $table->display_order_links('ID', 'vit_vitamin_ID'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Code', 'vit_code'); ?></th>
                         <th scope="col"><?php $table->display_order_links('Name', 'vit_name'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Retail', 'vit_retail'); ?></th>
-                        <th scope="col"><?php $table->display_order_links('Last Update', 'vit_last_update_date_time'); ?></th>
+                        <td scope="col" align="center"><strong><?php $table->display_order_links('Wholesale', 'vit_wholesale'); ?></strong></td>
+                        <td scope="col" align="center"><strong><?php $table->display_order_links('Retail', 'vit_retail'); ?></strong></td>
+                        <td scope="col" align="center"><strong><?php $table->display_order_links('Stock Bottles', 'vit_stock_bottles'); ?></strong></td>
+                        <td scope="col" align="center"><strong><?php $table->display_order_links('Stock Pills', 'vit_stock_pills'); ?></strong></td>
                         <th scope="col">
                             <a href="vitamin_modify.php">
                                 <i class="fas fa-plus-circle"></i>
@@ -49,10 +50,11 @@ $table->generate_data();
                         ?>
                         <tr onclick="editLine(<?php echo $row["vit_vitamin_ID"];?>);">
                             <th scope="row"><?php echo $row["vit_vitamin_ID"]; ?></th>
-                            <td><?php echo $row["vit_code"]; ?></td>
                             <td><?php echo $row["vit_name"]; ?></td>
-                            <td><?php echo $row["vit_retail"]; ?></td>
-                            <td><?php echo $db->convert_date_format($row["vit_last_update_date_time"],'yyyy-mm-dd','dd/mm/yyyy',1,1); ?></td>
+                            <td align="center"><?php echo $row["vit_wholesale"]; ?></td>
+                            <td align="center"><?php echo $row["vit_retail"]; ?></td>
+                            <td align="center"><?php echo $row["vit_stock_bottles"]; ?></td>
+                            <td align="center"><?php echo $row["vit_stock_pills"]; ?></td>
                             <td>
                                 <a href="vitamin_modify.php?lid=<?php echo $row["vit_vitamin_ID"]; ?>"><i
                                         class="fas fa-edit"></i></a>&nbsp

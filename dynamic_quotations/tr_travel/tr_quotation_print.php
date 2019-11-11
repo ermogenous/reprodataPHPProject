@@ -448,7 +448,7 @@ function getQuotationHTML($quotationID)
             </td>
             ' : '') . '
             ' . ($sect1['oqqit_rate_4'] == 'Limited' ? '<td align="center">
-                €1.500<br>
+                €10.000<br>
                 <div style="color: red">€100</div>
             </td>
             ' : '') . '
@@ -1293,6 +1293,7 @@ function getQuotationHTML($quotationID)
     //when limited no confirmation letter
     if ($sect1['oqqit_rate_4'] != 'Limited') {
 
+        $data['clo_destination'] = $sect1['clo_destination'];
         //generate confirmation for client
         $html .= getConfirmationLetter($data);
 
@@ -1352,7 +1353,7 @@ function getConfirmationLetter($data){
     if ($data['coverage'] == 'WorldExcl'){
         $world = 'Worldwide excluding U.S.A / Canada';
         $worldLong = 'Medical coverage is provided while traveling worldwide (except within the insured person\'s Country of Residence, 
-            the USA, and Canada) including CHINA';
+            the USA, and Canada) including '.$data['clo_destination'];
     }
     else {
         $world = 'Worldwide';

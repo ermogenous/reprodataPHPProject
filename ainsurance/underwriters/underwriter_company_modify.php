@@ -36,10 +36,37 @@ if ($_GET["lid"] != "") {
     //if advanced accounts and underwriter is sub agent get the commissions from the insurance companies
     //to check that the commissions defined below is not more than the top commissions
     $advancedAccounts = $db->get_setting('ac_advanced_accounts_enable');
-    if ($data['inaund_subagent_ID'] == -1 && $advancedAccounts == 1){
-        $compCommData = $db->query_fetch('
+    if ($advancedAccounts == 1){
+
+        //if subagent and office top
+        if ($data['inaund_subagent_ID'] == -1){
+            $compCommData = $db->query_fetch('
             SELECT * FROM ina_insurance_companies WHERE inainc_insurance_company_ID = '.$data['inaunc_insurance_company_ID']
-        );
+            );
+            $prevAgentComm['motor'] = $compCommData['inainc_commission_motor'];
+            $prevAgentComm['fire'] = $compCommData['inainc_commission_fire'];
+            $prevAgentComm['pa'] = $compCommData['inainc_commission_pa'];
+            $prevAgentComm['el'] = $compCommData['inainc_commission_el'];
+            $prevAgentComm['pi'] = $compCommData['inainc_commission_pi'];
+            $prevAgentComm['pl'] = $compCommData['inainc_commission_pl'];
+            $prevAgentComm['medical'] = $compCommData['inainc_commission_medical'];
+            $prevAgentComm['travel'] = $compCommData['inainc_commission_travel'];
+        }
+        //this underwriter is subagent of another subagent
+        else if ($data['inaund_subagent_ID'] > 0){
+            $parentUnderwriter = $db->query_fetch('SELECT * FROM ina_underwriter_companies 
+            WHERE inaunc_underwriter_ID = '.$data['inaund_subagent_ID']." 
+            AND inaunc_insurance_company_ID = ".$data['inaunc_insurance_company_ID']);
+            $prevAgentComm['motor'] = $parentUnderwriter['inaunc_commission_motor'];
+            $prevAgentComm['fire'] = $parentUnderwriter['inaunc_commission_fire'];
+            $prevAgentComm['pa'] = $parentUnderwriter['inaunc_commission_pa'];
+            $prevAgentComm['el'] = $parentUnderwriter['inaunc_commission_el'];
+            $prevAgentComm['pi'] = $parentUnderwriter['inaunc_commission_pi'];
+            $prevAgentComm['pl'] = $parentUnderwriter['inaunc_commission_pl'];
+            $prevAgentComm['medical'] = $parentUnderwriter['inaunc_commission_medical'];
+            $prevAgentComm['travel'] = $parentUnderwriter['inaunc_commission_travel'];
+        }
+
     }
 
 }
@@ -113,9 +140,9 @@ $formValidator = new customFormValidator();
                             ?>
                         </div>
                         <div class="col-sm-5">
-                            <?php if ($data['inaund_subagent_ID'] == -1 && $advancedAccounts == 1){ ?>
+                            <?php if ($data['inaund_subagent_ID'] != 0 && $advancedAccounts == 1){ ?>
                             <input type="text" class="form-control" name="comp_commission_motor" id="comp_commission_motor"
-                                   value="<?php echo $compCommData['inainc_commission_motor'];?>" style="width: 80px;" disabled>
+                                   value="<?php echo $prevAgentComm['motor'];?>" style="width: 80px;" disabled>
                             <?php
                                 $formValidator->addField([
                                     "fieldName" => "comp_commission_motor",
@@ -145,9 +172,9 @@ $formValidator = new customFormValidator();
                             ?>
                         </div>
                         <div class="col-sm-5">
-                            <?php if ($data['inaund_subagent_ID'] == -1 && $advancedAccounts == 1){ ?>
+                            <?php if ($data['inaund_subagent_ID'] != 0 && $advancedAccounts == 1){ ?>
                                 <input type="text" class="form-control" name="comp_commission_fire" id="comp_commission_fire"
-                                       value="<?php echo $compCommData['inainc_commission_fire'];?>" style="width: 80px;" disabled>
+                                       value="<?php echo $prevAgentComm['fire'];?>" style="width: 80px;" disabled>
                             <?php
                                 $formValidator->addField([
                                     "fieldName" => "comp_commission_fire",
@@ -176,9 +203,9 @@ $formValidator = new customFormValidator();
                             ?>
                         </div>
                         <div class="col-sm-5">
-                            <?php if ($data['inaund_subagent_ID'] == -1 && $advancedAccounts == 1){ ?>
+                            <?php if ($data['inaund_subagent_ID'] != 0 && $advancedAccounts == 1){ ?>
                                 <input type="text" class="form-control" name="comp_commission_pa" id="comp_commission_pa"
-                                       value="<?php echo $compCommData['inainc_commission_pa'];?>" style="width: 80px;" disabled>
+                                       value="<?php echo $prevAgentComm['pa'];?>" style="width: 80px;" disabled>
                             <?php
                                 $formValidator->addField([
                                     "fieldName" => "comp_commission_pa",
@@ -207,9 +234,9 @@ $formValidator = new customFormValidator();
                             ?>
                         </div>
                         <div class="col-sm-5">
-                            <?php if ($data['inaund_subagent_ID'] == -1 && $advancedAccounts == 1){ ?>
+                            <?php if ($data['inaund_subagent_ID'] != 0 && $advancedAccounts == 1){ ?>
                                 <input type="text" class="form-control" name="comp_commission_el" id="comp_commission_el"
-                                       value="<?php echo $compCommData['inainc_commission_el'];?>" style="width: 80px;" disabled>
+                                       value="<?php echo $prevAgentComm['el'];?>" style="width: 80px;" disabled>
                             <?php
                                 $formValidator->addField([
                                     "fieldName" => "comp_commission_el",
@@ -238,9 +265,9 @@ $formValidator = new customFormValidator();
                             ?>
                         </div>
                         <div class="col-sm-5">
-                            <?php if ($data['inaund_subagent_ID'] == -1 && $advancedAccounts == 1){ ?>
+                            <?php if ($data['inaund_subagent_ID'] != 0 && $advancedAccounts == 1){ ?>
                                 <input type="text" class="form-control" name="comp_commission_pi" id="comp_commission_pi"
-                                       value="<?php echo $compCommData['inainc_commission_pi'];?>" style="width: 80px;" disabled>
+                                       value="<?php echo $prevAgentComm['pi'];?>" style="width: 80px;" disabled>
                             <?php
                                 $formValidator->addField([
                                     "fieldName" => "comp_commission_pi",
@@ -269,9 +296,9 @@ $formValidator = new customFormValidator();
                             ?>
                         </div>
                         <div class="col-sm-5">
-                            <?php if ($data['inaund_subagent_ID'] == -1 && $advancedAccounts == 1){ ?>
+                            <?php if ($data['inaund_subagent_ID'] != 0 && $advancedAccounts == 1){ ?>
                                 <input type="text" class="form-control" name="comp_commission_pl" id="comp_commission_pl"
-                                       value="<?php echo $compCommData['inainc_commission_pl'];?>" style="width: 80px;" disabled>
+                                       value="<?php echo $prevAgentComm['pl'];?>" style="width: 80px;" disabled>
                             <?php
                                 $formValidator->addField([
                                     "fieldName" => "comp_commission_pl",
@@ -300,9 +327,9 @@ $formValidator = new customFormValidator();
                             ?>
                         </div>
                         <div class="col-sm-5">
-                            <?php if ($data['inaund_subagent_ID'] == -1 && $advancedAccounts == 1){ ?>
+                            <?php if ($data['inaund_subagent_ID'] != 0 && $advancedAccounts == 1){ ?>
                                 <input type="text" class="form-control" name="comp_commission_medical" id="comp_commission_medical"
-                                       value="<?php echo $compCommData['inainc_commission_medical'];?>" style="width: 80px;" disabled>
+                                       value="<?php echo $prevAgentComm['medical'];?>" style="width: 80px;" disabled>
                             <?php
                                 $formValidator->addField([
                                     "fieldName" => "comp_commission_medical",
@@ -331,9 +358,9 @@ $formValidator = new customFormValidator();
                             ?>
                         </div>
                         <div class="col-sm-5">
-                            <?php if ($data['inaund_subagent_ID'] == -1 && $advancedAccounts == 1){ ?>
+                            <?php if ($data['inaund_subagent_ID'] != 0 && $advancedAccounts == 1){ ?>
                                 <input type="text" class="form-control" name="comp_commission_travel" id="comp_commission_travel"
-                                       value="<?php echo $compCommData['inainc_commission_travel'];?>" style="width: 80px;" disabled>
+                                       value="<?php echo $prevAgentComm['travel'];?>" style="width: 80px;" disabled>
                             <?php
                                 $formValidator->addField([
                                     "fieldName" => "comp_commission_travel",

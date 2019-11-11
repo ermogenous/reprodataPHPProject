@@ -2,6 +2,7 @@
 include("../include/main.php");
 include('../ainsurance/customers/insurance_balance_class.php');
 include('../scripts/form_validator_class.php');
+include('customer_class.php');
 $db = new Main();
 $db->admin_title = "Customers Modify";
 
@@ -18,7 +19,16 @@ if ($_POST["action"] == "insert") {
         $_POST['fld_birthdate'] = '0000-00-00';
     }
 
-    $db->db_tool_insert_row('customers', $_POST, 'fld_', 0, 'cst_');
+    $customerNewID = $db->db_tool_insert_row('customers', $_POST, 'fld_', 1, 'cst_');
+
+
+    if ($db->dbSettings['ina_enable_agent_insurance']['value'] == 1 && $db->dbSettings['accounts']['value'] == 'advanced') {
+        $insuranceSettings = $db->query_fetch('SELECT * FROM ina_settings');
+        if ($insuranceSettings['inaset_auto_create_entity_from_client'] == 1) {
+            $customer = new Customers($customerNewID);
+            $customer->createACEntity();
+        }
+    }
 
     //check for basic accounts to create the customer account
     /*if ($db->dbSettings['accounts']['value'] == 'basic') {
@@ -46,6 +56,8 @@ if ($_POST["action"] == "insert") {
     $db->db_tool_update_row('customers', $_POST, "`cst_customer_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'cst_');
 
+    $customer = new Customers($_POST['lid']);
+    $customer->updateCustomer();
     /*if ($db->dbSettings['accounts']['value'] == 'basic') {
         include('../basic_accounts/basic_accounts_class.php');
         $bacc = new BasicAccounts();
@@ -75,10 +87,10 @@ $formValidator->showErrorList();
 $db->enable_jquery_ui();
 $db->show_header();
 ?>
-<div class="container">
+<div class="container-fluid">
     <div class="row">
-        <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
-        <div class="col-lg-6 col-md-6 col-xs-12 col-sm-12">
+        <div class="col-lg-2 col-md-2 hidden-xs hidden-sm"></div>
+        <div class="col-lg-8 col-md-8 col-xs-12 col-sm-12">
             <form name="myForm" id="myForm" method="post" action="" onsubmit=""
                 <?php $formValidator->echoFormParameters(); ?>>
                 <div class="alert alert-dark text-center">
@@ -115,6 +127,12 @@ $db->show_header();
                     </li>
                     <?php } ?>
 
+                    <li class="nav-item">
+                        <a class="nav-link" id="pills-entity-tab" data-toggle="pill" href="#pills-entity"
+                           role="tab"
+                           aria-controls="pills-entity" aria-selected="true">Entity/Accounts</a>
+                    </li>
+
                 </ul>
 
                 <div class="tab-content" id="pills-tabContent">
@@ -122,14 +140,14 @@ $db->show_header();
                          aria-labelledby="pills-general-tab">
                         <!-- GENERAL -->
                         <div class="row">
-                            <div class="col-4" style="height: 40px;">Balance</div>
-                            <div class="col-8">
+                            <div class="col-3" style="height: 40px;">Balance</div>
+                            <div class="col-9">
                                 <?php echo $balance->getBalance(); ?>
                             </div>
                         </div>
                         <div class="form-group row">
-                            <label for="fld_business_type_code_ID" class="col-sm-4 col-form-label">Business Type</label>
-                            <div class="col-sm-8">
+                            <label for="fld_business_type_code_ID" class="col-sm-3 col-form-label">Business Type</label>
+                            <div class="col-sm-9">
                                 <select name="fld_business_type_code_ID" id="fld_business_type_code_ID"
                                         class="form-control">
                                     <option value=""></option>
@@ -157,8 +175,8 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_identity_card" class="col-sm-4 col-form-label">I.D.</label>
-                            <div class="col-sm-8">
+                            <label for="fld_identity_card" class="col-sm-3 col-form-label">I.D.</label>
+                            <div class="col-sm-9">
                                 <input name="fld_identity_card" type="text" id="fld_identity_card"
                                        class="form-control"
                                        value="<?php echo $data["cst_identity_card"]; ?>">
@@ -175,8 +193,8 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_name" class="col-sm-4 col-form-label">Name</label>
-                            <div class="col-sm-8">
+                            <label for="fld_name" class="col-sm-3 col-form-label">Name</label>
+                            <div class="col-sm-9">
                                 <input name="fld_name" type="text" id="fld_name"
                                        class="form-control"
                                        value="<?php echo $data["cst_name"]; ?>">
@@ -193,8 +211,8 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_surname" class="col-sm-4 col-form-label">Surname</label>
-                            <div class="col-sm-8">
+                            <label for="fld_surname" class="col-sm-3 col-form-label">Surname</label>
+                            <div class="col-sm-9">
                                 <input name="fld_surname" type="text" id="fld_surname"
                                        class="form-control"
                                        value="<?php echo $data["cst_surname"]; ?>">
@@ -211,8 +229,8 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_address_line_1" class="col-sm-4 col-form-label">Address Line 1</label>
-                            <div class="col-sm-8">
+                            <label for="fld_address_line_1" class="col-sm-3 col-form-label">Address Line 1</label>
+                            <div class="col-sm-9">
                                 <input name="fld_address_line_1" type="text" id="fld_address_line_1"
                                        value="<?php echo $data["cst_address_line_1"]; ?>"
                                        class="form-control"/>
@@ -229,8 +247,8 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_address_line_1" class="col-sm-4 col-form-label">Address Line 2</label>
-                            <div class="col-sm-8">
+                            <label for="fld_address_line_1" class="col-sm-3 col-form-label">Address Line 2</label>
+                            <div class="col-sm-9">
                                 <input name="fld_address_line_2" type="text" id="fld_address_line_2"
                                        value="<?php echo $data["cst_address_line_2"]; ?>"
                                        class="form-control"/>
@@ -247,8 +265,8 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_city_code_ID" class="col-sm-4 col-form-label">City</label>
-                            <div class="col-sm-8">
+                            <label for="fld_city_code_ID" class="col-sm-3 col-form-label">City</label>
+                            <div class="col-sm-9">
                                 <select name="fld_city_code_ID" id="fld_city_code_ID"
                                         class="form-control">
                                     <option value=""></option>
@@ -276,8 +294,8 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_contact_person" class="col-sm-4 col-form-label">Contact Person</label>
-                            <div class="col-sm-8">
+                            <label for="fld_contact_person" class="col-sm-3 col-form-label">Contact Person</label>
+                            <div class="col-sm-9">
                                 <input name="fld_contact_person" type="text" id="fld_contact_person"
                                        value="<?php echo $data["cst_contact_person"]; ?>"
                                        class="form-control"/>
@@ -294,8 +312,8 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_contact_person_title_code_ID" class="col-sm-4 col-form-label">C.P.Title</label>
-                            <div class="col-sm-8">
+                            <label for="fld_contact_person_title_code_ID" class="col-sm-3 col-form-label">C.P.Title</label>
+                            <div class="col-sm-9">
                                 <select name="fld_contact_person_title_code_ID" id="fld_contact_person_title_code_ID"
                                         class="form-control">
                                     <option value=""
@@ -326,8 +344,8 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_birthdate" class="col-sm-4 col-form-label">Birthdate</label>
-                            <div class="col-sm-8">
+                            <label for="fld_birthdate" class="col-sm-3 col-form-label">Birthdate</label>
+                            <div class="col-sm-9">
                                 <input name="fld_birthdate" type="text" id="fld_birthdate"
                                        class="form-control"/>
                                 <?php
@@ -345,8 +363,8 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_work_tel_1" class="col-sm-4 col-form-label">Work Tel 1</label>
-                            <div class="col-sm-8">
+                            <label for="fld_work_tel_1" class="col-sm-3 col-form-label">Work Tel 1</label>
+                            <div class="col-sm-9">
                                 <input name="fld_work_tel_1" type="text" id="fld_work_tel_1"
                                        value="<?php echo $data["cst_work_tel_1"]; ?>"
                                        class="form-control"/>
@@ -363,8 +381,8 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_work_tel_2" class="col-sm-4 col-form-label">Work Tel 2</label>
-                            <div class="col-sm-8">
+                            <label for="fld_work_tel_2" class="col-sm-3 col-form-label">Work Tel 2</label>
+                            <div class="col-sm-9">
                                 <input name="fld_work_tel_2" type="text" id="fld_work_tel_2"
                                        value="<?php echo $data["cst_work_tel_2"]; ?>"
                                        class="form-control"/>
@@ -381,8 +399,8 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_fax" class="col-sm-4 col-form-label">Fax</label>
-                            <div class="col-sm-8">
+                            <label for="fld_fax" class="col-sm-3 col-form-label">Fax</label>
+                            <div class="col-sm-9">
                                 <input name="fld_fax" type="text" id="fld_fax"
                                        value="<?php echo $data["cst_fax"]; ?>"
                                        class="form-control"/>
@@ -399,8 +417,8 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_mobile_1" class="col-sm-4 col-form-label">Mobile 1</label>
-                            <div class="col-sm-8">
+                            <label for="fld_mobile_1" class="col-sm-3 col-form-label">Mobile 1</label>
+                            <div class="col-sm-9">
                                 <input name="fld_mobile_1" type="text" id="fld_mobile_1"
                                        value="<?php echo $data["cst_mobile_1"]; ?>"
                                        class="form-control"/>
@@ -417,8 +435,8 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_mobile_2" class="col-sm-4 col-form-label">Mobile 2</label>
-                            <div class="col-sm-8">
+                            <label for="fld_mobile_2" class="col-sm-3 col-form-label">Mobile 2</label>
+                            <div class="col-sm-9">
                                 <input name="fld_mobile_2" type="text" id="fld_mobile_2"
                                        value="<?php echo $data["cst_mobile_2"]; ?>"
                                        class="form-control"/>
@@ -435,8 +453,8 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_email" class="col-sm-4 col-form-label">Email</label>
-                            <div class="col-sm-8">
+                            <label for="fld_email" class="col-sm-3 col-form-label">Email</label>
+                            <div class="col-sm-9">
                                 <input name="fld_email" type="text" id="fld_email"
                                        value="<?php echo $data["cst_email"]; ?>"
                                        class="form-control"/>
@@ -454,8 +472,8 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_email_newsletter" class="col-sm-4 col-form-label">Email NewsLetter</label>
-                            <div class="col-sm-8">
+                            <label for="fld_email_newsletter" class="col-sm-3 col-form-label">Email NewsLetter</label>
+                            <div class="col-sm-9">
                                 <input name="fld_email_newsletter" type="text" id="fld_email_newsletter"
                                        value="<?php echo $data["cst_email_newsletter"]; ?>"
                                        class="form-control"/>
@@ -475,8 +493,8 @@ $db->show_header();
                         <?php $formValidator->generateErrorDescriptionDiv();?>
 
                         <div class="form-group row">
-                            <label for="name" class="col-sm-4 col-form-label"></label>
-                            <div class="col-sm-8">
+                            <label for="name" class="col-sm-3 col-form-label"></label>
+                            <div class="col-sm-9">
                                 <input name="action" type="hidden" id="action"
                                        value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
                                 <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
@@ -535,6 +553,16 @@ $db->show_header();
 
                     </div>
                     <?php } ?>
+
+                    <!-- Entity/Accounts -->
+                    <div class="tab-pane fade show" id="pills-entity" role="tabpanel"
+                         aria-labelledby="pills-entity-tab">
+
+                        <iframe src="customer_entity_tab.php?lid=<?php echo $_GET["lid"]; ?>"
+                                frameborder="0" id="frmCustomerEntityTab"
+                                scrolling="0" width="100%" height="600"></iframe>
+
+                    </div>
 
                 </div>
 

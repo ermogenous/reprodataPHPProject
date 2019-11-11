@@ -7,27 +7,44 @@
  */
 
 include("../../include/main.php");
+include("insurance_company_class.php");
 $db = new Main();
 $db->admin_title = "AInsurance Company Modify";
 
 
 if ($_POST["action"] == "insert") {
+    $db->start_transaction();
     $db->check_restriction_area('insert');
 
     $db->working_section = 'AInsurance Company Insert';
     $db->db_tool_insert_row('ina_insurance_companies', $_POST, 'fld_', 0, 'inainc_');
+
+    $db->commit_transaction();
     header("Location: insurance_companies.php");
     exit();
 
 } else if ($_POST["action"] == "update") {
+    $db->start_transaction();
     $db->check_restriction_area('update');
     $db->working_section = 'AInsurance Company Modify';
 
     $db->db_tool_update_row('ina_insurance_companies', $_POST, "`inainc_insurance_company_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'inainc_');
+
+    $comp = new InsuranceCompany($_POST['lid']);
+    if ($_POST['fld_debtor_account_ID'] == -1) {
+        if ($comp->autoGenerateAccounts()){
+            $db->commit_transaction();
+            $db->generateSessionAlertSuccess($comp->messageDescription);
+        }
+        else {
+            $db->rollback_transaction();
+            $db->generateSessionAlertError($comp->errorDescription);
+        }
+    }
+
     header("Location: insurance_companies.php");
     exit();
-
 
 }
 
@@ -157,30 +174,76 @@ $formValidator->showErrorList();
                 </div>
 
                 <div class="form-group row">
-                    <label for="fld_account_ID" class="col-sm-4 col-form-label">Account</label>
+                    <label for="fld_debtor_account_ID" class="col-sm-4 col-form-label">Debtor Account</label>
                     <div class="col-sm-8">
-                        <select name="fld_account_ID" id="fld_account_ID"
+                        <select name="fld_debtor_account_ID" id="fld_debtor_account_ID"
                                 class="form-control"
                                 required>
+                            <?php
+                            if ($data['inainc_debtor_account_ID'] == '' || $data['inainc_debtor_account_ID'] == -1) {
+                                ?>
+                                <option value="-1">Create Debtor Account Automatically</option>
+                            <?php } ?>
                             <option value=""></option>
                             <?php
                             $btResult = $db->query("
-                              SELECT * FROM ac_accounts 
-                              WHERE acacc_control = 0");
+                              SELECT * FROM ac_accounts
+                              JOIN vac_types on vactpe_account_type_ID = acacc_account_type_ID 
+                              WHERE acacc_control = 0
+                              AND vactpe_category = 'CurrentAsset'");
                             while ($bt = $db->fetch_assoc($btResult)) {
 
                                 ?>
                                 <option value="<?php echo $bt['acacc_account_ID']; ?>"
-                                    <?php if ($bt['acacc_account_ID'] == $data['inainc_account_ID']) echo 'selected'; ?>>
+                                    <?php if ($bt['acacc_account_ID'] == $data['inainc_debtor_account_ID']) echo 'selected'; ?>>
                                     <?php echo $bt['acacc_name']; ?>
                                 </option>
                             <?php } ?>
                         </select>
                         <?php
                         $formValidator->addField([
-                            "fieldName" => "fld_account_ID",
+                            "fieldName" => "fld_debtor_account_ID",
                             "fieldDataType" => "select",
                             "required" => false,
+                            "invalidTextAutoGenerate" => true
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="fld_revenue_account_ID" class="col-sm-4 col-form-label">Revenue Account</label>
+                    <div class="col-sm-8">
+                        <select name="fld_revenue_account_ID" id="fld_revenue_account_ID"
+                                class="form-control"
+                                required>
+                            <?php
+                            if ($data['inainc_revenue_account_ID'] == '' || $data['inainc_revenue_account_ID'] == -1) {
+                                ?>
+                                <option value="-1">Create Revenue Account Automatically</option>
+                            <?php } ?>
+                            <option value=""></option>
+                            <?php
+                            $btResult = $db->query("
+                              SELECT * FROM ac_accounts
+                              JOIN vac_types on vactpe_account_type_ID = acacc_account_type_ID 
+                              WHERE acacc_control = 0
+                              AND vactpe_category = 'Revenue'");
+                            while ($bt = $db->fetch_assoc($btResult)) {
+
+                                ?>
+                                <option value="<?php echo $bt['acacc_account_ID']; ?>"
+                                    <?php if ($bt['acacc_account_ID'] == $data['inainc_revenue_account_ID']) echo 'selected'; ?>>
+                                    <?php echo $bt['acacc_name']; ?>
+                                </option>
+                            <?php } ?>
+                        </select>
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_revenue_account_ID",
+                            "fieldDataType" => "select",
+                            "required" => false,
+                            "invalidTextAutoGenerate" => true
                         ]);
                         ?>
                     </div>

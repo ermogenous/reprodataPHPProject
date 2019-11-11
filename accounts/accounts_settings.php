@@ -9,6 +9,7 @@
 include("../include/main.php");
 include("../include/tables.php");
 include('../scripts/form_validator_class.php');
+include('../scripts/form_builder_class.php');
 
 $db = new Main(1, 'UTF-8');
 $db->admin_title = "Accounts Settings";
@@ -97,9 +98,9 @@ $db->enable_rxjs_lite();
                                         $result = $db->query($sql);
                                         while ($row = $db->fetch_assoc($result)) {
                                             ?>
-                                            <option value="<?php echo $row['acacc_account_ID'];?>"
+                                            <option value="<?php echo $row['acacc_account_ID']; ?>"
                                                 <?php if ($data['acstg_auto_ac_debtors_control_ID'] == $row['acacc_account_ID']) echo 'selected'; ?>>
-                                                <?php echo $row['acacc_name'];?>
+                                                <?php echo $row['acacc_name']; ?>
                                             </option>
                                         <?php } ?>
                                     </select>
@@ -120,7 +121,8 @@ $db->enable_rxjs_lite();
                                     Auto A/C`s Creditor Control
                                 </label>
                                 <div class="col-sm-4">
-                                    <select name="fld_auto_ac_creditors_control_ID" id="fld_auto_ac_creditors_control_ID"
+                                    <select name="fld_auto_ac_creditors_control_ID"
+                                            id="fld_auto_ac_creditors_control_ID"
                                             class="form-control">
                                         <option value=""></option>
                                         <?php
@@ -135,9 +137,9 @@ $db->enable_rxjs_lite();
                                         $result = $db->query($sql);
                                         while ($row = $db->fetch_assoc($result)) {
                                             ?>
-                                            <option value="<?php echo $row['acacc_account_ID'];?>"
+                                            <option value="<?php echo $row['acacc_account_ID']; ?>"
                                                 <?php if ($data['acstg_auto_ac_creditors_control_ID'] == $row['acacc_account_ID']) echo 'selected'; ?>>
-                                                <?php echo $row['acacc_name'];?>
+                                                <?php echo $row['acacc_name']; ?>
                                             </option>
                                         <?php } ?>
                                     </select>

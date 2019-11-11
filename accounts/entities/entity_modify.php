@@ -48,7 +48,25 @@ $formValidator->showErrorList();
 $db->enable_jquery_ui();
 $db->enable_rxjs_lite();
 $db->show_header();
+FormBuilder::buildPageLoader();
+
+
+//check if entity is connected to a customer. If yes then lock the form
+$customer = $db->query_fetch('SELECT * FROM customers WHERE cst_entity_ID = '.$_GET['lid']);
+if ($customer['cst_customer_ID'] > 0){
+    $formValidator->disableForm(['buttons']);
+    $customerLock = true;
+}
+//check if entity is connected to an insurance company. If yes then lock the form
+if ($db->get_setting('ina_enable_agent_insurance') == 1) {
+    $insComp = $db->query_fetch('SELECT * FROM ina_insurance_companies WHERE inainc_entity_ID = ' . $_GET['lid']);
+    if ($insComp['inainc_insurance_company_ID'] > 0) {
+        $formValidator->disableForm(['buttons']);
+    }
+    $insCompLock = true;
+}
 ?>
+
 
     <div class="container-fluid">
         <div class="row">
@@ -64,6 +82,33 @@ $db->show_header();
                                 Entity</strong>
                         </div>
                     </div>
+
+                    <?php
+                    if ($customer['cst_customer_ID'] > 0) {
+                        ?>
+                        <div class="row">
+                            <div class="col-12 alert alert-warning text-center">
+                                <strong>This entity is connected to a customer. To edit the fields you must edit the
+                                    customer</strong>
+                                <a href="../../customers/customers_modify.php?lid=<?php echo $customer['cst_customer_ID']; ?>">Edit
+                                    Customer</a>
+                            </div>
+                        </div>
+                        <?php
+                    }
+                    if ($insComp['inainc_insurance_company_ID'] > 0) {
+                        ?>
+                        <div class="row">
+                            <div class="col-12 alert alert-warning text-center">
+                                <strong>This entity is connected to an insurance company. To edit the fields you must edit the
+                                    insurance company</strong><br>
+                                <a href="../../ainsurance/codes/insurance_company_modify.php?lid=<?php echo $insComp['inainc_insurance_company_ID']; ?>">Edit
+                                    Insurance Company</a>
+                            </div>
+                        </div>
+                        <?php
+                    }
+                    ?>
 
                     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
 
@@ -227,34 +272,6 @@ $db->show_header();
                                     ?>
                                 </div>
                             </div>
-
-                            <div class="form-group row">
-                                <?php
-                                $formB = new FormBuilder(
-                                    [
-                                        'fieldName' => 'test1',
-                                        'fieldDescription' => 'Test 1 Input',
-                                        'fieldType' => 'text',
-                                        'labelClasses' => 'col-md-3',
-                                        'inputSelectAddEmptyOption' => true,
-                                        'inputValue' => 6
-                                    ]);
-                                $formB->buildLabel();
-                                ?>
-                                <div class="col-md-4">
-                                    <?php
-                                    $formB->buildInput();
-                                    $formValidator->addField(
-                                        [
-                                            'fieldName' => $formB->fieldName,
-                                            'fieldDataType' => 'text',
-                                            'required' => true,
-                                            'invalidTextAutoGenerate' => true
-                                        ]);
-                                    ?>
-                                </div>
-                            </div>
-
 
                         </div>
 

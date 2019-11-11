@@ -8,9 +8,10 @@
 
 include("../../include/main.php");
 include('../../scripts/form_validator_class.php');
+include('../../scripts/form_builder_class.php');
 include('transactions_class.php');
 $db = new Main();
-$db->admin_title = "Accounts";
+$db->admin_title = "Accounts - Transactions ";
 
 if ($_POST["action"] == "insert") {
     $db->check_restriction_area('insert');
@@ -56,7 +57,7 @@ if ($_GET["lid"] != "") {
     $sql = "SELECT * FROM 
               `ac_transactions` 
               JOIN ac_documents ON actrn_document_ID = acdoc_document_ID
-              LEFT OUTER JOIN ac_accounts ON actrn_account_ID = acacc_account_ID
+              LEFT OUTER JOIN ac_entities ON actrn_entity_ID = acet_entity_ID
               WHERE `actrn_transaction_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
 
@@ -79,51 +80,12 @@ if ($data['actrn_status'] != 'Outstanding' && $_GET['lid'] != '') {
 $db->enable_jquery_ui();
 $db->enable_rxjs_lite();
 $db->show_header();
+FormBuilder::buildPageLoader();
 
 $totalAccountLines = 15;
 
 ?>
-    <div id="pageLoadingDialog" title="" style="display: none;">
-        <img src="../../images/icon_spinner_transparent.gif">
-    </div>
-    <script>
-
-        $("#pageLoadingDialog").dialog({
-            autoOpen: true,
-            show: "slide",
-            modal: true,
-            height: 180,
-            width: 150,
-            create: function () {
-                $(".ui-dialog").find(".ui-dialog-titlebar").css({
-                    'background-image': 'none',
-                    'background-color': 'white',
-                    'border': 'none'
-                });
-            },
-            closeOnEscape: false,
-            open: function (event, ui) {
-                $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-            }
-
-        });
-
-        $(document).ready(function () {
-            $("#pageLoadingDialog").dialog('close');
-
-            //in case modify execute few functions to load the page
-
-            <?php if ($_GET['lid'] > 0) {?>
-            //load the document
-            documentAutoSelect();
-            loadEntity();
-            <?php } ?>
-
-        });
-    </script>
-
-
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-1 d-none d-md-block"></div>
             <div class="col-12 col-md-10">
@@ -169,98 +131,36 @@ $totalAccountLines = 15;
                     </div>
 
                     <div class="form-group row">
-                        <label for="documentCode" class="col-sm-2 col-form-label">Document</label>
-                        <div class="col-sm-3">
-                            <input name="documentCode" type="text" id="documentCode"
-                                   value="<?php echo $data["acdoc_code"]; ?>"
-                                   class="form-control" onchange="documentAutoSelect();"/>
+                        <?php
+                        $formB = new FormBuilder([
+                            "fieldName" => "fld_document_ID",
+                            "fieldDescription" => "Document",
+                            "labelClasses" => "col-sm-2",
+                            "fieldType" => "select",
+                            "inputValue" => $data['actrn_document_ID'],
+                            "inputSelectAddEmptyOption" => true
+                        ]);
+                        $formB->buildLabel();
+                        ?>
+                        <div class="col-sm-4">
                             <?php
+                            $docResult = $db->query('
+                              SELECT 
+                                CONCAT(acdoc_code," - ",acdoc_name)as name,
+                                acdoc_document_ID as value
+                                FROM ac_documents WHERE acdoc_active = "Active"');
+                            $formB->setInputSelectQuery($docResult);
+                            $formB->buildInput();
                             $formValidator->addField(
                                 [
-                                    'fieldName' => 'documentCode',
-                                    'fieldDataType' => 'text',
+                                    'fieldName' => $formB->fieldName,
+                                    'fieldDataType' => 'select',
                                     'required' => true,
-                                    'requiredAddedCustomCode' => '|| $("#fld_document_ID").val() == ""',
                                     'invalidTextAutoGenerate' => true
                                 ]);
                             ?>
-                            <input type="hidden" id="fld_document_ID" name="fld_document_ID" value="">
+
                         </div>
-                        <div class="col-sm-1">
-                            <img src="../../images/icon_spinner_transparent.gif" height="35px" style="display: none"
-                                 id="doc_spinner">
-                            <img src="../../images/icon_correct_green.gif" height="35px" style="display: none"
-                                 id="doc_correct">
-                            <img src="../../images/icon_error_x_red.gif" height="35px" style="display: none"
-                                 id="doc_error">
-                        </div>
-                        <div class="col-sm-6 col-form-label" id="documentSelectedValue"></div>
-
-                        <script>
-                            //autocomplete
-                            $('#documentCode').autocomplete({
-                                source: '../documents/documents_api.php?section=searchDocuments',
-                                delay: 1000,
-                                minLength: 1,
-                                messages: {
-                                    noResults: '',
-                                    results: function () {
-                                        //console.log('customer auto');
-                                    }
-                                },
-                                search: function (event, ui) {
-
-                                },
-                                focus: function (event, ui) {
-                                    $('#documentCode').val(ui.item.document_code);
-                                    return false;
-                                },
-                                select: function (event, ui) {
-                                    $('#documentCode').val(ui.item.document_code);
-                                    $('#fld_document_ID').val(ui.item.value);
-                                    $('#documentSelectedValue').html(ui.item.label + ' - Last Number: ' + ui.item.clo_last_number_used);
-
-                                    $('#doc_spinner').hide();
-
-                                    return false;
-                                }
-                            });
-
-                            function documentAutoSelect() {
-                                $('#doc_correct').hide();
-                                $('#doc_error').hide();
-                                $('#doc_spinner').show();
-
-                                let inputCode = $('#documentCode').val();
-                                Rx.Observable.fromPromise($.get("../documents/documents_api.php?section=getFirstDocumentByCode&term=" + inputCode))
-                                    .subscribe((response) => {
-                                            data = response;
-                                            //console.log(data);
-                                        },
-                                        () => {
-                                            $('#doc_error').show();
-                                            $('#documentSelectedValue').html('Error finding the document');
-                                        }
-                                        ,
-                                        () => {
-                                            $('#doc_spinner').hide();
-                                            if (data != null) {
-                                                $('#documentCode').val(data[0]['document_code']);
-                                                $('#fld_document_ID').val(data[0]['value']);
-                                                $('#documentSelectedValue').html(data[0]['label'] + ' - Last Number: ' + data[0]['clo_last_number_used']);
-                                                $('#doc_correct').show();
-                                            } else {
-                                                $('#doc_error').show();
-                                                $('#documentSelectedValue').html('Error finding the document');
-                                                $('#fld_document_ID').val('');
-                                            }
-
-                                        }
-                                    )
-                                ;
-                            }
-                        </script>
-
 
                     </div>
 
@@ -322,136 +222,38 @@ $totalAccountLines = 15;
 
 
                     <div class="form-group row">
-                        <label for="accountCode" class="col-sm-2 col-form-label">
-                            Entity &nbsp;
-                            <img src="../../images/icon_list_transparent.gif" height="20" style="cursor: pointer;"
-                                 id="accountOverlayOpener">
-                        </label>
-                        <div class="col-sm-3">
-                            <input name="accountCode" type="text" id="accountCode"
-                                   value="<?php echo $data["acacc_code"]; ?>"
-                                   class="form-control" onchange="loadEntity();"/>
+                        <?php
+                        $formB = new FormBuilder([
+                            "fieldName" => "fld_entity_ID",
+                            "fieldDescription" => "Entity",
+                            "labelClasses" => "col-sm-2",
+                            "fieldType" => "select",
+                            "inputValue" => $data['actrn_entity_ID'],
+                            "inputSelectAddEmptyOption" => true
+                        ]);
+                        $formB->buildLabel();
+                        ?>
+                        <div class="col-sm-4">
                             <?php
+                            $formB->setInputSelectQuery($db->query('
+                                SELECT 
+                                acet_entity_ID as value,
+                                acet_name as name
+                                FROM
+                                ac_entities
+                                WHERE acet_active = "Active"
+                            '));
+                            $formB->buildInput();
                             $formValidator->addField(
                                 [
-                                    'fieldName' => 'accountCode',
-                                    'fieldDataType' => 'text',
+                                    'fieldName' => 'fld_entity_ID',
+                                    'fieldDataType' => 'select',
                                     'required' => true,
                                     'invalidTextAutoGenerate' => true,
                                     'requiredAddedCustomCode' => '|| $("#fld_account_ID").val() == ""',
                                 ]);
                             ?>
                         </div>
-                        <div class="col-sm-1">
-                            <img src="../../images/icon_spinner_transparent.gif" height="35px" style="display: none"
-                                 id="acc_spinner">
-                            <img src="../../images/icon_correct_green.gif" height="35px" style="display: none"
-                                 id="acc_correct">
-                            <img src="../../images/icon_error_x_red.gif" height="35px" style="display: none"
-                                 id="acc_error">
-                            <input type="hidden" id="fld_account_ID" name="fld_account_ID" value="">
-                        </div>
-                        <div class="col-sm-6 col-form-label" id="accountSelectDiv"></div>
-
-                        <div id="accountDialog" title="Select Account" style="display: none;">
-                            <iframe src="accounts_list_modal.php" width="100%" height="100%" frameborder="0"></iframe>
-                        </div>
-
-                        <script>
-
-                            $('#accountCode').autocomplete({
-                                source: '../accounts/accounts_api.php?section=searchAccounts',
-                                delay: 1000,
-                                minLength: 1,
-                                messages: {
-                                    noResults: '',
-                                    results: function () {
-                                        //console.log('customer auto');
-                                    }
-                                },
-                                search: function (event, ui) {
-
-                                },
-                                focus: function (event, ui) {
-                                    $('#accountCode').val(ui.item.document_code);
-                                    return false;
-                                },
-                                select: function (event, ui) {
-                                    $('#accountCode').val(ui.item.document_code);
-                                    loadEntity();
-                                    return false;
-                                }
-                            });
-
-                            function loadEntity() {
-                                let accCode = $('#accountCode').val();
-                                let inputCode = $('#accountCode').val();
-
-                                $('#acc_spinner').show();
-                                $('#acc_correct').hide();
-                                $('#acc_error').hide();
-
-
-                                Rx.Observable.fromPromise($.get("../accounts/accounts_api.php?section=getFirstAccountByID&value=" + inputCode))
-                                    .subscribe((response) => {
-                                            data = response;
-                                        },
-                                        () => {
-                                            $('#acc_error').show();
-                                            $('#acc_spinner').hide();
-                                            $('#accountSelectDiv').html('Error finding the account');
-                                            $('#fld_account_ID').val('');
-                                        }
-                                        ,
-                                        () => {
-                                            $('#acc_spinner').hide();
-                                            if (data != null) {
-                                                $('#acc_correct').show();
-                                                $('#accountSelectDiv').html(data['acacc_code'] + ' - ' + data['acacc_name']);
-                                                $('#accountCode').val(data['acacc_code']);
-                                                $('#fld_account_ID').val(data['acacc_account_ID']);
-                                            }
-                                            else {
-                                                $('#acc_error').show();
-                                                $('#accountSelectDiv').html('Error finding the account');
-                                                $('#fld_account_ID').val('');
-                                            }
-
-                                        }
-                                    )
-                                ;
-
-
-                            }
-
-                            //MODAL
-                            $(function () {
-                                $("#accountDialog").dialog({
-                                    autoOpen: false,
-                                    height: 600,
-                                    width: 500,
-                                    modal: true,
-                                    show: {
-                                        effect: "blind",
-                                        duration: 1000
-                                    },
-                                    hide: {
-                                        effect: "explode",
-                                        duration: 1000
-                                    }
-                                });
-
-                                $("#accountOverlayOpener").on("click", function () {
-                                    $("#accountDialog").dialog("open");
-                                });
-                            });
-
-                            window.loadAccount = function (code) {
-                                $("#accountCode").val(code);
-                                $("#accountDialog").dialog("close");
-                                loadEntity();
-                            }
-                        </script>
 
                     </div>
 
@@ -465,10 +267,9 @@ $totalAccountLines = 15;
 
                     <div class="row">
                         <div class="col-sm-1 m-0 p-0">#</div>
-                        <div class="col-sm-2 m-0 p-0 text-center">Account</div>
-                        <div class="col-sm-4 m-0 p-0 text-center">Account Name</div>
-                        <div class="col-sm-1 m-0 p-0 text-center">Debit</div>
-                        <div class="col-sm-1 m-0 p-0 text-center">Credit</div>
+                        <div class="col-sm-4 m-0 p-0">Account</div>
+                        <div class="col-sm-2 m-0 p-0 text-center">Debit</div>
+                        <div class="col-sm-2 m-0 p-0 text-center">Credit</div>
                         <div class="col-sm-3 m-0 p-0 text-center">Reference</div>
                     </div>
 
@@ -479,174 +280,45 @@ $totalAccountLines = 15;
                     </div>
 
                     <!-- ACCOUNT LINES ---------------------------------------------------------------------------------------------------------------------- -->
-                    <?php
-
-                    for ($i = 1; $i <= $totalAccountLines; $i++) {
-                        echo '
-                            <div id="accountLinesDiv_' . $i . '" class="container-fluid" style="display: none;">
-                                <div class="row">
-                                    <input type="hidden" id="activeLine_' . $i . '" name="activeLine_' . $i . '" value="0">
-                                    <div class="col-sm-1 m-0 p-0">
-                                    ' . $i . '
-                                    <i class="fas fa-minus-circle" style="cursor: pointer" onclick="deleteAccountLine(' . $i . ');"></i>
-                                    </div>
-                                    <div class="col-sm-2 m-0 p-0">
-                                        <input type="text" name="accLineAccount_' . $i . '" id="accLineAccount_' . $i . '"
-                                            value="" class="form-control" onchange="loadLineAccount(' . $i . ');"/>
-                                            ';
-                            $formValidator->addField(
-                                [
-                                    'fieldName' => 'accLineAccount_' . $i,
-                                    'fieldDataType' => 'text',
-                                    'required' => true,
-                                    'invalidText' => 'Enter Account',
-                                    'requiredAddedCustomCode' => '&& $("#activeLine_' . $i . '").val() == "1"',
-                                ]);
-                            echo $formValidator::getAutoCompleteJSCode('accLineAccount_' . $i,
-                                [
-                                    'source' => '../accounts/accounts_api.php?section=searchAccounts',
-                                    'minLength' => 1,
-                                    'selectCode' => '$("#accLineAccount_' . $i . '").val(ui.item.document_code);'
-                                ]);
-
-                            echo '
-                                    </div>
-                                    
-                                    <div class="col-sm-9"></div>
-                                
-                                
-                                </div>
-                                <div class="row">
-                                    <div class="col-sm-3"></div>
-                                
-                                
-                                
-                                    <div class="col-sm-4 m-0 p-0 d-inline-block">
-                                        <div id="accountLineNameErrorText_' . $i . '"></div>
-                                        <table>
-                                            <tr>
-                                                <td>
-                                                    <img src="../../images/icon_spinner_transparent.gif" height="25px" style="display: none" id="lineSpinner_' . $i . '">
-                                                    <img src="../../images/icon_correct_green.gif" height="25px" style="display: none" id="lineCorrect_' . $i . '">
-                                                    <img src="../../images/icon_error_x_red.gif" height="25px" style="display: none" id="lineError_' . $i . '">
-                                                </td>
-                                                <td>
-                                                    <input type="hidden" id="accLine_account_ID_' . $i . '" name="accLine_account_ID_' . $i . '" value="">
-                                                    <div id="accountLineName_' . $i . '" style="font-size: 12px;"></div>
-                                                </td>
-                                            </tr>
-                                        </table>
-                                        
-                                        
-                                    </div>
-                                    <div class="col-sm-1 m-0 p-0">
-                                        <input type="text" name="accLine_debit_' . $i . '" id="accLine_debit_' . $i . '"
-                                            value="" class="form-control" onkeyup="checkDebitCreditField(' . $i . ')"/>';
-                        $formValidator->addField(
-                            [
-                                'fieldName' => 'accLine_debit_' . $i,
-                                'fieldDataType' => 'text',
-                                'required' => true,
-                                'invalidText' => 'Enter Dr.',
-                                'requiredAddedCustomCode' => '&& $("#activeLine_' . $i . '").val() == "1" && $("#accLine_credit_' . $i . '").val() == "" ',
-                            ]);
-                        echo '
-                                    </div>
-                                    <div class="col-sm-1 m-0 p-0">
-                                        <input type="text" name="accLine_credit_' . $i . '" id="accLine_credit_' . $i . '"
-                                            value="" class="form-control" onkeyup="checkDebitCreditField(' . $i . ')"/>';
-                        $formValidator->addField(
-                            [
-                                'fieldName' => 'accLine_credit_' . $i,
-                                'fieldDataType' => 'text',
-                                'required' => true,
-                                'invalidText' => 'Enter Cr.',
-                                'requiredAddedCustomCode' => '
-                                        && $("#activeLine_' . $i . '").val() == "1" 
-                                        && $("#accLine_debit_' . $i . '").val() == ""
-                                         
-                                    ',
-                            ]);
-                        echo '
-                                    </div>
-                                    <div class="col-sm-3 m-0 p-0">
-                                        <input type="text" name="accLine_reference_' . $i . '" id="accLine_reference_' . $i . '"
-                                            value="" class="form-control"/>';
-                        $formValidator->addField(
-                            [
-                                'fieldName' => 'accLine_reference_' . $i,
-                                'fieldDataType' => 'text',
-                                'required' => false
-                            ]);
-                        echo '
-                                    
-                                    </div>                            
-                                </div>
-                            </div>';
-                    }
-                    ?>
-
-                    <div class="row">
-                        <div class="col-sm-7">
-                            <input type="hidden" id="linesValid" name="linesValid" value="0">
-                            <input type="hidden" id="totalAccountLines" name="totalAccountLines"
-                                   value="<?php echo $totalAccountLines; ?>">
-                        </div>
-                        <div class="col-sm-1 m-0 p-0 text-center" id="totalDebit">0</div>
-                        <div class="col-sm-1 m-0 p-0 text-center" id="totalCredit">0</div>
-                    </div>
-
                     <script>
+                        let lastOpenLine = 0;
+                        $(document).key('shift+a', function () {
+                            insertNewLine();
+                        });
 
-                        <?php
-                        echo $formValidator::getPromiseJSCode(
-                            [
-                                'source' => '../accounts/accounts_api.php?section=getFirstAccountByID',
-                                'functionName' => 'loadLineAccount(lineID)',
-                                'sourceField' => '"#accLineAccount_" + lineID',
-                                'spinnerIcon' => '"#lineSpinner_" + lineID',
-                                'errorIcon' => '"#lineError_" + lineID',
-                                'correctIcon' => '"#lineCorrect_" + lineID',
-                                'errorField' => '"#accountLineName_" + lineID',
-                                'ifDataJSCode' => '
-                        $("#accLine_account_ID_" + lineID).val(data["acacc_account_ID"]);
-                        $("#accountLineName_" + lineID).html(data["acacc_name"]);
-                        $("#accLineAccount_" + lineID).val(data["acacc_code"]);
-                        ',
-                                'ifNoDataJSCode' => '
-                        $("#accLine_account_ID_" + line_ID).val("");
-                        $("#accountLineName_" + lineID).html("No Account Found");
-                        '
-                            ]);
-                        ?>
-
-
-
-                        function checkDebitCreditField(line) {
-                            let debit = $("#accLine_debit_" + line).val();
-                            let credit = $("#accLine_credit_" + line).val();
-
-                            $("#accLine_credit_" + line).prop('disabled', false);
-                            $("#accLine_debit_" + line).prop('disabled', false);
-
-                            if (debit != '') {
-                                $("#accLine_credit_" + line).prop('disabled', true);
-                            }
-                            if (credit != '') {
-                                $("#accLine_debit_" + line).prop('disabled', true);
-                            }
+                        function insertNewLine(){
+                            lastOpenLine++;
+                            $('#line_' + lastOpenLine).show();
+                            $('#activeLine_' + lastOpenLine).val(1);
                             calculateDebitCreditTotals();
-
                         }
 
+                        function deleteLine(lineNum){
+                            $('#line_' + lineNum).hide();
+                            $('#activeLine_' + lineNum).val(0);
+                            calculateDebitCreditTotals();
+
+                            if (lineNum == lastOpenLine){
+                                lastOpenLine--;
+                            }
+
+                        }
                         function calculateDebitCreditTotals() {
                             let totalDebit = 0;
                             let totalCredit = 0;
-                            for (i = 1; i <= <?php echo $totalAccountLines;?>; i++) {
+                            for (let i = 1; i <= 15; i++) {
                                 if ($('#activeLine_' + i).val() == 1) {
                                     totalDebit += $('#accLine_debit_' + i).val() * 1;
                                     totalCredit += $('#accLine_credit_' + i).val() * 1;
                                 }
+
+                                if ($('#accLine_debit_' + i).val() != ''){
+                                    $('#accLine_credit_' + i).prop('disabled', true);
+                                }
+                                else if ($('#accLine_credit_' + i).val() != ''){
+                                    $('#accLine_debit_' + i).prop('disabled', true);
+                                }
+
                             }
                             $('#totalDebit').html(totalDebit);
                             $('#totalCredit').html(totalCredit);
@@ -672,80 +344,170 @@ $totalAccountLines = 15;
 
                         }
 
-                        $(document).key('shift+a', function () {
-                            insertNewLine();
-                        });
-
-                        let totalAccountLines = 0;
-
-                        function insertNewLine() {
-                            if (totalAccountLines >= <?php echo $totalAccountLines;?>) {
-                                alert('Reached the Max Limit of lines');
-                            }
-                            else {
-                                insertNewAccountLine();
-                            }
-                        }
-
-                        function insertNewAccountLine() {
-                            totalAccountLines++;
-
-                            $('#accountLinesDiv_' + totalAccountLines).show();
-                            $('#activeLine_' + totalAccountLines).val('1');
-                        }
-
-                        function deleteAccountLine(id) {
-                            $('#accountLinesDiv_' + id).hide();
-                            $('#activeLine_' + id).val('0');
-
-                            //fix totalAccountLines
-                            let lastFound = 1;
-                            for (g = 1; g <= <?php echo $totalAccountLines;?>; g++) {
-                                if ($('#activeLine_' + g).val() == 1) {
-                                    lastFound = g;
-                                }
-                            }
-                            totalAccountLines = lastFound;
+                        $( document ).ready(function() {
                             calculateDebitCreditTotals();
-                        }
-
-                        //if modify create and fill the lines
-                        <?php
-                        if ($_GET['lid'] > 0) {
-                            $sql = 'SELECT * FROM 
-                                              ac_transaction_lines 
-                                              JOIN ac_accounts ON acacc_account_ID = actrl_account_ID
-                                              WHERE actrl_transaction_ID = ' . $_GET['lid'] . " ORDER BY actrl_line_number ASC";
-                            $result = $db->query($sql);
-                            while ($line = $db->fetch_assoc($result)) {
-
-                                if ($line['actrl_dr_cr'] == 1) {
-                                    $debit = $line['actrl_value'];
-                                    $credit = '';
-                                } else {
-                                    $debit = '';
-                                    $credit = $line['actrl_value'];
-                                }
-
-                                echo 'insertNewLine();
-                                        ';
-                                //load the data
-                                echo '$("#accLineAccount_' . $line['actrl_line_number'] . '").val("' . $line['acacc_code'] . '");
-                                        loadLineAccount(' . $line['actrl_line_number'] . ');
-                                        ';
-                                echo '$("#accLine_debit_' . $line['actrl_line_number'] . '").val("' . $debit . '");
-                                        ';
-                                echo '$("#accLine_credit_' . $line['actrl_line_number'] . '").val("' . $credit . '");
-                                        ';
-                                echo 'checkDebitCreditField(' . $line['actrl_line_number'] . ');
-                                        ';
-                                echo '$("#accLine_reference_' . $line['actrl_line_number'] . '").val("' . $line['actrl_reference'] . '");
-                                        ';
-                            }
-                        }//if modify
-                        ?>
-
+                        });
                     </script>
+                    <?php
+                    if ($_GET['lid'] > 0) {
+                        $sql = "SELECT * FROM ac_transaction_lines 
+                            WHERE actrl_transaction_ID = " . $data['actrn_transaction_ID']
+                            . " ORDER BY actrl_line_number ASC";
+                        $result = $db->query($sql);
+                        $totalLinesFound = 0;
+                        while ($row = $db->fetch_assoc($result)) {
+                            $totalLinesFound++;
+                            $linesData[$totalLinesFound] = $row;
+                        }
+                        $result = $db->query($sql);
+                    }
+                    for ($i = 1; $i <= 15; $i++) {
+                        $debitValue = '';
+                        $creditValue = '';
+                        if ($linesData[$i]['actrl_dr_cr'] == 1){
+                            $debitValue = $linesData[$i]['actrl_value'];
+                        }
+                        else {
+                            $creditValue = $linesData[$i]['actrl_value'];
+                        }
+                        ?>
+                        <div class="row" id="line_<?php echo $i;?>" style="display: none;">
+                            <input type="hidden" id="activeLine_<?php echo $i;?>"
+                                   name="activeLine_<?php echo $i;?>" value="0">
+                            <div class="col-sm-1 m-0 p-0">
+                                <?php echo $i;?>
+                                <i class="fas fa-minus-circle" style="cursor: pointer"
+                                   onclick="deleteLine(<?php echo $i;?>);"></i>
+                            </div>
+                            <div class="col-sm-4 m-0 p-0">
+                                <?php
+                                $formB = new FormBuilder([
+                                    "fieldName" => "accLine_account_ID_".$i,
+                                    "fieldType" => "select",
+                                    "inputValue" => $linesData[$i]['actrl_account_ID'],
+                                    "inputSelectAddEmptyOption" => true
+                                ]);
+                                $formB->setInputSelectQuery($db->query('
+                                SELECT 
+                                acacc_account_ID as value,
+                                CONCAT(acacc_code," - ",acacc_name) as name
+                                FROM
+                                ac_accounts
+                                WHERE acacc_active = "Active" AND acacc_control = 0
+                                ORDER BY acacc_code ASC, acacc_name ASC
+                            '));
+                                $formB->buildInput();
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => $formB->fieldName,
+                                        'fieldDataType' => 'select',
+                                        'required' => true,
+                                        'invalidTextAutoGenerate' => true,
+                                        'requiredAddedCustomCode' => ' && $("#activeLine_'.$i.'").val() == 1'
+                                    ]);
+                                ?>
+                            </div>
+                            <!-- DEBIT -->
+                            <div class="col-sm-2 m-0 p-0">
+                                <?php
+                                $formB = new FormBuilder([
+                                    "fieldName" => "accLine_debit_".$i,
+                                    "fieldType" => "input",
+                                    "fieldInputType" => 'text',
+                                    "inputExtraClasses" => 'text-center',
+                                    "fieldOnKeyUp" => 'calculateDebitCreditTotals();',
+                                    "inputValue" => $debitValue
+                                ]);
+                                $formB->buildInput();
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => $formB->fieldName,
+                                        'fieldDataType' => 'number',
+                                        'required' => true,
+                                        'invalidText' => 'Debit Required',
+                                        'requiredAddedCustomCode' => ' && $("#activeLine_'.$i.'").val() == 1 && $("#accLine_credit_' . $i . '").val() == ""'
+                                    ]);
+                                ?>
+                            </div>
+                            <!-- CREDIT -->
+                            <div class="col-sm-2 m-0 p-0">
+                                <?php
+                                $formB = new FormBuilder([
+                                    "fieldName" => "accLine_credit_".$i,
+                                    "fieldType" => "input",
+                                    "fieldInputType" => 'text',
+                                    "inputExtraClasses" => 'text-center',
+                                    "fieldOnKeyUp" => 'calculateDebitCreditTotals();',
+                                    "inputValue" => $creditValue
+                                ]);
+                                $formB->buildInput();
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => $formB->fieldName,
+                                        'fieldDataType' => 'number',
+                                        'required' => true,
+                                        'invalidText' => 'Credit Required',
+                                        'requiredAddedCustomCode' => ' && $("#activeLine_'.$i.'").val() == 1 && $("#accLine_debit_' . $i . '").val() == ""'
+                                    ]);
+                                ?>
+                            </div>
+                            <!-- REFERENCE -->
+                            <div class="col-sm-3 m-0 p-0">
+                                <?php
+                                $formB = new FormBuilder([
+                                    "fieldName" => "accLine_reference_".$i,
+                                    "fieldType" => "input",
+                                    "fieldInputType" => 'text',
+                                    "inputExtraClasses" => 'text-center',
+                                    "inputValue" => $linesData[$i]['actrl_reference']
+                                ]);
+                                $formB->buildInput();
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => $formB->fieldName,
+                                        'fieldDataType' => 'text',
+                                        'required' => false,
+                                        'invalidText' => 'Reference Required',
+                                        'requiredAddedCustomCode' => '',
+                                    ]);
+                                ?>
+                            </div>
+                        </div>
+
+                        <?php
+                    }
+                    ?>
+
+                    <script>
+
+                        function showLines(totalToShow){
+                            for(let i=1; i <= totalToShow; i++){
+                                insertNewLine();
+                            }
+                        }
+                        <?php
+                                echo "showLines(".$totalLinesFound.");";
+                        ?>
+                    </script>
+
+                    <div class="row">
+                        <div class="col-sm-5">
+                            <input type="hidden" id="linesValid" name="linesValid" value="0">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'linesValid',
+                                    'fieldDataType' => 'text',
+                                    'required' => true,
+                                    'invalidText' => 'Error',
+                                    'requiredAddedCustomCode' => ' || $("#linesValid").val() != 1',
+                                ]);
+                            ?>
+
+                        </div>
+                        <div class="col-sm-2 m-0 p-0 text-center" id="totalDebit">0</div>
+                        <div class="col-sm-2 m-0 p-0 text-center" id="totalCredit">0</div>
+                    </div>
 
                     <div class="row">
                         <div class="col-12">&nbsp;</div>

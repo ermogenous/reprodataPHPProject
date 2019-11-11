@@ -126,6 +126,12 @@ class Policy
         }
         $whereClause = $db->remove_last_char($whereClause);
         $whereClause .= ")";
+
+        //if admin then remove all so to have access to all
+        if ($db->user_data['usr_user_rights'] == 0){
+            $whereClause = ' > 0';
+        }
+
         //echo "<br>".$totalFound."->".$whereClause."<br>";
         if ($whatToReturn == 'where') {
             return $whereClause;

@@ -93,9 +93,9 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
     $main["block_countries_redirect_page"] = "http://rds.agentscy.com/ip_blocked.php";
 
 
-    ini_set('display_errors', 1);
-    ini_set('display_startup_errors', 1);
-    error_reporting(E_ALL & ~E_NOTICE);
+    //ini_set('display_errors', 1);
+    //ini_set('display_startup_errors', 1);
+    //error_reporting(E_ALL & ~E_NOTICE);
     /*
     if ($main["do_not_apply_https"] != 'yes') {
         if($_SERVER["HTTPS"] != "on" && $_SESSION["disable_ssl_temporary"] != 'YES') {

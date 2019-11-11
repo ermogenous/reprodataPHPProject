@@ -30,7 +30,6 @@ class AccountsTransaction
             $this->transactionData = $db->query_fetch('
                 SELECT * FROM ac_transactions
                 LEFT OUTER JOIN ac_documents ON actrn_document_ID = acdoc_document_ID
-                LEFT OUTER JOIN ac_accounts ON actrn_account_ID = acacc_account_ID
                 WHERE
                 actrn_transaction_ID = '.$transactionID.'
                 
@@ -292,7 +291,7 @@ class AccountsTransaction
         $dataArray['document_ID'] = $postData['fld_document_ID'];
         $dataArray['transaction_date'] = $db->convert_date_format($postData['fld_transaction_date'],'dd/mm/yyyy','yyyy-mm-dd');
         $dataArray['reference_date'] = $db->convert_date_format($postData['fld_reference_date'],'dd/mm/yyyy','yyyy-mm-dd');
-        $dataArray['account_ID'] = $postData['fld_account_ID'];
+        $dataArray['entity_ID'] = $postData['fld_entity_ID'];
         $dataArray['status'] = 'Outstanding';
         $dataArray['period'] = $db->dbSettings['ac_open_period']['value'];
         $dataArray['year'] = $db->dbSettings['ac_open_year']['value'];
@@ -378,7 +377,7 @@ class AccountsTransaction
         $dataArray['document_ID'] = $postData['fld_document_ID'];
         $dataArray['transaction_date'] = $db->convert_date_format($postData['fld_transaction_date'],'dd/mm/yyyy','yyyy-mm-dd');
         $dataArray['reference_date'] = $db->convert_date_format($postData['fld_reference_date'],'dd/mm/yyyy','yyyy-mm-dd');
-        $dataArray['account_ID'] = $postData['fld_account_ID'];
+        $dataArray['entity_ID'] = $postData['fld_entity_ID'];
         $dataArray['period'] = $db->dbSettings['ac_open_period']['value'];
         $dataArray['year'] = $db->dbSettings['ac_open_year']['value'];
         $dataArray['comments'] = '';

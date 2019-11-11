@@ -125,35 +125,41 @@ function template_header()
 
 
                     <!-- CUSTOMERS -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-users"></i> <?php echo $db->showLangText('Customers', 'Πελάτες'); ?>
-                            <i class="fas fa-caret-down"></i>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/customers/customers.php"><i
-                                        class="fas fa-eye"></i> <?php echo $db->showLangText('View Customers', 'Προβολή Πελατών'); ?>
+                    <?php
+                    if ($db->user_data['usr_user_rights'] < 8) {
+                        ?>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-users"></i> <?php echo $db->showLangText('Customers', 'Πελάτες'); ?>
+                                <i class="fas fa-caret-down"></i>
                             </a>
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/customers/customers_modify.php"><i
-                                        class="fas fa-plus-circle"></i> <?php echo $db->showLangText('New Customer', 'Δημιουργία Πελάτη'); ?>
-                            </a>
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/customers/customer_groups.php"><i
-                                        class="fas fa-eye"></i> <?php echo $db->showLangText('View Customer Groups', 'Προβολή Ομάδες Πελατών'); ?>
-                            </a>
-                            <a class="dropdown-item"
-                               href="<?php echo $main["site_url"]; ?>/customers/customer_groups_modify.php"><i
-                                        class="fas fa-plus-circle"></i> <?php echo $db->showLangText('New Customer Group', 'Δημιουργία Ομάδας Πελατών'); ?>
-                            </a>
-                        </div>
-                    </li>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/customers/customers.php"><i
+                                            class="fas fa-eye"></i> <?php echo $db->showLangText('View Customers', 'Προβολή Πελατών'); ?>
+                                </a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/customers/customers_modify.php"><i
+                                            class="fas fa-plus-circle"></i> <?php echo $db->showLangText('New Customer', 'Δημιουργία Πελάτη'); ?>
+                                </a>
+                                <div class="dropdown-divider"></div>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/customers/customer_groups.php"><i
+                                            class="fas fa-eye"></i> <?php echo $db->showLangText('View Customer Groups', 'Προβολή Ομάδες Πελατών'); ?>
+                                </a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/customers/customer_groups_modify.php"><i
+                                            class="fas fa-plus-circle"></i> <?php echo $db->showLangText('New Customer Group', 'Δημιουργία Ομάδας Πελατών'); ?>
+                                </a>
+                            </div>
+                        </li>
+                        <?php
+                    }
+                    ?>
 
 
-                    <?php if ($db->dbSettings['ina_enable_agent_insurance']['value'] == 1) { ?>
+                    <?php if ($db->dbSettings['ina_enable_agent_insurance']['value'] == 1 && $db->user_data['usr_user_rights'] < 8) { ?>
                         <!-- Agent Insurance -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"

@@ -463,6 +463,58 @@ $formValidator = new customFormValidator();
                 </div>
 
                 <div class="form-group row">
+                    <label for="fld_stock_bottles" class="col-sm-4 col-form-label">Stock Bottles</label>
+                    <div class="col-sm-8">
+                        <input name="fld_stock_bottles" type="text" id="fld_stock_bottles"
+                               class="form-control"
+                               value="<?php echo $data["vit_stock_bottles"]; ?>">
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'fld_stock_bottles',
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="fld_stock_pills" class="col-sm-4 col-form-label">Stock Pills</label>
+                    <div class="col-sm-4">
+                        <input name="fld_stock_pills" type="text" id="fld_stock_pills"
+                               class="form-control" onkeyup="calculateApprox();"
+                               value="<?php echo $data["vit_stock_pills"]; ?>">
+                        <?php
+                        $formValidator->addField(
+                            [
+                                'fieldName' => 'fld_stock_bottles',
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
+                        ?>
+                    </div>
+                    <div class="col-sm-4">
+                        Approx <span id="approxNum" onabort="approxNum"></span>
+                    </div>
+                </div>
+                <script>
+                    function calculateApprox(){
+                        let perBottle = $('#fld_quantity').val() * 1;
+                        let totalPills = $('#fld_stock_pills').val() * 1;
+                        $('#approxNum').html(
+                            totalPills / perBottle
+                        );
+                    }
+
+                    $(document).ready(function(){
+                        calculateApprox();
+                    });
+                </script>
+
+                <div class="form-group row">
                     <label for="name" class="col-sm-4 col-form-label"></label>
                     <div class="col-sm-8">
                         <input name="action" type="hidden" id="action"

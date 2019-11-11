@@ -7,6 +7,7 @@
  */
 
 include("../include/main.php");
+include("../scripts/form_builder_class.php");
 $db = new Main();
 $db->admin_title = "AInsurance Settings Modify";
 
@@ -41,10 +42,10 @@ $formValidator = new customFormValidator();
 $formValidator->showErrorList();
 ?>
 
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
-            <div class="col-lg-2 col-md-2 hidden-xs hidden-sm"></div>
-            <div class="col-lg-8 col-md-2 col-xs-12 col-sm-12">
+            <div class="col-lg-1 col-md-1 hidden-xs hidden-sm"></div>
+            <div class="col-lg-10 col-md-10 col-xs-12 col-sm-12">
                 <form name="myForm" id="myForm" method="post" action=""
                     <?php $formValidator->echoFormParameters(); ?>>
                     <div class="alert alert-dark text-center">
@@ -53,8 +54,8 @@ $formValidator->showErrorList();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_enable_acc_transactions" class="col-sm-6 col-form-label">Auto Generate Account Transactions</label>
-                        <div class="col-sm-3">
+                        <label for="fld_enable_acc_transactions" class="col-sm-4 col-form-label">Auto Generate Account Transactions</label>
+                        <div class="col-sm-2">
                             <select name="fld_enable_acc_transactions" id="fld_enable_acc_transactions"
                                     class="form-control">
                                 <option value="1" <?php if ($data['inaset_enable_acc_transactions'] == '1') echo "selected=\"selected\""; ?>>
@@ -75,28 +76,29 @@ $formValidator->showErrorList();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_ins_comp_dr_acc_ID" class="col-sm-6 col-form-label">Dr Account Ins.Comp Commissions</label>
-                        <div class="col-sm-6">
-                            <select name="fld_ins_comp_dr_acc_ID" id="fld_ins_comp_dr_acc_ID"
+                        <label for="fld_ins_comp_dr_control_account_ID" class="col-sm-4 col-form-label">Dr Account Control. Insurance Companies</label>
+                        <div class="col-sm-4">
+                            <select name="fld_ins_comp_dr_control_account_ID" id="fld_ins_comp_dr_control_account_ID"
                                     class="form-control">
                                 <option value=""></option>
                                 <?php
                                 $accResult = $db->query("
-                              SELECT * FROM ac_accounts 
-                              WHERE acacc_control = 0
+                              SELECT * FROM ac_accounts
+                              JOIN vac_types on vactpe_account_type_ID = acacc_account_type_ID  
+                              WHERE acacc_control = 1 AND vactpe_category = 'CurrentAsset'
                               ORDER BY acacc_code ASC");
                                 while ($acc = $db->fetch_assoc($accResult)) {
 
                                     ?>
                                     <option value="<?php echo $acc['acacc_account_ID']; ?>"
-                                        <?php if ($acc['acacc_account_ID'] == $data['inaset_ins_comp_dr_acc_ID']) echo 'selected'; ?>>
+                                        <?php if ($acc['acacc_account_ID'] == $data['inaset_ins_comp_dr_control_account_ID']) echo 'selected'; ?>>
                                         <?php echo $acc['acacc_code']." - ".$acc['acacc_name']; ?>
                                     </option>
                                 <?php } ?>
                             </select>
                             <?php
                             $formValidator->addField([
-                                "fieldName" => "fld_ins_comp_dr_acc_ID",
+                                "fieldName" => "fld_ins_comp_dr_control_account_ID",
                                 "fieldDataType" => "select",
                                 "required" => true,
                                 "invalidTextAutoGenerate" => true,
@@ -104,31 +106,35 @@ $formValidator->showErrorList();
                             ]);
                             ?>
                         </div>
+                        <div class="col-sm-4">
+                            When auto create the debit account for the insurance company it will be created under this control account.
+                        </div>
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_sub_agent_cr_acc_ID" class="col-sm-6 col-form-label">Cr Acc. For Sub-Agent Commissions</label>
-                        <div class="col-sm-6">
-                            <select name="fld_sub_agent_cr_acc_ID" id="fld_sub_agent_cr_acc_ID"
+                        <label for="fld_ins_comp_cr_control_account_ID" class="col-sm-4 col-form-label">Cr Account Control. Insurance Companies</label>
+                        <div class="col-sm-4">
+                            <select name="fld_ins_comp_cr_control_account_ID" id="fld_ins_comp_cr_control_account_ID"
                                     class="form-control">
                                 <option value=""></option>
                                 <?php
                                 $accResult = $db->query("
                               SELECT * FROM ac_accounts 
-                              WHERE acacc_control = 0
+                              JOIN vac_types on vactpe_account_type_ID = acacc_account_type_ID 
+                              WHERE acacc_control = 1 AND vactpe_category = 'Revenue'
                               ORDER BY acacc_code ASC");
                                 while ($acc = $db->fetch_assoc($accResult)) {
 
                                     ?>
                                     <option value="<?php echo $acc['acacc_account_ID']; ?>"
-                                        <?php if ($acc['acacc_account_ID'] == $data['inaset_sub_agent_cr_acc_ID']) echo 'selected'; ?>>
+                                        <?php if ($acc['acacc_account_ID'] == $data['inaset_ins_comp_cr_control_account_ID']) echo 'selected'; ?>>
                                         <?php echo $acc['acacc_code']." - ".$acc['acacc_name']; ?>
                                     </option>
                                 <?php } ?>
                             </select>
                             <?php
                             $formValidator->addField([
-                                "fieldName" => "fld_sub_agent_cr_acc_ID",
+                                "fieldName" => "fld_ins_comp_cr_control_account_ID",
                                 "fieldDataType" => "select",
                                 "required" => true,
                                 "invalidTextAutoGenerate" => true,
@@ -136,11 +142,14 @@ $formValidator->showErrorList();
                             ]);
                             ?>
                         </div>
+                        <div class="col-sm-4">
+                            When auto create the credit account for the insurance company it will be created under this control account.
+                        </div>
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_ins_comm_ac_document_ID" class="col-sm-6 col-form-label">Acc.Document To Be Used</label>
-                        <div class="col-sm-6">
+                        <label for="fld_ins_comm_ac_document_ID" class="col-sm-4 col-form-label">Acc.Document To Be Used</label>
+                        <div class="col-sm-4">
                             <select name="fld_ins_comm_ac_document_ID" id="fld_ins_comm_ac_document_ID"
                                     class="form-control">
                                 <option value=""></option>
@@ -165,6 +174,27 @@ $formValidator->showErrorList();
                                 "invalidTextAutoGenerate" => true,
                                 "requiredAddedCustomCode" => "&& $('#fld_enable_acc_transactions').val() == 1"
                             ]);
+                            ?>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <?php
+                        $formB = new FormBuilder();
+                        $formB->setFieldName('fld_auto_create_entity_from_client')
+                            ->setFieldDescription('Auto Create Entity When Customer Is Created')
+                            ->setLabelClasses('col-sm-4')
+                            ->setFieldType('select')
+                            ->setInputValue($data['inaset_auto_create_entity_from_client'])
+                        ->setInputSelectArrayOptions([
+                                '1' => 'Yes',
+                            '0' => 'No'
+                        ]);
+                        $formB->buildLabel();
+                        ?>
+                        <div class="col-sm-4">
+                            <?php
+                            $formB->buildInput();
                             ?>
                         </div>
                     </div>

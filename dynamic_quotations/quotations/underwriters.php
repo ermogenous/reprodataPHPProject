@@ -19,6 +19,9 @@ $table->generate_data();
 $db->show_header();
 ?>
     <div class="container">
+        <?php
+        echo $table->show_pages_links();
+        ?>
         <div class="table-responsive">
             <table class="table table-hover">
                 <thead>
@@ -57,6 +60,9 @@ $db->show_header();
             </table>
         </div>
     </div>
+<?php
+echo $table->show_pages_links();
+?>
     <script>
         var ignoreEdit = false;
 

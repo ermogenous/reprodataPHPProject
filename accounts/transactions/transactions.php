@@ -1,16 +1,50 @@
 <?php
 include("../../include/main.php");
 include("../../include/tables.php");
+include("../../tools/table_list.php");
 
 $db = new Main(1, 'UTF-8');
 $db->admin_title = "Transactions";
 
+
 $db->show_header();
 
-$table = new draw_table('ac_transactions', 'actrn_transaction_ID', 'ASC');
+//$table = new draw_table('ac_transactions', 'actrn_transaction_ID', 'ASC');
 
-$table->generate_data();
+//$table->generate_data();
 
+$list = new TableList();
+$list->setTable('ac_transactions','TransactionsList')
+    ->setSqlSelect('actrn_transaction_ID','ID')
+    ->setSqlSelect('actrn_transaction_number','Tr/Number')
+    ->setSqlSelect('acdoc_name','Document')
+    ->setSqlSelect('actrn_status','Status')
+    ->setSqlFrom('JOIN ac_documents ON acdoc_document_ID = actrn_document_ID')
+    ->setSqlOrder('actrn_transaction_ID', 'ASC')
+    ->setPerPage(2)
+    ->generateData();
+
+//echo $list->getSql();
+
+$list->setMainColumn('col-lg-10')
+    ->setTopTitle('Transactions List')
+    ->setTopContainerToFluid()
+    ->setLeftColumn('col-lg-1')
+    ->setRightColumn('col-lg-1')
+    ->showPagesLinksTop()
+    ->showPagesLinksBottom()
+    ->setDeleteConfirmText('Are you sure you want to delete this Transaction?')
+    ->setMainFieldID('ID')
+    ->setModifyLink('transaction_modify.php?lid=')
+    ->setDeleteLink('transaction_delete.php?lid=')
+    ->setFunctionIconArea('IconsFunction')
+    ->tableFullBuilder();
+
+function IconsFunction($row){
+    return '';
+}
+
+/*
 ?>
 
 
@@ -85,5 +119,6 @@ $table->generate_data();
 </div>
 
 <?php
+*/
 $db->show_footer();
 ?>

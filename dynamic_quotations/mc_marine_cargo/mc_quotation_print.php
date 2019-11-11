@@ -254,7 +254,7 @@ function getQuotationHTML($quotationID)
                             ' . nl2br($sect2['oqqit_rate_5']) . '
                         </td>
                         <td width="50%" valign="top">
-                            <b>Goods Insured - (as per bill of landing)</b><br><br>
+                            <b>Goods Insured - (as per bill of lading)</b><br><br>
                             ' . nl2br($sect2['oqqit_rate_1']) . '<br>
                             '.$oceanVessel.'
                         </td>
@@ -593,7 +593,7 @@ function getQuotationHTML($quotationID)
             </tr>
             <tr>
                 <td width="15" align="left">4.</td>
-                <td align="left">Original Bill Of Landing and/or other contract of carriage.</td>
+                <td align="left">Original Bill Of Lading and/or other contract of carriage.</td>
             </tr>
             <tr>
                 <td width="15" align="left">5.</td>
@@ -601,7 +601,7 @@ function getQuotationHTML($quotationID)
             </tr>
             <tr>
                 <td width="15" align="left">6.</td>
-                <td align="left">Landing account and weight notes at final destination.</td>
+                <td align="left">Lading account and weight notes at final destination.</td>
             </tr>
             <tr>
                 <td width="15" align="left">7.</td>
