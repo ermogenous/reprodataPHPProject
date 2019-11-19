@@ -8,6 +8,8 @@ if ($_POST["action"] == "insert") {
     $db->working_section = 'Insert new quotations type';
     $db->start_transaction();
 
+    $_POST['fld_added_field_person_company'] = $db->get_check_value($_POST['fld_added_field_person_company']);
+
     $_POST['fld_added_field_identity'] = $db->get_check_value($_POST['fld_added_field_identity']);
     $_POST['fld_added_field_identity_required'] = $db->get_check_value($_POST['fld_added_field_identity_required']);
 
@@ -39,6 +41,8 @@ if ($_POST["action"] == "insert") {
     $db->check_restriction_area('update');
     $db->working_section = 'Modify quotations type';
     $db->start_transaction();
+
+    $_POST['fld_added_field_person_company'] = $db->get_check_value($_POST['fld_added_field_person_company']);
 
     $_POST['fld_added_field_identity'] = $db->get_check_value($_POST['fld_added_field_identity']);
     $_POST['fld_added_field_identity_required'] = $db->get_check_value($_POST['fld_added_field_identity_required']);
@@ -634,6 +638,17 @@ $formValidator = new customFormValidator();
                                     Added fields
                                 </div>
                                 <div class="col-sm-8">
+                                    <div class="row">
+                                        <label for="fld_added_field_person_company" class="col-sm-3 col-form-label">
+                                            Person/Company:
+                                        </label>
+                                        <div class="col-sm-1">
+                                            <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                                   id="fld_added_field_person_company" name="fld_added_field_person_company"
+                                                <?php if ($data['oqqt_added_field_person_company'] == 1) echo 'checked'; ?>>
+                                        </div>
+                                    </div>
+
                                     <div class="row">
                                         <label for="fld_added_field_identity" class="col-sm-3 col-form-label">
                                             Identity:

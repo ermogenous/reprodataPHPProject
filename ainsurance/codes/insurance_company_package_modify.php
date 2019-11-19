@@ -81,7 +81,7 @@ $formValidator = new customFormValidator();
                                class="col-sm-4">Company</label>
                         <div class="col-sm-8" style="height: 45px;">
                             <select name="fld_insurance_company_ID" id="fld_insurance_company_ID"
-                                    class="form-control">
+                                    class="form-control" <?php if ($_GET['lid'] > 0) echo "disabled";?>>
                                 <option value=""></option>
                                 <?php
                                 $sql = "SELECT * FROM ina_insurance_companies WHERE inainc_status = 'Active' ORDER BY inainc_name ASC";

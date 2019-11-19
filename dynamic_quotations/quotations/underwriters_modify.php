@@ -45,6 +45,9 @@ if ($_POST["action"] == "insert") {
     if ($_POST['packageLuxury'] == 1) {
         $_POST['fld_tr_package_selection'] .= '#luxury#';
     }
+    if ($_POST['packageSpecial'] == 1) {
+        $_POST['fld_tr_package_selection'] .= '#special#';
+    }
     if ($_POST['packageSchengen'] == 1) {
         $_POST['fld_tr_package_selection'] .= '#schengen#';
     }
@@ -757,6 +760,13 @@ $formValidator = new customFormValidator();
 
                                     <div class="custom-control custom-checkbox custom-control-inline">
                                         <input type="checkbox" class="custom-control-input" value="1"
+                                               id="packageSpecial" name="packageSpecial"
+                                            <?php if (strpos($data['oqun_tr_package_selection'], '#special#') !== false) echo 'checked'; ?>>
+                                        <label class="custom-control-label" for="packageSpecial">Special</label>
+                                    </div>
+
+                                    <div class="custom-control custom-checkbox custom-control-inline">
+                                        <input type="checkbox" class="custom-control-input" value="1"
                                                id="packageSchengen" name="packageSchengen"
                                             <?php if (strpos($data['oqun_tr_package_selection'], '#schengen#') !== false) echo 'checked'; ?>>
                                         <label class="custom-control-label" for="packageSchengen">Schengen</label>
@@ -979,7 +989,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "number",
                                         "required" => true,
                                         "invalidTextAutoGenerate" => true,
-                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageBasic').is(':checked')"
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageLuxury').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -998,7 +1008,85 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "number",
                                         "required" => true,
                                         "invalidTextAutoGenerate" => true,
-                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageBasic').is(':checked')"
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageLuxury').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
+
+                            <div class="row form-group">
+                                <label for="fld_tr_special_premium" class="col-sm-3 col-form-label">
+                                    Special Package Per Day/Person Pr.
+                                </label>
+                                <div class="col-sm-1">
+                                    <input name="fld_tr_special_premium" type="text"
+                                           id="fld_tr_special_premium"
+                                           class="form-control text-center"
+                                           value="<?php echo $data['oqun_tr_special_premium']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_special_premium",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageSpecial').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+
+                                <label for="fld_tr_special_min_premium" class="col-sm-3 col-form-label">
+                                    Special Minimum Policy Premium
+                                </label>
+                                <div class="col-sm-1">
+                                    <input name="fld_tr_special_min_premium" type="text"
+                                           id="fld_tr_special_min_premium"
+                                           class="form-control text-center"
+                                           value="<?php echo $data['oqun_tr_special_min_premium']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_special_min_premium",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageSpecial').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+
+                                <label for="fld_tr_special_fees" class="col-sm-1 col-form-label text-right">
+                                    Fees
+                                </label>
+                                <div class="col-sm-1">
+                                    <input name="fld_tr_special_fees" type="text"
+                                           id="fld_tr_special_fees"
+                                           class="form-control text-center"
+                                           value="<?php echo $data['oqun_tr_special_fees']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_special_fees",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageSpecial').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+
+                                <label for="fld_tr_special_stamps" class="col-sm-1 col-form-label text-right">
+                                    Stamps
+                                </label>
+                                <div class="col-sm-1">
+                                    <input name="fld_tr_special_stamps" type="text"
+                                           id="fld_tr_special_stamps"
+                                           class="form-control text-center"
+                                           value="<?php echo $data['oqun_tr_special_stamps']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_tr_special_stamps",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidTextAutoGenerate" => true,
+                                        "requiredAddedCustomCode" => "&& $('#allow_tr').is(':checked') && $('#packageSpecial').is(':checked')"
                                     ]);
                                     ?>
                                 </div>

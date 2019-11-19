@@ -172,6 +172,29 @@ class Policy
         return $data;
     }
 
+    public function getParentUnderwriterData(){
+        global $db;
+
+        $underwriter = $db->query_fetch('SELECT * FROM ina_underwriters WHERE inaund_underwriter_ID = '.$this->policyData['inapol_underwriter_ID']);
+
+        $sql = "SELECT * FROM 
+                  ina_underwriters 
+                  JOIN users ON usr_users_ID = inaund_user_ID
+                  WHERE inaund_underwriter_ID = " .$underwriter['inaund_subagent_ID'] ;
+        $data = $db->query_fetch($sql);
+
+        //get commission
+        $typeCode = strtolower($this->policyData['inapol_type_code']);
+        $sql = "SELECT * FROM
+                  ina_underwriter_companies 
+                  WHERE
+                  inaunc_underwriter_ID = " . $data['inaund_underwriter_ID'] . "
+                  AND inaunc_insurance_company_ID = " . $this->policyData['inapol_insurance_company_ID'];
+        $commData = $db->query_fetch($sql);
+        $data['clo_commission_percent'] = $commData['inaunc_commission_' . $typeCode];
+        return $data;
+    }
+
     public function getPeriodTotalPremiums()
     {
         global $db;
@@ -1204,17 +1227,27 @@ class Policy
             ];
         }
 
-        if ($this->policyData['inainc_account_ID'] == '') {
+        if ($this->policyData['inainc_debtor_account_ID'] == '') {
             $this->error = true;
-            $this->errorDescription = 'No account defined for this company';
+            $this->errorDescription = 'No debtor account defined for this company';
+            return [
+                "Error" => $this->errorDescription
+            ];
+        }
+
+        if ($this->policyData['inainc_revenue_account_ID'] == '') {
+            $this->error = true;
+            $this->errorDescription = 'No revenue account defined for this company';
             return [
                 "Error" => $this->errorDescription
             ];
         }
 
         //Company transactions
+        $companyData = $db->query_fetch('
+          SELECT * FROM ina_insurance_companies WHERE inainc_insurance_company_ID = '.$this->policyData['inapol_insurance_company_ID']);
         //1. Debit
-        $companyDrAccountID = $this->insuranceSettings['inaset_ins_comp_dr_acc_ID'];
+        $companyDrAccountID = $companyData['inainc_debtor_account_ID'];
         $companyDrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $companyDrAccountID);
         $companyDrAccountName = $companyDrAccountDetails['acacc_name'];
         $companyDrAccountCode = $companyDrAccountDetails['acacc_code'];
@@ -1226,7 +1259,7 @@ class Policy
         //echo "Dr Account: ".$companyDrAccountCode." - ".$companyDrAccountName." Amount:".$result[1]['ammount']."<br>";
 
         //2. Credit
-        $companyCrAccountID = $this->policyData['inainc_account_ID'];
+        $companyCrAccountID = $companyData['inainc_revenue_account_ID'];
         //get the name of the account
         $companyCrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $companyCrAccountID);
         $companyCrAccountName = $companyCrAccountDetails['acacc_name'];
@@ -1239,13 +1272,33 @@ class Policy
         //echo "Cr Account: ".$companyCrAccountCode.' - '.$companyCrAccountName." Amount:".$result[2]['ammount']."<br>";
 
         //Sub Agent Transactions
+
+        //First check if the agent is sub-sub agent
+        $subAgent = false;
+        $subSubAgent = false;
+        $subAgentData = $this->getPolicyUnderwriterData();
+        $subSubAgentData = [];
+        if ($subAgentData['inaund_subagent_ID'] == 0 || $subAgentData['inaund_subagent_ID'] == ''){
+            $subAgent = false;
+            $subSubAgent = false;
+        }
+        else if ($subAgentData['inaund_subagent_ID'] == -1){
+            $subAgent = true;
+            $subSubAgent = false;
+        }
+        else if ($subAgentData['inaund_subagent_ID'] > 0){
+            $subAgent = true;
+            $subSubAgent = true;
+            $subSubAgentData = $db->query_fetch('SELECT * FROM ina_underwriters WHERE inaund_underwriter_ID = '.$subAgentData['inaund_underwriter_ID']);
+        }
+
         //First check if the agent is sub agent
-        $underwriterData = $this->getPolicyUnderwriterData();
+
         //if -1 then is top sub agent
-        if ($underwriterData['inaund_subagent_ID'] == -1) {
+        if ($subAgent == true) {
 
             //1.Dr
-            $subAgentDrAccountID = $underwriterData['inaund_subagent_acc_ID'];
+            $subAgentDrAccountID = $subAgentData['inaund_subagent_dr_account_ID'];
             $subAgentDrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $subAgentDrAccountID);
             $subAgentDrAccountName = $subAgentDrAccountDetails['acacc_name'];
             $subAgentDrAccountCode = $subAgentDrAccountDetails['acacc_code'];
@@ -1257,7 +1310,7 @@ class Policy
             //echo "<br>Dr Account: ".$subAgentDrAccountCode.' - '.$subAgentDrAccountName." Amount:".$result[3]['ammount']."<br>";
 
             //2.Cr
-            $subAgentCrAccountID = $this->insuranceSettings['inaset_sub_agent_cr_acc_ID'];
+            $subAgentCrAccountID = $subAgentData['inaund_subagent_cr_account_ID'];
             $subAgentCrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $subAgentCrAccountID);
             $subAgentCrAccountName = $subAgentCrAccountDetails['acacc_name'];
             $subAgentCrAccountCode = $subAgentCrAccountDetails['acacc_code'];

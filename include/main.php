@@ -124,6 +124,7 @@ class Main
             echo "Error Connecting to Database";
             exit();
         }
+
         $this->db_handle->select_db($this->settings["db_database"]);
 
         $this->db_handle->query("SET NAMES 'utf8'");
@@ -140,11 +141,8 @@ class Main
         $this->date_info["minute"] = substr($this->date_info["full"], 14, 2);
         $this->date_info["second"] = substr($this->date_info["full"], 17, 2);
         $this->date_info["full2"] = $this->date_info["year"] . "-" . $this->date_info["month"] . "-" . $this->date_info["day"] . " " . $this->date_info["hour"] . ":" . $this->date_info["minute"] . ":" . $this->date_info["second"];
-
         $this->getAllStartUpSettings();
-
         $this->check_ip_location();
-
         $this->generateSessionDismiss();
         $this->generateSessionAlert();
 
@@ -197,7 +195,6 @@ class Main
         $sql = "SELECT *,timestampdiff(DAY, ipl_last_check, now())as clo_days_diff FROM ip_locations WHERE ipl_ip = '" . $ip . "'";
         $data = $this->query_fetch($sql);
         $country = $data["ipl_country"];
-
         //if already exists check when was last checked.
         //if more than 15 days then send for update check again.
         if ($data["ipl_ip_location_serial"] > 0) {
@@ -211,7 +208,6 @@ class Main
         } else {
             $retrive_data = 1;
         }
-
         //if ($ip == '81.4.137.26') {
         //echo "https://ipinfo.io/{$ip}/json";
         //$details = json_decode(file_get_contents("https://ipinfo.io/{$ip}/json"));
@@ -700,10 +696,8 @@ class Main
 
     public function query_fetch($sql, $info = 'No information defined for this query')
     {
-
         $row = mysqli_fetch_assoc($this->query($sql, $info));
         return $row;
-
     }
 
     public function num_rows($result)

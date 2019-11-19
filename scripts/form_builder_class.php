@@ -13,6 +13,7 @@ class FormBuilder
     private $fieldDescription; //Type of the text input: text/number/email
     private $fieldType;//text of all label classes needed
     private $fieldInputType;// Type of input input/select/checkbox/radio/textarea
+    private $fieldStyle = '';
     private $labelClasses; //the value of the input.
     private $inputExtraClasses;
     private $inputValue;//true/false if true adds an extra empty option at the top
@@ -82,7 +83,7 @@ class FormBuilder
             $disabled = 'disabled';
         }
 
-        echo '<input name="' . $this->fieldName . '" type="' . $this->fieldInputType . '" id="' . $this->fieldName . '"
+        echo '<input name="' . $this->fieldName . '" type="' . $this->fieldInputType . '" id="' . $this->fieldName . '" style="'.$this->fieldStyle.'"
               value="' . $this->inputValue . '" '. ' onkeyup="'.$this->fieldOnKeyUp.'" onchange="'.$this->fieldOnChange.'"
               class="' . $this->defaultInputClass . ' ' . $this->inputExtraClasses . '" '.$disabled.'/>';
     }
@@ -90,7 +91,7 @@ class FormBuilder
     private function buildInputSelect()
     {
         global $db;
-        echo '<select id="' . $this->fieldName . '" name="' . $this->fieldName . '" class="' . $this->defaultInputClass
+        echo '<select id="' . $this->fieldName . '" name="' . $this->fieldName . '" class="' . $this->defaultInputClass .' style="'.$this->fieldStyle.'"'
             . ' onkeyup="'.$this->fieldOnKeyUp.'" onchange="'.$this->fieldOnChange.'"  ' . $this->inputExtraClasses . '">' . PHP_EOL;
 
         if ($this->inputSelectAddEmptyOption == true) {
@@ -334,6 +335,11 @@ class FormBuilder
 
     public function setDisableField(){
         $this->disableField = true;
+        return $this;
     }
 
+    public function setFieldStyle($style){
+        $this->fieldStyle = $style;
+        return $this;
+    }
 }

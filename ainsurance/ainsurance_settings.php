@@ -76,7 +76,7 @@ $formValidator->showErrorList();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_ins_comp_dr_control_account_ID" class="col-sm-4 col-form-label">Dr Account Control. Insurance Companies</label>
+                        <label for="fld_ins_comp_dr_control_account_ID" class="col-sm-4 col-form-label">Dr Account Control. Insurance Companies [DELETE]</label>
                         <div class="col-sm-4">
                             <select name="fld_ins_comp_dr_control_account_ID" id="fld_ins_comp_dr_control_account_ID"
                                     class="form-control">
@@ -112,7 +112,7 @@ $formValidator->showErrorList();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_ins_comp_cr_control_account_ID" class="col-sm-4 col-form-label">Cr Account Control. Insurance Companies</label>
+                        <label for="fld_ins_comp_cr_control_account_ID" class="col-sm-4 col-form-label">Cr Account Control. Insurance Companies[DELETE]</label>
                         <div class="col-sm-4">
                             <select name="fld_ins_comp_cr_control_account_ID" id="fld_ins_comp_cr_control_account_ID"
                                     class="form-control">

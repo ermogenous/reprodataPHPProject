@@ -7,17 +7,54 @@
  */
 
 include("../../include/main.php");
-include("../../include/tables.php");
+//include("../../include/tables.php");
+include("../../tools/table_list.php");
 
 $db = new Main(1, 'UTF-8');
 $db->admin_title = "AInsurance Companies";
 
 $db->show_header();
 
-$table = new draw_table('ina_insurance_companies', 'inainc_insurance_company_ID', 'ASC');
 
-$table->generate_data();
+$list = new TableList();
+$list->setTable('ina_insurance_companies', 'InsuranceCompanies')
+    ->setSqlSelect('inainc_insurance_company_ID', 'ID')
+    ->setSqlSelect('inainc_code', 'Code')
+    ->setSqlSelect('inainc_name', 'Name')
+    ->setSqlSelect('inainc_status', 'Status')
+    //->setSqlFrom('JOIN ac_documents ON acdoc_document_ID = actrn_document_ID')
+    ->setSqlOrder('inainc_insurance_company_ID', 'ASC')
+    ->setPerPage(50)
+    ->generateData();
 
+//echo $list->getSql();
+
+$list->setMainColumn('col-lg-10')
+    ->setTopTitle('Insurance Companies')
+    ->setTopContainerToFluid()
+    ->setLeftColumn('col-lg-1')
+    ->setRightColumn('col-lg-1')
+    ->showPagesLinksTop()
+    ->showPagesLinksBottom()
+    ->addTableColumn('Packages', 'packageFunction', [
+        'thAlign' => 'center',
+        'tdAlign' => 'center'
+    ])
+    ->setDeleteConfirmText('Are you sure you want to delete this Insurance Company?')
+    ->setMainFieldID('ID')
+    ->setModifyLink('insurance_company_modify.php?lid=')
+    ->setDeleteLink('insurance_company_delete.php?lid=')
+    //->setFunctionIconArea('IconsFunction')
+    ->tableFullBuilder();
+
+function packageFunction($data)
+{
+    return '<a href="insurance_company_packages.php?lid=' . $data['ID'] . '"><i class="fas fa-cubes"></i></a>';
+}
+
+//$table = new draw_table('ina_insurance_companies', 'inainc_insurance_company_ID', 'ASC');
+//$table->generate_data();
+/*
 ?>
 
 
@@ -81,5 +118,6 @@ $table->generate_data();
     }
 </script>
 <?php
+*/
 $db->show_footer();
 ?>

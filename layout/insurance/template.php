@@ -403,21 +403,31 @@ function template_header()
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/codes/insurance_companies.php">
                                     <i class="fab fa-linode"></i> Insurance Companies</a>
+
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/ainsurance/codes/insurance_company_packages.php">
+                                    <i class="fas fa-cubes"></i> Insurance Company Packages</a>
+
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/underwriters/underwriters.php">
                                     <i class="fas fa-users"></i> Insurance Underwriters</a>
+
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/send_auto_emails/send_auto_emails.php">
                                     <i class="fas fa-envelope"></i> Auto Emails</a>
+
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/settings/settings_update.php">
                                     <i class="fas fa-screwdriver"></i> System Settings</a>
+
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/agents/agents.php">
                                     <i class="fas fa-users"></i> Agents</a>
+
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/policy_types/policy_types.php">
                                     <i class="fas fa-linode"></i> Policy Types</a>
+
                             </div>
 
                         </li>

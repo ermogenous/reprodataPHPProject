@@ -22,7 +22,7 @@ if ($_GET["quotation"] != "") {
     $quote = new dynamicQuotation($_GET['quotation']);
     $quotation_type_data = $quote->quotationData();
     $quotationUnderwriter = $db->query_fetch(
-            'SELECT * FROM 
+        'SELECT * FROM 
                   oqt_quotations_underwriters 
                   WHERE oqun_user_ID = ' . $q_data['oqq_users_ID']
     );
@@ -43,11 +43,10 @@ if ($_GET["quotation"] != "") {
 if ($_GET["quotation"] != "") {
     if ($db->user_data["usr_users_ID"] != $q_data["oqq_users_ID"] && $db->user_data["usr_user_rights"] >= 3) {
         //check if the underwriter has access to view this group users
-        if ($underwriter['oqun_view_group_ID'] > 0 && $underwriter['oqun_view_group_ID'] == $quote->quotationData()['usr_users_groups_ID']){
+        if ($underwriter['oqun_view_group_ID'] > 0 && $underwriter['oqun_view_group_ID'] == $quote->quotationData()['usr_users_groups_ID']) {
             //do nothing
             $disableForm = true;
-        }
-        else {
+        } else {
             header("Location: quotations.php?notAllowed");
             exit();
         }
@@ -135,7 +134,7 @@ if ($_POST["action"] == "save") {
 		        oqq_detail_price_array = '" . $premium_result["detailed_result"] . "' WHERE oqq_quotations_ID = " . $quotation_id;
 
             //only update the premium if the calculation type is not Manual
-            if ($q_data['oqq_calculation_type'] != 'Manual'){
+            if ($q_data['oqq_calculation_type'] != 'Manual') {
                 $db->query($sql);
             }
 
@@ -206,7 +205,7 @@ if ($quote->quotationData()['oqq_status'] != 'Outstanding' && $_GET['quotation']
     }
 }
 //check if to disable form
-if ($disableForm == true){
+if ($disableForm == true) {
     $formValidator->disableForm();
 }
 $formValidator->addCustomCode("
@@ -290,6 +289,34 @@ $formValidator->showErrorList();
                             <?php } ?>
                         </div>
                     </div>
+
+                    <?php if ($quotation_type_data['oqqt_added_field_nationality'] == 1) { ?>
+                        <div class="form-group row">
+                            <label for="person_company" class="col-sm-4 col-form-label">
+                                <?php show_quotation_text("Ατομο/Εταιρεία", "Person/Company"); ?>
+                            </label>
+                            <div class="col-sm-8">
+                                <select class="form-control" id="person_company" name="person_company">
+                                    <option value="Person"
+                                        <?php if ($q_data['oqq_person_company'] == 'Person') echo "selected"; ?>
+                                    >Person
+                                    </option>
+                                    <option value="Company"
+                                        <?php if ($q_data['oqq_person_company'] == 'Company') echo "selected"; ?>
+                                    >Company
+                                    </option>
+                                </select>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'person_company',
+                                        'fieldDataType' => 'select',
+                                        'required' => false
+                                    ]);
+                                ?>
+                            </div>
+                        </div>
+                    <?php } ?>
 
 
                     <div class="form-group row">
@@ -390,67 +417,67 @@ $formValidator->showErrorList();
                     </div>
 
                     <?php if ($quotation_type_data['oqqt_added_field_identity'] == 1) { ?>
-                    <div class="form-group row">
-                        <label for="insureds_id" class="col-sm-4 col-form-label">
-                            <?php
-                            $idText = $quotation_type_data['oqqt_identity_replace_text'];
-                            if ($idText == '') {
-                                $idGreek = 'Ταυτότητα';
-                                $idEnglish = 'Identity Card';
-                            } else {
-                                $idText = explode('||', $idText);
-                                $idGreek = $idText[1];
-                                $idEnglish = $idText[0];
-                            }
-                            show_quotation_text($idGreek, $idEnglish);
-                            ?>
-                        </label>
-                        <div class="col-sm-8">
-                            <input name="insureds_id" type="text" id="insureds_id"
-                                   class="form-control"
-                                   value="<?php echo $q_data["oqq_insureds_id"]; ?>">
-                            <?php
-                            $identityRequired = false;
-                            if ($quotation_type_data['oqqt_added_field_identity_required'] == 1) {
-                                $identityRequired = true;
-                            }
-                            $formValidator->addField(
-                                [
-                                    'fieldName' => 'insureds_id',
-                                    'fieldDataType' => 'text',
-                                    'required' => $identityRequired,
-                                    'invalidText' => show_quotation_text("Συμπληρώστε Ταυτότητα.", "Must Enter Identity Card", 'Return')
-                                ]);
-                            ?>
+                        <div class="form-group row">
+                            <label for="insureds_id" class="col-sm-4 col-form-label">
+                                <?php
+                                $idText = $quotation_type_data['oqqt_identity_replace_text'];
+                                if ($idText == '') {
+                                    $idGreek = 'Ταυτότητα';
+                                    $idEnglish = 'Identity Card';
+                                } else {
+                                    $idText = explode('||', $idText);
+                                    $idGreek = $idText[1];
+                                    $idEnglish = $idText[0];
+                                }
+                                show_quotation_text($idGreek, $idEnglish);
+                                ?>
+                            </label>
+                            <div class="col-sm-8">
+                                <input name="insureds_id" type="text" id="insureds_id"
+                                       class="form-control"
+                                       value="<?php echo $q_data["oqq_insureds_id"]; ?>">
+                                <?php
+                                $identityRequired = false;
+                                if ($quotation_type_data['oqqt_added_field_identity_required'] == 1) {
+                                    $identityRequired = true;
+                                }
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'insureds_id',
+                                        'fieldDataType' => 'text',
+                                        'required' => $identityRequired,
+                                        'invalidText' => show_quotation_text("Συμπληρώστε Ταυτότητα.", "Must Enter Identity Card", 'Return')
+                                    ]);
+                                ?>
 
+                            </div>
                         </div>
-                    </div>
                     <?php } ?>
 
                     <?php if ($quotation_type_data['oqqt_added_field_telephone'] == 1) { ?>
-                    <div class="form-group row">
-                        <label for="insureds_tel" class="col-sm-4 col-form-label">
-                            <?php show_quotation_text("Τηλέφωνο", "Telephone"); ?>
-                        </label>
-                        <div class="col-sm-8">
-                            <input name="insureds_tel" type="text" id="insureds_tel"
-                                   class="form-control"
-                                   value="<?php echo $q_data["oqq_insureds_tel"]; ?>">
-                            <?php
-                            $telephoneRequired = false;
-                            if ($quotation_type_data['oqqt_added_field_telephone_required'] == 1) {
-                                $telephoneRequired = true;
-                            }
-                            $formValidator->addField(
-                                [
-                                    'fieldName' => 'insureds_tel',
-                                    'fieldDataType' => 'text',
-                                    'required' => $telephoneRequired,
-                                    'invalidText' => show_quotation_text("Συμπληρώστε Τηλέφωνο.", "Must Enter Telephone", 'Return')
-                                ]);
-                            ?>
+                        <div class="form-group row">
+                            <label for="insureds_tel" class="col-sm-4 col-form-label">
+                                <?php show_quotation_text("Τηλέφωνο", "Telephone"); ?>
+                            </label>
+                            <div class="col-sm-8">
+                                <input name="insureds_tel" type="text" id="insureds_tel"
+                                       class="form-control"
+                                       value="<?php echo $q_data["oqq_insureds_tel"]; ?>">
+                                <?php
+                                $telephoneRequired = false;
+                                if ($quotation_type_data['oqqt_added_field_telephone_required'] == 1) {
+                                    $telephoneRequired = true;
+                                }
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'insureds_tel',
+                                        'fieldDataType' => 'text',
+                                        'required' => $telephoneRequired,
+                                        'invalidText' => show_quotation_text("Συμπληρώστε Τηλέφωνο.", "Must Enter Telephone", 'Return')
+                                    ]);
+                                ?>
+                            </div>
                         </div>
-                    </div>
                     <?php } ?>
 
                     <?php if ($quotation_type_data['oqqt_added_field_nationality'] == 1) { ?>
@@ -503,6 +530,9 @@ $formValidator->showErrorList();
                                 if ($quotation_type_data['oqqt_added_field_dob_required'] == 1) {
                                     $dobRequired = true;
                                 }
+                                if ($quotation_type_data['oqqt_added_field_nationality'] == 1){
+                                    $addedCustomCode = "&& $('#person_company').val() != 'Company'";
+                                }
 
                                 $formValidator->addField(
                                     [
@@ -511,7 +541,8 @@ $formValidator->showErrorList();
                                         'required' => $dobRequired,
                                         'enableDatePicker' => true,
                                         'datePickerValue' => $db->convertDateToEU($q_data["oqq_birthdate"]),
-                                        'invalidText' => show_quotation_text("Συμπληρώστε Ημ. Γέννησης.", "Must Enter Date of Birth", 'Return')
+                                        'invalidText' => show_quotation_text("Συμπληρώστε Ημ. Γέννησης.", "Must Enter Date of Birth", 'Return'),
+                                        'requiredAddedCustomCode' => $addedCustomCode
                                     ]);
                                 ?>
                             </div>

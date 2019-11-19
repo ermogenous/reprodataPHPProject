@@ -328,6 +328,34 @@ $db->show_header();
 
                         </div>
 
+                        <div class="form-group row">
+                            <label for="fld_entity_ID" class="col-sm-2 col-form-label">Entity</label>
+                            <div class="col-sm-4">
+                                <select name="fld_entity_ID" id="fld_entity_ID"
+                                        class="form-control">
+                                    <option value="0">None</option>
+                                    <?php
+                                    $entitiesResult = $db->query('SELECT * FROM ac_entities WHERE acet_active = "Active"');
+                                    while ($entity = $db->fetch_assoc($entitiesResult)){
+                                        ?>
+                                        <option value="<?php echo $entity['acet_entity_ID']; ?>" <?php if ($data['acacc_entity_ID'] == $entity['acet_entity_ID']) echo 'selected'; ?>>
+                                            <?php echo $entity['acet_name']; ?>
+                                        </option>
+                                    <?php } ?>
+                                </select>
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_entity_ID',
+                                        'fieldDataType' => 'select',
+                                        'required' => false,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
+                            </div>
+
+                        </div>
+
 
                         <div class="form-group row">
 

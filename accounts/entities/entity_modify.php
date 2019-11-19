@@ -34,13 +34,6 @@ if ($_POST["action"] == "insert") {
 }
 
 
-if ($_GET["lid"] != "") {
-
-    $sql = "SELECT * FROM `ac_entities` WHERE `acet_entity_ID` = " . $_GET["lid"];
-    $data = $db->query_fetch($sql);
-
-}
-
 $formValidator = new customFormValidator();
 $formValidator->setFormName('myForm');
 $formValidator->showErrorList();
@@ -50,21 +43,28 @@ $db->enable_rxjs_lite();
 $db->show_header();
 FormBuilder::buildPageLoader();
 
+if ($_GET["lid"] != "") {
 
-//check if entity is connected to a customer. If yes then lock the form
-$customer = $db->query_fetch('SELECT * FROM customers WHERE cst_entity_ID = '.$_GET['lid']);
-if ($customer['cst_customer_ID'] > 0){
-    $formValidator->disableForm(['buttons']);
-    $customerLock = true;
-}
-//check if entity is connected to an insurance company. If yes then lock the form
-if ($db->get_setting('ina_enable_agent_insurance') == 1) {
-    $insComp = $db->query_fetch('SELECT * FROM ina_insurance_companies WHERE inainc_entity_ID = ' . $_GET['lid']);
-    if ($insComp['inainc_insurance_company_ID'] > 0) {
+    $sql = "SELECT * FROM `ac_entities` WHERE `acet_entity_ID` = " . $_GET["lid"];
+    $data = $db->query_fetch($sql);
+
+    //check if entity is connected to a customer. If yes then lock the form
+    $customer = $db->query_fetch('SELECT * FROM customers WHERE cst_entity_ID = ' . $_GET['lid']);
+    if ($customer['cst_customer_ID'] > 0) {
         $formValidator->disableForm(['buttons']);
+        $customerLock = true;
     }
-    $insCompLock = true;
+    //check if entity is connected to an insurance company. If yes then lock the form
+    if ($db->get_setting('ina_enable_agent_insurance') == 1) {
+        $insComp = $db->query_fetch('SELECT * FROM ina_insurance_companies WHERE inainc_entity_ID = ' . $_GET['lid']);
+        if ($insComp['inainc_insurance_company_ID'] > 0) {
+            $formValidator->disableForm(['buttons']);
+        }
+        $insCompLock = true;
+    }
 }
+
+
 ?>
 
 
@@ -100,7 +100,8 @@ if ($db->get_setting('ina_enable_agent_insurance') == 1) {
                         ?>
                         <div class="row">
                             <div class="col-12 alert alert-warning text-center">
-                                <strong>This entity is connected to an insurance company. To edit the fields you must edit the
+                                <strong>This entity is connected to an insurance company. To edit the fields you must
+                                    edit the
                                     insurance company</strong><br>
                                 <a href="../../ainsurance/codes/insurance_company_modify.php?lid=<?php echo $insComp['inainc_insurance_company_ID']; ?>">Edit
                                     Insurance Company</a>

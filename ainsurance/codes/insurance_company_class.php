@@ -25,6 +25,47 @@ class InsuranceCompany {
         
     }
 
+    public function delete(){
+        global $db;
+        if ($this->insuranceCompanyID == '' || $this->insuranceCompanyData['inainc_insurance_company_ID'] == ''){
+            $this->error = true;
+            $this->errorDescription = 'Must provide insurance company ID';
+            return false;
+        }
+
+        //validations
+        //1: check if used in policies
+        $sql = 'SELECT * FROM ina_policies WHERE inapol_insurance_company_ID = '.$this->insuranceCompanyID;
+        $result = $db->query_fetch($sql);
+        if ($result['inapol_policy_ID'] > 0){
+            $this->error = true;
+            $this->errorDescription = 'Insurance Company used in policies. Cannot delete';
+            return false;
+        }
+
+        //2: check if connected to an entity
+        if ($this->insuranceCompanyData['inainc_entity_ID'] > 0){
+            $this->error = true;
+            $this->errorDescription = 'Insurance comapny is connected to an accounts entity. Must be removed first.';
+            return false;
+        }
+
+        //3: Check if any packages exists
+        $sql = 'SELECT * FROM ina_insurance_company_packages WHERE inaincpk_insurance_company_ID = '.$this->insuranceCompanyID;
+        $result = $db->query_fetch($sql);
+        if ($result['inaincpk_insurance_company_ID'] > 0){
+            $this->error = true;
+            $this->errorDescription = 'Insurance Company packages found. Must delete the packages first. Cannot delete';
+            return false;
+        }
+        
+        $db->db_tool_delete_row('ina_insurance_companies', $this->insuranceCompanyID,
+            'inainc_insurance_company_ID = '.$this->insuranceCompanyID);
+
+        return true;
+
+    }
+
     private $insuranceSettings;
     private $gotInsuranceSettings = false;
     private function getInsuranceSettings(){

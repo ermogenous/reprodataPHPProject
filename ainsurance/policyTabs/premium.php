@@ -48,12 +48,12 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                 <form name="myForm" id="myForm" method="post" action=""
                     <?php $formValidator->echoFormParameters(); ?> >
                     <div class="alert alert-dark text-center">
-                        <b><?php echo $db->showLangText('Premium','Ασφάληστρα');?></b>
+                        <b><?php echo $db->showLangText('Premium', 'Ασφάληστρα'); ?></b>
                     </div>
 
                     <div class="form-group row">
                         <label for="fld_premium" class="col-sm-3 col-form-label">
-                            <?php echo $db->showLangText('Policy Net Premium','Καθαρά Ασφάληστρα');?>
+                            <?php echo $db->showLangText('Policy Net Premium', 'Καθαρά Ασφάληστρα'); ?>
                         </label>
                         <div class="col-sm-3">
                             <input type="text" id="fld_premium" name="fld_premium"
@@ -72,9 +72,9 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                         </div>
 
                         <label for="fld_commission" class="col-sm-3 col-form-label">
-                            <?php echo $db->showLangText('Policy Commission','Προμήθεια')." ".$policy->companyCommission."%";?>
+                            <?php echo $db->showLangText('Policy Commission', 'Προμήθεια') . " " . $policy->companyCommission . "%"; ?>
                             <i class="fas fa-calculator" style="cursor: pointer;" onclick="calculateCommission();"></i>
-                            <input type="hidden" value="<?php echo $policy->companyCommission;?>"
+                            <input type="hidden" value="<?php echo $policy->companyCommission; ?>"
                                    id="commissionPercent" name="commissionPercent">
                         </label>
                         <div class="col-sm-3">
@@ -92,47 +92,12 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                                 ]);
                             ?>
                         </div>
-                        <script>
-                            function calculateCommission(){
-                                let premium = $('#fld_premium').val() * 1;
-                                let fees = $('#fld_fees').val() * 1;
-                                let commPercent = $('#commissionPercent').val() * 1;
-                                let commCalculation = '<?php echo $policy->commissionCalculation;?>';
-                                let commission = 0;
 
-                                if (commCalculation == 'commNetPrem'){
-                                    commission = (premium * commPercent) / 100;
-                                }
-                                else if (commCalculation == 'commNetPremFees'){
-                                    commission = ((premium + fees) * commPercent) / 100;
-                                }
-                                else {
-                                    commission = (premium * commPercent) / 100;
-                                }
-                                commission = commission.toFixed(2);
-                                $('#fld_commission').val(commission);
-
-                                //sub agent commission
-                                if (-1 == <?php echo $policyUnderwriter['inaund_subagent_ID'];?>){
-                                    console.log('Sub Agent exists');
-
-                                    let subCommPercent = '<?php echo $policyUnderwriter['clo_commission_percent'];?>';
-                                    subCommPercent = subCommPercent * 1;
-                                    let subCommission = 0;
-
-                                    subCommission = (premium * subCommPercent) / 100;
-                                    subCommission = subCommission.toFixed(2);
-                                    $('#fld_subagent_commission').val(subCommission);
-
-                                }
-
-                            }
-                        </script>
                     </div>
 
                     <div class="form-group row">
                         <label for="fld_fees" class="col-sm-3 col-form-label">
-                            <?php echo $db->showLangText('Policy Fees','Δηκαιώματα');?>
+                            <?php echo $db->showLangText('Policy Fees', 'Δηκαιώματα'); ?>
                         </label>
                         <div class="col-sm-3">
                             <input type="text" name="fld_fees" id="fld_fees"
@@ -152,7 +117,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
 
 
                         <label for="fld_stamps" class="col-sm-3 col-form-label">
-                            <?php echo $db->showLangText('Policy Stamps','Χαρτόσημα');?>
+                            <?php echo $db->showLangText('Policy Stamps', 'Χαρτόσημα'); ?>
                         </label>
                         <div class="col-sm-3">
                             <input type="text" name="fld_stamps" id="fld_stamps"
@@ -173,7 +138,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
 
                         <?php if (1 == 2) { ?>
                             <label for="fld_mif" class="col-sm-3 col-form-label">
-                                <?php echo $db->showLangText('Policy MIF','Τ.Α.Μ.Ο');?>
+                                <?php echo $db->showLangText('Policy MIF', 'Τ.Α.Μ.Ο'); ?>
                             </label>
                             <div class="col-sm-3">
                                 <input type="text" id="fld_mif" name="fld_mif"
@@ -195,35 +160,72 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                     </div>
 
                     <?php
-                    if ($policyUnderwriter['inaund_subagent_ID'] == -1){
-                    ?>
-                    <div class="form-group row">
-                        <label for="fld_subagent_commission"  class="col-sm-9 text-right col-form-label">
-                            Sub Agent Commission: <?php echo $policyUnderwriter['usr_name']." ".$policyUnderwriter['clo_commission_percent']."%";?>
-                        </label>
-                        <div class="col-sm-3">
-                            <input type="text" id="fld_subagent_commission" name="fld_subagent_commission"
-                                   class="form-control"
-                                   required onchange="updateGrossPremium();"
-                                   value="<?php echo $policy->policyData["inapol_subagent_commission"]; ?>">
-                            <?php
-                            $formValidator->addField(
-                                [
-                                    'fieldName' => 'fld_subagent_commission',
-                                    'fieldDataType' => 'number',
-                                    'required' => true,
-                                    'invalidText' => 'Sub Agent Commission is Required'
-                                ]);
-                            ?>
+                    if ($policyUnderwriter['inaund_subagent_ID'] == -1 || $policyUnderwriter['inaund_subagent_ID'] > 0) {
+
+                        //if sub sub agent then get commission rate from parent
+                        if ($policyUnderwriter['inaund_subagent_ID'] > 0) {
+                            $subAgentData = $policy->getParentUnderwriterData();
+                            $subAgentRate = $subAgentData['clo_commission_percent'];
+                            $subAgentName = $subAgentData['usr_name'];
+                        } else {
+                            $subAgentRate = $policy->policyData["inapol_subagent_commission"];
+                            $subAgentName = $policyUnderwriter['usr_name'];
+                        }
+
+                        ?>
+                        <div class="form-group row">
+                            <label for="fld_subagent_commission" class="col-sm-9 text-right col-form-label">Sub Agent
+                                Comm.: <?php echo $subAgentName . " " . $subAgentRate . "%"; ?>
+                            </label>
+                            <div class="col-sm-3">
+                                <input type="text" id="fld_subagent_commission" name="fld_subagent_commission"
+                                       class="form-control"
+                                       required onchange="updateGrossPremium();"
+                                       value="<?php echo $subAgentRate; ?>">
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_subagent_commission',
+                                        'fieldDataType' => 'number',
+                                        'required' => true,
+                                        'invalidText' => 'Sub Agent Commission is Required'
+                                    ]);
+                                ?>
+                            </div>
                         </div>
-                    </div>
+                    <?php } ?>
+
+                    <?php
+                    if ($policyUnderwriter['inaund_subagent_ID'] > 0) {
+                        ?>
+                        <div class="form-group row">
+                            <label for="fld_subsubagent_commission" class="col-sm-9 text-right col-form-label">SubSub
+                                Agent
+                                Commission: <?php echo $policyUnderwriter['usr_name'] . " " . $policyUnderwriter['clo_commission_percent'] . "%"; ?>
+                            </label>
+                            <div class="col-sm-3">
+                                <input type="text" id="fld_subsubagent_commission" name="fld_subsubagent_commission"
+                                       class="form-control"
+                                       required onchange="updateGrossPremium();"
+                                       value="<?php echo $policy->policyData["inapol_subsubagent_commission"]; ?>">
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_subsubagent_commission',
+                                        'fieldDataType' => 'number',
+                                        'required' => true,
+                                        'invalidText' => 'SubSub Agent Commission is Required'
+                                    ]);
+                                ?>
+                            </div>
+                        </div>
                     <?php } ?>
 
                     <div class="form-group row">
                         <div class="col-sm-5 col-form-label"></div>
 
                         <label class="col-sm-4 col-form-label alert alert-success">
-                            <?php echo $db->showLangText('Policy Gross Premium','Συνολικά Ασφάληστρα');?>
+                            <?php echo $db->showLangText('Policy Gross Premium', 'Συνολικά Ασφάληστρα'); ?>
                         </label>
                         <div class="col-sm-3 text-center alert alert-success" id="grossPremium"></div>
                     </div>
@@ -247,7 +249,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                                 if ($policy->policyData['inapol_process_status'] != 'Cancellation') {
                                     ?>
                                     <div class="col-5 alert alert-danger">
-                                        <?php echo $db->showLangText('Must insert ','Πρέπει να εισαχθεί ');?> <?php echo $policy->getTypeFullName(); ?></div>
+                                        <?php echo $db->showLangText('Must insert ', 'Πρέπει να εισαχθεί '); ?><?php echo $policy->getTypeFullName(); ?></div>
                                     <?php
                                 }
                             }
@@ -266,8 +268,12 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                             <textarea disabled style="width: 100%" rows="5"><?php
                                 if ($policy->policyData['inapol_status'] == 'Outstanding') {
                                     $transactionData = $policy->getAccountTransactionsList();
-                                    foreach ($transactionData as $num => $trans){
-                                        echo $num." ".$trans['type']." - ".$trans['code']."-".$trans['name']." ".$trans['amount']."\n";
+                                    foreach ($transactionData as $num => $trans) {
+                                        if ($policy->error == true) {
+                                            echo $policy->errorDescription;
+                                        } else {
+                                            echo $num . " " . $trans['type'] . " - " . $trans['code'] . "-" . $trans['name'] . " " . $trans['amount'] . "\n";
+                                        }
                                     }
                                 }
                                 ?></textarea>
@@ -298,6 +304,57 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
             );
         }
 
+        function calculateCommission() {
+            let premium = $('#fld_premium').val() * 1;
+            let fees = $('#fld_fees').val() * 1;
+            let commPercent = $('#commissionPercent').val() * 1;
+            let commCalculation = '<?php echo $policy->commissionCalculation;?>';
+            let commission = 0;
+
+            if (commCalculation == 'commNetPrem') {
+                commission = (premium * commPercent) / 100;
+            }
+            else if (commCalculation == 'commNetPremFees') {
+                commission = ((premium + fees) * commPercent) / 100;
+            }
+            else {
+                commission = (premium * commPercent) / 100;
+            }
+            commission = commission.toFixed(2);
+            $('#fld_commission').val(commission);
+
+            let subAgent = '<?php echo $policyUnderwriter['inaund_subagent_ID'];?>';
+            //sub agent commission
+            let subCommission = 0;
+            if (subAgent == -1 || subAgent > 0) {
+                //console.log('Sub Agent exists - <?php echo $subAgentRate;?>%');
+
+                let subCommPercent = '<?php echo $subAgentRate;?>';
+                subCommPercent = subCommPercent * 1;
+
+                subCommission = (premium * subCommPercent) / 100;
+                subCommission = subCommission.toFixed(2);
+                $('#fld_subagent_commission').val(subCommission);
+
+            }
+            if (subAgent > 0) {
+                //console.log('SubSub Agent exists - <?php echo $policyUnderwriter['clo_commission_percent'];?>%');
+
+                let subCommPercent = '<?php echo $policyUnderwriter['clo_commission_percent'];?>';
+                subCommPercent = subCommPercent * 1;
+                let subSubCommission = 0;
+
+                subSubCommission = (premium * subCommPercent) / 100;
+                subSubCommission = subSubCommission.toFixed(2);
+                $('#fld_subsubagent_commission').val(subSubCommission);
+                //substract the subsubagent commission from the subagent
+                let subAgentComm = (subCommission - subSubCommission) * 1;
+                subAgentComm = subAgentComm.toFixed(2);
+                $('#fld_subagent_commission').val(subAgentComm);
+            }
+
+        }
+
         $(document).ready(function () {
             updateGrossPremium();
 
@@ -305,9 +362,9 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
             //every time this page loads reload the premium tab
             parent.window.frames['installmentsTab'].location.reload(true);
             <?php } ?>
-            $('#premTab', window.parent.document).height('550px');
+            $('#premTab', window.parent.document).height('610px');
             //check if commission field is empty or zero then calculate
-            if ($('#fld_commission').val() == ''){
+            if ($('#fld_commission').val() == '') {
                 calculateCommission();
             }
         });

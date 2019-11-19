@@ -95,7 +95,7 @@ include('../../scripts/form_validator_class.php');
 $formValidator = new customFormValidator();
 ?>
 
-    <div class="container">
+    <div class="container-fluid">
         <div class="row">
             <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
             <div class="col-lg-6 col-md-6 col-xs-12 col-sm-12">
@@ -201,6 +201,7 @@ $formValidator = new customFormValidator();
                                 WHERE
                                 inaund_user_ID != '.$_GET['lid'].'
                                 AND inaund_subagent_ID != 0
+                                AND inaund_subagent_ID = -1 
                                 ORDER BY usr_name ASC';
                                 $result = $db->query($sql);
                                 while ($row = $db->fetch_assoc($result)){
@@ -218,9 +219,9 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="row">
-                        <label for="fld_subagent_acc_ID" class="col-sm-4 col-form-label">Sub Agent Account</label>
+                        <label for="fld_subagent_dr_account_ID" class="col-sm-4 col-form-label">Sub Agent Dr. Account</label>
                         <div class="col-8">
-                            <select name="fld_subagent_acc_ID" id="fld_subagent_acc_ID"
+                            <select name="fld_subagent_dr_account_ID" id="fld_subagent_dr_account_ID"
                                     class="form-control"
                                     required>
                                 <option value=""></option>
@@ -232,14 +233,45 @@ $formValidator = new customFormValidator();
 
                                     ?>
                                     <option value="<?php echo $bt['acacc_account_ID']; ?>"
-                                        <?php if ($bt['acacc_account_ID'] == $data['inaund_subagent_acc_ID']) echo 'selected'; ?>>
+                                        <?php if ($bt['acacc_account_ID'] == $data['inaund_subagent_dr_account_ID']) echo 'selected'; ?>>
                                         <?php echo $bt['acacc_code']." - ".$bt['acacc_name']; ?>
                                     </option>
                                 <?php } ?>
                             </select>
                             <?php
                             $formValidator->addField([
-                                "fieldName" => "fld_subagent_acc_ID",
+                                "fieldName" => "fld_subagent_dr_account_ID",
+                                "fieldDataType" => "select",
+                                "required" => false,
+                            ]);
+                            ?>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <label for="fld_subagent_cr_account_ID" class="col-sm-4 col-form-label">Sub Agent Cr. Account</label>
+                        <div class="col-8">
+                            <select name="fld_subagent_cr_account_ID" id="fld_subagent_cr_account_ID"
+                                    class="form-control"
+                                    required>
+                                <option value=""></option>
+                                <?php
+                                $btResult = $db->query("
+                              SELECT * FROM ac_accounts 
+                              WHERE acacc_control = 0");
+                                while ($bt = $db->fetch_assoc($btResult)) {
+
+                                    ?>
+                                    <option value="<?php echo $bt['acacc_account_ID']; ?>"
+                                        <?php if ($bt['acacc_account_ID'] == $data['inaund_subagent_cr_account_ID']) echo 'selected'; ?>>
+                                        <?php echo $bt['acacc_code']." - ".$bt['acacc_name']; ?>
+                                    </option>
+                                <?php } ?>
+                            </select>
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_subagent_cr_account_ID",
                                 "fieldDataType" => "select",
                                 "required" => false,
                             ]);

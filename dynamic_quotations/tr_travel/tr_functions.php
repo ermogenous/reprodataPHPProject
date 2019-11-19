@@ -40,7 +40,7 @@ function tr_travel_information()
         let expiry = new Date(departureSplit[2],departureSplit[1]-1,departureSplit[0]);
         let totalDays = $("#5_oqqit_rate_5").val();
         let clientDestError = false;
-        expiry.setDate(expiry.getDate() + (totalDays*1));
+        expiry.setDate(expiry.getDate() + ((totalDays*1)-1));
         $("#expiry_date").val(expiry.getDate() + "/" + ((expiry.getMonth()*1)+1) + "/" + expiry.getFullYear());
         
         //if destination = client/member nationality generate error
@@ -125,6 +125,12 @@ function tr_travel_information()
                     </option>
                 <?php } ?>
 
+                <?php if (strpos($underwriter['oqun_tr_package_selection'], '#special#') !== false) { ?>
+                    <option value="Special" <?php if ($qitem_data['oqqit_rate_4'] == 'Special') echo 'selected'; ?>>
+                        Special
+                    </option>
+                <?php } ?>
+
                 <?php if (strpos($underwriter['oqun_tr_package_selection'], '#schengen#') !== false) { ?>
                     <option value="Schengen" <?php if ($qitem_data['oqqit_rate_4'] == 'Schengen') echo 'selected'; ?>>
                         Schengen
@@ -164,6 +170,10 @@ function tr_travel_information()
                 $('#geographicalArea').attr('disabled', true);
 
                 //limit winter sports
+                $('#winterSports').val('No');
+                $('#winterSports').attr('disabled', true);
+            }
+            else if (selectedPackage == 'Special') {
                 $('#winterSports').val('No');
                 $('#winterSports').attr('disabled', true);
             }
@@ -639,7 +649,7 @@ function showMemberHTML($id, $selectionField, $fieldNames)
 
 function insured_amount_custom_rates($array, $values, $quotation_id)
 {
-    global $db, $quotationUnderwriter;
+    global $db, $quotationUnderwriter,$q_data;
     //print_r($quotationUnderwriter);
     //exit();
 
@@ -690,6 +700,10 @@ function insured_amount_custom_rates($array, $values, $quotation_id)
     //find premium per client/member
     //1.Client
     $array[5][6] = ($totalDays * $packageRate);
+    if ($_POST['person_company'] == 'Company'){
+        $array[5][6] = 0;
+    }
+
     //worldwide loading 50%
     if ($values[5][2]['rate'] == 'WorldWide') {
         $array[5][6] += $array[5][6] * 0.5;

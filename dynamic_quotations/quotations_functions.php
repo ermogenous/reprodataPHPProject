@@ -24,6 +24,7 @@ function insert_quotation_data_to_db($quotation_id, $quotation_type_id)
     $sql .= "
 oqq_language = '" . $_SESSION["oq_quotations_language"] . "', 
 oqq_quotations_type_ID = " . $quotation_type_id . ",
+oqq_person_company = '" . addslashes($_POST["person_company"]) . "',
 oqq_insureds_name = '" . addslashes($_POST["insureds_name"]) . "',
 oqq_insureds_id = '" . addslashes($_POST["insureds_id"]) . "',
 oqq_nationality_ID = '".addslashes($_POST['nationality_ID'])."',
