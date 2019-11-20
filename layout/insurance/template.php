@@ -10,7 +10,7 @@ function template_header()
     <head>
         <meta charset="UTF-8">
         <title><?php echo $main["conf_title"] . " " . $db->admin_title; ?></title>
-        <LINK REL="SHORTCUT ICON" HREF="<?php echo $main["site_url"]; ?>/favicon.png">
+        <LINK REL="SHORTCUT ICON" HREF="<?php echo $db->admin_layout_url; ?>/images/favicon.png">
         <link rel="stylesheet" href="<?php echo $db->admin_layout_url; ?>style.css" rel="stylesheet">
 
         <link rel="stylesheet" href="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/css/bootstrap.min.css">
@@ -410,7 +410,7 @@ function template_header()
 
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/underwriters/underwriters.php">
-                                    <i class="fas fa-users"></i> Insurance Underwriters</a>
+                                    <i class="fas fa-users"></i> Insurance Agents</a>
 
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/send_auto_emails/send_auto_emails.php">
@@ -478,7 +478,7 @@ function template_header()
                             </li>
                  -->
             </ul>
-            <img src="<?php echo $db->admin_layout_url; ?>/images/insurance_logo.jpg" height="50">
+            <img src="<?php echo $db->admin_layout_url; ?>/images/demetriou-insurance.jpg" height="50">
         </div>
     </nav>
 

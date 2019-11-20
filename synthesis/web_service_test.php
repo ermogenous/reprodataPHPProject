@@ -26,7 +26,7 @@ else {
 $db->show_header();
 ?>
 
-<div class="container-fluid" style="font-size: 20px;">
+<div class="container-fluid" style="">
 
     <div class="row">
         <div class=".d-sm-none .d-md-block col-md-2"></div>

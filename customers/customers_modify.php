@@ -15,7 +15,7 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_for_user_group_ID'] = $db->user_data['usr_users_groups_ID'];
     $_POST['fld_user_ID'] = $db->user_data['usr_users_ID'];
     $_POST['fld_birthdate'] = $db->convertDateToUS($_POST['fld_birthdate']);
-    if ($_POST['fld_birthdate'] == ''){
+    if ($_POST['fld_birthdate'] == '') {
         $_POST['fld_birthdate'] = '0000-00-00';
     }
 
@@ -49,7 +49,7 @@ if ($_POST["action"] == "insert") {
     $db->start_transaction();
 
     $_POST['fld_birthdate'] = $db->convertDateToUS($_POST['fld_birthdate']);
-    if ($_POST['fld_birthdate'] == ''){
+    if ($_POST['fld_birthdate'] == '') {
         $_POST['fld_birthdate'] = '0000-00-00';
     }
 
@@ -89,8 +89,8 @@ $db->show_header();
 ?>
 <div class="container-fluid">
     <div class="row">
-        <div class="col-lg-2 col-md-2 hidden-xs hidden-sm"></div>
-        <div class="col-lg-8 col-md-8 col-xs-12 col-sm-12">
+        <div class="col-lg-1 col-md-2 hidden-xs hidden-sm"></div>
+        <div class="col-lg-10 col-md-8 col-xs-12 col-sm-12">
             <form name="myForm" id="myForm" method="post" action="" onsubmit=""
                 <?php $formValidator->echoFormParameters(); ?>>
                 <div class="alert alert-dark text-center">
@@ -105,33 +105,44 @@ $db->show_header();
                            role="tab"
                            aria-controls="pills-general" aria-selected="true">General</a>
                     </li>
-                    <?php if ($db->get_setting('prd_enable_products') == 1) {?>
-                    <li class="nav-item">
-                        <a class="nav-link" id="pills-products-tab" data-toggle="pill" href="#pills-products"
-                           role="tab"
-                           aria-controls="pills-products" aria-selected="true">Products</a>
-                    </li>
+                    <?php if ($db->get_setting('prd_enable_products') == 1) { ?>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-products-tab" data-toggle="pill" href="#pills-products"
+                               role="tab"
+                               aria-controls="pills-products" aria-selected="true">Products</a>
+                        </li>
                     <?php } ?>
 
-                    <?php if ($_GET['lid'] > 0){ ?>
-                    <li class="nav-item">
-                        <a class="nav-link" id="pills-groups-tab" data-toggle="pill" href="#pills-groups"
-                           role="tab"
-                           aria-controls="pills-groups" aria-selected="true">Groups</a>
-                    </li>
+                    <?php if ($_GET['lid'] > 0) { ?>
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-groups-tab" data-toggle="pill" href="#pills-groups"
+                               role="tab"
+                               aria-controls="pills-groups" aria-selected="true">Groups</a>
+                        </li>
 
-                    <li class="nav-item">
-                        <a class="nav-link" id="pills-unpaid-tab" data-toggle="pill" href="#pills-unpaid"
-                           role="tab"
-                           aria-controls="pills-unpaid" aria-selected="true">Unpaid Installments</a>
-                    </li>
+                        <?php
+                        if ($db->dbSettings['ina_enable_agent_insurance']['value'] == 1) {
+                            ?>
+                            <li class="nav-item">
+                                <a class="nav-link" id="pills-policies-tab" data-toggle="pill" href="#pills-policies"
+                                   role="tab"
+                                   aria-controls="pills-policies" aria-selected="true">Policies</a>
+                            </li>
+                        <?php } ?>
+
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-unpaid-tab" data-toggle="pill" href="#pills-unpaid"
+                               role="tab"
+                               aria-controls="pills-unpaid" aria-selected="true">Unpaid Installments</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-entity-tab" data-toggle="pill" href="#pills-entity"
+                               role="tab"
+                               aria-controls="pills-entity" aria-selected="true">Entity/Accounts</a>
+                        </li>
                     <?php } ?>
 
-                    <li class="nav-item">
-                        <a class="nav-link" id="pills-entity-tab" data-toggle="pill" href="#pills-entity"
-                           role="tab"
-                           aria-controls="pills-entity" aria-selected="true">Entity/Accounts</a>
-                    </li>
 
                 </ul>
 
@@ -312,7 +323,8 @@ $db->show_header();
                         </div>
 
                         <div class="form-group row">
-                            <label for="fld_contact_person_title_code_ID" class="col-sm-3 col-form-label">C.P.Title</label>
+                            <label for="fld_contact_person_title_code_ID"
+                                   class="col-sm-3 col-form-label">C.P.Title</label>
                             <div class="col-sm-9">
                                 <select name="fld_contact_person_title_code_ID" id="fld_contact_person_title_code_ID"
                                         class="form-control">
@@ -490,7 +502,7 @@ $db->show_header();
                             </div>
                         </div>
 
-                        <?php $formValidator->generateErrorDescriptionDiv();?>
+                        <?php $formValidator->generateErrorDescriptionDiv(); ?>
 
                         <div class="form-group row">
                             <label for="name" class="col-sm-3 col-form-label"></label>
@@ -509,49 +521,57 @@ $db->show_header();
                     </div>
 
 
+                    <?php if ($_GET['lid'] > 0 && $db->get_setting('prd_enable_products') == 1) { ?>
+                        <!-- PRODUCTS -->
+                        <div class="tab-pane fade show" id="pills-products" role="tabpanel"
+                             aria-labelledby="pills-products-tab">
 
+                            <iframe src="customers_products.php?cid=<?php echo $_GET["lid"]; ?>"
+                                    frameborder="0"
+                                    scrolling="0" width="100%" height="400"></iframe>
 
-                    <?php if ($_GET['lid'] > 0 && $db->get_setting('prd_enable_products') == 1) {?>
-                    <!-- PRODUCTS -->
-                    <div class="tab-pane fade show" id="pills-products" role="tabpanel"
-                         aria-labelledby="pills-products-tab">
-
-                        <iframe src="customers_products.php?cid=<?php echo $_GET["lid"]; ?>"
-                                frameborder="0"
-                                scrolling="0" width="100%" height="400"></iframe>
-
-                    </div>
+                        </div>
                     <?php } ?>
 
 
 
 
 
-                    <?php if ($_GET['lid'] > 0){ ?>
-                    <!-- Customer Groups -->
-                    <div class="tab-pane fade show" id="pills-groups" role="tabpanel"
-                         aria-labelledby="pills-groups-tab">
+                    <?php if ($_GET['lid'] > 0) { ?>
+                        <!-- Customer Groups ------------------------------------------------------------------------------------>
+                        <div class="tab-pane fade show" id="pills-groups" role="tabpanel"
+                             aria-labelledby="pills-groups-tab">
 
-                        <iframe src="customers_groups_list.php?cid=<?php echo $_GET["lid"]; ?>"
-                                frameborder="0"
-                                scrolling="0" width="100%" height="400"></iframe>
+                            <iframe src="customers_groups_list.php?cid=<?php echo $_GET["lid"]; ?>"
+                                    frameborder="0"
+                                    scrolling="0" width="100%" height="400"></iframe>
 
-                    </div>
+                        </div>
+
+                        <?php
+                        if ($db->dbSettings['ina_enable_agent_insurance']['value'] == 1) {
+                            ?>
+                            <!-- Customer Policies ------------------------------------------------------------------------------------>
+                            <div class="tab-pane fade show" id="pills-policies" role="tabpanel"
+                                 aria-labelledby="pills-policies-tab">
+
+                                <iframe src="customers_policies.php?cid=<?php echo $_GET["lid"]; ?>"
+                                        frameborder="0"
+                                        scrolling="0" width="100%" height="400"></iframe>
+
+                            </div>
+                        <?php } ?>
 
 
+                        <!-- Customer Unpaid Installments ------------------------------------------------------------------------->
+                        <div class="tab-pane fade show" id="pills-unpaid" role="tabpanel"
+                             aria-labelledby="pills-unpaid-tab">
 
+                            <iframe src="../ainsurance/customers/customer_unpaid.php?cid=<?php echo $_GET["lid"]; ?>"
+                                    frameborder="0" id="frmCustomerUnpaidTab"
+                                    scrolling="0" width="100%" height="400"></iframe>
 
-
-
-                    <!-- Customer Unpaid Installments -->
-                    <div class="tab-pane fade show" id="pills-unpaid" role="tabpanel"
-                         aria-labelledby="pills-unpaid-tab">
-
-                        <iframe src="../ainsurance/customers/customer_unpaid.php?cid=<?php echo $_GET["lid"]; ?>"
-                                frameborder="0" id="frmCustomerUnpaidTab"
-                                scrolling="0" width="100%" height="400"></iframe>
-
-                    </div>
+                        </div>
                     <?php } ?>
 
                     <!-- Entity/Accounts -->

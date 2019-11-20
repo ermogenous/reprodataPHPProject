@@ -122,7 +122,7 @@ $db->show_header();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_underwriter_ID" class="col-md-2 col-form-label"><?php echo $db->showLangText('Underwriter','Ασφαλιστής');?></label>
+                        <label for="fld_underwriter_ID" class="col-md-2 col-form-label"><?php echo $db->showLangText('Agent','Ασφαλιστής');?></label>
                         <div class="col-md-4">
                             <select name="fld_underwriter_ID" id="fld_underwriter_ID"
                                     class="form-control"

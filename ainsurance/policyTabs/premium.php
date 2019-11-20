@@ -174,14 +174,14 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
 
                         ?>
                         <div class="form-group row">
-                            <label for="fld_subagent_commission" class="col-sm-9 text-right col-form-label">Sub Agent
-                                Comm.: <?php echo $subAgentName . " " . $subAgentRate . "%"; ?>
+                            <label for="fld_subagent_commission" class="col-sm-9 text-right col-form-label">
+                                Sub Agent Comm.: <?php echo $subAgentName . " " . $subAgentRate . "%"; ?>
                             </label>
                             <div class="col-sm-3">
                                 <input type="text" id="fld_subagent_commission" name="fld_subagent_commission"
                                        class="form-control"
                                        required onchange="updateGrossPremium();"
-                                       value="<?php echo $subAgentRate; ?>">
+                                       value="<?php echo $policy->policyData["inapol_subagent_commission"]; ?>">
                                 <?php
                                 $formValidator->addField(
                                     [
@@ -199,9 +199,8 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                     if ($policyUnderwriter['inaund_subagent_ID'] > 0) {
                         ?>
                         <div class="form-group row">
-                            <label for="fld_subsubagent_commission" class="col-sm-9 text-right col-form-label">SubSub
-                                Agent
-                                Commission: <?php echo $policyUnderwriter['usr_name'] . " " . $policyUnderwriter['clo_commission_percent'] . "%"; ?>
+                            <label for="fld_subsubagent_commission" class="col-sm-9 text-right col-form-label">
+                                SubSub Agent Commission: <?php echo $policyUnderwriter['usr_name'] . " " . $policyUnderwriter['clo_commission_percent'] . "%"; ?>
                             </label>
                             <div class="col-sm-3">
                                 <input type="text" id="fld_subsubagent_commission" name="fld_subsubagent_commission"
@@ -265,8 +264,12 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                     <div class="row">
                         <div class="col-sm-12">
                             Accounts Transactions Console
-                            <textarea disabled style="width: 100%" rows="5"><?php
+                            <textarea disabled style="width: 100%" rows="8"><?php
                                 if ($policy->policyData['inapol_status'] == 'Outstanding') {
+                                    if ($policy->policyData['inainc_enable_commission_release'] == 1){
+                                        echo "Commission Release is Active for this Company. Transactions will be generated only on payments.".PHP_EOL;
+                                        echo "List of possible accounts transactions below.".PHP_EOL;
+                                    }
                                     $transactionData = $policy->getAccountTransactionsList();
                                     foreach ($transactionData as $num => $trans) {
                                         if ($policy->error == true) {
@@ -305,6 +308,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
         }
 
         function calculateCommission() {
+            console.log('Calculating Commission');
             let premium = $('#fld_premium').val() * 1;
             let fees = $('#fld_fees').val() * 1;
             let commPercent = $('#commissionPercent').val() * 1;
@@ -362,7 +366,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
             //every time this page loads reload the premium tab
             parent.window.frames['installmentsTab'].location.reload(true);
             <?php } ?>
-            $('#premTab', window.parent.document).height('610px');
+            $('#premTab', window.parent.document).height('660px');
             //check if commission field is empty or zero then calculate
             if ($('#fld_commission').val() == '') {
                 calculateCommission();

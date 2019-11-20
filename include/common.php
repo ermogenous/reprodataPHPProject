@@ -4,8 +4,8 @@
 $main["start_script_time"] = microtime(true);
 
 if ($_SERVER['HTTP_HOST'] == 'localhost') {
-    $main["conf_title"] = 'Reprodata';
-    $main["admin_title"] = "Reprodata Development";
+    $main["conf_title"] = 'A.K.Demetriou';
+    $main["admin_title"] = "A.K.Demetriou";
 
     //Global variables
     $main["site_host"] = 'localhost';

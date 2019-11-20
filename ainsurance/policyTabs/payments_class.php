@@ -64,7 +64,7 @@ class PolicyPayment
 
     }
 
-    public function postPayment()
+    public function applyPayment()
     {
         global $db;
 
@@ -209,7 +209,105 @@ class PolicyPayment
 
     }
 
-    function reversePostPayment()
+    public function postPayment(){
+        global $db;
+
+        //validations
+        if ($this->paymentData['inapp_status'] != 'Applied'){
+            $this->error = true;
+            $this->errorDescription = 'Cannot post non applied payment';
+        }
+
+        if ($this->error == true){
+            return false;
+        }
+
+        $newData['fld_status'] = 'Active';
+        $db->db_tool_update_row('ina_policy_payments', $newData,'inapp_policy_payment_ID = ' . $this->paymentID , $this->paymentID,
+            'fld_', 'execute','inapp_');
+
+        $policy = new Policy($this->policyID);
+        if ($policy->policyData['inainc_enable_commission_release'] == 1){
+
+            $transactions = $policy->getAccountTransactionsList();
+
+
+            //find the percentage paid based on the total
+            $percentPaid = $this->paymentData['inapp_allocated_commission'] / $policy->policyData['inapol_commission'];
+
+            $newCommission = $this->paymentData['inapp_allocated_commission'];
+
+            $transactions[1]['amount'] = $newCommission;
+            $transactions[2]['amount'] = $newCommission;
+
+            //if subagent commissions
+            if ($transactions[3]['type'] != '' && $policy->policyData['inapol_subagent_commission'] > 0){
+                $newSubCommission = $policy->policyData['inapol_subagent_commission'] * $percentPaid;
+                $newSubCommission = round($newSubCommission,2);
+                $transactions[3]['amount'] = $newSubCommission;
+                $transactions[4]['amount'] = $newSubCommission;
+            }
+
+            //if subsubagent commissions
+            if ($transactions[5]['type'] != '' && $policy->policyData['inapol_subsubagent_commission'] > 0){
+                $newSubSubCommission = $policy->policyData['inapol_subsubagent_commission'] * $percentPaid;
+                $newSubSubCommission = round($newSubSubCommission,2);
+                $transactions[5]['amount'] = $newSubSubCommission;
+                $transactions[6]['amount'] = $newSubSubCommission;
+            }
+
+
+            $insuranceSettings = $db->query_fetch('SELECT * FROM ina_settings');
+            //set 1
+            $headerData['documentID'] = $insuranceSettings['inaset_ins_comm_ac_document_ID'];
+            $headerData['entityID'] = $transactions[1]['entityID'];
+            $headerData['comments'] = 'Policy ID:'.$this->policyID." Commissions";
+            $headerData['fromModule'] = 'AInsurance';
+            $headerData['fromIDDescription'] = 'PaymentID';
+            $headerData['fromID'] = $this->paymentID;
+            $transactionsData[1] = $transactions[1];
+            $transactionsData[2] = $transactions[2];
+
+            include_once('../../accounts/transactions/transactions_class.php');
+            $transaction = new AccountsTransaction(0);
+            $transaction->makeNewTransaction($headerData, $transactionsData);
+            if ($transaction->error == true){
+                $this->error = true;
+                $this->errorDescription = $transaction->errorDescription;
+                return false;
+            }
+            //set 2
+            if ($transactions[3]['type'] != ''){
+                $transactionsData[1] = $transactions[3];
+                $transactionsData[2] = $transactions[4];
+                $headerData['entityID'] = $transactions[3]['entityID'];
+                $transaction->makeNewTransaction($headerData, $transactionsData);
+                if ($transaction->error == true){
+                    $this->error = true;
+                    $this->errorDescription = $transaction->errorDescription;
+                    return false;
+                }
+            }
+
+            //set 3
+            if ($transactions[5]['type'] != ''){
+                $transactionsData[1] = $transactions[5];
+                $transactionsData[2] = $transactions[6];
+                $headerData['entityID'] = $transactions[5]['entityID'];
+                $transaction->makeNewTransaction($headerData, $transactionsData);
+                if ($transaction->error == true){
+                    $this->error = true;
+                    $this->errorDescription = $transaction->errorDescription;
+                    return false;
+                }
+            }
+
+        }//if commission release
+
+        return true;
+    }
+
+    public function reversePostPayment()
     {
         global $db;
 
@@ -264,7 +362,7 @@ class PolicyPayment
         return true;
     }
 
-    function updateInstallmentsCommissions()
+    public function updateInstallmentsCommissions()
     {
         global $db;
 

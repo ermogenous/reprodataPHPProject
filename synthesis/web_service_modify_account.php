@@ -51,9 +51,10 @@ $db->enable_jquery_ui();
 $db->show_header();
 
 FormBuilder::buildPageLoader();
-
-$labelWidth = 'col-sm-5';
-$fontSize = 'font-size:20px;';
+$formB = new FormBuilder();
+$formB->setLabelClasses('col-sm-4 col-md-4 col-lg-3');
+$formB->setFieldDivClass('col-sm-5 col-md-5 col-lg-5');
+$fontSize = '';
 
 ?>
 
@@ -70,19 +71,18 @@ $fontSize = 'font-size:20px;';
 
                     <div class="row form-group">
                         <?php
-                        $formB = new FormBuilder();
-                        $formB->setFieldName('fld_ccac_acct_code')
+                        $formB->initSettings()
+                            ->setFieldName('fld_ccac_acct_code')
                             ->setFieldDescription('Account Code')
                             ->setFieldType('input')
                             ->setFieldInputType('text')
                             ->setInputValue($data->ccac_acct_code)
-                            ->setLabelClasses($labelWidth)
                             ->setFieldStyle($fontSize)
                             ->setDisableField();
 
                         $formB->buildLabel();
                         ?>
-                        <div class="col-sm-5">
+                        <div class="<?php echo $formB->getFieldDivClass();?>">
                             <?php
                             $formB->buildInput();
                             $formValidator->addField(
@@ -98,18 +98,17 @@ $fontSize = 'font-size:20px;';
 
                     <div class="row form-group">
                         <?php
-                        $formB = new FormBuilder();
-                        $formB->setFieldName('fld_ccac_long_desc')
+                        $formB->initSettings()
+                            ->setFieldName('fld_ccac_long_desc')
                             ->setFieldDescription('Account Long Description')
                             ->setFieldType('input')
                             ->setFieldInputType('text')
                             ->setInputValue($data->ccac_long_desc)
-                            ->setFieldStyle($fontSize)
-                            ->setLabelClasses($labelWidth);
+                            ->setFieldStyle($fontSize);
 
                         $formB->buildLabel();
                         ?>
-                        <div class="col-sm-5">
+                        <div class="<?php echo $formB->getFieldDivClass();?>">
                             <?php
                             $formB->buildInput();
                             $formValidator->addField(
@@ -125,18 +124,17 @@ $fontSize = 'font-size:20px;';
 
                     <div class="row form-group">
                         <?php
-                        $formB = new FormBuilder();
-                        $formB->setFieldName('fld_ccad_addr_lin1')
+                        $formB->initSettings()
+                            ->setFieldName('fld_ccad_addr_lin1')
                             ->setFieldDescription('Address Line 1')
                             ->setFieldType('input')
                             ->setFieldInputType('text')
                             ->setInputValue($data->ccad_addr_lin1)
-                            ->setFieldStyle($fontSize)
-                            ->setLabelClasses($labelWidth);
+                            ->setFieldStyle($fontSize);
 
                         $formB->buildLabel();
                         ?>
-                        <div class="col-sm-5">
+                        <div class="<?php echo $formB->getFieldDivClass();?>">
                             <?php
                             $formB->buildInput();
                             $formValidator->addField(
@@ -152,18 +150,17 @@ $fontSize = 'font-size:20px;';
 
                     <div class="row form-group">
                         <?php
-                        $formB = new FormBuilder();
-                        $formB->setFieldName('fld_ccad_addr_lin2')
+                        $formB->initSettings()
+                            ->setFieldName('fld_ccad_addr_lin2')
                             ->setFieldDescription('Address Line 2')
                             ->setFieldType('input')
                             ->setFieldInputType('text')
                             ->setInputValue($data->ccad_addr_lin2)
-                            ->setFieldStyle($fontSize)
-                            ->setLabelClasses($labelWidth);
+                            ->setFieldStyle($fontSize);
 
                         $formB->buildLabel();
                         ?>
-                        <div class="col-sm-5">
+                        <div class="<?php echo $formB->getFieldDivClass();?>">
                             <?php
                             $formB->buildInput();
                             $formValidator->addField(
@@ -179,18 +176,17 @@ $fontSize = 'font-size:20px;';
 
                     <div class="row form-group">
                         <?php
-                        $formB = new FormBuilder();
-                        $formB->setFieldName('fld_ccad_addr_lin3')
+                        $formB->initSettings()
+                            ->setFieldName('fld_ccad_addr_lin3')
                             ->setFieldDescription('Address Line 3')
                             ->setFieldType('input')
                             ->setFieldInputType('text')
                             ->setInputValue($data->ccad_addr_lin3)
-                            ->setFieldStyle($fontSize)
-                            ->setLabelClasses($labelWidth);
+                            ->setFieldStyle($fontSize);
 
                         $formB->buildLabel();
                         ?>
-                        <div class="col-sm-5">
+                        <div class="<?php echo $formB->getFieldDivClass();?>">
                             <?php
                             $formB->buildInput();
                             $formValidator->addField(
@@ -206,18 +202,17 @@ $fontSize = 'font-size:20px;';
 
                     <div class="row form-group">
                         <?php
-                        $formB = new FormBuilder();
-                        $formB->setFieldName('fld_ccad_addr_lin4')
+                        $formB->initSettings()
+                            ->setFieldName('fld_ccad_addr_lin4')
                             ->setFieldDescription('Address Line 4')
                             ->setFieldType('input')
                             ->setFieldInputType('text')
                             ->setInputValue($data->ccad_addr_lin4)
-                            ->setFieldStyle($fontSize)
-                            ->setLabelClasses($labelWidth);
+                            ->setFieldStyle($fontSize);
 
                         $formB->buildLabel();
                         ?>
-                        <div class="col-sm-5">
+                        <div class="<?php echo $formB->getFieldDivClass();?>">
                             <?php
                             $formB->buildInput();
                             $formValidator->addField(
@@ -233,18 +228,17 @@ $fontSize = 'font-size:20px;';
 
                     <div class="row form-group">
                         <?php
-                        $formB = new FormBuilder();
-                        $formB->setFieldName('fld_ccad_crdt_lmit')
+                        $formB->initSettings()
+                            ->setFieldName('fld_ccad_crdt_lmit')
                             ->setFieldDescription('Credit Limit')
                             ->setFieldType('input')
                             ->setFieldInputType('text')
                             ->setInputValue($data->ccad_crdt_lmit)
-                            ->setFieldStyle($fontSize)
-                            ->setLabelClasses($labelWidth);
+                            ->setFieldStyle($fontSize);
 
                         $formB->buildLabel();
                         ?>
-                        <div class="col-sm-5">
+                        <div class="<?php echo $formB->getFieldDivClass();?>">
                             <?php
                             $formB->buildInput();
                             $formValidator->addField(
@@ -260,18 +254,17 @@ $fontSize = 'font-size:20px;';
 
                     <div class="row form-group">
                         <?php
-                        $formB = new FormBuilder();
-                        $formB->setFieldName('fld_ccad_crdt_days')
+                        $formB->initSettings()
+                            ->setFieldName('fld_ccad_crdt_days')
                             ->setFieldDescription('Credit Days')
                             ->setFieldType('input')
                             ->setFieldInputType('text')
                             ->setInputValue($data->ccad_crdt_days)
-                            ->setFieldStyle($fontSize)
-                            ->setLabelClasses($labelWidth);
+                            ->setFieldStyle($fontSize);
 
                         $formB->buildLabel();
                         ?>
-                        <div class="col-sm-5">
+                        <div class="<?php echo $formB->getFieldDivClass();?>">
                             <?php
                             $formB->buildInput();
                             $formValidator->addField(

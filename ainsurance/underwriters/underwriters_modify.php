@@ -228,7 +228,7 @@ $formValidator = new customFormValidator();
                                 <?php
                                 $btResult = $db->query("
                               SELECT * FROM ac_accounts 
-                              WHERE acacc_control = 0");
+                              WHERE acacc_control = 0 ORDER BY acacc_code ASC");
                                 while ($bt = $db->fetch_assoc($btResult)) {
 
                                     ?>
@@ -259,7 +259,7 @@ $formValidator = new customFormValidator();
                                 <?php
                                 $btResult = $db->query("
                               SELECT * FROM ac_accounts 
-                              WHERE acacc_control = 0");
+                              WHERE acacc_control = 0 ORDER BY acacc_code ASC");
                                 while ($bt = $db->fetch_assoc($btResult)) {
 
                                     ?>

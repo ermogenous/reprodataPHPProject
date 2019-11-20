@@ -18,10 +18,10 @@ if ($_GET['action'] == 'apply' && $_GET['lid'] != '') {
     $db->working_section = 'Posting Payment: ' . $_GET['lid'];
     $db->start_transaction();
     $payment = new PolicyPayment($_GET['lid']);
-    if ($payment->postPayment() == true) {
+    if ($payment->applyPayment() == true) {
 
         $db->commit_transaction();
-        $db->generateAlertSuccess('Payment Posted Successfully');
+        $db->generateAlertSuccess('Payment Applied Successfully');
     } else {
         $db->rollback_transaction();
         $db->generateAlertError($payment->errorDescription);
@@ -38,6 +38,22 @@ if ($_GET['action'] == 'reverse' && $_GET['lid'] != '') {
 
         $db->commit_transaction();
         $db->generateAlertSuccess('Payment Reversed Successfully');
+    } else {
+        $db->rollback_transaction();
+        $db->generateAlertError($payment->errorDescription);
+    }
+    $_GET['rel'] = 'yes';
+
+}
+
+if ($_GET['action'] == 'post' && $_GET['lid'] != '') {
+    $db->working_section = 'Posting Payment: ' . $_GET['lid'];
+    $db->start_transaction();
+    $payment = new PolicyPayment($_GET['lid']);
+    if ($payment->postPayment() == true) {
+
+        $db->commit_transaction();
+        $db->generateAlertSuccess('Payment Posted Successfully');
     } else {
         $db->rollback_transaction();
         $db->generateAlertError($payment->errorDescription);
@@ -97,6 +113,10 @@ if ($_GET['pid'] > 0) {
                             $minPaymentID = $db->query_fetch("
                                             SELECT MIN(inapp_policy_payment_ID)as clo_min FROM ina_policy_payments 
                                             WHERE inapp_policy_ID = ".$policy->installmentID." AND inapp_status = 'Outstanding' AND inapp_locked != 1");
+
+                            $minAppliedID = $db->query_fetch("
+                                SELECT MIN(inapp_policy_payment_ID) as clo_min FROM ina_policy_payments
+                                WHERE inapp_policy_ID = ".$policy->installmentID." AND inapp_status = 'Applied'");
                             while ($row = $table->fetch_data()) {
                                 $totalLines++;
                                 ?>
@@ -141,6 +161,17 @@ if ($_GET['pid'] > 0) {
                                                         class="fas fa-fast-backward"></i></a>
 
                                         <?php } ?>
+
+                                        <?php
+                                        //Post payments
+                                        if ($row['inapp_status'] == 'Applied' && $row['inapp_policy_payment_ID'] == $minAppliedID['clo_min']){
+                                        ?>
+                                            <a href="payments.php?lid=<?php echo $row["inapp_policy_payment_ID"] . "&pid=" . $policy->installmentID . "&action=post"; ?>"
+                                               onclick="ignoreEdit = true;
+                               return confirm('Are you sure you want to post this policy payment?');"><i class="fas fa-lock"></i></a>
+
+                                        <?php } ?>
+
                                     </td>
                                 </tr>
                                 <?php

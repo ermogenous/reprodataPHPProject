@@ -503,11 +503,17 @@ class Policy
             }
 
             //if advanced accounts send the transactions for commissions and sub agent commissions
-            if ($this->accountsUsed == 'Advanced'){
-                $this->insertAccountTransactions();
+            if ($this->accountsUsed == 'Advanced' && $this->policyData['inainc_enable_commission_release'] != 1){
+                $transactionsResult = $this->insertAccountTransactions();
+            }
+            else if ($this->accountsUsed == 'Advanced' && $this->policyData['inainc_enable_commission_release'] == 1){
+
             }
         }
 
+        if ($this->error == true){
+            return false;
+        }
 
         //$this->validForActive = true;
         //$this->errorDescription = 'Some error. Activate function needs build';
@@ -1246,15 +1252,24 @@ class Policy
         //Company transactions
         $companyData = $db->query_fetch('
           SELECT * FROM ina_insurance_companies WHERE inainc_insurance_company_ID = '.$this->policyData['inapol_insurance_company_ID']);
+
+
         //1. Debit
         $companyDrAccountID = $companyData['inainc_debtor_account_ID'];
-        $companyDrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $companyDrAccountID);
+        $companyDrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code,acacc_entity_ID FROM ac_accounts WHERE acacc_account_ID = ' . $companyDrAccountID);
+        //find entity from the debit account
+        $entityID = $companyDrAccountDetails['acacc_entity_ID'];
+        if ($entityID == 0 || $entityID == ''){
+            $this->error = true;
+            $this->errorDescription = 'Account '.$companyDrAccountDetails['acacc_code']." does not have entity";
+        }
         $companyDrAccountName = $companyDrAccountDetails['acacc_name'];
         $companyDrAccountCode = $companyDrAccountDetails['acacc_code'];
         $result[1]['type'] = 'Dr';
         $result[1]['name'] = $companyDrAccountName;
         $result[1]['code'] = $companyDrAccountCode;
         $result[1]['accountID'] = $companyDrAccountID;
+        $result[1]['entityID'] = $entityID;
         $result[1]['amount'] = $this->policyData['inapol_commission'];
         //echo "Dr Account: ".$companyDrAccountCode." - ".$companyDrAccountName." Amount:".$result[1]['ammount']."<br>";
 
@@ -1268,6 +1283,7 @@ class Policy
         $result[2]['name'] = $companyCrAccountName;
         $result[2]['code'] = $companyCrAccountCode;
         $result[2]['accountID'] = $companyCrAccountID;
+        $result[2]['entityID'] = $entityID;
         $result[2]['amount'] = $this->policyData['inapol_commission'];
         //echo "Cr Account: ".$companyCrAccountCode.' - '.$companyCrAccountName." Amount:".$result[2]['ammount']."<br>";
 
@@ -1289,7 +1305,8 @@ class Policy
         else if ($subAgentData['inaund_subagent_ID'] > 0){
             $subAgent = true;
             $subSubAgent = true;
-            $subSubAgentData = $db->query_fetch('SELECT * FROM ina_underwriters WHERE inaund_underwriter_ID = '.$subAgentData['inaund_underwriter_ID']);
+            $subSubAgentData = $this->getPolicyUnderwriterData();;
+            $subAgentData = $this->getParentUnderwriterData();
         }
 
         //First check if the agent is sub agent
@@ -1297,19 +1314,26 @@ class Policy
         //if -1 then is top sub agent
         if ($subAgent == true) {
 
-            //1.Dr
+            //3.Dr
             $subAgentDrAccountID = $subAgentData['inaund_subagent_dr_account_ID'];
-            $subAgentDrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $subAgentDrAccountID);
+            $subAgentDrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code,acacc_entity_ID FROM ac_accounts WHERE acacc_account_ID = ' . $subAgentDrAccountID);
+            //find entity from the debit account
+            $entityID = $subAgentDrAccountDetails['acacc_entity_ID'];
+            if ($entityID == 0 || $entityID == ''){
+                $this->error = true;
+                $this->errorDescription = 'Account '.$subAgentDrAccountDetails['acacc_code']." does not have entity";
+            }
             $subAgentDrAccountName = $subAgentDrAccountDetails['acacc_name'];
             $subAgentDrAccountCode = $subAgentDrAccountDetails['acacc_code'];
             $result[3]['type'] = 'Dr';
             $result[3]['name'] = $subAgentDrAccountName;
             $result[3]['code'] = $subAgentDrAccountCode;
             $result[3]['accountID'] = $subAgentDrAccountID;
+            $result[3]['entityID'] = $entityID;
             $result[3]['amount'] = $this->policyData['inapol_subagent_commission'];
             //echo "<br>Dr Account: ".$subAgentDrAccountCode.' - '.$subAgentDrAccountName." Amount:".$result[3]['ammount']."<br>";
 
-            //2.Cr
+            //4.Cr
             $subAgentCrAccountID = $subAgentData['inaund_subagent_cr_account_ID'];
             $subAgentCrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $subAgentCrAccountID);
             $subAgentCrAccountName = $subAgentCrAccountDetails['acacc_name'];
@@ -1318,9 +1342,43 @@ class Policy
             $result[4]['name'] = $subAgentCrAccountName;
             $result[4]['code'] = $subAgentCrAccountCode;
             $result[4]['accountID'] = $subAgentCrAccountID;
+            $result[4]['entityID'] = $entityID;
             $result[4]['amount'] = $this->policyData['inapol_subagent_commission'];
             //echo $result[4]['type']." Account: ".$subAgentCrAccountCode.' - '.$subAgentCrAccountName." Amount:".$result[4]['ammount']."<br>";
 
+        }
+
+        if ($subSubAgent == true){
+            //5.Dr
+            $subAgentDrAccountID = $subSubAgentData['inaund_subagent_dr_account_ID'];
+            $subAgentDrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code,acacc_entity_ID FROM ac_accounts WHERE acacc_account_ID = ' . $subAgentDrAccountID);
+            $entityID = $subAgentDrAccountDetails['acacc_entity_ID'];
+            if ($entityID == 0 || $entityID == ''){
+                $this->error = true;
+                $this->errorDescription = 'Account '.$subAgentDrAccountDetails['acacc_code']." does not have entity";
+            }
+            $subAgentDrAccountName = $subAgentDrAccountDetails['acacc_name'];
+            $subAgentDrAccountCode = $subAgentDrAccountDetails['acacc_code'];
+            $result[5]['type'] = 'Dr';
+            $result[5]['name'] = $subAgentDrAccountName;
+            $result[5]['code'] = $subAgentDrAccountCode;
+            $result[5]['accountID'] = $subAgentDrAccountID;
+            $result[5]['entityID'] = $entityID;
+            $result[5]['amount'] = $this->policyData['inapol_subsubagent_commission'];
+            //echo "<br>Dr Account: ".$subAgentDrAccountCode.' - '.$subAgentDrAccountName." Amount:".$result[3]['ammount']."<br>";
+
+            //6.Cr
+            $subAgentCrAccountID = $subSubAgentData['inaund_subagent_cr_account_ID'];
+            $subAgentCrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $subAgentCrAccountID);
+            $subAgentCrAccountName = $subAgentCrAccountDetails['acacc_name'];
+            $subAgentCrAccountCode = $subAgentCrAccountDetails['acacc_code'];
+            $result[6]['type'] = 'Cr';
+            $result[6]['name'] = $subAgentCrAccountName;
+            $result[6]['code'] = $subAgentCrAccountCode;
+            $result[6]['accountID'] = $subAgentCrAccountID;
+            $result[6]['entityID'] = $entityID;
+            $result[6]['amount'] = $this->policyData['inapol_subsubagent_commission'];
+            //echo $result[4]['type']." Account: ".$subAgentCrAccountCode.' - '.$subAgentCrAccountName." Amount:".$result[4]['ammount']."<br>";
         }
 
 
@@ -1331,21 +1389,70 @@ class Policy
         global $db;
         include('../accounts/transactions/transactions_class.php');
 
+        if ($this->accountsUsed != 'Advanced'){
+            $this->error = true;
+            $this->errorDescription = 'Cannot insert transactions. Advanced accounts is not enabled.';
+        }
+        if ($this->policyData['inainc_enable_commission_release'] == 1){
+            $this->error = true;
+            $this->errorDescription = 'Cannot insert transactions. Commission released is active for this insurance company.';
+        }
+        if ($this->error == true){
+            return false;
+        }
+        //break the transactions into 3 sets
+
+        //get the list
         $transactions = $this->getAccountTransactionsList();
+        //validate
+        if ($this->error == true){
+            return false;
+        }
+
+        //set 1
         $headerData['documentID'] = $this->insuranceSettings['inaset_ins_comm_ac_document_ID'];
-        $headerData['accountID'] = $transactions[1]['accountID'];
+        $headerData['entityID'] = $transactions[1]['entityID'];
         $headerData['comments'] = 'Policy ID:'.$this->policyID." Commissions";
         $headerData['fromModule'] = 'AInsurance';
         $headerData['fromIDDescription'] = 'PolicyID';
         $headerData['fromID'] = $this->policyID;
+        $transactionsData[1] = $transactions[1];
+        $transactionsData[2] = $transactions[2];
 
         $transaction = new AccountsTransaction(0);
-        $result = $transaction->makeNewTransaction($headerData, $transactions);
-
-        if ($result == true){
+        $transaction->makeNewTransaction($headerData, $transactionsData);
+        if ($transaction->error == true){
             $this->error = true;
             $this->errorDescription = $transaction->errorDescription;
+            return false;
         }
+        //set 2
+        if ($transactions[3]['type'] != ''){
+            $transactionsData[1] = $transactions[3];
+            $transactionsData[2] = $transactions[4];
+            $headerData['entityID'] = $transactions[3]['entityID'];
+            $transaction->makeNewTransaction($headerData, $transactionsData);
+            if ($transaction->error == true){
+                $this->error = true;
+                $this->errorDescription = $transaction->errorDescription;
+                return false;
+            }
+        }
+
+        //set 3
+        if ($transactions[5]['type'] != ''){
+            $transactionsData[1] = $transactions[5];
+            $transactionsData[2] = $transactions[6];
+            $headerData['entityID'] = $transactions[5]['entityID'];
+            $transaction->makeNewTransaction($headerData, $transactionsData);
+            if ($transaction->error == true){
+                $this->error = true;
+                $this->errorDescription = $transaction->errorDescription;
+                return false;
+            }
+        }
+
+        return true;
     }
 
 }

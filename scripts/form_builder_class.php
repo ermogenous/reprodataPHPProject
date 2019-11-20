@@ -34,6 +34,9 @@ class FormBuilder
     public $defaultLabelClass = 'col-form-label';
     public $defaultInputClass = 'form-control';
 
+    //layout settings
+    private $fieldDivClass = '';
+
     /**
      * FormBuilder constructor.
      * @param $settings
@@ -57,6 +60,14 @@ class FormBuilder
         $this->fieldOnChange = $settings['fieldOnChange'];
     }
 
+    /**
+     * @return $this
+     */
+    function initSettings(){
+        $this->disableField = false;
+        return $this;
+    }
+
     public function buildInput()
     {
         global $db;
@@ -75,6 +86,7 @@ class FormBuilder
             echo "FormBuilder:buildInput parameter fieldType is not specified correctly.";
         }
     }
+
 
     private function buildInputInput()
     {
@@ -233,6 +245,7 @@ class FormBuilder
 
     /**
      * @param $fieldName The id/name of the field
+     * @return $this
      */
     public function setFieldName($fieldName)
     {
@@ -242,6 +255,7 @@ class FormBuilder
 
     /**
      * @param $fieldDescription
+     * @return $this
      */
     public function setFieldDescription($fieldDescription)
     {
@@ -251,6 +265,7 @@ class FormBuilder
 
     /**
      * @param $fieldType input/select/checkbox/radio/textarea
+     * @return $this
      */
     public function setFieldType($fieldType)
     {
@@ -260,6 +275,7 @@ class FormBuilder
 
     /**
      * @param $fieldInputType: text/number/date
+     * @return $this
      */
     public function setFieldInputType($fieldInputType)
     {
@@ -269,6 +285,7 @@ class FormBuilder
 
     /**
      * @param $labelClasses
+     * @return $this
      */
     public function setLabelClasses($labelClasses)
     {
@@ -278,6 +295,7 @@ class FormBuilder
 
     /**
      * @param $inputValue
+     * @return $this
      */
     public function setInputValue($inputValue)
     {
@@ -287,6 +305,7 @@ class FormBuilder
 
     /**
      * @param $inputSelectQuery
+     * @return $this
      */
     public function setInputSelectQuery($inputSelectQuery)
     {
@@ -294,6 +313,10 @@ class FormBuilder
         return $this;
     }
 
+    /**
+     * @param $optArray
+     * @return $this
+     */
     public function setInputSelectArrayOptions($optArray){
         $this->inputSelectArrayOptions = $optArray;
         return $this;
@@ -301,6 +324,7 @@ class FormBuilder
 
     /**
      * @param $inputSelectAddEmptyOption
+     * @return $this
      */
     public function setInputSelectAddEmptyOption($inputSelectAddEmptyOption)
     {
@@ -310,6 +334,7 @@ class FormBuilder
 
     /**
      * @param $inputExtraClasses
+     * @return $this
      */
     public function setInputExtraClasses($inputExtraClasses)
     {
@@ -319,6 +344,7 @@ class FormBuilder
 
     /**
      * @param $fieldOnChage
+     * @return $this
      */
     public function setFieldOnChange($fieldOnChage){
         $this->fieldOnChange = $fieldOnChage;
@@ -327,19 +353,35 @@ class FormBuilder
 
     /**
      * @param $fieldOnKeyUp
+     * @return $this
      */
     public function setFieldOnKeyUp($fieldOnKeyUp){
         $this->fieldOnKeyUp = $fieldOnKeyUp;
         return $this;
     }
 
+    /**
+     * @return $this
+     */
     public function setDisableField(){
         $this->disableField = true;
         return $this;
     }
 
+    /**
+     * @param $style
+     * @return $this
+     */
     public function setFieldStyle($style){
         $this->fieldStyle = $style;
         return $this;
+    }
+
+    public function setFieldDivClass($fieldDivClass){
+        $this->fieldDivClass = $fieldDivClass;
+        return $this;
+    }
+    public function getFieldDivClass(){
+        return $this->fieldDivClass;
     }
 }

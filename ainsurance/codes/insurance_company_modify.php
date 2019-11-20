@@ -16,6 +16,8 @@ if ($_POST["action"] == "insert") {
     $db->start_transaction();
     $db->check_restriction_area('insert');
 
+    $_POST['fld_enable_commission_release'] = $db->get_check_value($_POST['fld_enable_commission_release']);
+
     $db->working_section = 'AInsurance Company Insert';
     $db->db_tool_insert_row('ina_insurance_companies', $_POST, 'fld_', 0, 'inainc_');
 
@@ -28,19 +30,24 @@ if ($_POST["action"] == "insert") {
     $db->check_restriction_area('update');
     $db->working_section = 'AInsurance Company Modify';
 
+    $_POST['fld_enable_commission_release'] = $db->get_check_value($_POST['fld_enable_commission_release']);
+
     $db->db_tool_update_row('ina_insurance_companies', $_POST, "`inainc_insurance_company_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'inainc_');
 
     $comp = new InsuranceCompany($_POST['lid']);
     if ($_POST['fld_debtor_account_ID'] == -1) {
-        if ($comp->autoGenerateAccounts()){
+        if ($comp->autoGenerateAccounts()) {
             $db->commit_transaction();
             $db->generateSessionAlertSuccess($comp->messageDescription);
-        }
-        else {
+        } else {
             $db->rollback_transaction();
             $db->generateSessionAlertError($comp->errorDescription);
         }
+    }
+    else {
+        $db->commit_transaction();
+        $db->generateSessionAlertSuccess('Company modified successfully');
     }
 
     header("Location: insurance_companies.php");
@@ -196,7 +203,7 @@ $formValidator->showErrorList();
                                 ?>
                                 <option value="<?php echo $bt['acacc_account_ID']; ?>"
                                     <?php if ($bt['acacc_account_ID'] == $data['inainc_debtor_account_ID']) echo 'selected'; ?>>
-                                    <?php echo $bt['acacc_name']; ?>
+                                    <?php echo $bt['acacc_code'] . ' - ' . $bt['acacc_name']; ?>
                                 </option>
                             <?php } ?>
                         </select>
@@ -215,8 +222,7 @@ $formValidator->showErrorList();
                     <label for="fld_revenue_account_ID" class="col-sm-4 col-form-label">Revenue Account</label>
                     <div class="col-sm-8">
                         <select name="fld_revenue_account_ID" id="fld_revenue_account_ID"
-                                class="form-control"
-                                required>
+                                class="form-control">
                             <?php
                             if ($data['inainc_revenue_account_ID'] == '' || $data['inainc_revenue_account_ID'] == -1) {
                                 ?>
@@ -234,7 +240,7 @@ $formValidator->showErrorList();
                                 ?>
                                 <option value="<?php echo $bt['acacc_account_ID']; ?>"
                                     <?php if ($bt['acacc_account_ID'] == $data['inainc_revenue_account_ID']) echo 'selected'; ?>>
-                                    <?php echo $bt['acacc_name']; ?>
+                                    <?php echo $bt['acacc_code'] . ' - ' . $bt['acacc_name']; ?>
                                 </option>
                             <?php } ?>
                         </select>
@@ -243,6 +249,25 @@ $formValidator->showErrorList();
                             "fieldName" => "fld_revenue_account_ID",
                             "fieldDataType" => "select",
                             "required" => false,
+                            "invalidTextAutoGenerate" => true
+                        ]);
+                        ?>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="fld_enable_commission_release" class="col-sm-4 col-form-label">Enable Commission Release</label>
+                    <div class="col-sm-8">
+                        <select name="fld_enable_commission_release" id="fld_enable_commission_release"
+                                class="form-control">
+                            <option value="1" <?php if ($data['inainc_enable_commission_release'] == 1) echo 'selected';?>>Yes - Transactions will be sent on payment</option>
+                            <option value="0" <?php if ($data['inainc_enable_commission_release'] == 0) echo 'selected';?>>No - Transactions will be sent on activate policy</option>
+                        </select>
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_enable_commission_release",
+                            "fieldDataType" => "select",
+                            "required" => true,
                             "invalidTextAutoGenerate" => true
                         ]);
                         ?>

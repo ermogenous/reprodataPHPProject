@@ -40,11 +40,13 @@ class TableList
     private $showPagesLinksBottom = false;
     private $createNewLink;
     private $modifyLink;
+    private $modifyLinkTarget;
     private $deleteLink;
     private $enableEditOnTouch = false;
     private $deleteConfirmText = 'Are you sure you want to delete this record?';
     private $disableModifyIcon = false;
     private $disableDeleteIcon = false;
+    private $disableIconColumn = false;
     private $functionIconArea; //Set a function name here and will be called passed the row data
     private $extraColumns = [];
 
@@ -183,9 +185,10 @@ class TableList
         return $this;
     }
 
-    public function setModifyLink($link)
+    public function setModifyLink($link, $target = '_self')
     {
         $this->modifyLink = $link;
+        $this->modifyLinkTarget = $target;
         return $this;
     }
 
@@ -225,6 +228,12 @@ class TableList
         return $this;
     }
 
+    public function setDisableIconColumn()
+    {
+        $this->disableIconColumn = true;
+        return $this;
+    }
+
     public function setFunctionIconArea($function)
     {
         $this->functionIconArea = $function;
@@ -252,6 +261,8 @@ class TableList
         if ($this->sqlDataGenerated == false) {
             $this->generateData();
         }
+        //need to re-execute to get the total records in this page.
+        $this->buildPagesLinks();
 
         global $db;
         //Main container
@@ -299,17 +310,21 @@ class TableList
         if (count($this->extraColumns) > 0) {
             foreach ($this->extraColumns as $columnData) {
                 $this->tableHtml .= '
-                                    <td scope="col" align="'.$columnData['thAlign'].'"><strong>' . $columnData['title'] . '</strong></td>
+                                    <td scope="col" align="' . $columnData['thAlign'] . '"><strong>' . $columnData['title'] . '</strong></td>
             ';
             }
         }
-        //show the create new table column
-        $this->tableHtml .= '
+        if ($this->disableIconColumn == false) {
+            //show the create new table column
+            $this->tableHtml .= '
                                     <th scope="col">
                                         <a href="' . $this->createNewLink . '">
                                         <i class="fas fa-plus-circle"></i>
                                         </a>
-                                    </th>
+                                    </th>';
+        }
+
+        $this->tableHtml .= '
                                  </tr>
                                 </thead>
                                 <tbody>
@@ -330,35 +345,38 @@ class TableList
                 foreach ($this->extraColumns as $columnData) {
                     $columnFunction = $columnData['function'];
                     $this->tableHtml .= '
-                                        <td scope="row" align="'.$columnData['tdAlign'].'">' . $columnFunction($row) . '</td>
+                                        <td scope="row" align="' . $columnData['tdAlign'] . '">' . $columnFunction($row) . '</td>
                 ';
                 }
             }
 
-            $this->tableHtml .= '       <td>
+            if ($this->disableIconColumn == false) {
+                $this->tableHtml .= '       <td>
        ';
 
 
-
-            if ($this->disableModifyIcon == false) {
-                $this->tableHtml .= '
-                    <a href="' . $this->modifyLink . $row[$this->mainIDField] . '">
+                if ($this->disableModifyIcon == false) {
+                    $this->tableHtml .= '
+                    <a href="' . $this->modifyLink . $row[$this->mainIDField] . '" target="' . $this->modifyLink . '">
                     <i class="fas fa-edit"></i></a>';
-            }
-            if ($this->disableDeleteIcon == false) {
-                $this->tableHtml .= '
+                }
+                if ($this->disableDeleteIcon == false) {
+                    $this->tableHtml .= '
                 <a href="' . $this->deleteLink . $row[$this->mainIDField] . '"
                    onclick="ignoreEdit = true; return confirm(\'' . $this->deleteConfirmText . '\');">
                    <i class="fas fa-minus-circle"></i></a>
                 ';
-            }
-            if ($this->functionIconArea != '') {
-                $funName = $this->functionIconArea;
-                $this->tableHtml .= $funName($row);
-            }
+                }
+                if ($this->functionIconArea != '') {
+                    $funName = $this->functionIconArea;
+                    $this->tableHtml .= $funName($row);
+                }
 
-            $this->tableHtml .= '
+                $this->tableHtml .= '
                                         </td>
+                                        ';
+            }
+            $this->tableHtml .= '
                                     </tr>' . PHP_EOL;
         }
         $this->tableHtml .= '
@@ -390,11 +408,27 @@ class TableList
         var ignoreEdit = false;
         function editLine(id) {
             if (ignoreEdit === false) {
+                ';
+
+        if ($this->modifyLinkTarget == '_self') {
+            $this->tableHtml .= '
                 window.location.assign("' . $this->modifyLink . '" + id);
+                ';
+        } else if ($this->modifyLinkTarget == '_parent'){
+            $this->tableHtml .= '
+                parent.document.location.href = "' . $this->modifyLink . '" + id;
+                ';
+        } else if ($this->modifyLinkTarget == '_blank'){
+            $this->tableHtml .= '
+                window.open("' . $this->modifyLink . '" + id);
+                ';
+        }
+        $this->tableHtml .= '
             }
         }
-</script>
-        ';
+
+</script >
+';
         echo $this->tableHtml;
     }
 
@@ -417,7 +451,7 @@ class TableList
         if ($this->sqlSelect != '') {
             $this->sql .= $this->sqlSelect . PHP_EOL;
         } else {
-            $this->sql .= '* ' . PHP_EOL;
+            $this->sql .= ' * ' . PHP_EOL;
         }
 
         $this->sql .= "FROM " . $this->tableName . PHP_EOL . $this->sqlFrom . PHP_EOL;
@@ -450,17 +484,17 @@ class TableList
     public function getOrdering()
     {
         if ($_GET['TlSetOrder'] != '') {
-            $_SESSION['tableList-' . $this->uniqueID]['order'] = $_GET['TlSetOrder'];
-            if ($_SESSION['tableList-' . $this->uniqueID]['orderType'] == '') {
-                $_SESSION['tableList-' . $this->uniqueID]['orderType'] = 'ASC';
-            } else if ($_SESSION['tableList-' . $this->uniqueID]['orderType'] == 'ASC') {
-                $_SESSION['tableList-' . $this->uniqueID]['orderType'] = 'DESC';
-            } else if ($_SESSION['tableList-' . $this->uniqueID]['orderType'] == 'DESC') {
-                $_SESSION['tableList-' . $this->uniqueID]['orderType'] = 'ASC';
+            $_SESSION['tableList - ' . $this->uniqueID]['order'] = $_GET['TlSetOrder'];
+            if ($_SESSION['tableList - ' . $this->uniqueID]['orderType'] == '') {
+                $_SESSION['tableList - ' . $this->uniqueID]['orderType'] = 'ASC';
+            } else if ($_SESSION['tableList - ' . $this->uniqueID]['orderType'] == 'ASC') {
+                $_SESSION['tableList - ' . $this->uniqueID]['orderType'] = 'DESC';
+            } else if ($_SESSION['tableList - ' . $this->uniqueID]['orderType'] == 'DESC') {
+                $_SESSION['tableList - ' . $this->uniqueID]['orderType'] = 'ASC';
             }
         }
 
-        if ($_SESSION['tableList-' . $this->uniqueID]['order'] != '') {
+        if ($_SESSION['tableList - ' . $this->uniqueID]['order'] != '') {
             $this->sqlOrderBy = PHP_EOL . '`' . $_SESSION['tableList-' . $this->uniqueID]['order'] . "` " . $_SESSION['tableList-' . $this->uniqueID]['orderType'];
         }
     }
@@ -483,19 +517,17 @@ class TableList
         //update the session with the current page
         $_SESSION['tableList-' . $this->uniqueID]['currentPage'] = $this->currentPage;
 
-
         //echo "Total Table:".$this->tableTotalResults." Per Page:".$this->perPage.' Total Pages: '.$this->totalPages;
-        //echo "<br>Current Page:".$this->currentPage." Session CurrentPage:".$_SESSION['tableList-'.$this->uniqueID]['currentPage'];
-        //echo "<br>";
-
-        $this->pagesLinksHtml = 'Showing ' . $this->perPage . ' of ' . $this->tableTotalResults . '.';
+        //echo " < br>Current Page:".$this->currentPage." Session CurrentPage:".$_SESSION['tableList-'.$this->uniqueID]['currentPage'];
+        //echo " < br>";
+        $this->pagesLinksHtml = 'Showing ' . $this->sqlTotalResults . ' of ' . $this->tableTotalResults . '.';
         if ($this->totalPages > 1) {
             $this->pagesLinksHtml .= ' Go to page ';
 
             if ($this->totalPages < 11) {
                 for ($i = 1; $i <= $this->totalPages; $i++) {
                     if ($i != $this->currentPage)
-                        $this->pagesLinksHtml .= "<a href=\"?TlGoToPage=" . $i . "\">" . $i . "</a>&nbsp;&nbsp;";
+                        $this->pagesLinksHtml .= " < a href = \"?TlGoToPage=" . $i . "\">" . $i . "</a>&nbsp;&nbsp;";
                     else
                         $this->pagesLinksHtml .= $i . "&nbsp;&nbsp;";
                 }

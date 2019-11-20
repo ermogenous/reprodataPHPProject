@@ -177,9 +177,9 @@ class AccountsTransaction
             $this->errorDescription = 'Must supply document ID';
             return false;
         }
-        if ($headerData['accountID'] == ''){
+        if ($headerData['entityID'] == '' || $headerData['entityID'] == 0){
             $this->error = true;
-            $this->errorDescription = 'Must supply account ID';
+            $this->errorDescription = 'Must supply entity ID';
             return false;
         }
 
@@ -209,7 +209,8 @@ class AccountsTransaction
         //proceed to create the records
         //1. create the header record in ac_transactions
         $newData['document_ID'] = $headerData['documentID'];
-        $newData['account_ID'] = $headerData['accountID'];
+        //$newData['account_ID'] = $headerData['accountID'];
+        $newData['entity_ID'] = $headerData['entityID'];
         $newData['comments'] = $headerData['comments'];
         $newData['status'] = 'Outstanding';
         $newData['transaction_date'] = date('Y-m-d');
@@ -222,12 +223,14 @@ class AccountsTransaction
 
         //generate the number
         $this->loadDocumentData($headerData['documentID']);
+        $this->documentData['acdoc_number_last_used']++;
         $newNumber = $db->buildNumber(
             $this->documentData['acdoc_number_prefix'],
             $this->documentData['acdoc_number_leading_zeros'],
             $this->documentData['acdoc_number_last_used']);
+
         //update the document
-        $docNewData['number_last_used'] = $this->documentData['acdoc_number_last_used']++;
+        $docNewData['number_last_used'] = $this->documentData['acdoc_number_last_used'];
         $db->db_tool_update_row('ac_documents', $docNewData,
             'acdoc_document_ID = '.$headerData['documentID'],
             $headerData['documentID'],
@@ -235,7 +238,6 @@ class AccountsTransaction
             'execute',
             'acdoc_');
         $newData['transaction_number'] = $newNumber;
-
         //insert the record
         $newHeaderID = $db->db_tool_insert_row('ac_transactions', $newData,'',1,
             'actrn_','execute');
@@ -256,7 +258,6 @@ class AccountsTransaction
             $lineData['dr_cr'] = $drCr;
             $lineData['value'] = $value['amount'];
             $lineData['reference'] = $value['reference'];
-
             $db->db_tool_insert_row('ac_transaction_lines', $lineData,'',0,
                 'actrl_','execute');
 
