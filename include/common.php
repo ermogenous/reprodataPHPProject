@@ -9,9 +9,9 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
 
     //Global variables
     $main["site_host"] = 'localhost';
-    $main["site_url"] = "http://localhost/reprodata"; //Not include last slash
-    $main["local_url"] = "C:/xampp/htdocs/reprodata"; //Not include last slash
-    $main["remote_folder"] = "/reprodata";
+    $main["site_url"] = "http://localhost/insurance"; //Not include last slash
+    $main["local_url"] = "C:/xampp/htdocs/insurance"; //Not include last slash
+    $main["remote_folder"] = "/insurance";
     $main["remote_folder_total"] = 1;
 
 

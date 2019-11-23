@@ -21,5 +21,5 @@ if ($undCheck['inaund_underwriter_ID'] == ''){
 
 
 
-header("Location: ainsurance/index.php");
+header("Location: ainsurance/policies.php");
 exit();

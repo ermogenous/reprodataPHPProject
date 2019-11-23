@@ -44,6 +44,7 @@ $list->setMainColumn('col-lg-10')
     ->setMainFieldID('ID')
     ->setModifyLink('insurance_company_modify.php?lid=')
     ->setDeleteLink('insurance_company_delete.php?lid=')
+    ->setCreateNewLink('insurance_company_modify.php')
     //->setFunctionIconArea('IconsFunction')
     ->tableFullBuilder();
 

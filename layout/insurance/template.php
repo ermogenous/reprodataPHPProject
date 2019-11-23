@@ -198,6 +198,11 @@ function template_header()
                                     <i class="fas fa-table"></i> <?php echo $db->showLangText('Statement', 'Δήλωση Λογαριασμού'); ?>
                                 </a>
 
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/ainsurance/index.php">
+                                    <i class="fas fa-table"></i> <?php echo $db->showLangText('View Unpaid', 'Προβολή Απλήρωτων'); ?>
+                                </a>
+
                                 <?php if ($db->user_data["usr_user_rights"] == 0) { ?>
                                     <a class="dropdown-item"
                                        href="<?php echo $main["site_url"]; ?>/ainsurance/ainsurance_settings.php">

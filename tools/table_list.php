@@ -357,7 +357,7 @@ class TableList
 
                 if ($this->disableModifyIcon == false) {
                     $this->tableHtml .= '
-                    <a href="' . $this->modifyLink . $row[$this->mainIDField] . '" target="' . $this->modifyLink . '">
+                    <a href="' . $this->modifyLink . $row[$this->mainIDField] . '" target="' . $this->modifyLinkTarget . '">
                     <i class="fas fa-edit"></i></a>';
                 }
                 if ($this->disableDeleteIcon == false) {
@@ -484,17 +484,17 @@ class TableList
     public function getOrdering()
     {
         if ($_GET['TlSetOrder'] != '') {
-            $_SESSION['tableList - ' . $this->uniqueID]['order'] = $_GET['TlSetOrder'];
-            if ($_SESSION['tableList - ' . $this->uniqueID]['orderType'] == '') {
-                $_SESSION['tableList - ' . $this->uniqueID]['orderType'] = 'ASC';
-            } else if ($_SESSION['tableList - ' . $this->uniqueID]['orderType'] == 'ASC') {
-                $_SESSION['tableList - ' . $this->uniqueID]['orderType'] = 'DESC';
-            } else if ($_SESSION['tableList - ' . $this->uniqueID]['orderType'] == 'DESC') {
-                $_SESSION['tableList - ' . $this->uniqueID]['orderType'] = 'ASC';
+            $_SESSION['tableList-' . $this->uniqueID]['order'] = $_GET['TlSetOrder'];
+            if ($_SESSION['tableList-' . $this->uniqueID]['orderType'] == '') {
+                $_SESSION['tableList-' . $this->uniqueID]['orderType'] = 'ASC';
+            } else if ($_SESSION['tableList-' . $this->uniqueID]['orderType'] == 'ASC') {
+                $_SESSION['tableList-' . $this->uniqueID]['orderType'] = 'DESC';
+            } else if ($_SESSION['tableList-' . $this->uniqueID]['orderType'] == 'DESC') {
+                $_SESSION['tableList-' . $this->uniqueID]['orderType'] = 'ASC';
             }
         }
 
-        if ($_SESSION['tableList - ' . $this->uniqueID]['order'] != '') {
+        if ($_SESSION['tableList-' . $this->uniqueID]['order'] != '') {
             $this->sqlOrderBy = PHP_EOL . '`' . $_SESSION['tableList-' . $this->uniqueID]['order'] . "` " . $_SESSION['tableList-' . $this->uniqueID]['orderType'];
         }
     }

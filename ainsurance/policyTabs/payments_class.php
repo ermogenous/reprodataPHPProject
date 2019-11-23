@@ -187,15 +187,28 @@ class PolicyPayment
 
         //echo "Total Allocated amount:".$totalAllocatedAmount." Payment amount:".$this->paymentData['inapp_amount'];
         if ($totalAllocatedAmount == $this->paymentData['inapp_amount']) {
+            //echo "First";
             $payNewData['status'] = 'Applied';
             $payNewData['allocated_amount'] = $totalAllocatedAmount;
             $payNewData['allocated_commission'] = $totalAllocatedCommission;
+            //sub agent
+            //echo "Total Amount:".$totalAllocatedAmount."<br>";
+            $totalPremium = $this->paymentData['inapol_premium'] + $this->paymentData['inapol_fees'] + $this->paymentData['inapol_stamps'];
+            //echo "Total Premium:".$totalPremium."<br>";
+            $percentAllocated = $totalAllocatedAmount / $totalPremium;
+            //echo "Percent:".$percentAllocated."<br>";
+            if ($this->paymentData['inapol_subagent_commission'] > 0){
+                //$payNewData['']
+            }
+            //exit();
+            //$percentAllocated =
             $db->db_tool_update_row('ina_policy_payments', $payNewData,
                 'inapp_policy_payment_ID = ' . $this->paymentID, $this->paymentID,
                 '', 'execute', 'inapp_');
             return true;
 
         } else if ($totalAllocatedAmount < $this->paymentData['inapp_amount']) {
+            //echo "Second";
             $payNewData['status'] = 'Incomplete';
             $payNewData['allocated_amount'] = $totalAllocatedAmount;
             $payNewData['allocated_commission'] = $totalAllocatedCommission;
@@ -301,6 +314,10 @@ class PolicyPayment
                     return false;
                 }
             }
+
+            //get all accounting transactions of this policy to verify that total amount of commission is correct.
+            //if not add the difference in this transaction
+
 
         }//if commission release
 

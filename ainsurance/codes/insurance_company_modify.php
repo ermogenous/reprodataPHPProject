@@ -63,8 +63,6 @@ if ($_GET["lid"] != "") {
 } else {
     $data['inainc_active'] = 'Active';
 }
-
-
 $db->show_header();
 
 include('../../scripts/form_validator_class.php');
