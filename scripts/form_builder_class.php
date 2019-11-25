@@ -81,6 +81,7 @@ class FormBuilder
         } else if ($this->fieldType == 'radio') {
 
         } else if ($this->fieldType == 'textarea') {
+            $this->buildInputTextArea();
 
         } else {
             echo "FormBuilder:buildInput parameter fieldType is not specified correctly.";
@@ -98,6 +99,19 @@ class FormBuilder
         echo '<input name="' . $this->fieldName . '" type="' . $this->fieldInputType . '" id="' . $this->fieldName . '" style="'.$this->fieldStyle.'"
               value="' . $this->inputValue . '" '. ' onkeyup="'.$this->fieldOnKeyUp.'" onchange="'.$this->fieldOnChange.'"
               class="' . $this->defaultInputClass . ' ' . $this->inputExtraClasses . '" '.$disabled.'/>';
+    }
+
+    private function buildInputTextArea()
+    {
+        $disabled = '';
+        if ($this->disableField == true){
+            $disabled = 'disabled';
+        }
+
+        echo '<textarea name="' . $this->fieldName . '" id="' . $this->fieldName . '" style="'.$this->fieldStyle.'"
+        onkeyup="'.$this->fieldOnKeyUp.'" onchange="'.$this->fieldOnChange.'" class="' . $this->defaultInputClass . ' ' . $this->inputExtraClasses . '" '.$disabled.'>'
+        . $this->inputValue . '</textarea>';
+
     }
 
     private function buildInputSelect()
@@ -323,7 +337,7 @@ class FormBuilder
     }
 
     /**
-     * @param $inputSelectAddEmptyOption
+     * @param $inputSelectAddEmptyOption true/false
      * @return $this
      */
     public function setInputSelectAddEmptyOption($inputSelectAddEmptyOption)
