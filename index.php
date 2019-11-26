@@ -1,4 +1,11 @@
 <?php
+include('include/common.php');
+if (isset($_GET['goAdmin'])) {
+    echo "admin";
+} else {
+    header("Location:" . $main["site_url"] . "/tolc/home.php");
+    exit();
+}
 header("Location: login.php");
 exit();
 ?>

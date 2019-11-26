@@ -919,6 +919,14 @@ class Main
 
     }
 
+    public function enable_jquery_ui_dateTimePicker(){
+        if ($this->enabled_jquery_ui != 'yes'){
+            $this->enable_jquery_ui();
+        }
+        $this->include_js_file($this->settings["site_url"] . "/scripts/jquery-ui-timepicker-addon.min.js");
+        $this->include_css_file($this->settings["site_url"] . "/scripts/jquery-ui-timepicker-addon.css");
+    }
+
     public function enable_jquery_tools()
     {
 
@@ -1509,11 +1517,11 @@ class Main
         $this->update_log_file('CUSTOM', 0, $action, 'CUSTOM', 'CUSTOM', $sql);
     }//update_log_file_custom
 
-    function convertDateToEU($date){
-        return $this->convert_date_format($date,'yyyy-mm-dd','dd/mm/yyyy');
+    function convertDateToEU($date, $date_time = 0, $return_time = 0){
+        return $this->convert_date_format($date,'yyyy-mm-dd','dd/mm/yyyy', $date_time, $return_time);
     }
-    function convertDateToUS($date){
-        return $this->convert_date_format($date,'dd/mm/yyyy','yyyy-mm-dd');
+    function convertDateToUS($date, $date_time = 0, $return_time = 0){
+        return $this->convert_date_format($date,'dd/mm/yyyy','yyyy-mm-dd', $date_time, $return_time);
     }
 
     function convert_date_format($date, $from_format = 'yyyy-mm-dd', $to_format = 'dd/mm/yyyy', $date_time = 0, $return_time = 0)

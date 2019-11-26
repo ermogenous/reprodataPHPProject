@@ -6,12 +6,7 @@
  * Time: 11:21 ΠΜ
  */
 
-if (isset($_GET['goAdmin'])) {
-    echo "admin";
-} else {
-    //header("Location:" . $main["site_url"] . "/tolc/content/home.php");
-    //exit();
-}
+
 
 function template_header()
 {
@@ -141,28 +136,28 @@ function template_header()
                             <ul aria-labelledby="dropdownMenu1" class="dropdown-menu border-0 shadow">
                                 <li>
                                     <a class="dropdown-item"
-                                       href="<?php echo $main["site_url"]; ?>/tolc/branches/branches.php">
+                                       href="<?php echo $main["site_url"]; ?>/events/branches/branches.php">
                                         <i class="fas fa-users"></i> Branches</a>
                                 </li>
 
                                 <li>
                                     <a class="dropdown-item"
-                                       href="<?php echo $main["site_url"]; ?>/tolc/hosts/hosts.php">
+                                       href="<?php echo $main["site_url"]; ?>/events/hosts/hosts.php">
                                         <i class="far fa-calendar-alt"></i> Hosts</a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item"
-                                       href="<?php echo $main["site_url"]; ?>/tolc/rooms/rooms.php">
+                                       href="<?php echo $main["site_url"]; ?>/events/rooms/rooms.php">
                                         <i class="fas fa-plus"></i> Rooms</a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item"
-                                       href="<?php echo $main["site_url"]; ?>/tolc/events/events.php">
+                                       href="<?php echo $main["site_url"]; ?>/events/events/events.php">
                                         <i class="far fa-calendar-alt"></i> Events</a>
                                 </li>
                                 <li>
                                     <a class="dropdown-item"
-                                       href="<?php echo $main["site_url"]; ?>/tolc/events/event_calendar.php">
+                                       href="<?php echo $main["site_url"]; ?>/events/events/event_calendar.php">
                                         <i class="fas fa-book"></i> Event Calendar</a>
                                 </li>
 

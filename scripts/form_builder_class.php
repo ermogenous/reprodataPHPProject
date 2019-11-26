@@ -65,6 +65,7 @@ class FormBuilder
      */
     function initSettings(){
         $this->disableField = false;
+        $this->fieldInputType = '';
         return $this;
     }
 
@@ -96,9 +97,45 @@ class FormBuilder
             $disabled = 'disabled';
         }
 
-        echo '<input name="' . $this->fieldName . '" type="' . $this->fieldInputType . '" id="' . $this->fieldName . '" style="'.$this->fieldStyle.'"
+        if ($this->fieldInputType == 'date'){
+            echo '<input name="' . $this->fieldName . '" type="text" id="' . $this->fieldName . '" style="'.$this->fieldStyle.'"
               value="' . $this->inputValue . '" '. ' onkeyup="'.$this->fieldOnKeyUp.'" onchange="'.$this->fieldOnChange.'"
               class="' . $this->defaultInputClass . ' ' . $this->inputExtraClasses . '" '.$disabled.'/>';
+            echo '<script>
+        $(function () {
+            $("#'.$this->fieldName.'").datepicker();
+            $("#'.$this->fieldName.'").datepicker("option", "dateFormat", "dd/mm/yy");
+            $("#'.$this->fieldName.'").val("'.$this->inputValue.'");
+
+        });
+        </script>';
+        }//need to include dateTime js addon
+        else if ($this->fieldInputType == 'dateTime') {
+            echo '<input name="' . $this->fieldName . '" type="text" id="' . $this->fieldName . '" style="'.$this->fieldStyle.'"
+              value="' . $this->inputValue . '" '. ' onkeyup="'.$this->fieldOnKeyUp.'" onchange="'.$this->fieldOnChange.'"
+              class="' . $this->defaultInputClass . ' ' . $this->inputExtraClasses . '" '.$disabled.'/>';
+            echo '<script>
+        $(function () {
+            $("#'.$this->fieldName.'").datetimepicker({
+                dateFormat: "dd/mm/yy",
+                timeFormat: "HH:mm",
+                showSecond:false,
+                showMillisec:false,
+                showMicrosec:false,
+                showTimezone:false
+            });
+            //$("#'.$this->fieldName.'").datepicker("setDate","'.$this->inputValue.'");
+            $("#'.$this->fieldName.'").val("'.$this->inputValue.'");
+
+        });
+        </script>';
+        }
+        else {
+            echo '<input name="' . $this->fieldName . '" type="' . $this->fieldInputType . '" id="' . $this->fieldName . '" style="'.$this->fieldStyle.'"
+              value="' . $this->inputValue . '" '. ' onkeyup="'.$this->fieldOnKeyUp.'" onchange="'.$this->fieldOnChange.'"
+              class="' . $this->defaultInputClass . ' ' . $this->inputExtraClasses . '" '.$disabled.'/>';
+        }
+
     }
 
     private function buildInputTextArea()
@@ -288,7 +325,7 @@ class FormBuilder
     }
 
     /**
-     * @param $fieldInputType: text/number/date
+     * @param $fieldInputType: text/number/date/dateTime
      * @return $this
      */
     public function setFieldInputType($fieldInputType)

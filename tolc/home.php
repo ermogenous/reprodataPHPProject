@@ -6,8 +6,9 @@
  * Time: 4:51 ΜΜ
  */
 include("../include/main.php");
+include("template.php");
 $db = new Main(0);
 
-$db->show_header();
+show_tolc_header();
 require('content/home.php');
-$db->show_footer();
+show_tolc_footer();
