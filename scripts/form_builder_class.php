@@ -66,6 +66,8 @@ class FormBuilder
     function initSettings(){
         $this->disableField = false;
         $this->fieldInputType = '';
+        $this->inputSelectQuery = '';
+        $this->inputSelectAddEmptyOption = false;
         return $this;
     }
 

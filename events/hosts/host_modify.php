@@ -140,13 +140,12 @@ if ($_GET['lid'] != ''){
                     <div class="col-12" style="height: 25px;"></div>
 
                     <div class="form-group row">
-                        <label for="name" class="col-4 d-none d-sm-block col-form-label"></label>
-                        <div class="col-sm-8">
+                        <div class="col-sm-8 text-center">
                             <input name="action" type="hidden" id="action"
                                    value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
                             <input type="button" value="Back" class="btn btn-secondary"
-                                   onclick="window.location.assign('branches.php')">
+                                   onclick="window.location.assign('hosts.php')">
                             <input type="submit" name="Submit" id="Submit"
                                    value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Branch"
                                    class="btn btn-primary">

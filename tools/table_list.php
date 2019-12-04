@@ -74,14 +74,20 @@ class TableList
         return $this;
     }
 
-    public function setSqlSelect($fieldName, $asName)
+    public function setSqlSelect($fieldName, $asName, $settings=[])
     {
+        /**
+         * Settings: ex: ['functionName' => 'convertDateToEu']
+         */
         if ($this->sqlSelect != '') {
             $this->sqlSelect .= ',';
         }
         $this->sqlSelect .= PHP_EOL . $fieldName . " as `" . $asName . "`";
         $this->sqlTotalFields++;
-        $this->allFieldsArray[$this->sqlTotalFields] = $asName;
+        $this->allFieldsArray[$this->sqlTotalFields]['name'] = $asName;
+        if ($settings['functionName'] != ''){
+            $this->allFieldsArray[$this->sqlTotalFields]['function'] = $settings['functionName'];
+        }
         return $this;
     }
 
@@ -243,6 +249,7 @@ class TableList
     /** Adds extra column after the fields. Executes the defined function to get the data to show
      * @param $title
      * @param $functionName the name of the function to execute
+     * @param $settings
      * @return $this
      */
     public function addTableColumn($title, $functionName, $settings = [])
@@ -303,7 +310,7 @@ class TableList
         //loop into all the columns for the headers
         for ($i = 1; $i <= $this->sqlTotalFields; $i++) {
             $this->tableHtml .= '
-                                    <th scope="col"><a href="?TlSetOrder=' . $this->allFieldsArray[$i] . '">' . $this->allFieldsArray[$i] . '</a></th>
+                                    <th scope="col"><a href="?TlSetOrder=' . $this->allFieldsArray[$i]['name'] . '">' . $this->allFieldsArray[$i]['name'] . '</a></th>
             ';
         }
         //loop into all the extra columns
@@ -334,8 +341,13 @@ class TableList
         while ($row = $db->fetch_assoc($this->sqlResult)) {
             $this->tableHtml .= '<tr onclick="editLine(' . $row[$this->mainIDField] . ');">' . PHP_EOL;
             for ($i = 1; $i <= $this->sqlTotalFields; $i++) {
+                $fieldData = $row[$this->allFieldsArray[$i]['name']];
+                if ($this->allFieldsArray[$i]['function'] != ''){
+                    $fieldDataFunction = $this->allFieldsArray[$i]['function'];
+                    $fieldData = $fieldDataFunction($fieldData);
+                }
                 $this->tableHtml .= '
-                                        <td scope="row">' . $row[$this->allFieldsArray[$i]] . '</td>
+                                        <td scope="row">' . $fieldData . '</td>
                 ';
 
             }

@@ -10,11 +10,31 @@ include("../../include/main.php");
 $db = new Main();
 $db->admin_title = "Insurance Underwriters Modify";
 
+function findSubAgentType($postValues){
+    global $db;
+    if ($postValues['fld_subagent_ID'] == 0){
+        return 0;
+    }
+    else if ($postValues['fld_subagent_ID'] == -1){
+        return 1;
+    }
+    else if ($postValues['fld_subagent_ID'] > 0){
+        $agentData = $db->query_fetch('SELECT * FROM ina_underwriters WHERE inaund_underwriter_ID = '.$postValues['fld_subagent_ID']);
+        if ($agentData['inaund_subagent'] == 1){
+            return 2;
+        }
+        else {
+            return 3;
+        }
+    }
+}
+
 if ($_POST["action"] == "insert") {
     $db->check_restriction_area('insert');
     $db->working_section = 'Insert new Insurance underwriter';
     $db->start_transaction();
 
+    $_POST['fld_subagent'] = findSubAgentType($_POST);
 
     $newID = $db->db_tool_insert_row('ina_underwriters', $_POST, 'fld_', 1, 'inaund_');
     //update companies
@@ -59,8 +79,12 @@ if ($_POST["action"] == "insert") {
     }
 
     if ($error_found == false) {
+
+        $_POST['fld_subagent'] = findSubAgentType($_POST);
+
         $db->db_tool_update_row('ina_underwriters', $_POST, "`inaund_underwriter_ID` = " . $_POST["lid"], $_POST["lid"],
             'fld_', 'execute', 'inaund_');
+
         //update the companies
         foreach ($_POST as $name => $value) {
             if (substr($name, 0, 7) == 'inc_id_') {
@@ -201,7 +225,7 @@ $formValidator = new customFormValidator();
                                 WHERE
                                 inaund_user_ID != '.$_GET['lid'].'
                                 AND inaund_subagent_ID != 0
-                                AND inaund_subagent_ID = -1 
+                                #AND inaund_subagent_ID = -1 
                                 ORDER BY usr_name ASC';
                                 $result = $db->query($sql);
                                 while ($row = $db->fetch_assoc($result)){

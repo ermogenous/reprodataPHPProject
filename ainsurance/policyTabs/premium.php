@@ -160,35 +160,25 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                     </div>
 
                     <?php
-                    if ($policyUnderwriter['inaund_subagent_ID'] == -1 || $policyUnderwriter['inaund_subagent_ID'] > 0) {
-
-                        //if sub sub agent then get commission rate from parent
-                        if ($policyUnderwriter['inaund_subagent_ID'] > 0) {
-                            $subAgentData = $policy->getParentUnderwriterData();
-                            $subAgentRate = $subAgentData['clo_commission_percent'];
-                            $subAgentName = $subAgentData['usr_name'];
-                        } else {
-                            $subAgentRate = $policy->policyData["inapol_subagent_commission"];
-                            $subAgentName = $policyUnderwriter['usr_name'];
-                        }
-
+                    if ($policy->policyData['inapol_agent_level1_ID'] > 0) {
+                            $subLevel1 = $db->query_fetch('SELECT * FROM ina_underwriters JOIN users ON usr_users_ID = inaund_user_ID WHERE inaund_underwriter_ID = '.$policy->policyData['inapol_agent_level1_ID']);
                         ?>
                         <div class="form-group row">
-                            <label for="fld_subagent_commission" class="col-sm-9 text-right col-form-label">
-                                Sub Agent Comm.: <?php echo $subAgentName . " " . $subAgentRate . "%"; ?>
+                            <label for="fld_agent_level1_commission" class="col-sm-9 text-right col-form-label">
+                                Sub Level 1 Comm.: <?php echo $subLevel1['usr_name'] . " " . $policy->policyData['inapol_agent_level1_percent'] . "%"; ?>
                             </label>
                             <div class="col-sm-3">
-                                <input type="text" id="fld_subagent_commission" name="fld_subagent_commission"
+                                <input type="text" id="fld_agent_level1_commission" name="fld_agent_level1_commission"
                                        class="form-control"
                                        required onchange="updateGrossPremium();"
-                                       value="<?php echo $policy->policyData["inapol_subagent_commission"]; ?>">
+                                       value="<?php echo $policy->policyData["inapol_agent_level1_commission"]; ?>">
                                 <?php
                                 $formValidator->addField(
                                     [
-                                        'fieldName' => 'fld_subagent_commission',
+                                        'fieldName' => 'fld_agent_level1_commission',
                                         'fieldDataType' => 'number',
                                         'required' => true,
-                                        'invalidText' => 'Sub Agent Commission is Required'
+                                        'invalidText' => 'Sub Agent Level 1 Commission is Required'
                                     ]);
                                 ?>
                             </div>
@@ -196,21 +186,48 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                     <?php } ?>
 
                     <?php
-                    if ($policyUnderwriter['inaund_subagent_ID'] > 0) {
+                    if ($policy->policyData['inapol_agent_level2_ID'] > 0) {
+                        $subLevel2 = $db->query_fetch('SELECT * FROM ina_underwriters JOIN users ON usr_users_ID = inaund_user_ID WHERE inaund_underwriter_ID = '.$policy->policyData['inapol_agent_level2_ID'])
                         ?>
                         <div class="form-group row">
-                            <label for="fld_subsubagent_commission" class="col-sm-9 text-right col-form-label">
-                                SubSub Agent Commission: <?php echo $policyUnderwriter['usr_name'] . " " . $policyUnderwriter['clo_commission_percent'] . "%"; ?>
+                            <label for="fld_agent_level2_commission" class="col-sm-9 text-right col-form-label">
+                                Sub Level 2 Commission: <?php echo $subLevel2['usr_name'] . " " . $policy->policyData['inapol_agent_level2_percent'] . "%"; ?>
                             </label>
                             <div class="col-sm-3">
-                                <input type="text" id="fld_subsubagent_commission" name="fld_subsubagent_commission"
+                                <input type="text" id="fld_agent_level2_commission" name="fld_agent_level2_commission"
                                        class="form-control"
                                        required onchange="updateGrossPremium();"
-                                       value="<?php echo $policy->policyData["inapol_subsubagent_commission"]; ?>">
+                                       value="<?php echo $policy->policyData["inapol_agent_level2_commission"]; ?>">
                                 <?php
                                 $formValidator->addField(
                                     [
-                                        'fieldName' => 'fld_subsubagent_commission',
+                                        'fieldName' => 'fld_agent_level2_commission',
+                                        'fieldDataType' => 'number',
+                                        'required' => true,
+                                        'invalidText' => 'SubSub Agent Commission is Required'
+                                    ]);
+                                ?>
+                            </div>
+                        </div>
+                    <?php } ?>
+
+                    <?php
+                    if ($policy->policyData['inapol_agent_level3_ID'] > 0) {
+                        $subLevel3 = $db->query_fetch('SELECT * FROM ina_underwriters JOIN users ON usr_users_ID = inaund_user_ID WHERE inaund_underwriter_ID = '.$policy->policyData['inapol_agent_level3_ID'])
+                        ?>
+                        <div class="form-group row">
+                            <label for="fld_agent_level3_commission" class="col-sm-9 text-right col-form-label">
+                                Sub Level 3 Commission: <?php echo $subLevel3['usr_name'] . " " . $policy->policyData['inapol_agent_level3_percent'] . "%"; ?>
+                            </label>
+                            <div class="col-sm-3">
+                                <input type="text" id="fld_agent_level3_commission" name="fld_agent_level3_commission"
+                                       class="form-control"
+                                       required onchange="updateGrossPremium();"
+                                       value="<?php echo $policy->policyData["inapol_agent_level3_commission"]; ?>">
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_agent_level3_commission',
                                         'fieldDataType' => 'number',
                                         'required' => true,
                                         'invalidText' => 'SubSub Agent Commission is Required'
@@ -327,34 +344,55 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
             commission = commission.toFixed(2);
             $('#fld_commission').val(commission);
 
-            let subAgent = '<?php echo $policyUnderwriter['inaund_subagent_ID'];?>';
+            let subAgentLevel1 = '<?php echo $policy->policyData['inapol_agent_level1_ID'];?>';
             //sub agent commission
-            let subCommission = 0;
-            if (subAgent == -1 || subAgent > 0) {
-                //console.log('Sub Agent exists - <?php echo $subAgentRate;?>%');
+            let subLevel1Commission = 0;
+            if (subAgentLevel1 > 0) {
+                console.log('Sub Level 1 Agent exists - <?php echo $policy->policyData['inapol_agent_level1_percent'];?>%');
+                let subLevel1Percent = '<?php echo $policy->policyData['inapol_agent_level1_percent'];?>';
+                subLevel1Percent = subLevel1Percent * 1;
 
-                let subCommPercent = '<?php echo $subAgentRate;?>';
-                subCommPercent = subCommPercent * 1;
-
-                subCommission = (premium * subCommPercent) / 100;
-                subCommission = subCommission.toFixed(2);
-                $('#fld_subagent_commission').val(subCommission);
-
+                subLevel1Commission = (premium * subLevel1Percent) / 100;
+                subLevel1Commission = subLevel1Commission.toFixed(2);
+                $('#fld_agent_level1_commission').val(subLevel1Commission);
             }
-            if (subAgent > 0) {
-                //console.log('SubSub Agent exists - <?php echo $policyUnderwriter['clo_commission_percent'];?>%');
 
-                let subCommPercent = '<?php echo $policyUnderwriter['clo_commission_percent'];?>';
-                subCommPercent = subCommPercent * 1;
-                let subSubCommission = 0;
+            let subAgentLevel2 = '<?php echo $policy->policyData['inapol_agent_level2_ID'];?>';
+            if (subAgentLevel2 > 0) {
+                console.log('Sub Level 2 Agent exists - <?php echo $policy->policyData['inapol_agent_level2_percent'];?>%');
 
-                subSubCommission = (premium * subCommPercent) / 100;
-                subSubCommission = subSubCommission.toFixed(2);
-                $('#fld_subsubagent_commission').val(subSubCommission);
+                let level1Percent = '<?php echo $policy->policyData['inapol_agent_level1_percent'];?>';
+                let level2Percent = '<?php echo $policy->policyData['inapol_agent_level2_percent'];?>';
+                level1Percent = level1Percent * 1;
+                level2Percent = level2Percent * 1;
+                let level2Commission = 0;
+
+                level2Commission = (premium * level2Percent) / 100;
+                level2Commission = level2Commission.toFixed(2);
+                $('#fld_agent_level2_commission').val(level2Commission);
                 //substract the subsubagent commission from the subagent
-                let subAgentComm = (subCommission - subSubCommission) * 1;
-                subAgentComm = subAgentComm.toFixed(2);
-                $('#fld_subagent_commission').val(subAgentComm);
+                let level1Comm = (subLevel1Commission - level2Commission) * 1;
+                level1Comm = level1Comm.toFixed(2);
+                $('#fld_agent_level1_commission').val(level1Comm);
+            }
+
+            let subAgentLevel3 = '<?php echo $policy->policyData['inapol_agent_level3_ID'];?>';
+            if (subAgentLevel3 > 0) {
+                console.log('Sub Level 3 Agent exists - <?php echo $policy->policyData['inapol_agent_level3_percent'];?>%');
+
+                let level2Percent = '<?php echo $policy->policyData['inapol_agent_level2_percent'];?>';
+                let level3Percent = '<?php echo $policy->policyData['inapol_agent_level3_percent'];?>';
+                level2Percent = level2Percent * 1;
+                level3Percent = level3Percent * 1;
+                let level3Commission = 0;
+                let level2Commission = $('#fld_agent_level2_commission').val() * 1;
+                level3Commission = (premium * level3Percent) / 100;
+                level3Commission = level3Commission.toFixed(2);
+                $('#fld_agent_level3_commission').val(level3Commission);
+                //substract the subsubagent commission from the subagent
+                let level2Comm = (level2Commission - level3Commission) * 1;
+                level2Comm = level2Comm.toFixed(2);
+                $('#fld_agent_level2_commission').val(level2Comm);
             }
 
         }

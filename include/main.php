@@ -709,6 +709,13 @@ class Main
 
     }
 
+    public function getNextID($table){
+        $sql = 'SELECT Auto_increment FROM information_schema.tables WHERE table_name="'.$table.'"';
+        $result = $this->query_fetch($sql);
+        $return = $result['Auto_increment'];
+        return $return;
+    }
+
     public function insert_id()
     {
         return mysqli_insert_id($this->db_handle);
@@ -1379,7 +1386,7 @@ class Main
                 }
                 //echo $name." -> ".$value." -> ".$previous[$fixed_name]." [".$fixed_name."]<br>";
                 //check if any change from the previous value;
-                if ($value != $previous[$fixed_name]) {
+                if ($value !== $previous[$fixed_name]) {
 
                     if ($found_change != 0)
                         $sql .= ', ';

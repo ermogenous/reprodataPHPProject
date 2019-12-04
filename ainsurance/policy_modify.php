@@ -22,6 +22,8 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_expiry_date'] = $db->convert_date_format($_POST['fld_expiry_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $_POST['fld_financial_date'] = $db->convertDateToUS($_POST['fld_financial_date']);
     $_POST['fld_status'] = 'Outstanding';
+    //build the subagentsID
+    Policy::buildSubAgentsIDsFromPOST();
 
     //init fields
     $_POST['fld_replacing_ID'] = 0;
@@ -32,17 +34,17 @@ if ($_POST["action"] == "insert") {
 
     //fix the installment ID
     $newData['installment_ID'] = $newID;
-    $db->db_tool_update_row('ina_policies', $newData, 'inapol_policy_ID = '.$newID, $newID,
-        '','execute','inapol_');
+    $db->db_tool_update_row('ina_policies', $newData, 'inapol_policy_ID = ' . $newID, $newID,
+        '', 'execute', 'inapol_');
 
     //validate policy number
     $policy = new Policy($newID);
-    if ($policy->validatePolicyNumber() == false){
+    if ($policy->validatePolicyNumber() == false) {
         $db->generateSessionAlertError($policy->errorDescription);
         //reset the policy number
         $resetNumData['policy_number'] = '';
-        $db->db_tool_update_row('ina_policies', $resetNumData, 'inapol_policy_ID = '.$newID, $newID,
-            '','execute','inapol_');
+        $db->db_tool_update_row('ina_policies', $resetNumData, 'inapol_policy_ID = ' . $newID, $newID,
+            '', 'execute', 'inapol_');
         header("Location: policy_modify.php?lid=" . $newID);
         exit();
     }
@@ -73,6 +75,8 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_expiry_date'] = $db->convert_date_format($_POST['fld_expiry_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $_POST['fld_financial_date'] = $db->convertDateToUS($_POST['fld_financial_date']);
 
+    //build the subagentsID
+    Policy::buildSubAgentsIDsFromPOST();
     if ($policy->policyData['inapol_status'] == 'Outstanding') {
         $db->db_tool_update_row('ina_policies', $_POST, "`inapol_policy_ID` = " . $_POST["lid"],
             $_POST["lid"], 'fld_', 'execute', 'inapol_');
@@ -118,11 +122,12 @@ $db->show_header();
                 <form name="myForm" id="myForm" method="post" action="" onsubmit=""
                     <?php $formValidator->echoFormParameters(); ?>>
                     <div class="alert alert-dark text-center">
-                        <b><?php if ($_GET["lid"] == "") echo $db->showLangText('Insert Policy','Δημιουργία Συμβολαίου'); else echo $db->showLangText('Update Policy','Αλλαγή Συμβολαίου'); ?></b>
+                        <b><?php if ($_GET["lid"] == "") echo $db->showLangText('Insert Policy', 'Δημιουργία Συμβολαίου'); else echo $db->showLangText('Update Policy', 'Αλλαγή Συμβολαίου'); ?></b>
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_underwriter_ID" class="col-md-2 col-form-label"><?php echo $db->showLangText('Agent','Ασφαλιστής');?></label>
+                        <label for="fld_underwriter_ID"
+                               class="col-md-2 col-form-label"><?php echo $db->showLangText('Agent', 'Ασφαλιστής'); ?></label>
                         <div class="col-md-4">
                             <select name="fld_underwriter_ID" id="fld_underwriter_ID"
                                     class="form-control"
@@ -130,18 +135,17 @@ $db->show_header();
                                 <option value=""></option>
                                 <?php
                                 //if user rights <= 2 then show all underwriters. Else show only in same group
-                                if ($db->user_data['usr_user_rights'] <= 2){
+                                if ($db->user_data['usr_user_rights'] <= 2) {
                                     $groupFilter = '';
-                                }
-                                else {
-                                    $groupFilter = 'AND usg_users_groups_ID = '.$db->user_data['usr_users_groups_ID'];
+                                } else {
+                                    $groupFilter = 'AND usg_users_groups_ID = ' . $db->user_data['usr_users_groups_ID'];
                                 }
                                 $sql = "SELECT * FROM ina_underwriters
                                         JOIN users ON usr_users_ID = inaund_user_ID
                                         JOIN users_groups ON usr_users_groups_ID = usg_users_groups_ID
                                         WHERE
                                         1=1 
-                                        ".$groupFilter." 
+                                        " . $groupFilter . " 
                                         AND inaund_status = 'Active' 
                                         ORDER BY usr_name ASC";
                                 echo $sql;
@@ -181,7 +185,7 @@ $db->show_header();
 
                     <div class="form-group row">
                         <label for="fld_insurance_company_ID" class="col-md-2 col-form-label">
-                            <?php echo $db->showLangText('Company','Εταιρεία');?>
+                            <?php echo $db->showLangText('Company', 'Εταιρεία'); ?>
                         </label>
                         <div class="col-md-4">
                             <select name="fld_insurance_company_ID" id="fld_insurance_company_ID"
@@ -232,10 +236,11 @@ $db->show_header();
                         </div>
 
                         <label for="fld_type_code" class="col-md-3 col-form-label">
-                            <?php echo $db->showLangText('Type','Τύπος');?>
+                            <?php echo $db->showLangText('Type', 'Τύπος'); ?>
                         </label>
                         <div class="col-md-3">
-                            <input type="hidden" id="type_code_db" name="type_code_db" value="<?php echo $data['inapol_type_code']; ?>">
+                            <input type="hidden" id="type_code_db" name="type_code_db"
+                                   value="<?php echo $data['inapol_type_code']; ?>">
                             <select name="fld_type_code" id="fld_type_code"
                                     class="form-control"
                                     onchange="insuranceTypeChange()">
@@ -255,7 +260,7 @@ $db->show_header();
                                 ]);
                             ?>
                             <div class="invalid-feedback" id="errorDeleteAllItems">
-                                <?php echo $db->showLangText('Must delete all items before you can change the type','Πρέπει να διαγράψετε όλα τα στοιχεία για να μπορέσετε να αλλάξετε τον τύπο');?>
+                                <?php echo $db->showLangText('Must delete all items before you can change the type', 'Πρέπει να διαγράψετε όλα τα στοιχεία για να μπορέσετε να αλλάξετε τον τύπο'); ?>
                             </div>
                         </div>
                         <script>
@@ -292,7 +297,7 @@ $db->show_header();
 
                     <div class="form-group row">
                         <label for="customerSelect" class="col-md-2 col-form-label">
-                            <?php echo $db->showLangText('Customer','Πελάτης');?>
+                            <?php echo $db->showLangText('Customer', 'Πελάτης'); ?>
                         </label>
                         <div class="col-md-4">
                             <input name="customerSelect" type="text" id="customerSelect"
@@ -342,7 +347,7 @@ $db->show_header();
                         </div>
 
                         <label for="fld_policy_number" class="col-md-3 col-form-label">
-                            <?php echo $db->showLangText('Policy Number','Αρ.Συμβολαίου');?>
+                            <?php echo $db->showLangText('Policy Number', 'Αρ.Συμβολαίου'); ?>
                         </label>
                         <div class="col-md-2">
                             <input name="fld_policy_number" type="text" id="fld_policy_number"
@@ -362,7 +367,8 @@ $db->show_header();
                         <div class="col-md-1">
                             <i class="fas fa-check" id="policyNumberCheck" style="display: none;"></i>
                             <i class="fas fa-times" id="policyNumberError" style="display: none;"></i>
-                            <img src="../images/spinner-transparent.gif" height="28px" id="policyNumberSpinner" style="display: none;">
+                            <img src="../images/spinner-transparent.gif" height="28px" id="policyNumberSpinner"
+                                 style="display: none;">
                             <input type="hidden" id="policyNumberValidation" value="valid">
                         </div>
                     </div>
@@ -371,7 +377,7 @@ $db->show_header();
                         //validate policy number with delay of 500 milliseconds
                         function delay(callback, ms) {
                             var timer = 0;
-                            return function() {
+                            return function () {
                                 var context = this, args = arguments;
                                 clearTimeout(timer);
                                 timer = setTimeout(function () {
@@ -379,6 +385,7 @@ $db->show_header();
                                 }, ms || 0);
                             };
                         }
+
                         $('#fld_policy_number').keyup(delay(function (e) {
                             //console.log('Time elapsed!', this.value);
                             let policyNumber = this.value;
@@ -402,18 +409,15 @@ $db->show_header();
                                     ,
                                     () => {
                                         $('#policyNumberSpinner').hide();
-                                        if (data['clo_total_policies'] > 0){
+                                        if (data['clo_total_policies'] > 0) {
                                             $('#policyNumberError').show();
                                             $('#policyNumberValidation').val('error');
-                                        }
-                                        else {
+                                        } else {
                                             $('#policyNumberCheck').show();
                                         }
                                     }
                                 )
                             ;
-
-
 
 
                         }, 500));
@@ -424,12 +428,14 @@ $db->show_header();
                         <div class="col-md-6 text-center">
                             <b>#</b><span id="cus_number"><?php echo $data['cst_customer_ID']; ?></span>
                             <b>ID:</b> <span id="cus_id"><?php echo $data['cst_identity_card']; ?></span>
-                            <b><?php echo $db->showLangText('Tel:','Τηλ:');?></b> <span id="cus_work_tel"><?php echo $data['cst_work_tel_1']; ?></span>
-                            <b><?php echo $db->showLangText('Mobile:','Κινητό:');?></b> <span id="cus_mobile"><?php echo $data['cst_mobile_1']; ?></span>
+                            <b><?php echo $db->showLangText('Tel:', 'Τηλ:'); ?></b> <span
+                                    id="cus_work_tel"><?php echo $data['cst_work_tel_1']; ?></span>
+                            <b><?php echo $db->showLangText('Mobile:', 'Κινητό:'); ?></b> <span
+                                    id="cus_mobile"><?php echo $data['cst_mobile_1']; ?></span>
                         </div>
 
                         <label for="fld_period_starting_date" class="col-md-3 col-form-label">
-                            <?php echo $db->showLangText('Period Starting Date','Ημ.Έναρξης Περιόδου');?>
+                            <?php echo $db->showLangText('Period Starting Date', 'Ημ.Έναρξης Περιόδου'); ?>
                         </label>
                         <div class="col-md-2">
                             <input name="fld_period_starting_date" type="text" id="fld_period_starting_date"
@@ -449,23 +455,23 @@ $db->show_header();
                         </div>
                     </div>
                     <script>
-                        function applyDatesAuto(){
+                        function applyDatesAuto() {
                             let periodStDate = $('#fld_period_starting_date').val();
-                            if ($('#fld_starting_date').val() == ''){
+                            if ($('#fld_starting_date').val() == '') {
                                 $('#fld_starting_date').val(periodStDate);
                             }
-                            if ($('#fld_financial_date').val() == ''){
+                            if ($('#fld_financial_date').val() == '') {
                                 $('#fld_financial_date').val(periodStDate);
                             }
-                            if ($('#fld_expiry_date').val() == ''){
-                                fillExpiryDate('year',1);
+                            if ($('#fld_expiry_date').val() == '') {
+                                fillExpiryDate('year', 1);
                             }
                         }
                     </script>
 
                     <div class="form-group row">
                         <label for="fld_name" class="col-md-2 col-form-label">
-                            <?php echo $db->showLangText('Status','Κατάσταση');?>
+                            <?php echo $db->showLangText('Status', 'Κατάσταση'); ?>
                         </label>
                         <div class="col-md-2">
                             <?php echo $data['inapol_status']; ?>
@@ -476,20 +482,20 @@ $db->show_header();
                                 <button id="changeStatus" name="changeStatus" class="form-control alert-success"
                                         type="button"
                                         onclick="window.location.assign('policy_change_status.php?lid=<?php echo $data['inapol_policy_ID']; ?>')">
-                                    <?php echo $db->showLangText('Activate','Ενεργοποίηση');?>
+                                    <?php echo $db->showLangText('Activate', 'Ενεργοποίηση'); ?>
                                 </button>
                             <?php } ?>
                             <?php if ($data['inapol_status'] == 'Active') { ?>
                                 <button id="changeStatus" name="changeStatus" class="form-control alert-success"
                                         type="button"
                                         onclick="window.location.assign('policy_change_status.php?lid=<?php echo $data['inapol_policy_ID']; ?>')">
-                                    <?php echo $db->showLangText('Endorse/Cancel','Αλλαγή/Ακύρωση');?>
+                                    <?php echo $db->showLangText('Endorse/Cancel', 'Αλλαγή/Ακύρωση'); ?>
                                 </button>
                             <?php } ?>
                         </div>
 
                         <label for="fld_starting_date" class="col-md-3 col-form-label">
-                            <?php echo $db->showLangText('Starting Date','Ημερομηνία Έναρξης');?>
+                            <?php echo $db->showLangText('Starting Date', 'Ημερομηνία Έναρξης'); ?>
                         </label>
                         <div class="col-md-2">
                             <input name="fld_starting_date" type="text" id="fld_starting_date"
@@ -511,12 +517,12 @@ $db->show_header();
 
                     <div class="form-group row">
                         <label for="fld_process_status" class="col-md-3 col-form-label">
-                            <?php echo $db->showLangText('Process Status','Κατάσταση Λειτουργίας');?>
+                            <?php echo $db->showLangText('Process Status', 'Κατάσταση Λειτουργίας'); ?>
                         </label>
                         <div class="col-md-3">
                             <select name="fld_process_status" id="fld_process_status"
                                     class="form-control"
-                            <?php if ($data['inapol_replacing_ID'] > 0 || $data['inapol_replaced_by_ID'] > 0) echo "disabled";?>
+                                <?php if ($data['inapol_replacing_ID'] > 0 || $data['inapol_replaced_by_ID'] > 0) echo "disabled"; ?>
                             >
                                 <option value="New" <?php if ($data['inapol_process_status'] == 'New') echo 'selected'; ?>>
                                     New
@@ -525,9 +531,9 @@ $db->show_header();
                                     Renewal
                                 </option>
                                 <?php if ($data['inapol_process_status'] == 'Endorsement') { ?>
-                                <option value="Endorsement" <?php if ($data['inapol_process_status'] == 'Endorsement') echo 'selected'; ?>>
-                                    Endorsement
-                                </option>
+                                    <option value="Endorsement" <?php if ($data['inapol_process_status'] == 'Endorsement') echo 'selected'; ?>>
+                                        Endorsement
+                                    </option>
                                 <?php } ?>
                                 <?php if ($data['inapol_process_status'] == 'Cancellation') { ?>
                                     <option value="Cancellation" <?php if ($data['inapol_process_status'] == 'Cancellation') echo 'selected'; ?>>
@@ -538,7 +544,7 @@ $db->show_header();
                         </div>
 
                         <label for="fld_expiry_date" class="col-md-3 col-form-label">
-                            <?php echo $db->showLangText('Expiry Date','Ημερομηνία Λήξης');?> <br>
+                            <?php echo $db->showLangText('Expiry Date', 'Ημερομηνία Λήξης'); ?> <br>
                             <span class="main_text_smaller">
                                 <span style="cursor: pointer" onclick="fillExpiryDate('year',1);">1Y</span>&nbsp
                                 <span style="cursor: pointer" onclick="fillExpiryDate('month',6);">6M</span>&nbsp
@@ -570,7 +576,7 @@ $db->show_header();
                         <div class="col-md-6"></div>
 
                         <label for="fld_financial_date" class="col-md-3 col-form-label">
-                            <?php echo $db->showLangText('Financial Date','Ημερομηνία Παραγωγής');?>
+                            <?php echo $db->showLangText('Financial Date', 'Ημερομηνία Παραγωγής'); ?>
                         </label>
                         <div class="col-md-2">
                             <input name="fld_financial_date" type="text" id="fld_financial_date"
@@ -611,7 +617,7 @@ $db->show_header();
                             <li class="nav-item">
                                 <a class="nav-link" id="prem-tab" data-toggle="tab" href="#prem" role="tab"
                                    aria-controls="prem" aria-selected="false">
-                                    <?php echo $db->showLangText('Premium','Ασφάληστρα');?>
+                                    <?php echo $db->showLangText('Premium', 'Ασφάληστρα'); ?>
                                 </a>
                             </li>
 
@@ -619,14 +625,14 @@ $db->show_header();
                                 <a class="nav-link" id="installments-tab" data-toggle="tab" href="#installments"
                                    role="tab"
                                    aria-controls="installments" aria-selected="false">
-                                    <?php echo $db->showLangText('Installments','Δόσεις');?>
+                                    <?php echo $db->showLangText('Installments', 'Δόσεις'); ?>
                                 </a>
                             </li>
 
                             <li class="nav-item">
                                 <a class="nav-link" id="payments-tab" data-toggle="tab" href="#payments" role="tab"
                                    aria-controls="payments" aria-selected="false">
-                                    <?php echo $db->showLangText('Payments','Πληρωμές');?>
+                                    <?php echo $db->showLangText('Payments', 'Πληρωμές'); ?>
                                 </a>
                             </li>
                         </ul>
@@ -643,7 +649,7 @@ $db->show_header();
                                  aria-labelledby="prem-tab">
                                 <iframe src="policyTabs/premium.php?pid=<?php echo $_GET["lid"] . "&type=" . $policy->getInputType(); ?>"
                                         frameborder="0" id="premTab" name="premTab"
-                                        scrolling="0" width="100%" height="450"> </iframe>
+                                        scrolling="0" width="100%" height="450"></iframe>
                             </div>
 
                             <div class="tab-pane fade" id="installments" role="tabpanel"
@@ -663,7 +669,7 @@ $db->show_header();
                         <div class="row">
                             <div class="col-12 text-center alert alert-info">
                                 <b><?php echo $db->showLangText('Create the policy to be able to proceed.',
-                                        'Δημιουργήστε το Συμβόλαιο για να μπορέσετε να προχωρήσετε.');?></b>
+                                        'Δημιουργήστε το Συμβόλαιο για να μπορέσετε να προχωρήσετε.'); ?></b>
                             </div>
                         </div>
                         <div class="row">
@@ -683,18 +689,20 @@ $db->show_header();
                             <input name="action" type="hidden" id="action"
                                    value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
-                            <input type="button" value="<?php echo $db->showLangText('Back','Πίσω');?>" class="btn btn-secondary"
+                            <input type="button" value="<?php echo $db->showLangText('Back', 'Πίσω'); ?>"
+                                   class="btn btn-secondary"
                                    onclick="window.location.assign('policies.php')">
 
 
-                            <input type="submit" value="<?php echo $db->showLangText('Save Policy','Αποθήκευση Συμβόλαιου');?>"
+                            <input type="submit"
+                                   value="<?php echo $db->showLangText('Save Policy', 'Αποθήκευση Συμβόλαιου'); ?>"
                                    class="btn btn-secondary" id="Save"
                                    onclick="submitForm('save');">
                             <input type="submit"
                                    value="<?php if ($_GET["lid"] == "")
-                                       echo $db->showLangText('Insert Policy & Exit','Δημιουργία Συμβόλαιου και Έξοδος');
+                                       echo $db->showLangText('Insert Policy & Exit', 'Δημιουργία Συμβόλαιου και Έξοδος');
                                    else
-                                       echo $db->showLangText('Save Policy & Exit','Αποθήκευση Συμβόλαιου και Έξοδος');  ?>"
+                                       echo $db->showLangText('Save Policy & Exit', 'Αποθήκευση Συμβόλαιου και Έξοδος'); ?>"
                                    class="btn btn-secondary" id="Submit"
                                    onclick="submitForm('exit');">
 
@@ -724,10 +732,9 @@ $db->show_header();
 
             if (saved == '') {
                 //when inserting. Nothing to do here
-            }
-            else {
+            } else {
                 //check if the option is changed.
-                if (current != saved){
+                if (current != saved) {
 
                     let policy = '<?php echo $_GET['lid'];?>';
                     Rx.Observable.fromPromise($.get("policy_api.php?section=policy_num_of_items&policyID=" + policy))
@@ -741,20 +748,18 @@ $db->show_header();
                             }
                             ,
                             () => {
-                            //console.log(data['clo_total_items']);
-                                if ((data['clo_total_items']*1) > 0){
+                                //console.log(data['clo_total_items']);
+                                if ((data['clo_total_items'] * 1) > 0) {
                                     $('#errorDeleteAllItems').show();
                                     $('#fld_type_code').val(saved);
-                                }
-                                else {
+                                } else {
                                     $('#errorDeleteAllItems').hide();
                                     //check if the type is not empty
                                     if (current != '') {
                                         //need to refresh the page now.
                                         if (confirm('This will change the policy type. Are you sure you want to continue?')) {
                                             $('#myForm').submit();
-                                        }
-                                        else {
+                                        } else {
                                             $('#fld_type_code').val(saved);
                                         }
                                     }
@@ -763,13 +768,11 @@ $db->show_header();
                             }
                         )
                     ;
-                }
-                else {
+                } else {
                     //no change is found. do nothing
                     $('#errorDeleteAllItems').hide();
                 }
             }
-
 
 
         }

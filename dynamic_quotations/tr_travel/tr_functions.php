@@ -139,7 +139,7 @@ function tr_travel_information()
 
                 <?php if (strpos($underwriter['oqun_tr_package_selection'], '#limited#') !== false) { ?>
                     <option value="Limited" <?php if ($qitem_data['oqqit_rate_4'] == 'Limited') echo 'selected'; ?>>
-                        Limited
+                        Russian Visa
                     </option>
                 <?php } ?>
             </select>

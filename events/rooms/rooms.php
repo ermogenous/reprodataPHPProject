@@ -24,6 +24,8 @@ $list = new TableList();
 $list->setTable('ev_rooms','EventRooms')
     ->setSqlSelect('evrom_room_ID','ID')
     ->setSqlSelect('evrom_name','Name')
+    ->setSqlSelect('evbrh_name','Branch')
+    ->setSqlFrom('JOIN ev_branches ON evrom_branch_ID = evbrh_branch_ID')
     ->setSqlOrder('evrom_room_ID', 'ASC')
     ->setPerPage(50)
     ->generateData();

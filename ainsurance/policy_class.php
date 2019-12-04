@@ -172,29 +172,6 @@ class Policy
         return $data;
     }
 
-    public function getParentUnderwriterData(){
-        global $db;
-
-        $underwriter = $db->query_fetch('SELECT * FROM ina_underwriters WHERE inaund_underwriter_ID = '.$this->policyData['inapol_underwriter_ID']);
-
-        $sql = "SELECT * FROM 
-                  ina_underwriters 
-                  JOIN users ON usr_users_ID = inaund_user_ID
-                  WHERE inaund_underwriter_ID = " .$underwriter['inaund_subagent_ID'] ;
-        $data = $db->query_fetch($sql);
-
-        //get commission
-        $typeCode = strtolower($this->policyData['inapol_type_code']);
-        $sql = "SELECT * FROM
-                  ina_underwriter_companies 
-                  WHERE
-                  inaunc_underwriter_ID = " . $data['inaund_underwriter_ID'] . "
-                  AND inaunc_insurance_company_ID = " . $this->policyData['inapol_insurance_company_ID'];
-        $commData = $db->query_fetch($sql);
-        $data['clo_commission_percent'] = $commData['inaunc_commission_' . $typeCode];
-        return $data;
-    }
-
     public function getPeriodTotalPremiums()
     {
         global $db;
@@ -1287,36 +1264,14 @@ class Policy
         $result[2]['amount'] = $this->policyData['inapol_commission'];
         //echo "Cr Account: ".$companyCrAccountCode.' - '.$companyCrAccountName." Amount:".$result[2]['ammount']."<br>";
 
-        //Sub Agent Transactions
+        //Sub Agent Level 1 Transactions
+        if ($this->policyData['inapol_agent_level1_ID'] > 0) {
 
-        //First check if the agent is sub-sub agent
-        $subAgent = false;
-        $subSubAgent = false;
-        $subAgentData = $this->getPolicyUnderwriterData();
-        $subSubAgentData = [];
-        if ($subAgentData['inaund_subagent_ID'] == 0 || $subAgentData['inaund_subagent_ID'] == ''){
-            $subAgent = false;
-            $subSubAgent = false;
-        }
-        else if ($subAgentData['inaund_subagent_ID'] == -1){
-            $subAgent = true;
-            $subSubAgent = false;
-        }
-        else if ($subAgentData['inaund_subagent_ID'] > 0){
-            $subAgent = true;
-            $subSubAgent = true;
-            $subSubAgentData = $this->getPolicyUnderwriterData();;
-            $subAgentData = $this->getParentUnderwriterData();
-        }
-
-        //First check if the agent is sub agent
-
-        //if -1 then is top sub agent
-        if ($subAgent == true) {
-
+            //get agent data
+            $agentData = $db->query_fetch('SELECT * FROM ina_underwriters WHERE inaund_underwriter_ID = '.$this->policyData['inapol_agent_level1_ID']);
             //3.Dr
-            $subAgentDrAccountID = $subAgentData['inaund_subagent_dr_account_ID'];
-            $subAgentDrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code,acacc_entity_ID FROM ac_accounts WHERE acacc_account_ID = ' . $subAgentDrAccountID);
+            $AgentDrAccountID = $agentData['inaund_subagent_dr_account_ID'];
+            $subAgentDrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code,acacc_entity_ID FROM ac_accounts WHERE acacc_account_ID = ' . $AgentDrAccountID);
             //find entity from the debit account
             $entityID = $subAgentDrAccountDetails['acacc_entity_ID'];
             if ($entityID == 0 || $entityID == ''){
@@ -1328,13 +1283,13 @@ class Policy
             $result[3]['type'] = 'Dr';
             $result[3]['name'] = $subAgentDrAccountName;
             $result[3]['code'] = $subAgentDrAccountCode;
-            $result[3]['accountID'] = $subAgentDrAccountID;
+            $result[3]['accountID'] = $AgentDrAccountID;
             $result[3]['entityID'] = $entityID;
-            $result[3]['amount'] = $this->policyData['inapol_subagent_commission'];
+            $result[3]['amount'] = $this->policyData['inapol_agent_level1_commission'];
             //echo "<br>Dr Account: ".$subAgentDrAccountCode.' - '.$subAgentDrAccountName." Amount:".$result[3]['ammount']."<br>";
 
             //4.Cr
-            $subAgentCrAccountID = $subAgentData['inaund_subagent_cr_account_ID'];
+            $subAgentCrAccountID = $agentData['inaund_subagent_cr_account_ID'];
             $subAgentCrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $subAgentCrAccountID);
             $subAgentCrAccountName = $subAgentCrAccountDetails['acacc_name'];
             $subAgentCrAccountCode = $subAgentCrAccountDetails['acacc_code'];
@@ -1343,15 +1298,17 @@ class Policy
             $result[4]['code'] = $subAgentCrAccountCode;
             $result[4]['accountID'] = $subAgentCrAccountID;
             $result[4]['entityID'] = $entityID;
-            $result[4]['amount'] = $this->policyData['inapol_subagent_commission'];
+            $result[4]['amount'] = $this->policyData['inapol_agent_level1_commission'];
             //echo $result[4]['type']." Account: ".$subAgentCrAccountCode.' - '.$subAgentCrAccountName." Amount:".$result[4]['ammount']."<br>";
 
         }
-
-        if ($subSubAgent == true){
+        //Sub Agent Level 2 Transactions
+        if ($this->policyData['inapol_agent_level2_ID'] > 0 ){
+            //get agent data
+            $agentData = $db->query_fetch('SELECT * FROM ina_underwriters WHERE inaund_underwriter_ID = '.$this->policyData['inapol_agent_level2_ID']);
             //5.Dr
-            $subAgentDrAccountID = $subSubAgentData['inaund_subagent_dr_account_ID'];
-            $subAgentDrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code,acacc_entity_ID FROM ac_accounts WHERE acacc_account_ID = ' . $subAgentDrAccountID);
+            $AgentDrAccountID = $agentData['inaund_subagent_dr_account_ID'];
+            $subAgentDrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code,acacc_entity_ID FROM ac_accounts WHERE acacc_account_ID = ' . $AgentDrAccountID);
             $entityID = $subAgentDrAccountDetails['acacc_entity_ID'];
             if ($entityID == 0 || $entityID == ''){
                 $this->error = true;
@@ -1362,13 +1319,13 @@ class Policy
             $result[5]['type'] = 'Dr';
             $result[5]['name'] = $subAgentDrAccountName;
             $result[5]['code'] = $subAgentDrAccountCode;
-            $result[5]['accountID'] = $subAgentDrAccountID;
+            $result[5]['accountID'] = $AgentDrAccountID;
             $result[5]['entityID'] = $entityID;
-            $result[5]['amount'] = $this->policyData['inapol_subsubagent_commission'];
+            $result[5]['amount'] = $this->policyData['inapol_agent_level2_commission'];
             //echo "<br>Dr Account: ".$subAgentDrAccountCode.' - '.$subAgentDrAccountName." Amount:".$result[3]['ammount']."<br>";
 
             //6.Cr
-            $subAgentCrAccountID = $subSubAgentData['inaund_subagent_cr_account_ID'];
+            $subAgentCrAccountID = $agentData['inaund_subagent_cr_account_ID'];
             $subAgentCrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $subAgentCrAccountID);
             $subAgentCrAccountName = $subAgentCrAccountDetails['acacc_name'];
             $subAgentCrAccountCode = $subAgentCrAccountDetails['acacc_code'];
@@ -1377,7 +1334,42 @@ class Policy
             $result[6]['code'] = $subAgentCrAccountCode;
             $result[6]['accountID'] = $subAgentCrAccountID;
             $result[6]['entityID'] = $entityID;
-            $result[6]['amount'] = $this->policyData['inapol_subsubagent_commission'];
+            $result[6]['amount'] = $this->policyData['inapol_agent_level2_commission'];
+            //echo $result[4]['type']." Account: ".$subAgentCrAccountCode.' - '.$subAgentCrAccountName." Amount:".$result[4]['ammount']."<br>";
+        }
+        //Sub Agent Level 3 Transactions
+        if ($this->policyData['inapol_agent_level3_ID'] > 0 ){
+            //get agent data
+            $agentData = $db->query_fetch('SELECT * FROM ina_underwriters WHERE inaund_underwriter_ID = '.$this->policyData['inapol_agent_level3_ID']);
+            //5.Dr
+            $AgentDrAccountID = $agentData['inaund_subagent_dr_account_ID'];
+            $subAgentDrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code,acacc_entity_ID FROM ac_accounts WHERE acacc_account_ID = ' . $AgentDrAccountID);
+            $entityID = $subAgentDrAccountDetails['acacc_entity_ID'];
+            if ($entityID == 0 || $entityID == ''){
+                $this->error = true;
+                $this->errorDescription = 'Account '.$subAgentDrAccountDetails['acacc_code']." does not have entity";
+            }
+            $subAgentDrAccountName = $subAgentDrAccountDetails['acacc_name'];
+            $subAgentDrAccountCode = $subAgentDrAccountDetails['acacc_code'];
+            $result[7]['type'] = 'Dr';
+            $result[7]['name'] = $subAgentDrAccountName;
+            $result[7]['code'] = $subAgentDrAccountCode;
+            $result[7]['accountID'] = $AgentDrAccountID;
+            $result[7]['entityID'] = $entityID;
+            $result[7]['amount'] = $this->policyData['inapol_agent_level3_commission'];
+            //echo "<br>Dr Account: ".$subAgentDrAccountCode.' - '.$subAgentDrAccountName." Amount:".$result[3]['ammount']."<br>";
+
+            //6.Cr
+            $subAgentCrAccountID = $agentData['inaund_subagent_cr_account_ID'];
+            $subAgentCrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $subAgentCrAccountID);
+            $subAgentCrAccountName = $subAgentCrAccountDetails['acacc_name'];
+            $subAgentCrAccountCode = $subAgentCrAccountDetails['acacc_code'];
+            $result[8]['type'] = 'Cr';
+            $result[8]['name'] = $subAgentCrAccountName;
+            $result[8]['code'] = $subAgentCrAccountCode;
+            $result[8]['accountID'] = $subAgentCrAccountID;
+            $result[8]['entityID'] = $entityID;
+            $result[8]['amount'] = $this->policyData['inapol_agent_level3_commission'];
             //echo $result[4]['type']." Account: ".$subAgentCrAccountCode.' - '.$subAgentCrAccountName." Amount:".$result[4]['ammount']."<br>";
         }
 
@@ -1453,6 +1445,81 @@ class Policy
         }
 
         return true;
+    }
+
+    public static function buildSubAgentsIDsFromPOST(){
+        global $db;
+        //policy agent ID
+        $policyAgentID = $_POST['fld_underwriter_ID'];
+        $agentData = $db->query_fetch('SELECT * FROM ina_underwriters WHERE inaund_underwriter_ID = '.$policyAgentID);
+
+        //init subagents
+        $_POST['fld_agent_level1_ID'] = 0;
+        $_POST['fld_agent_level1_percent'] = 0;
+        $_POST['fld_agent_level2_ID'] = 0;
+        $_POST['fld_agent_level2_percent'] = 0;
+        $_POST['fld_agent_level3_ID'] = 0;
+        $_POST['fld_agent_level3_percent'] = 0;
+        if ($agentData['inaund_subagent'] == 0){
+        }
+        else if ($agentData['inaund_subagent'] == 1){
+            $_POST['fld_agent_level1_ID'] = $policyAgentID;
+        }
+        else if ($agentData['inaund_subagent'] == 2){
+            $_POST['fld_agent_level1_ID'] = $agentData['inaund_subagent_ID'];
+            $_POST['fld_agent_level2_ID'] = $policyAgentID;
+        }
+        else if ($agentData['inaund_subagent'] == 3){
+            $sql = 'SELECT * FROM ina_underwriters WHERE inaund_underwriter_ID = '.$agentData['inaund_subagent_ID'];
+            $level1Data = $db->query_fetch($sql);
+
+            $_POST['fld_agent_level1_ID'] = $level1Data['inaund_subagent_ID'];
+            $_POST['fld_agent_level2_ID'] = $agentData['inaund_subagent_ID'];
+            $_POST['fld_agent_level3_ID'] = $policyAgentID;
+        }
+        //find the commissions percentages
+        $policyType = strtolower($_POST['fld_type_code']);
+        if ($agentData['inaund_subagent'] == 1){
+            //level 1
+            $sql = 'SELECT * FROM ina_underwriter_companies WHERE inaunc_underwriter_ID = '.$_POST['fld_agent_level1_ID'].
+                    ' AND inaunc_insurance_company_ID = '.$_POST['fld_insurance_company_ID'];
+            $level1Comp = $db->query_fetch($sql);
+            $_POST['fld_agent_level1_percent'] = $level1Comp['inaunc_commission_'.$policyType];
+
+        }
+        else if ($agentData['inaund_subagent'] == 2){
+            //level 1
+            $sql1 = 'SELECT * FROM ina_underwriter_companies WHERE inaunc_underwriter_ID = '.$_POST['fld_agent_level1_ID'].
+                ' AND inaunc_insurance_company_ID = '.$_POST['fld_insurance_company_ID'];
+            $level1Comp = $db->query_fetch($sql1);
+            $_POST['fld_agent_level1_percent'] = $level1Comp['inaunc_commission_'.$policyType];
+
+            //level 2
+            $sql2 = 'SELECT * FROM ina_underwriter_companies WHERE inaunc_underwriter_ID = '.$_POST['fld_agent_level2_ID'].
+                ' AND inaunc_insurance_company_ID = '.$_POST['fld_insurance_company_ID'];
+            $level2Comp = $db->query_fetch($sql2);
+            $_POST['fld_agent_level2_percent'] = $level2Comp['inaunc_commission_'.$policyType];
+
+        }
+        else if ($agentData['inaund_subagent'] == 3){
+            //level 1
+            $sql1 = 'SELECT * FROM ina_underwriter_companies WHERE inaunc_underwriter_ID = '.$_POST['fld_agent_level1_ID'].
+                ' AND inaunc_insurance_company_ID = '.$_POST['fld_insurance_company_ID'];
+            $level1Comp = $db->query_fetch($sql1);
+            $_POST['fld_agent_level1_percent'] = $level1Comp['inaunc_commission_'.$policyType];
+
+            //level 2
+            $sql2 = 'SELECT * FROM ina_underwriter_companies WHERE inaunc_underwriter_ID = '.$_POST['fld_agent_level2_ID'].
+                ' AND inaunc_insurance_company_ID = '.$_POST['fld_insurance_company_ID'];
+            $level2Comp = $db->query_fetch($sql2);
+            $_POST['fld_agent_level2_percent'] = $level2Comp['inaunc_commission_'.$policyType];
+
+            //level 3
+            $sql3 = 'SELECT * FROM ina_underwriter_companies WHERE inaunc_underwriter_ID = '.$_POST['fld_agent_level3_ID'].
+                ' AND inaunc_insurance_company_ID = '.$_POST['fld_insurance_company_ID'];
+            $level3Comp = $db->query_fetch($sql3);
+            $_POST['fld_agent_level3_percent'] = $level3Comp['inaunc_commission_'.$policyType];
+        }
     }
 
 }

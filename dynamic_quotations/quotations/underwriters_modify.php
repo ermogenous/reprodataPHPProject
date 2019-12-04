@@ -776,7 +776,7 @@ $formValidator = new customFormValidator();
                                         <input type="checkbox" class="custom-control-input" value="1"
                                                id="packageLimited" name="packageLimited"
                                             <?php if (strpos($data['oqun_tr_package_selection'], '#limited#') !== false) echo 'checked'; ?>>
-                                        <label class="custom-control-label" for="packageLimited">Limited</label>
+                                        <label class="custom-control-label" for="packageLimited">Russian Visa</label>
                                     </div>
 
                                 </div>
@@ -1172,7 +1172,7 @@ $formValidator = new customFormValidator();
 
                             <div class="row form-group">
                                 <label for="fld_tr_limited_premium" class="col-sm-3 col-form-label">
-                                    Limited Package Per Day/Person Pr.
+                                    Russian Visa Package Per Day/Person Pr.
                                 </label>
                                 <div class="col-sm-1">
                                     <input name="fld_tr_limited_premium" type="text"
@@ -1191,7 +1191,7 @@ $formValidator = new customFormValidator();
                                 </div>
 
                                 <label for="fld_tr_limited_min_premium" class="col-sm-3 col-form-label">
-                                    Limited Minimum <strong>Member</strong> Premium
+                                    Russian V. Minimum <strong>Member</strong> Premium
                                 </label>
                                 <div class="col-sm-1">
                                     <input name="fld_tr_limited_min_premium" type="text"

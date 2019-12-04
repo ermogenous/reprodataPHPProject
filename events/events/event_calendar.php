@@ -77,13 +77,14 @@ function generateMyscheduleDataScript($userID, $startDate)
     //echo "Here";
     //get the data from db
     $sql = "SELECT * FROM 
-            ev_events";
+            ev_events
+            JOIN ev_rooms ON evrom_room_ID = evevt_room_ID";
     $result = $db->query($sql);
     while ($row = $db->fetch_assoc($result)) {
         $data .= "
         {
             id:" . $row['evevt_event_ID'] . ",
-            title: '" . $row['evevt_name'] . "',
+            title: '" . $row['evrom_name']."-".$row['evevt_title'] . " \\n ".$row['evevt_description']."',
             start: '" . $row['evevt_starting_date_time'] . "',
             end: '".$row['evevt_end_date_time']."',
             url: 'event_modify.php?lid=" . $row['evevt_event_ID'] . "'
