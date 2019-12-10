@@ -325,7 +325,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
         }
 
         function calculateCommission() {
-            console.log('Calculating Commission');
+            //console.log('Calculating Commission');
             let premium = $('#fld_premium').val() * 1;
             let fees = $('#fld_fees').val() * 1;
             let commPercent = $('#commissionPercent').val() * 1;
@@ -348,7 +348,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
             //sub agent commission
             let subLevel1Commission = 0;
             if (subAgentLevel1 > 0) {
-                console.log('Sub Level 1 Agent exists - <?php echo $policy->policyData['inapol_agent_level1_percent'];?>%');
+                //console.log('Sub Level 1 Agent exists - <?php echo $policy->policyData['inapol_agent_level1_percent'];?>%');
                 let subLevel1Percent = '<?php echo $policy->policyData['inapol_agent_level1_percent'];?>';
                 subLevel1Percent = subLevel1Percent * 1;
 
@@ -359,7 +359,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
 
             let subAgentLevel2 = '<?php echo $policy->policyData['inapol_agent_level2_ID'];?>';
             if (subAgentLevel2 > 0) {
-                console.log('Sub Level 2 Agent exists - <?php echo $policy->policyData['inapol_agent_level2_percent'];?>%');
+                //console.log('Sub Level 2 Agent exists - <?php echo $policy->policyData['inapol_agent_level2_percent'];?>%');
 
                 let level1Percent = '<?php echo $policy->policyData['inapol_agent_level1_percent'];?>';
                 let level2Percent = '<?php echo $policy->policyData['inapol_agent_level2_percent'];?>';
@@ -378,7 +378,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
 
             let subAgentLevel3 = '<?php echo $policy->policyData['inapol_agent_level3_ID'];?>';
             if (subAgentLevel3 > 0) {
-                console.log('Sub Level 3 Agent exists - <?php echo $policy->policyData['inapol_agent_level3_percent'];?>%');
+                //console.log('Sub Level 3 Agent exists - <?php echo $policy->policyData['inapol_agent_level3_percent'];?>%');
 
                 let level2Percent = '<?php echo $policy->policyData['inapol_agent_level2_percent'];?>';
                 let level3Percent = '<?php echo $policy->policyData['inapol_agent_level3_percent'];?>';

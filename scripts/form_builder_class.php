@@ -24,6 +24,9 @@ class FormBuilder
     private $fieldOnKeyUp;
     private $disableField = false;
 
+    //Label
+    private $labelTitle = '';
+
     //AutoComplete JS CODE
     private $acjsSource;
     private $acjsDelay;
@@ -68,6 +71,7 @@ class FormBuilder
         $this->fieldInputType = '';
         $this->inputSelectQuery = '';
         $this->inputSelectAddEmptyOption = false;
+        $this->labelTitle = '';
         return $this;
     }
 
@@ -188,7 +192,15 @@ class FormBuilder
 
     public function buildLabel()
     {
-        echo '<label for="' . $this->fieldName . '" class="' . $this->labelClasses . ' ' . $this->defaultLabelClass . '">' . $this->fieldDescription . '</label>';
+        $questionMark = '';
+        if ($this->labelTitle != ''){
+            $questionMark = ' <i class="fas fa-question"></i>';
+        }
+        echo '<label for="' . $this->fieldName . '" class="' . $this->labelClasses . ' ' . $this->defaultLabelClass
+            . '" title="'.$this->labelTitle.'">'
+            . $this->fieldDescription
+            . $questionMark .
+            '</label>';
     }
 
     public function buildAutoCompleteJSCode($parameters)
@@ -437,4 +449,24 @@ class FormBuilder
     public function getFieldDivClass(){
         return $this->fieldDivClass;
     }
+
+    /**
+     * @return string
+     */
+    public function getLabelTitle()
+    {
+        return $this->labelTitle;
+    }
+
+    /**
+     * @param string $labelTitle
+     * @return $this
+     */
+    public function setLabelTitle($labelTitle)
+    {
+        $this->labelTitle = $labelTitle;
+        return $this;
+    }
+
+
 }

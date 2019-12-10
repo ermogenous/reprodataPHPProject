@@ -414,6 +414,10 @@ function template_header()
                                     <i class="fas fa-cubes"></i> Insurance Company Packages</a>
 
                                 <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/ainsurance/issuing/issuing.php">
+                                    <i class="fas fa-cubes"></i> Policy Issuing</a>
+
+                                <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/underwriters/underwriters.php">
                                     <i class="fas fa-users"></i> Insurance Agents</a>
 

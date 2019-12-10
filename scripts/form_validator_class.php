@@ -247,7 +247,7 @@ class customFormValidator
             } //For other
             else {
                 $return .= "
-            if ($('#" . $fieldData['fieldName'] . "').val() == '' " . $requiredAddedCustomCode . "){
+            if ( ($('#" . $fieldData['fieldName'] . "').val() == '' && $('#" . $fieldData['fieldName'] . "').prop('disabled') !== true)" . $requiredAddedCustomCode . "){
                 $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                 FormErrorFound = true;

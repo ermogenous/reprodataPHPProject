@@ -15,6 +15,7 @@ $db->admin_title = "AInsurance Policy Modify";
 
 if ($_POST["action"] == "insert") {
     $db->check_restriction_area('insert');
+    $db->start_transaction();;
 
     $_POST['fld_for_user_group_ID'] = $db->user_data['usr_users_groups_ID'];
     $_POST['fld_period_starting_date'] = $db->convert_date_format($_POST['fld_period_starting_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
@@ -45,10 +46,12 @@ if ($_POST["action"] == "insert") {
         $resetNumData['policy_number'] = '';
         $db->db_tool_update_row('ina_policies', $resetNumData, 'inapol_policy_ID = ' . $newID, $newID,
             '', 'execute', 'inapol_');
+        $db->commit_transaction();
         header("Location: policy_modify.php?lid=" . $newID);
         exit();
     }
 
+    $db->commit_transaction();
     if ($_POST['sub-action'] == 'exit') {
         header("Location: policies.php");
         exit();
@@ -521,7 +524,7 @@ $db->show_header();
                         </label>
                         <div class="col-md-3">
                             <select name="fld_process_status" id="fld_process_status"
-                                    class="form-control"
+                                    class="form-control" onchange="checkIfIssuing()"
                                 <?php if ($data['inapol_replacing_ID'] > 0 || $data['inapol_replaced_by_ID'] > 0) echo "disabled"; ?>
                             >
                                 <option value="New" <?php if ($data['inapol_process_status'] == 'New') echo 'selected'; ?>>
@@ -597,7 +600,7 @@ $db->show_header();
                     </div>
 
 
-                    <!-- TABS -->
+                    <!-- TABS --------------------------------------------------------------------------------------------------------------------------------------------TABS -->
                     <?php
                     if ($_GET['lid'] > 0) {
 
@@ -635,6 +638,20 @@ $db->show_header();
                                     <?php echo $db->showLangText('Payments', 'Πληρωμές'); ?>
                                 </a>
                             </li>
+                            <?php
+                            if ($policy->policyData['inaiss_issue_ID'] > 0) {
+                                ?>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="documents-tab" data-toggle="tab" href="#documents"
+                                       role="tab"
+                                       aria-controls="documents" aria-selected="false">
+                                        <?php echo $db->showLangText('Documents', 'Έγγραφα'); ?>
+                                    </a>
+                                </li>
+                                <?php
+
+                            }
+                            ?>
                         </ul>
                         <div class="tab-content" id="myTabContent">
 
@@ -664,6 +681,17 @@ $db->show_header();
                                         frameborder="0" id="paymentsTab" name="paymentsTab"
                                         scrolling="0" width="100%" height="600"></iframe>
                             </div>
+                            <?php
+                            if ($policy->policyData['inaiss_issue_ID'] > 0) {
+                            ?>
+                            <div class="tab-pane fade" id="documents" role="tabpanel" aria-labelledby="documents-tab">
+                                <iframe src="policyTabs/documents.php?pid=<?php echo $_GET["lid"]; ?>"
+                                        frameborder="0" id="documentsTab" name="documentsTab"
+                                        scrolling="0" width="100%" height="600"></iframe>
+                            </div>
+                            <?php
+                            }
+                            ?>
                         </div>
                     <?php } else { ?>
                         <div class="row">
@@ -729,6 +757,8 @@ $db->show_header();
             //curent option selected
             let current = $('#fld_type_code').val();
             let saved = $('#type_code_db').val();
+
+            checkIfIssuing();
 
             if (saved == '') {
                 //when inserting. Nothing to do here
@@ -826,6 +856,51 @@ $db->show_header();
                     );
                 }
             );
+        }
+
+        function checkIfIssuing() {
+            //console.log('checkIfIssuing');
+            let company = $('#fld_insurance_company_ID').val();
+            let insuranceType = $('#fld_type_code').val();
+            $('#fld_policy_number').attr('disabled', false);
+
+            if (company != '' && insuranceType != '') {
+                //console.log(company + ' -> ' + insuranceType);
+
+                //promise - find the if issuing record exists.
+                Rx.Observable.fromPromise($.get("issuing/issuing_api.php?section=findIssuing&compID=" + company + '&insType=' + insuranceType))
+                    .subscribe((response) => {
+                            data = response;
+                            //console.log(data);
+                        },
+                        () => {
+                            //if error occurs make option back to the saved one.
+
+                        }
+                        ,
+                        () => {
+                            if (data && data.length > 0) {
+                                if (data[0]['inaiss_issue_ID'] > 0) {
+                                    issuingExists(data);
+                                }
+                            }
+
+                        }
+                    )
+                ;
+
+            }
+
+
+        }
+
+        function issuingExists(issuingData) {
+            //console.log(issuingData);
+            //check if new or renewal
+            let policyProcess = $('#fld_process_status').val();
+            //disable the policy number field
+            $('#fld_policy_number').attr('disabled', true);
+            //console.log(policyProcess);
         }
 
         $(document).ready(function () {

@@ -807,54 +807,6 @@ function getQuotationHTML($quotationID)
                 <table class="tableNoTdBorder" width="820" cellspacing="0" cellpadding="0">
                     <tr>
                         <td valign="top" width="410">
-                            Missed Connection
-                        </td>
-                        <td width="410">
-                            <strong>
-                                <br>
-                                Excess for each and every claim
-                            </strong>
-                        </td>
-                    </tr>
-                </table>
-                
-            </td>
-            ' . ($sect1['oqqit_rate_4'] == 'Basic' ? '<td align="center">
-                €500<br>
-                <div style="color: red">€50</div>
-            </td>
-            ' : '') . '
-            ' . ($sect1['oqqit_rate_4'] == 'Standard' ? '<td align="center">
-                €750<br>
-                <div style="color: red">€50</div>
-            </td>
-            ' : '') . '
-            ' . ($sect1['oqqit_rate_4'] == 'Luxury' ? '<td align="center">
-                €1.000<br>
-                <div style="color: red">€50</div>
-            </td>
-            ' : '') . '
-            ' . ($sect1['oqqit_rate_4'] == 'Special' ? '<td align="center">
-                €1.000<br>
-                <div style="color: red">€50</div>
-            </td>
-            ' : '') . '
-            ' . ($sect1['oqqit_rate_4'] == 'Schengen' ? '<td align="center">
-                Not Included
-            </td>
-            ' : '') . '
-            ' . ($sect1['oqqit_rate_4'] == 'Limited' ? '<td align="center">
-                Not Included
-            </td>
-            ' : '') . '
-        </tr>
-        
-        <tr>
-            <td>
-            
-                <table class="tableNoTdBorder" width="820" cellspacing="0" cellpadding="0">
-                    <tr>
-                        <td valign="top" width="410">
                             Baggage Delay
                         </td>
                         <td width="410">
