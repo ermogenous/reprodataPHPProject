@@ -34,6 +34,8 @@ if ($_POST["action"] == "insert") {
 }
 
 $db->enable_jquery_ui();
+$db->include_js_file('../../scripts/jquery_color_picker/colorpicker/jquery.colorpicker.js');
+$db->include_css_file('../../scripts/jquery_color_picker/colorpicker/jquery.colorpicker.css');
 $db->show_header();
 
 
@@ -135,9 +137,45 @@ if ($_GET['lid'] != ''){
                         </div>
                     </div>
 
+                    <div class="row">
+                        <?php
+                        $formB->setFieldName('fld_color')
+                            ->setFieldDescription('Room Color')
+                            ->setFieldType('input')
+                            ->setInputValue($data['evrom_color'])
+                            ->buildLabel();
+                        ?>
+                        <div class="col-sm-4">
+                            <?php
+                            $formB->buildInput();
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => $formB->fieldName,
+                                    'fieldDataType' => 'text',
+                                    'required' => true,
+                                    'invalidTextAutoGenerate' => true
+                                ]);
+                            ?>
+                        </div>
+                    </div>
 
-
-
+                    <script>
+                        $(function() {
+                            $('#fld_color').colorpicker({
+                                showOn:         'both',
+                                showNoneButton: true,
+                                showCloseButton: true,
+                                showCancelButton: true,
+                                colorFormat: ['#HEX'],
+                                position: {
+                                    my: 'center',
+                                    at: 'center',
+                                    of: window
+                                },
+                                modal: true
+                            });
+                        });
+                    </script>
 
                     <div class="col-12" style="height: 25px;"></div>
 

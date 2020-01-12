@@ -13,9 +13,9 @@ include("../../tools/table_list.php");
 $db = new Main(1, 'UTF-8');
 $db->admin_title = "Event Locations";
 
-if ($_GET['layout'] == 'blank'){
+if ($_GET['layout'] == 'blank') {
     $db->show_empty_header();
-}else {
+} else {
     $db->show_header();
 }
 
@@ -25,15 +25,16 @@ if ($_GET['layout'] == 'blank'){
 //$table->generate_data();
 
 $list = new TableList();
-$list->setTable('ev_event_schedules','EventEventSchedules');
-if ($_GET['layout'] != 'blank'){
-    $list->setSqlSelect('evsch_event_schedule_ID','ID')
-        ->setSqlSelect('evevt_title','Event Title');
+$list->setTable('ev_event_schedules', 'EventEventSchedules');
+$list->setSqlSelect('evsch_event_schedule_ID', 'ID');
+if ($_GET['layout'] != 'blank') {
+    $list->setSqlSelect('evevt_title', 'Event Title');
 }
 
-    $list->setSqlSelect('evsch_start_date_time', 'Start Date',['functionName' => 'convertDateToEu'])
-    ->setSqlSelect('evsch_end_date_time', 'End Date',['functionName' => 'convertDateToEu'])
+$list->setSqlSelect('evsch_start_date_time', 'Start Date', ['functionName' => 'convertDateToEu'])
+    ->setSqlSelect('evsch_end_date_time', 'End Date', ['functionName' => 'convertDateToEu'])
     ->setSqlFrom('JOIN ev_events ON evevt_event_ID = evsch_event_ID')
+    ->setSqlWhere('evsch_event_ID = '.$_GET['lid'])
     ->setSqlOrder('evsch_event_schedule_ID', 'ASC')
     ->setPerPage(50)
     ->generateData();
@@ -49,18 +50,29 @@ $list->setMainColumn('col-lg-10')
     ->showPagesLinksBottom()
     ->setDeleteConfirmText('Are you sure you want to delete this schedule?')
     ->setMainFieldID('ID')
-    ->setModifyLink('event_schedule_modify.php?lid='.$_GET['lid']."&eid=")
-    ->setDeleteLink('event_schedule.php?lid='.$_GET['lid']."&eid=")
-    ->setCreateNewLink('event_schedule_modify.php?lid='.$_GET['lid'])
+    ->setModifyLink('event_schedule_modify.php?layout='.$_GET['layout'].'&lid=' . $_GET['lid'] . "&eid=")
+    ->setDeleteLink('event_schedule.php?layout='.$_GET['layout'].'&lid=' . $_GET['lid'] . "&eid=")
+    ->setCreateNewLink('event_schedule_modify.php?layout='.$_GET['layout'].'&lid=' . $_GET['lid'])
     ->tableFullBuilder();
 
-function convertDateToEu($data){
+function convertDateToEu($data)
+{
     global $db;
-    return $db->convertDateToEU($data,1,1);
+    return $db->convertDateToEU($data, 1, 1);
 }
-if ($_GET['layout'] == 'blank'){
+?>
+<div class="container">
+    <div class="row">
+        <div class="col-12 text-center">
+            <a href="events.php">Back</a>
+        </div>
+    </div>
+</div>
+
+<?php
+if ($_GET['layout'] == 'blank') {
     $db->show_empty_footer();
-}else {
+} else {
     $db->show_footer();
 }
 

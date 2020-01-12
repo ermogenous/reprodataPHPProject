@@ -20,17 +20,6 @@ if ($_POST["action"] == "insert") {
     $db->check_restriction_area('insert');
     $db->working_section = 'Event Events Insert';
 
-    $_POST['fld_starting_date_time'] = $db->convertDateToUS($_POST['fld_starting_date_time'], 1, 1);
-    $_POST['fld_end_date_time'] = $db->convertDateToUS($_POST['fld_end_date_time'], 1, 1);
-
-    $_POST['fld_days_monday'] = $db->get_check_value($_POST['fld_days_monday']);
-    $_POST['fld_days_tuesday'] = $db->get_check_value($_POST['fld_days_tuesday']);
-    $_POST['fld_days_wednesday'] = $db->get_check_value($_POST['fld_days_wednesday']);
-    $_POST['fld_days_thursday'] = $db->get_check_value($_POST['fld_days_thursday']);
-    $_POST['fld_days_friday'] = $db->get_check_value($_POST['fld_days_friday']);
-    $_POST['fld_days_saturday'] = $db->get_check_value($_POST['fld_days_saturday']);
-    $_POST['fld_days_sunday'] = $db->get_check_value($_POST['fld_days_sunday']);
-
     $newID = $db->db_tool_insert_row('ev_events', $_POST, 'fld_', 1, 'evevt_');
     $db->commit_transaction();
     if ($_POST['subAction'] == 'exit') {
@@ -44,17 +33,6 @@ if ($_POST["action"] == "insert") {
 } else if ($_POST["action"] == "update") {
     $db->check_restriction_area('update');
     $db->working_section = 'Event Events Update';
-
-    $_POST['fld_starting_date_time'] = $db->convertDateToUS($_POST['fld_starting_date_time'], 1, 1);
-    $_POST['fld_end_date_time'] = $db->convertDateToUS($_POST['fld_end_date_time'], 1, 1);
-
-    $_POST['fld_days_monday'] = $db->get_check_value($_POST['fld_days_monday']);
-    $_POST['fld_days_tuesday'] = $db->get_check_value($_POST['fld_days_tuesday']);
-    $_POST['fld_days_wednesday'] = $db->get_check_value($_POST['fld_days_wednesday']);
-    $_POST['fld_days_thursday'] = $db->get_check_value($_POST['fld_days_thursday']);
-    $_POST['fld_days_friday'] = $db->get_check_value($_POST['fld_days_friday']);
-    $_POST['fld_days_saturday'] = $db->get_check_value($_POST['fld_days_saturday']);
-    $_POST['fld_days_sunday'] = $db->get_check_value($_POST['fld_days_sunday']);
 
     $db->db_tool_update_row('ev_events', $_POST, "`evevt_event_ID` = " . $_POST["lid"], $_POST["lid"], 'fld_', 'execute', 'evevt_');
     if ($_POST['subAction'] == 'exit') {

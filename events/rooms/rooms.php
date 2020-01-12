@@ -24,7 +24,8 @@ $list = new TableList();
 $list->setTable('ev_rooms','EventRooms')
     ->setSqlSelect('evrom_room_ID','ID')
     ->setSqlSelect('evrom_name','Name')
-    ->setSqlSelect('evbrh_name','Branch')
+    ->setSqlSelect('evbrh_name','Branch', ['tdAlign' => 'center', 'thAlign' => 'center'])
+    ->setSqlSelect('evrom_color','Color',['ignoreField' => true])
     ->setSqlFrom('JOIN ev_branches ON evrom_branch_ID = evbrh_branch_ID')
     ->setSqlOrder('evrom_room_ID', 'ASC')
     ->setPerPage(50)
@@ -37,6 +38,7 @@ $list->setMainColumn('col-lg-10')
     ->setTopContainerToFluid()
     ->setLeftColumn('col-lg-1')
     ->setRightColumn('col-lg-1')
+    ->addTableColumn('Color', 'showColor',['tdAlign' => 'center', 'thAlign' => 'center'])
     ->showPagesLinksTop()
     ->showPagesLinksBottom()
     ->setDeleteConfirmText('Are you sure you want to delete this Room?')
@@ -47,5 +49,9 @@ $list->setMainColumn('col-lg-10')
     ->tableFullBuilder();
 
 $db->show_footer();
+
+function showColor($data){
+    return '<div style="background-color: '.$data['Color'].';width: 60px; height: 15px;"></div>';
+}
 
 ?>

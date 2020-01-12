@@ -148,6 +148,14 @@ if ($_POST["action"] == "save") {
                 }
             }
 
+            //if advanced edit then resend the emails
+            if ($quote->isAdvancedEdit() == true) {
+                if ($quote->quotationData()['oqqt_adv_edit_resent_emails'] == 1) {
+
+                    $quote->sendEmail();
+                }
+            }
+
             $db->commit_transaction();
 
             //no need to redirect if is language change.
@@ -225,6 +233,11 @@ $formValidator->addCustomCode("
     
 ");
 $formValidator->showErrorList();
+
+//form builder
+include('../scripts/form_builder_class.php');
+$formB = new FormBuilder();
+$formB->setLabelClasses('col-sm-4');
 
 ?>
 <script language="JavaScript" type="text/javascript">
@@ -530,7 +543,7 @@ $formValidator->showErrorList();
                                 if ($quotation_type_data['oqqt_added_field_dob_required'] == 1) {
                                     $dobRequired = true;
                                 }
-                                if ($quotation_type_data['oqqt_added_field_nationality'] == 1){
+                                if ($quotation_type_data['oqqt_added_field_nationality'] == 1) {
                                     $addedCustomCode = "&& $('#person_company').val() != 'Company'";
                                 }
 
@@ -648,7 +661,8 @@ $formValidator->showErrorList();
                     </div>
 
                     <?php
-                    if ($quotation_type_data['oqqt_added_field_city'] == 1) { ?>
+                    if ($quotation_type_data['oqqt_added_field_city'] == 1) {
+                        ?>
                         <div class="form-group row">
                             <label for="insureds_city" class="col-sm-4 col-form-label">
                                 <?php show_quotation_text("Πόλη", "City"); ?>
@@ -701,6 +715,41 @@ $formValidator->showErrorList();
                             ?>
                         </div>
                     </div>
+
+                    <?php
+                    for ($i = 1; $i <= 5; $i++) {
+                        if ($quotation_type_data['oqqt_extra_field_'.$i.'_title'] != '' && $quotation_type_data['oqqt_extra_field_'.$i.'_title'] != null) {
+                            $extraFieldText = explode('||',$quotation_type_data['oqqt_extra_field_'.$i.'_title']);
+                            if ($quotation_type_data['oqqt_extra_field_'.$i.'_required'] == 1){
+                                $extraFieldRequired = true;
+                            }
+                            else {
+                                $extraDetailsRequired = false;
+                            }
+                            ?>
+                            <div class="form-group row">
+                                <label for="extra_field_<?php echo $i; ?>" class="col-sm-4 col-form-label">
+                                    <?php show_quotation_text($extraFieldText[1], $extraFieldText[0]); ?>
+                                </label>
+                                <div class="col-sm-8">
+                                    <input name="extra_field_<?php echo $i; ?>" type="text" id="extra_field_<?php echo $i; ?>"
+                                           class="form-control"
+                                           value="<?php echo $q_data["oqq_extra_field_".$i]; ?>">
+                                    <?php
+                                    $formValidator->addField(
+                                        [
+                                            'fieldName' => 'extra_field_'.$i,
+                                            'fieldDataType' => 'text',
+                                            'required' => $extraDetailsRequired,
+                                            'invalidTextAutoGenerate' => true
+                                        ]);
+                                    ?>
+                                </div>
+                            </div>
+                            <?php
+                        }
+                    }
+                    ?>
 
                 </div>
 
@@ -883,8 +932,7 @@ $formValidator->showErrorList();
         if (i > 0) {
             $('#warningDivSection').show();
             $('#warningDivSection').html(allHtml);
-        }
-        else {
+        } else {
             $('#warningDivSection').hide();
             $('#warningDivSection').html('');
         }
@@ -905,8 +953,7 @@ $formValidator->showErrorList();
         if (i > 0) {
             $('#alertDivSection').show();
             $('#alertDivSection').html(allHtml);
-        }
-        else {
+        } else {
             $('#alertDivSection').hide();
             $('#alertDivSection').html('');
         }
@@ -926,8 +973,7 @@ $formValidator->showErrorList();
         eval(functionString);
         if (result['result'] == 1) {
             addNewWarning(result['info'], fieldID);
-        }
-        else {
+        } else {
             removeWarning(fieldID);
         }
     }
@@ -941,8 +987,7 @@ $formValidator->showErrorList();
         eval(functionString);
         if (result['result'] == 1) {
             addNewAlert(result['info'], fieldID);
-        }
-        else {
+        } else {
             removeAlert(fieldID);
         }
     }

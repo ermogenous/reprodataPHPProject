@@ -16,7 +16,7 @@ $db->enable_jquery();
 $db->include_js_file('../../scripts/fullcalendar-3.9.0/lib/moment.min.js');
 $db->include_js_file('../../scripts/fullcalendar-3.9.0/fullcalendar.min.js');
 $db->include_css_file('../../scripts/fullcalendar-3.9.0/fullcalendar.min.css');
-$db->include_css_file('../../scripts/fullcalendar-3.9.0/fullcalendar.print.min.css',"media='print'");
+$db->include_css_file('../../scripts/fullcalendar-3.9.0/fullcalendar.print.min.css', "media='print'");
 
 $startDate = date('Y-m-d', mktime(0, 0, 0, date('m') - 6, 1, date('Y')));
 
@@ -36,7 +36,7 @@ $db->admin_more_head .= "
             editable: true,
             eventLimit: true, // allow \"more\" link when too many events
             events: [
-                ".generateMyscheduleDataScript($db->user_data['usr_users_ID'], $startDate)."
+                " . generateMyscheduleDataScript($db->user_data['usr_users_ID'], $startDate) . "
             ]
         });
 
@@ -78,15 +78,17 @@ function generateMyscheduleDataScript($userID, $startDate)
     //get the data from db
     $sql = "SELECT * FROM 
             ev_events
-            JOIN ev_rooms ON evrom_room_ID = evevt_room_ID";
+            JOIN ev_rooms ON evrom_room_ID = evevt_room_ID
+            JOIN ev_event_schedules ON evsch_event_ID = evevt_event_ID";
     $result = $db->query($sql);
     while ($row = $db->fetch_assoc($result)) {
         $data .= "
         {
             id:" . $row['evevt_event_ID'] . ",
-            title: '" . $row['evrom_name']."-".$row['evevt_title'] . " \\n ".$row['evevt_description']."',
-            start: '" . $row['evevt_starting_date_time'] . "',
-            end: '".$row['evevt_end_date_time']."',
+            title: '" . $row['evrom_name'] . "-" . $row['evevt_title'] . " \\n " . $row['evevt_description'] . "',
+            start: '" . $row['evsch_start_date_time'] . "',
+            end: '" . $row['evsch_end_date_time'] . "',
+            color: '".$row['evrom_color']."',
             url: 'event_modify.php?lid=" . $row['evevt_event_ID'] . "'
         },\n";
     }

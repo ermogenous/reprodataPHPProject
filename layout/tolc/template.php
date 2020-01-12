@@ -18,7 +18,7 @@ function template_header()
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title><?php echo $main["conf_title"] . " " . $db->admin_title; ?></title>
+        <title>Tree of Life Center</title>
         <LINK REL="SHORTCUT ICON" HREF="<?php echo $db->admin_layout_url; ?>/images/favicon.png">
         <link rel="stylesheet" href="<?php echo $db->admin_layout_url; ?>style.css" rel="stylesheet">
 

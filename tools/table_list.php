@@ -74,10 +74,21 @@ class TableList
         return $this;
     }
 
+    /**
+     * @param $fieldName
+     * @param $asName
+     * @param array $settings
+     * @return $this
+     */
     public function setSqlSelect($fieldName, $asName, $settings=[])
     {
         /**
-         * Settings: ex: ['functionName' => 'convertDateToEu']
+         * Settings: ex: [
+         * 'functionName' => 'convertDateToEu'
+         * 'IgnoreField' => true
+         * 'thAlign' => left,right,center -> align of the header td
+         * 'tdAlign' => left,right,center -> align of the row td
+         * ]
          */
         if ($this->sqlSelect != '') {
             $this->sqlSelect .= ',';
@@ -85,6 +96,9 @@ class TableList
         $this->sqlSelect .= PHP_EOL . $fieldName . " as `" . $asName . "`";
         $this->sqlTotalFields++;
         $this->allFieldsArray[$this->sqlTotalFields]['name'] = $asName;
+        $this->allFieldsArray[$this->sqlTotalFields]['ignoreField'] = $settings['ignoreField'];
+        $this->allFieldsArray[$this->sqlTotalFields]['thAlign'] = $settings['thAlign'];
+        $this->allFieldsArray[$this->sqlTotalFields]['tdAlign'] = $settings['tdAlign'];
         if ($settings['functionName'] != ''){
             $this->allFieldsArray[$this->sqlTotalFields]['function'] = $settings['functionName'];
         }
@@ -287,7 +301,6 @@ class TableList
                 <div class="' . $this->mainColumnClass . '">
         ';
 
-
         $this->tableHtml .= '
                 <div class="row">
                     <div class="col-12 text-center ' . $this->topTitleClass . '"><strong>' . $this->topTitle . '</strong></div>
@@ -309,16 +322,19 @@ class TableList
         ';
         //loop into all the columns for the headers
         for ($i = 1; $i <= $this->sqlTotalFields; $i++) {
-            $this->tableHtml .= '
-                                    <th scope="col"><a href="?TlSetOrder=' . $this->allFieldsArray[$i]['name'] . '">' . $this->allFieldsArray[$i]['name'] . '</a></th>
+            if ($this->allFieldsArray[$i]['ignoreField'] != true) {
+                $this->tableHtml .= '
+                                    <td scope="col" align="'.$this->allFieldsArray[$i]['thAlign'].'"><strong>';
+                $this->tableHtml .= '<a href="?TlSetOrder=' . $this->allFieldsArray[$i]['name'] . '">' . $this->allFieldsArray[$i]['name'] . '</a></strong></td>
             ';
+            }
         }
         //loop into all the extra columns
         if (count($this->extraColumns) > 0) {
             foreach ($this->extraColumns as $columnData) {
                 $this->tableHtml .= '
                                     <td scope="col" align="' . $columnData['thAlign'] . '"><strong>' . $columnData['title'] . '</strong></td>
-            ';
+                                ';
             }
         }
         if ($this->disableIconColumn == false) {
@@ -346,9 +362,11 @@ class TableList
                     $fieldDataFunction = $this->allFieldsArray[$i]['function'];
                     $fieldData = $fieldDataFunction($fieldData);
                 }
-                $this->tableHtml .= '
-                                        <td scope="row">' . $fieldData . '</td>
-                ';
+                if ($this->allFieldsArray[$i]['ignoreField'] != true) {
+                    $this->tableHtml .= '
+                                        <td scope="row" align="'.$this->allFieldsArray[$i]['tdAlign'].'">' . $fieldData . '</td>
+                    ';
+                }
 
             }
 

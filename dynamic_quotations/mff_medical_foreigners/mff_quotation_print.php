@@ -46,7 +46,15 @@ function getQuotationHTML($quotationID)
         $draft = '';
         $draftImage = '';
         $signature = '<img src="images/santamas_signature_200.png" width="200">';
-        $stamp = '<img src="images/full_stamp_signature.png" width="140">';
+        $startDateParts = explode('-',$quotationData['oqq_starting_date']);
+        $startDateNum = ($startDateParts[0] * 10000) + ($startDateParts[1] * 100) + ($startDateParts[2] * 1);
+        if ($startDateNum >= 20200101){
+            $stamp = '<img src="images/full_stamp_signature_2020.png" width="140">';
+        }
+        else {
+            $stamp = '<img src="images/full_stamp_signature.png" width="140">';
+        }
+
     }
 
     $html = '

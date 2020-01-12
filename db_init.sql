@@ -260,12 +260,12 @@ INSERT INTO `permissions_lines` VALUES ('26', '1', '214', '0', '0', '0', '0', '0
 DROP TABLE IF EXISTS `process_lock`;
 CREATE TABLE `process_lock` (
   `pl_process_lock_ID` int(8) NOT NULL AUTO_INCREMENT,
-  `pl_description` varchar(100) COLLATE utf8_bin DEFAULT NULL,
-  `pl_name` varchar(50) COLLATE utf8_bin DEFAULT NULL,
+  `pl_description` varchar(100) CHARACTER SET utf8 DEFAULT NULL,
+  `pl_name` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
   `pl_user_serial` int(8) DEFAULT NULL,
   `pl_active` int(1) DEFAULT NULL,
-  `pl_start_timestamp` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
-  `pl_end_timestamp` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `pl_start_timestamp` datetime DEFAULT NULL,
+  `pl_end_timestamp` datetime DEFAULT NULL,
   PRIMARY KEY (`pl_process_lock_ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
@@ -325,7 +325,7 @@ CREATE TABLE `settings` (
   `stg_settings_ID` int(10) NOT NULL AUTO_INCREMENT,
   `stg_section` varchar(50) COLLATE utf8_bin NOT NULL,
   `stg_value` varchar(250) COLLATE utf8_bin NOT NULL,
-  `stg_value_date` datetime DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `stg_value_date` datetime DEFAULT NULL,
   PRIMARY KEY (`stg_settings_ID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 

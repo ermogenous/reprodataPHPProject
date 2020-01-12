@@ -413,9 +413,31 @@ class dynamicQuotation
 
     }
 
-    private function sendEmail()
+    public function isAdvancedEdit(){
+        global $db;
+        if ($this->quotationData()['oqq_status'] != 'Outstanding'){
+            if ($db->user_data['usr_user_rights'] <= 3) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    public function sendEmail()
     {
         global $db,$main;
+
+        $quotationUnderwriter = $db->query_fetch(
+            'SELECT * FROM 
+                  oqt_quotations_underwriters 
+                  WHERE oqun_user_ID = ' . $this->quotationData()['oqq_users_ID']
+        );
+
         include_once('../send_auto_emails/send_auto_emails_class.php');
         if ($this->quotationData['oqqt_active_send_mail'] != '') {
 

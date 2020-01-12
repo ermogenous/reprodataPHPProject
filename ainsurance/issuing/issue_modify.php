@@ -154,6 +154,30 @@ if ($_GET['lid'] != '') {
                     <div class="form-group row">
                         <?php
                         $formB->initSettings()
+                            ->setFieldName('fld_issue_number')
+                            ->setFieldDescription('Issue Policy Number')
+                            ->setFieldType('select')
+                            ->setInputValue($data['inaiss_issue_number'])
+                            ->buildLabel();
+                        ?>
+                        <div class="col-sm-4">
+                            <?php
+                            $formB->
+                                //->buildInput();
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => $formB->fieldName,
+                                    'fieldDataType' => 'text',
+                                    'required' => true,
+                                    'invalidTextAutoGenerate' => true
+                                ]);
+                            ?>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <?php
+                        $formB->initSettings()
                             ->setFieldName('fld_number_prefix')
                             ->setFieldDescription('Policy Number Prefix')
                             ->setFieldType('input')

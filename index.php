@@ -1,10 +1,13 @@
 <?php
-include('include/common.php');
-if (isset($_GET['goAdmin'])) {
-    echo "admin";
-} else {
-    header("Location:" . $main["site_url"] . "/tolc/home.php");
-    exit();
+include('include/main.php');
+$db = new Main(0);
+if ($db->admin_default_layout == 'tolc') {
+    if (isset($_GET['goAdmin'])) {
+        echo "admin";
+    } else {
+        header("Location:" . $main["site_url"] . "/tolc/home.php");
+        exit();
+    }
 }
 header("Location: login.php");
 exit();

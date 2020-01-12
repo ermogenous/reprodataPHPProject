@@ -32,10 +32,10 @@ if ($_POST["action"] == "insert") {
     $newID = $db->db_tool_insert_row('ev_event_schedules', $_POST, 'fld_', 1, 'evsch_');
     $db->commit_transaction();
     if ($_POST['subAction'] == 'exit') {
-        header("Location: event_schedules.php?lid=" . $_POST['lid']);
+        header("Location: event_schedules.php?layout=".$_GET['layout']."&lid=" . $_POST['lid']);
         exit();
     } else {
-        header("Location: event_schedule_modify.php?lid=" . $_POST['lid'] . "&eid=" . $newID);
+        header("Location: event_schedule_modify.php?layout=".$_GET['layout']."&lid=" . $_POST['lid'] . "&eid=" . $newID);
         exit();
     }
 
@@ -49,10 +49,10 @@ if ($_POST["action"] == "insert") {
     $db->db_tool_update_row('ev_event_schedules', $_POST, "`evsch_event_schedule_ID` = " . $_POST["eid"],
         $_POST["eid"], 'fld_', 'execute', 'evsch_');
     if ($_POST['subAction'] == 'exit') {
-        header("Location: event_schedules.php?lid=" . $_POST['lid']);
+        header("Location: event_schedules.php?layout=".$_GET['layout']."&lid=" . $_POST['lid']);
         exit();
     } else {
-        header("Location: event_schedule_modify.php?lid=" . $_POST['lid'] . "&eid=" . $_POST['eid']);
+        header("Location: event_schedule_modify.php?layout=".$_GET['layout']."&lid=" . $_POST['lid'] . "&eid=" . $_POST['eid']);
         exit();
     }
 
@@ -77,7 +77,11 @@ $eventData = $db->query_fetch('SELECT * FROM ev_events WHERE evevt_event_ID = ' 
 
 $db->enable_jquery_ui();
 $db->enable_jquery_ui_dateTimePicker();
-$db->show_header();
+if ($_GET['layout'] == 'blank') {
+    $db->show_empty_header();
+} else {
+    $db->show_header();
+}
 ?>
 
     <div class="container-fluid">
@@ -183,7 +187,7 @@ $db->show_header();
                             <input name="eid" type="hidden" id="eid" value="<?php echo $_GET["eid"]; ?>">
                             <input name="subAction" type="hidden" id="subAction" value="exit">
                             <input type="button" value="Back" class="btn btn-secondary"
-                                   onclick="window.location.assign('events.php')">
+                                   onclick="window.location.assign('event_schedules.php?layout=<?php echo $_GET['layout'];?>&lid=<?php echo $_GET['lid'];?>')">
                             <input type="submit" name="Submit" id="Submit"
                                    value="<?php if ($_GET["eid"] == "") echo "Insert"; else echo "Update"; ?> Event Schedule & Exit"
                                    class="btn btn-primary">
@@ -203,5 +207,9 @@ $db->show_header();
 
 <?php
 $formValidator->output();
-$db->show_footer();
+if ($_GET['layout'] == 'blank') {
+    $db->show_empty_footer();
+} else {
+    $db->show_footer();
+}
 ?>

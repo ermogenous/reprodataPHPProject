@@ -17,6 +17,7 @@ class FormBuilder
     private $labelClasses; //the value of the input.
     private $inputExtraClasses;
     private $inputValue;//true/false if true adds an extra empty option at the top
+    private $inputCheckBoxValue;
     private $inputSelectQuery;
     private $inputSelectArrayOptions;
     private $inputSelectAddEmptyOption;
@@ -84,7 +85,7 @@ class FormBuilder
         } else if ($this->fieldType == 'select') {
             $this->buildInputSelect();
         } else if ($this->fieldType == 'checkbox') {
-
+            $this->buildInputCheckbox();
         } else if ($this->fieldType == 'radio') {
 
         } else if ($this->fieldType == 'textarea') {
@@ -188,6 +189,26 @@ class FormBuilder
         }
 
         echo '</select>' . PHP_EOL;
+    }
+
+    private function buildInputCheckbox(){
+        $disabled = '';
+        if ($this->disableField == true){
+            $disabled = 'disabled';
+        }
+
+        $checked = '';
+        if ($this->inputValue == $this->inputCheckBoxValue){
+            $checked = 'checked';
+        }
+
+        echo '
+        <div class="form-check">
+            <input type="checkbox" name="' . $this->fieldName . '" id="' . $this->fieldName . '" style="'.$this->fieldStyle.'"
+            onkeyup="'.$this->fieldOnKeyUp.'" onchange="'.$this->fieldOnChange.'" '.$checked.'
+            class="form-check-input ' . $this->inputExtraClasses . '" value="'.$this->inputCheckBoxValue.'" '.$disabled.'>
+        </div>
+        ';
     }
 
     public function buildLabel()
@@ -365,6 +386,15 @@ class FormBuilder
     public function setInputValue($inputValue)
     {
         $this->inputValue = $inputValue;
+        return $this;
+    }
+
+    /**
+     * @param $checkBoxValue
+     * @return $this
+     */
+    public function setInputCheckBoxValue($checkBoxValue){
+        $this->inputCheckBoxValue = $checkBoxValue;
         return $this;
     }
 

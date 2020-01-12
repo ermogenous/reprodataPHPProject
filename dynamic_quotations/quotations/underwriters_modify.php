@@ -18,6 +18,7 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_allow_quotations'] = '#1-' . $db->get_check_value($_POST['allow_mff']) . "#";
     $_POST['fld_allow_quotations'] .= '#2-' . $db->get_check_value($_POST['allow_mc']) . "#";
     $_POST['fld_allow_quotations'] .= '#3-' . $db->get_check_value($_POST['allow_tr']) . "#";
+    $_POST['fld_allow_quotations'] .= '#4-' . $db->get_check_value($_POST['allow_hc']) . "#";
 
 
     $db->db_tool_insert_row('oqt_quotations_underwriters', $_POST, 'fld_', 0, 'oqun_');
@@ -34,6 +35,7 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_allow_quotations'] = '#1-' . $db->get_check_value($_POST['allow_mff']) . "#";
     $_POST['fld_allow_quotations'] .= '#2-' . $db->get_check_value($_POST['allow_mc']) . "#";
     $_POST['fld_allow_quotations'] .= '#3-' . $db->get_check_value($_POST['allow_tr']) . "#";
+    $_POST['fld_allow_quotations'] .= '#4-' . $db->get_check_value($_POST['allow_hc']) . "#";
 
     $_POST['fld_tr_package_selection'] = '';
     if ($_POST['packageBasic'] == 1) {
@@ -216,6 +218,12 @@ $formValidator = new customFormValidator();
                             <a class="nav-link" id="pills-travel-tab" data-toggle="pill" href="#pills-travel"
                                role="tab"
                                aria-controls="pills-travel" aria-selected="true">Travel</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-household-tab" data-toggle="pill" href="#pills-household"
+                               role="tab"
+                               aria-controls="pills-household" aria-selected="true">Household</a>
                         </li>
 
                     </ul>
@@ -1253,8 +1261,33 @@ $formValidator = new customFormValidator();
                             <!-- TRAVEL END TAB -->
                         </div>
 
+                        <div class="tab-pane fade show" id="pills-household" role="tabpanel"
+                             aria-labelledby="pills-household-tab">
+                            <!-- HOUSEHOLD -->
+
+                            <div class="row alert alert-success text-center">
+                                <div class="col-12">
+                                    <b>Household</b>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label for="allow_hc" class="col-sm-4 col-form-label">
+                                    Allow Household
+                                </label>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                           id="allow_hc" name="allow_hc"
+                                        <?php if (strpos($data['oqun_allow_quotations'], '#4-1#') !== false) echo 'checked'; ?>>
+                                </div>
+                            </div>
+
+                        </div>
+
                         <!-- CONTENTS TAB END-->
                     </div>
+
+                    <div class="row" style="height: 25px"></div>
 
                     <!-- BUTTONS -->
                     <div class="form-group row">

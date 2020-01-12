@@ -40,7 +40,14 @@ oqq_situation_address = '" . addslashes($_POST["situation_address"]) . "',
 oqq_situation_postal_code = '" . addslashes($_POST["situation_postal_code"]) . "',
 oqq_extra_details = '" . addslashes($_POST["situations_extra_details"]) . "',
 oqq_starting_date = '".addslashes($db->convert_date_format($_POST['starting_date'],'dd/mm/yyyy','yyyy-mm-dd'))."',
-oqq_expiry_date = '".addslashes($db->convert_date_format($_POST['expiry_date'],'dd/mm/yyyy','yyyy-mm-dd'))."'";
+oqq_expiry_date = '".addslashes($db->convert_date_format($_POST['expiry_date'],'dd/mm/yyyy','yyyy-mm-dd'))."',
+oqq_extra_field_1 = '".addslashes($_POST['extra_field_1'])."',
+oqq_extra_field_2 = '".addslashes($_POST['extra_field_2'])."',
+oqq_extra_field_3 = '".addslashes($_POST['extra_field_3'])."',
+oqq_extra_field_4 = '".addslashes($_POST['extra_field_4'])."',
+oqq_extra_field_5 = '".addslashes($_POST['extra_field_5'])."'
+
+";
     $sql .= $sql2;
 
     //echo $sql."<hr>";exit();
@@ -82,7 +89,7 @@ function insert_item_data_to_db($quotation_type_data, $quotation_id, $item_id)
                 } else {
                     $field_value = $_POST[$item_id . "_" . $field_name];
                 }
-                $sql .= ",\n" . $field_name . " = \"" . $field_value . "\"";
+                $sql .= ",\n" . $field_name . " = \"" . addslashes($field_value) . "\"";
 
             }//insured amount fields that are not empty.
 
@@ -103,7 +110,7 @@ function insert_item_data_to_db($quotation_type_data, $quotation_id, $item_id)
                 } else {
                     $field_value = $value;
                 }
-                $sql .= ",\n" . $field_name . " = \"" . $field_value . "\"";
+                $sql .= ",\n" . $field_name . " = \"" . addslashes($field_value) . "\"";
 //echo $item_id . "_" . $field_name;exit();
             }//insured amount fields that are not empty.
 
@@ -268,7 +275,15 @@ function quotation_price_calculation($quotation_id)
     }//while loops items
 
     //step3 Send the result array to the custom_calculation_function to fix the appropriate rates.
-    $result_amount = insured_amount_custom_rates($result_amount, $result_amount_values, $quotation_id);
+    if (function_exists('insured_amount_custom_rates')) {
+        $result_amount = insured_amount_custom_rates($result_amount, $result_amount_values, $quotation_id);
+    }
+    else {
+        $db->generateAlertError('Function "insured_amount_custom_rates($result_amount, $result_amount_values, $quotation_id)" is missing from functions file');
+        $db->show_header();
+        $db->show_footer();
+        exit();
+    }
 
     //step 4 add up the values from the array
     $premium = 0;

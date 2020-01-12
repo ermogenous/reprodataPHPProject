@@ -152,9 +152,24 @@ $db->show_header();
     </tr>
     <tr>
       <td>&nbsp;</td>
-      <td height="28">&nbsp;</td>
-      <td>&nbsp;</td>
+      <td height="28">Attachments:</td>
+      <td>
+          <?php
+          if ($data['sae_attachment_files'] != ''){
+              $attachmentFiles = explode(PHP_EOL,$data['sae_attachment_files']);
+              foreach ($attachmentFiles as $file){
+                  $fileData = explode("||",$file);
+                  echo "<a href='attachment_files/".$fileData[0]."' target='_blank'>".$fileData[1]."</a><br>";
+              }
+          }
+          ?>
+      </td>
     </tr>
+      <tr>
+          <td>&nbsp;</td>
+          <td height="28">&nbsp;</td>
+          <td>&nbsp;</td>
+      </tr>
     <tr>
       <td>&nbsp;</td>
       <td height="28"><input name="action" type="hidden" id="action" value="<?php if($_GET["lid"] == "") echo "insert"; else echo "update";?>">

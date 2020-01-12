@@ -18,6 +18,8 @@ if ($_POST["action"] == "insert") {
     $db->check_restriction_area('insert');
     $db->working_section = 'Accounts Entity Inserting';
 
+    $_POST['fld_birthdate'] = $db->convertDateToUS($_POST['fld_birthdate']);
+
     $db->db_tool_insert_row('ac_entities', $_POST, 'fld_', 0, 'acet_');
     header("Location: entities.php");
     exit();
@@ -25,6 +27,8 @@ if ($_POST["action"] == "insert") {
 } else if ($_POST["action"] == "update") {
     $db->check_restriction_area('update');
     $db->working_section = 'Accounts Entity Modifying';
+
+    $_POST['fld_birthdate'] = $db->convertDateToUS($_POST['fld_birthdate']);
 
     $db->db_tool_update_row('ac_entities', $_POST, "`acet_entity_ID` = " . $_POST["lid"], $_POST["lid"],
         'fld_', 'execute', 'acet_');
@@ -272,6 +276,41 @@ if ($_GET["lid"] != "") {
                                         ]);
                                     ?>
                                 </div>
+
+                                <label for="fld_birthdate" class="col-md-2 col-form-label">Birthdate</label>
+                                <div class="col-md-4">
+                                    <input name="fld_birthdate" type="text" id="fld_birthdate"
+                                           value="<?php echo $data["acet_birthdate"]; ?>"
+                                           class="form-control"/>
+                                    <?php
+                                    $formValidator->addField(
+                                        [
+                                            'fieldName' => 'fld_birthdate',
+                                            'fieldDataType' => 'date',
+                                            'enableDatePicker' => true,
+                                            'datePickerValue' => $db->convertDateToEU($data["acet_birthdate"]),
+                                            'required' => false,
+                                            'invalidTextAutoGenerate' => true
+                                        ]);
+                                    ?>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="fld_comments" class="col-md-2 col-form-label">Comments</label>
+                                <div class="col-md-4">
+                                    <textarea name="fld_comments" type="text" id="fld_comments"
+                                              class="form-control"><?php echo $data["acet_comments"]; ?></textarea>
+                                    <?php
+                                    $formValidator->addField(
+                                        [
+                                            'fieldName' => 'fld_comments',
+                                            'fieldDataType' => 'text',
+                                            'required' => false,
+                                            'invalidTextAutoGenerate' => true
+                                        ]);
+                                    ?>
+                                </div>
                             </div>
 
                         </div>
@@ -302,7 +341,7 @@ if ($_GET["lid"] != "") {
                             <input type="button" value="Back" class="btn btn-secondary"
                                    onclick="window.location.assign('entities.php')">
                             <input type="submit" name="Submit" id="Submit"
-                                   value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Account"
+                                   value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Entity"
                                    class="btn btn-primary">
                         </div>
                     </div>

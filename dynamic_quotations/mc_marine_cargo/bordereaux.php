@@ -38,6 +38,8 @@ if ($_POST['action'] == 'search') {
         '" . $db->convertDateToUS($_POST['effectiveFrom']) . "' AND '" . $db->convertDateToUS($_POST['effectiveTo']) . "' ";
     }
 
+
+
     if ($_POST['type'] == 'Marine') {
         $sql = "
           SELECT
@@ -134,13 +136,17 @@ if ($_POST['action'] == 'search') {
           ,(SELECT cde_value FROM codes WHERE cde_code_ID = members79.oqqit_rate_14) as clo_9_nationality
           ,members79.oqqit_date_3 as clo_9_birthdate
           
+          ,usr_name
+          ,oqun_tr_open_cover_number
+          
           FROM 
           oqt_quotations
           JOIN oqt_quotations_items as tr_info ON oqq_quotations_ID = tr_info.oqqit_quotations_ID AND tr_info.oqqit_items_ID = 5
           JOIN oqt_quotations_items as members13 ON oqq_quotations_ID = members13.oqqit_quotations_ID AND members13.oqqit_items_ID = 6
           JOIN oqt_quotations_items as members46 ON oqq_quotations_ID = members46.oqqit_quotations_ID AND members46.oqqit_items_ID = 7
           JOIN oqt_quotations_items as members79 ON oqq_quotations_ID = members79.oqqit_quotations_ID AND members79.oqqit_items_ID = 8
-          
+          JOIN users ON usr_users_ID = oqq_users_ID
+          JOIN oqt_quotations_underwriters ON oqun_user_ID = oqq_users_ID
           WHERE
           1=1
           " . $where . "
@@ -594,7 +600,12 @@ function outputExcelTravel($sql)
     $spreadsheet->setActiveSheetIndex(0)
         ->setCellValue($str . '1', 'Type')
         ->setCellValue(++$str . '1', '#')
+        ->setCellValue(++$str . '1', 'Agent')
+        ->setCellValue(++$str . '1', 'Open Cover Number')
         ->setCellValue(++$str . '1', 'Number')
+        ->setCellValue(++$str . '1', 'Premium')
+        ->setCellValue(++$str . '1', 'Fees')
+        ->setCellValue(++$str . '1', 'Stamps')
         ->setCellValue(++$str . '1', 'Activation Date')
         ->setCellValue(++$str . '1', 'Departure Date')
         ->setCellValue(++$str . '1', 'Client Name')
@@ -653,12 +664,18 @@ function outputExcelTravel($sql)
 
     $line = 1;
     while ($row = $db->fetch_assoc($result)) {
+
         $str = 'A';
         $line++;
         $spreadsheet->getActiveSheet()
             ->setCellValue($str . $line, 'Travel')
             ->setCellValue(++$str . $line, $row['oqq_quotations_ID'])
+            ->setCellValue(++$str . $line, $row['usr_name'])
+            ->setCellValue(++$str . $line, $row['oqun_tr_open_cover_number'])
             ->setCellValue(++$str . $line, $row['oqq_number'])
+            ->setCellValue(++$str . $line, $row['oqq_premium'])
+            ->setCellValue(++$str . $line, $row['oqq_fees'])
+            ->setCellValue(++$str . $line, $row['oqq_stamps'])
             ->setCellValue(++$str . $line, $db->convert_date_format($row['oqq_last_update_date_time'], 'yyyy-mm-dd', 'dd/mm/yyyy', 1, 1))
             ->setCellValue(++$str . $line, $db->convertDateToEU($row['clo_departure_date']))
             ->setCellValue(++$str . $line, $row['oqq_insureds_name'])
@@ -713,7 +730,6 @@ function outputExcelTravel($sql)
         $spreadsheet->getActiveSheet()->getStyle('A1:' . $str . $line)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 
     }
-
     //set autosize from A-Z
     $str = 'A';
     $stop = false;

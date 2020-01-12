@@ -469,6 +469,10 @@ function template_header()
                                    href="<?php echo $main["site_url"]; ?>/tools/log_file_view.php">
                                     <i class="fas fa-exclamation-triangle"></i> View Log File</a>
 
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/test/akd/show_file.php">
+                                    <i class="fas fa-cloud-upload-alt"></i> Insurance/Accounts Import</a>
+
                                 <?php if ($db->user_data['usr_users_ID'] == 1) { ?>
                                     <a class="dropdown-item"
                                        href="<?php echo $main["site_url"]; ?>/vitamins/vitamins.php">

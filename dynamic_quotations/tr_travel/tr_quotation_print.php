@@ -1,12 +1,17 @@
 <?php
 function getQuotationHTML($quotationID)
 {
-    global $db, $main, $quotationUnderwriter;
+    global $db, $main;
 
     $quotationData = $db->query_fetch('
             SELECT *, (SELECT cde_value FROM codes WHERE cde_code_ID = oqq_nationality_ID) as clo_nationality 
             FROM oqt_quotations WHERE oqq_quotations_ID = ' . $quotationID);
 
+    $quotationUnderwriter = $db->query_fetch(
+        'SELECT * FROM 
+                  oqt_quotations_underwriters 
+                  WHERE oqun_user_ID = ' . $quotationData['oqq_users_ID']
+    );
 //section 1 ========================================================================================================================================SECTION 1
     $sect1 = $db->query_fetch('
         SELECT *,
@@ -46,7 +51,14 @@ function getQuotationHTML($quotationID)
         $draft = '';
         $draftImage = '';
         $signature = '<img src="images/santamas_signature_200.png" width="200">';
-        $stamp = '<img src="images/full_stamp_signature.png" width="140">';
+        $effDateSplit = explode("-",$sect1['oqqit_date_1']);
+        $effDateNum = ($effDateSplit[0] * 10000) + ($effDateSplit[1] * 100) + ($effDateSplit[2] * 1);
+        if ($effDateNum >= 20200101){
+            $stamp = '<img src="images/full_stamp_signature_2020.png" width="140">';
+        }
+        else {
+            $stamp = '<img src="images/full_stamp_signature.png" width="140">';
+        }
 
         if ($quotationUnderwriter['oqun_tr_open_cover_number'] != '' && strlen($quotationUnderwriter['oqun_tr_open_cover_number']) >= 5) {
             $underwriterOpenCoverNumber = "Open Cover Number: " . $quotationUnderwriter['oqun_tr_open_cover_number'];
@@ -1353,7 +1365,7 @@ function getQuotationHTML($quotationID)
 
 
     //when limited no confirmation letter
-    if ($sect1['oqqit_rate_4'] != 'Limited') {
+    if ($sect1['oqqit_rate_4'] != 'Limiteddddd') { //show in all
 
         $data['clo_destination'] = $sect1['clo_destination'];
         //generate confirmation for client

@@ -206,12 +206,22 @@ function tr_travel_information()
                    class="form-control text-center" title="<?php show_quotation_text("Ημ. Αναχώρησης", "Departure Date"); ?>">
             <?php
 
+            //admins can go backdated
             $minDate = '';
             if ($db->user_data['usr_user_rights'] <= 2){
                 $minDate = '01/01/1900';
             }
             else {
                 $minDate = date('d/m/Y');
+            }
+
+            //admins can go further future dates
+            $maxDate = '';
+            if ($db->user_data['usr_user_rights'] <= 2){
+                $maxDate = '01/01/2100';
+            }
+            else {
+                $maxDate = date('d/m/Y', mktime(0, 0, 0, date('m'), (date('d') + 45), date('Y')));
             }
 
             $formValidator->addField(
@@ -223,7 +233,7 @@ function tr_travel_information()
                     'required' => true,
                     'invalidTextAutoGenerate' => show_quotation_text('Καταχώρησε Ημ. Αναχώρησης', 'Must enter Departure Date'),
                     'dateMinDate' => $minDate,
-                    'dateMaxDate' => date('d/m/Y', mktime(0, 0, 0, date('m'), (date('d') + 45), date('Y'))),
+                    'dateMaxDate' => $maxDate,
                 ]);
             ?>
         </div>
@@ -709,9 +719,9 @@ function insured_amount_custom_rates($array, $values, $quotation_id)
         $array[5][6] += $array[5][6] * 0.5;
     }
 
-    //wintersport loading 100%
+    //wintersport loading 50%
     if ($values[5][3]['rate'] == 'Yes') {
-        $array[5][6] += $array[5][6];
+        $array[5][6] += $array[5][6] * 0.5;
     }
     //check limited min premium
     if ($values[5][4]['rate'] == 'Limited') {
@@ -734,24 +744,31 @@ function insured_amount_custom_rates($array, $values, $quotation_id)
                 $memberPremium += $memberPremium * 0.5;
             }
 
-            //if wintersport then 100% loading
+            //if wintersport then 50% loading
             if ($values[5][3]['rate'] == 'Yes') {
                 //echo "Wintersport applied<br>";
-                $memberPremium += $memberPremium;
+                $memberPremium += $memberPremium * 0.5;
             }
 
             //if age < 16 then 50% discount
             if ($members[$i]['age'] < 16) {
-                //echo "Age Discount applied<br>";
                 $memberPremium = $memberPremium * 0.5;
+                //echo "Age Discount applied - Prem:".$memberPremium."<br>";
             }
 
             //if package = limited then the min premium applies to each person
             if ($values[5][4]['rate'] == 'Limited') {
-                if ($minPremium > $memberPremium) {
+                //if 50% age discount applies then the min premium is also 50%
+                $limitedMinPremium = $minPremium;
+                if ($members[$i]['age'] < 16) {
+                    $limitedMinPremium = $minPremium * 0.5;
+                }
+
+                if ($limitedMinPremium > $memberPremium) {
                     //echo "Limited min premium applied:" . $memberPremium . " -> " . $minPremium;
                     //exit();
-                    $memberPremium = $minPremium;
+                    $memberPremium = $limitedMinPremium;
+
                 }
             }
 
