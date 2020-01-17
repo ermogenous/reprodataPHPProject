@@ -18,6 +18,10 @@ class FormBuilder
     private $inputExtraClasses;
     private $inputValue;//true/false if true adds an extra empty option at the top
     private $inputCheckBoxValue;
+    private $radioInline = false;
+    private $radioTotalOutputs = 1; //this will be used to automatically generate the ID`s of the radios. no need to define here anything
+    private $radioValue;
+    private $radioLabelDescription;
     private $inputSelectQuery;
     private $inputSelectArrayOptions;
     private $inputSelectAddEmptyOption;
@@ -73,6 +77,8 @@ class FormBuilder
         $this->inputSelectQuery = '';
         $this->inputSelectAddEmptyOption = false;
         $this->labelTitle = '';
+        $this->fieldOnChange = '';
+        $this->fieldOnKeyUp = '';
         return $this;
     }
 
@@ -87,7 +93,7 @@ class FormBuilder
         } else if ($this->fieldType == 'checkbox') {
             $this->buildInputCheckbox();
         } else if ($this->fieldType == 'radio') {
-
+            $this->buildInputRadio();
         } else if ($this->fieldType == 'textarea') {
             $this->buildInputTextArea();
 
@@ -209,6 +215,31 @@ class FormBuilder
             class="form-check-input ' . $this->inputExtraClasses . '" value="'.$this->inputCheckBoxValue.'" '.$disabled.'>
         </div>
         ';
+    }
+
+    private function buildInputRadio(){
+        $disabled = '';
+        if ($this->disableField == true){
+            $disabled = 'disabled';
+        }
+
+        $checked = '';
+        if ($this->inputValue == $this->radioValue){
+            $checked = 'checked';
+        }
+
+        $inline = '';
+        if ($this->radioInline == true){
+            $inline = ' custom-control-inline';
+        }
+
+        echo '
+        <div class="custom-control custom-radio'.$inline.'">
+            <input type="radio" id="'.$this->fieldName."-".$this->radioTotalOutputs.'" name="'.$this->fieldName.'" class="custom-control-input" 
+            value="'.$this->radioValue.'" onchange="'.$this->fieldOnChange.'" onkeyup="'.$this->fieldOnKeyUp.'" '.$checked.'>
+            <label class="custom-control-label" for="'.$this->fieldName."-".$this->radioTotalOutputs.'">'.$this->radioLabelDescription.'</label>
+        </div>';
+        $this->radioTotalOutputs++;
     }
 
     public function buildLabel()
@@ -395,6 +426,25 @@ class FormBuilder
      */
     public function setInputCheckBoxValue($checkBoxValue){
         $this->inputCheckBoxValue = $checkBoxValue;
+        return $this;
+    }
+
+    /**
+     * @param bool $value
+     * @return $this
+     */
+    public function setRadioInline($value = true){
+        $this->radioInline = $value;
+        return $this;
+    }
+
+    public function setRadioLabelDescription($description){
+        $this->radioLabelDescription = $description;
+        return $this;
+    }
+
+    public function setRadioValue($value){
+        $this->radioValue = $value;
         return $this;
     }
 

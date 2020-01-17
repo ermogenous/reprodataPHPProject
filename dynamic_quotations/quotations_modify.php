@@ -105,7 +105,6 @@ $items_sql = "SELECT * FROM `oqt_items` WHERE
 
 if ($_POST["action"] == "save") {
 
-
     //check if change language and new quotation
     if ($_POST["change_language"] == '1' && $_GET["quotation"] == "") {
         //do nothing

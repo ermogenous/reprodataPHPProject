@@ -44,9 +44,11 @@ function tr_travel_information()
         $("#expiry_date").val(expiry.getDate() + "/" + ((expiry.getMonth()*1)+1) + "/" + expiry.getFullYear());
         
         //if destination = client/member nationality generate error
+        //admin allow
+        '.($db->user_data['usr_user_rights'] <= 2? 'let advancedUser = true;':'let advancedUser = false;').'
         let destinationError = "'.show_quotation_text('Ο προορισμός και η ιθαγένεια συμβαλλομένου δεν μπορούν να είναι οι ίδιοι', 'Destination & Policyholder Nationality cannot be the same','return').'";
-        if ($("#5_oqqit_rate_1").val() == $("#nationality_ID").val()){
-            console.log("Client error");
+        if ($("#5_oqqit_rate_1").val() == $("#nationality_ID").val() && advancedUser == false){
+            //console.log("Client error");
             $("#destination-invalid-text").html(destinationError);
             $("#destination").addClass("is-invalid");
             $("#destination").removeClass("is-valid");
