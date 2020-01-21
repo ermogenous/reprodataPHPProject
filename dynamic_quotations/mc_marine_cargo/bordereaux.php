@@ -608,6 +608,7 @@ function outputExcelTravel($sql)
         ->setCellValue(++$str . '1', 'Stamps')
         ->setCellValue(++$str . '1', 'Activation Date')
         ->setCellValue(++$str . '1', 'Departure Date')
+        ->setCellValue(++$str . '1', 'Return Date')
         ->setCellValue(++$str . '1', 'Client Name')
         ->setCellValue(++$str . '1', 'Client Nationality')
         ->setCellValue(++$str . '1', 'Client Birthdate')
@@ -620,6 +621,7 @@ function outputExcelTravel($sql)
         ->setCellValue(++$str . '1', 'Winter Sports')
         ->setCellValue(++$str . '1', 'Package')
         ->setCellValue(++$str . '1', 'Total Days')
+        ->setCellValue(++$str . '1', 'Sum Insured')
         ->setCellValue(++$str . '1', '1-Name')
         ->setCellValue(++$str . '1', '1-ID')
         ->setCellValue(++$str . '1', '1-Nationality')
@@ -678,11 +680,12 @@ function outputExcelTravel($sql)
             ->setCellValue(++$str . $line, $row['oqq_stamps'])
             ->setCellValue(++$str . $line, $db->convert_date_format($row['oqq_last_update_date_time'], 'yyyy-mm-dd', 'dd/mm/yyyy', 1, 1))
             ->setCellValue(++$str . $line, $db->convertDateToEU($row['clo_departure_date']))
+            ->setCellValue(++$str . $line, $db->convertDateToEU($row['oqq_expiry_date'],1,0))
             ->setCellValue(++$str . $line, $row['oqq_insureds_name'])
             ->setCellValue(++$str . $line, $row['clo_client_nationality'])
             ->setCellValue(++$str . $line, $db->convertDateToEU($row['oqq_birthdate']))
             ->setCellValue(++$str . $line, $row['oqq_insureds_address'])
-            ->setCellValue(++$str . $line, $row['oqq_insureds_city'])
+            ->setCellValue(++$str . $line, cityToEnglish($row['oqq_insureds_city']))
             ->setCellValue(++$str . $line, $row['oqq_insureds_postal_code'])
             ->setCellValue(++$str . $line, $row['oqq_insureds_tel'])
             ->setCellValue(++$str . $line, $row['clo_destination_country'])
@@ -690,6 +693,7 @@ function outputExcelTravel($sql)
             ->setCellValue(++$str . $line, $row['clo_winter_sports'])
             ->setCellValue(++$str . $line, $row['clo_package'])
             ->setCellValue(++$str . $line, $row['clo_period_days'])
+            ->setCellValue(++$str . $line, getSumInsured($row['clo_package']))/*Sum Insured*/
             ->setCellValue(++$str . $line, $row['clo_1_name'])
             ->setCellValue(++$str . $line, $row['clo_1_id'])
             ->setCellValue(++$str . $line, $row['clo_1_nationality'])
@@ -785,6 +789,48 @@ function outputExcelTravel($sql)
     $writer = IOFactory::createWriter($spreadsheet, 'Xls');
     $writer->save('php://output');
 
+}
+
+function cityToEnglish($cityGr){
+    if ($cityGr == 'Λεμεσός'){
+        return 'Limassol';
+    }
+    if ($cityGr == 'Λευκωσία'){
+        return 'Nicosia';
+    }
+    if ($cityGr == 'Λάρνακα'){
+        return 'Larnaca';
+    }
+    if ($cityGr == 'Πάφος'){
+        return 'Paphos';
+    }
+    if ($cityGr == 'Αμμόχωστος'){
+        return 'Famagusta';
+    }
+    if ($cityGr == 'Κερύνεια'){
+        return 'Kerynia';
+    }
+}
+
+function getSumInsured($package){
+    if ($package == 'Basic'){
+        return '50000';
+    }
+    if ($package == 'Standard'){
+        return '100000';
+    }
+    if ($package == 'Luxury'){
+        return '150000';
+    }
+    if ($package == 'Special'){
+        return '100000';
+    }
+    if ($package == 'Schengen'){
+        return '20000';
+    }
+    if ($package == 'Limited'){
+        return '20000';
+    }
 }
 
 ?>

@@ -111,6 +111,12 @@ if ($_POST["action"] == "save") {
     } else {
         if ($quote->quotationData()['oqit_status'] == 'Outstanding' || $db->user_data['usr_user_rights'] <= 1 || $_POST['lid'] == '') {
             $db->start_transaction();
+
+            //execute the modify_post_function if exists
+            if (function_exists('modify_post_values')){
+                $_POST = modify_post_values($_POST);
+            }
+
             $quotation_id = insert_quotation_data_to_db($_POST["quotation"], $_POST["quotation_type"]);
 
 
