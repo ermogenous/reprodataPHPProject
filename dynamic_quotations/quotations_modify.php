@@ -661,7 +661,6 @@ $formB->setLabelClasses('col-sm-4');
                                     'invalidText' => show_quotation_text("Συμπληρώστε Διεύθυνση.", "Must Enter Address", 'Return')
                                 ]);
                             ?>
-                            <div class="invalid-feedback" id="insureds_address_invalid_tooltip">afdsf</div>
                         </div>
                     </div>
 
