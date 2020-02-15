@@ -84,8 +84,8 @@ function mc_shipment_details_3()
                 <option value="Personal Effects professionally packed" <?php if ($qitem_data['oqqit_rate_4'] == 'Personal Effects professionally packed') echo 'selected'; ?>>
                     Personal Effects professionally packed
                 </option>
-                <option value="Personal Effects owner packed" <?php if ($qitem_data['oqqit_rate_4'] == 'Personal Effects owner packed') echo 'selected'; ?>>
-                    Personal Effects owner packed
+                <option value="CPMB - Cyprus Potato Marketing Board" <?php if ($qitem_data['oqqit_rate_4'] == 'CPMB - Cyprus Potato Marketing Board') echo 'selected'; ?>>
+                    CPMB - Cyprus Potato Marketing Board
                 </option>
                 <option value="Other" <?php if ($qitem_data['oqqit_rate_4'] == 'Other') echo 'selected'; ?>>
                     Other [Requires Approval]
@@ -726,7 +726,7 @@ function mc_cargo_details_4()
                 else if (commodity == 'Personal Effects professionally packed'){
                     rate = '<?php echo $underwriter["oqun_excess_pro_packed_rate"];?>';
                 }
-                else if (commodity == 'Personal Effects owner packed'){
+                else if (commodity == 'CPMB - Cyprus Potato Marketing Board'){
                     rate = '<?php echo $underwriter["oqun_excess_owner_packed_rate"];?>';
                 }
                 else if (commodity == 'Other'){

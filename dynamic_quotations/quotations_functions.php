@@ -296,7 +296,7 @@ function quotation_price_calculation($quotation_id)
             //echo "<b>".$item_id."-".$section_id."</b> (".$qitem_data["oqit_insured_amount_".$section_id].") A-><b>".$result_amount_values[$item_id][$section_id]['amount']."</b> Res=>&#8364;<b>".$item_premium."</b><br>";
             if ($result_amount != 'ALL') {
                 $premium += $item_premium;
-                if ($item_premium > 0) {
+                if ($item_premium != 0 && $item_premium != '') {
                     $detailed_result .= "\n<b>" . $item_id . "-" . $section_id . "</b> A-><b>" . $result_amount_values[$item_id][$section_id]['amount'] . "*(" . $result_amount_values[$item_id][$section_id]['rate'] . ")</b>=>&#8364;<b>" . $item_premium . "</b> (" . $result_amount_values[$item_id][$section_id]['item_amount'] . ")<br>";
                 }
             }

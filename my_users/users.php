@@ -91,5 +91,12 @@ $table->generate_data();
     }
 </script>
 <?php
+
+echo $db->encrypt('60');
+
+echo "<br><br>";
+
+echo $db->decrypt('SVpuNTl5TzhuejlWU3h2VHhQYlkvZz09OjpqrZ48CLfo_jL16ziyLobv');
+
 $db->show_footer();
 ?>

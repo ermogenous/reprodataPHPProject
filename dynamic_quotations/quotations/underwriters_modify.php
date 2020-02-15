@@ -315,7 +315,7 @@ $formValidator = new customFormValidator();
                             $defExcTempMeat = $data["oqun_excess_temp_meat"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_temp_meat"];
                             $defExcSpecialCover = $data["oqun_excess_special_cover"] == '' ? 'Deductible €250 or 1% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_special_cover"];
                             $defExcProPacked = $data["oqun_excess_pro_packed"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_pro_packed"];
-                            $defExcOwnerPacked = $data["oqun_excess_owner_packed"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_owner_packed"];
+                            $defExcOwnerPacked = $data["oqun_excess_owner_packed"] == '' ? 'Nil' : $data["oqun_excess_owner_packed"];//POTATO BOARD
                             $defExcOther = $data["oqun_excess_general_cargo"] == '' ? '' : $data["oqun_excess_general_cargo"];
 
                             ?>
@@ -568,9 +568,7 @@ $formValidator = new customFormValidator();
                             </div>
 
                             <div class="form-group row">
-                                <label for="fld_excess_owner_packed" class="col-sm-5 col-form-label">Excess Personal
-                                    Effects
-                                    owner packed</label>
+                                <label for="fld_excess_owner_packed" class="col-sm-5 col-form-label">Excess - CPMB - Cyprus Potato Marketing Board</label>
                                 <div class="col-sm-5">
                                     <input name="fld_excess_owner_packed" type="text" id="fld_excess_owner_packed"
                                            class="form-control" maxlength="100"

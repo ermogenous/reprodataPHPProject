@@ -35,7 +35,7 @@ if ($_POST['action'] == 'search') {
 
     if ($_POST['effectiveFrom'] != '') {
         $where .= "AND oqq_effective_date BETWEEN 
-        '" . $db->convertDateToUS($_POST['effectiveFrom']) . "' AND '" . $db->convertDateToUS($_POST['effectiveTo']) . "' ";
+        '" . $db->convertDateToUS($_POST['effectiveFrom']) . " 00:00:00' AND '" . $db->convertDateToUS($_POST['effectiveTo']) . " 23:59:59' ";
     }
 
 

@@ -8,6 +8,149 @@
 
 function insured_amount_custom_rates($array, $values, $quotation_id)
 {
+    $package = $values[10][3]['rate'];
+    $buildingValue = $values[11][14]['rate'];
+    $contentsInHome = $values[12][1]['rate'];
+    $extentionFullTheft = $values[12][12]['rate'];
+    $accidentsDomesticStuff = $values[13][1]['rate'];
+    $personalPossesions = $values[12][2]['rate'];
+    $valuables = $values[12][3]['rate'];
+    $deepFreezer = $values[12][13]['rate'];
+    $pedalCycles = $values[13][4]['rate'];
+    $pedalCyclesValueUnder200 = $values[13][5]['rate'];
+    $cycle1 = explode("##",$values[13][6]['rate']);
+    $cycle2 = explode("##",$values[13][7]['rate']);
+    $cycle3 = explode("##",$values[13][8]['rate']);
+    $pedalCyclesValueOver200 = $cycle1[1] + $cycle2[1] + $cycle3[1];
+    $moneyBankCards = $values[12][14]['rate'];
+    $intruderAlarm = $values[11][9]['rate'];
+    $fireAlarm = $values[11][10]['rate'];
+    $boltedSafe = $values[11][11]['rate'];
+    $ccvt = $values[11][12]['rate'];
+    $securityLock = $values[11][13]['rate'];
+    $propertyYearBuilt = $values[10][6]['rate'];
+    $remoteArea = $values[11][7]['rate'];
+
+    echo $package." - ".$buildingValue." - ".$contentsInHome." - ".$extentionFullTheft;
+    echo "<br>";
+    echo $accidentsDomesticStuff." - ".$personalPossesions." - ".$valuables;
+    echo "<br>";
+    echo $deepFreezer." - ".$pedalCycles." - ".$pedalCyclesValueUnder200." - Cycles:".$pedalCyclesValueOver200;
+    echo "<br>";
+    echo $moneyBankCards." - ".$intruderAlarm." - ".$fireAlarm;
+    echo "<br>";
+    echo $boltedSafe." - ".$ccvt." - ".$securityLock;
+    echo "<br>";
+    echo $propertyYearBuilt." - ".$remoteArea;
+    echo "<br>";
+//exit();
+    //calculate premiums
+    //section 1 building
+    if ($package == 'Basic'){
+        if ($buildingValue <= 1000000){
+            $buildingRate = 0.0011;
+        }
+        else if ($buildingValue > 1000000 && $buildingValue <= 2000000){
+            $buildingRate = 0.0011;
+        }
+        else if ($buildingValue > 2000000){
+            $buildingRate = 0.00105;
+        }
+    }
+    else if ($package == 'Classic'){
+        if ($buildingValue <= 1000000){
+            $buildingRate = 0.00135;
+        }
+        else if ($buildingValue > 1000000 && $buildingValue <= 2000000){
+            $buildingRate = 0.00130;
+        }
+        else if ($buildingValue > 2000000){
+            $buildingRate = 0.00125;
+        }
+    }
+    else if ($package == 'Luxury'){
+        if ($buildingValue <= 1000000){
+            $buildingRate = 0.00175;
+        }
+        else if ($buildingValue > 1000000 && $buildingValue <= 2000000){
+            $buildingRate = 0.00170;
+        }
+        else if ($buildingValue > 2000000){
+            $buildingRate = 0.00170;
+        }
+    }
+
+    $array[11][14] = $buildingValue * $buildingRate;
+    $premium['building'] = $array[11][14];
+
+    //section 2 Contents
+    if ($package == 'Basic'){
+        $contentsRate = 0.0015;
+        $fullTheftRate = 0;
+        $domesticStuffAmount = 0;
+        $deepFreezerAmount = 0;
+        $pedalCyclesRate = 0;
+        $moneyAmount = 0;
+    }
+    else if ($package == 'Classic'){
+        $contentsRate = 0.0019;
+        $fullTheftRate = 0.0005;
+        $domesticStuffAmount = 30;
+        $deepFreezerAmount = 10;
+        $pedalCyclesRate = 0.015;
+        $moneyAmount = 15;
+    }
+    else if ($package == 'Luxury'){
+        $contentsRate = 0.00215;
+        $fullTheftRate = 0.0005;
+        $domesticStuffAmount = 30;
+        $deepFreezerAmount = 10;
+        $pedalCyclesRate = 0.015;
+        $moneyAmount = 15;
+    }
+    $array[12][1] = $contentsInHome * $contentsRate;
+    $premium['contents'] = $array[12][1];
+
+    $array[12][12] = $contentsInHome * $fullTheftRate;
+    $premium['fullTheft'] = $array[12][12];
+
+    //section 3 domestic stuff
+    if ($accidentsDomesticStuff == 'Yes'){
+        $array[13][1] = $domesticStuffAmount;
+    }
+    //section 5
+    if ($personalPossesions > 0){
+        $array[12][2] = $personalPossesions * $contentsRate;
+    }
+    if ($valuables > 0){
+        $array[12][3] = $valuables * $contentsRate;
+    }
+
+    //section 6
+    if ($deepFreezer == 'Yes'){
+        $array[12][13] = $deepFreezerAmount;
+    }
+
+    //Section 7 pedal cycles
+    if ($pedalCycles == 'Yes'){
+        $array[13][4] = ($pedalCyclesValueUnder200 + $pedalCyclesValueOver200) * $pedalCyclesRate;
+    }
+
+    //Section 8 Money
+    if ($moneyBankCards == 'Yes'){
+        $array[12][14] = $moneyAmount;
+    }
+
+    //Discounts
+    if ($intruderAlarm == 'Yes'){
+        $array[11][9] = ($buildingValue * 0.00005) * -1;
+        echo "Alarm: ";
+        echo $array[11][9];
+        //exit();
+    }
+
+    //exit();
+
     return $array;
 }
 
@@ -1621,7 +1764,7 @@ function hc_household_item5_extra_covers()
             ->setFieldDescription(show_quotation_text('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ποδήλατα στα οποία δεν γίνεται ειδική αναφορά, η αξία έκαστου<br>&nbsp;&nbsp;&nbsp;&nbsp; εκ των οποίων δεν υπερβαίνει τα €200 '
                 , '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Unspecified Pedal Cycles not exceeding €200 each', 'return'))
             ->setFieldType('input')
-            ->setInputValue($qitem_data['oqqit_rate_3'])
+            ->setInputValue($qitem_data['oqqit_rate_5'])
             ->buildLabel();
         ?>
         <div class="col-sm-2">
