@@ -79,6 +79,8 @@ class FormBuilder
         $this->labelTitle = '';
         $this->fieldOnChange = '';
         $this->fieldOnKeyUp = '';
+        $this->fieldDescription = '';
+        $this->radioLabelDescription = '';
         return $this;
     }
 
@@ -236,7 +238,7 @@ class FormBuilder
         echo '
         <div class="custom-control custom-radio'.$inline.'">
             <input type="radio" id="'.$this->fieldName."-".$this->radioTotalOutputs.'" name="'.$this->fieldName.'" class="custom-control-input" 
-            value="'.$this->radioValue.'" onchange="'.$this->fieldOnChange.'" onkeyup="'.$this->fieldOnKeyUp.'" '.$checked.'>
+            value="'.$this->radioValue.'" onchange="'.$this->fieldOnChange.'" onkeyup="'.$this->fieldOnKeyUp.'" '.$checked.'><div class="invalid-feedback" id="'.$this->fieldName.'"-invalid-text"></div>
             <label class="custom-control-label" for="'.$this->fieldName."-".$this->radioTotalOutputs.'">'.$this->radioLabelDescription.'</label>
         </div>';
         $this->radioTotalOutputs++;
@@ -253,6 +255,7 @@ class FormBuilder
             . $this->fieldDescription
             . $questionMark .
             '</label>';
+        return $this;
     }
 
     public function buildAutoCompleteJSCode($parameters)

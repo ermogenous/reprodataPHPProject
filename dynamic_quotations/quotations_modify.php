@@ -339,7 +339,18 @@ $formB->setLabelClasses('col-sm-4');
 
                     <div class="form-group row">
                         <label for="insureds_name" class="col-sm-4 col-form-label">
-                            <?php show_quotation_text("Ονομα Συμβαλλόμενου", "Policyholder Name"); ?>
+                            <?php
+                            $policyHolderText = $quotation_type_data['oqqt_policyholder_replace_text'];
+                            if ($policyHolderText == '') {
+                                $policyHolderGreek = 'Ονομα Συμβαλλόμενου';
+                                $policyHolderEnglish = 'Policyholder Name';
+                            } else {
+                                $policyHolderText = explode('||', $policyHolderText);
+                                $policyHolderGreek = $policyHolderText[1];
+                                $policyHolderEnglish = $policyHolderText[0];
+                            }
+                            show_quotation_text($policyHolderGreek, $policyHolderEnglish);
+                            ?>
                         </label>
                         <div class="col-sm-<?php if ($quotation_type_data['oqqt_enable_search_autofill'] == 1) echo "4"; else echo "8"; ?>">
                             <input name="insureds_name" type="text" id="insureds_name"

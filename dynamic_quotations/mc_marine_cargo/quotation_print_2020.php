@@ -285,6 +285,7 @@ body{
                             <b>Goods Insured - (as per bill of lading)</b><br><br>
                             ' . nl2br($sect2['oqqit_rate_1']) . '<br>
                             '.$oceanVessel.'
+                            '.($sect2['oqqit_rate_7'] != ''?('<br><b>Your Ref:</b>'.$sect2['oqqit_rate_7']):'').'
                         </td>
                     </tr>
                 </table>

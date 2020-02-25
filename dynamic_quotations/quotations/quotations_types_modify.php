@@ -936,13 +936,27 @@ FormBuilder::buildPageLoader();
                             </div>
 
                             <div class="row">
-                                <label for="fld_identity_replace_text" class="col-sm-3 col-form-label">
+                                <label for="fld_identity_replace_text" class="col-sm-4 col-form-label">
                                     Replace Identity Text with:
                                 </label>
-                                <div class="col-sm-7">
+                                <div class="col-sm-6">
                                     <input type="text" class="form-control"
                                            id="fld_identity_replace_text" name="fld_identity_replace_text"
                                            value="<?php echo $data['oqqt_identity_replace_text']; ?>">
+                                </div>
+                                <div class="col-sm-2">
+                                    ENG||GRE
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label for="fld_policyholder_replace_text" class="col-sm-4 col-form-label">
+                                    Replace PolicyHolder Name Text with:
+                                </label>
+                                <div class="col-sm-6">
+                                    <input type="text" class="form-control"
+                                           id="fld_policyholder_replace_text" name="fld_policyholder_replace_text"
+                                           value="<?php echo $data['oqqt_policyholder_replace_text']; ?>">
                                 </div>
                                 <div class="col-sm-2">
                                     ENG||GRE
