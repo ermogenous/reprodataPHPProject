@@ -365,10 +365,6 @@ function hc_household_item2_other()
                 ->setRadioValue('Tenant')
                 ->buildInput();
 
-            $formB->setRadioLabelDescription(show_quotation_text('Άλλο', 'Other', 'return'))
-                ->setRadioValue('Other')
-                ->buildInput();
-
             $formValidator->addField(
                 [
                     'fieldName' => $formB->fieldName,
@@ -1247,7 +1243,7 @@ function hc_household_item3_questions()
                 [
                     'fieldName' => $formB->fieldName,
                     'fieldDataType' => 'number',
-                    'required' => true,
+                    'required' => false,
                     'invalidTextAutoGenerate' => true
                 ]);
             ?>
@@ -1277,19 +1273,9 @@ function hc_household_item4_contents()
     $formB->setLabelClasses('col-sm-4');
 
     ?>
-    <script>
-        function showHideContentsInfo() {
-            if ($('#contentsInfoStatus').val() == 'hidden') {
-                $('#contentsInfoStatus').val('show');
-                $('#contentsInfoDiv').show();
-            } else {
-                $('#contentsInfoStatus').val('hidden')
-                $('#contentsInfoDiv').hide();
-            }
-        }
-    </script>
+
     <input type="hidden" id="contentsInfoStatus" name="contentsInfoStatus" value="hidden">
-    <div class="row" id="contentsInfoDiv" style="display: none;">
+    <div class="row" id="contentsInfoDiv">
         <div class="col-12"><?php
             show_quotation_text(
                 '
@@ -1621,7 +1607,7 @@ function hc_household_item5_extra_covers()
         <?php
 
         $employer_SIN = explode('##', $qitem_data['oqqit_rate_2']);
-
+        $formB->setLabelClasses('col-sm-5');
         $formB->setFieldName('emplyerSIN_1')
             ->setFieldDescription(show_quotation_text('&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Αριθμό Μητρώου Εργοδότη', '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Employer’s Social Insurance Number', 'return'))
             ->setFieldType('input')
@@ -1690,6 +1676,7 @@ function hc_household_item5_extra_covers()
                     'required' => false,
                     'invalidTextAutoGenerate' => true
                 ]);
+            $formB->setLabelClasses('col-sm-4');
             ?>
         </div>
     </div>

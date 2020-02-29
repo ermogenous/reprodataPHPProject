@@ -604,7 +604,7 @@ function cmr_transport_item_2_other_details()
                 <?php
                 $formB->setFieldName('claims_' . $i . '_3')
                     ->setFieldType('input')
-                    ->setFieldInputType('number')
+                    ->setFieldInputType('text')
                     ->setInputValue($claims[$i][2])
                     ->buildInput();
                 $formValidator->addField(
