@@ -181,6 +181,7 @@ $db->show_header();
                         <div class="col-3"><?php echo $db->convert_date_format($createdSplit[0], 'yyyy-mm-dd', 'dd/mm/yyyy') . " " . $createdSplit[1]; ?></div>
                         <div class="col-1">Status</div>
                         <div class="col-2"><?php echo $row['oqqp_status']; ?></div>
+                        <div class="col-4"><?php echo $row['oqqp_comments']; ?></div>
                     </div>
 
                     <?php

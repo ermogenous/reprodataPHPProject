@@ -256,6 +256,11 @@ class dynamicQuotation
                 $dataArray['email_subject'] = str_replace('[PDFLINK]', $link, $dataArray['email_subject']);
                 $dataArray['email_body'] = str_replace('[PDFLINK]', $link, $dataArray['email_body']);
 
+                //[IDENTIFIER]
+                $dataArray['email_subject'] = str_replace('[IDENTIFIER]', $this->quotationData['oqq_unique_identifier'], $dataArray['email_subject']);
+                $dataArray['email_body'] = str_replace('[IDENTIFIER]', $this->quotationData['oqq_unique_identifier'], $dataArray['email_body']);
+                $attachment_file_name = str_replace('[IDENTIFIER]', $this->quotationData['oqq_unique_identifier'], $attachment_file_name);
+
                 //file attachment
                 if ($this->quotationData['oqqt_approval_attach_print_filename'] != ''){
                     //get the pdf data
@@ -428,7 +433,7 @@ class dynamicQuotation
         }
     }
 
-    public function sendEmail()
+    public function sendEmail($replaceSubject='',$replaceBody='',$subjectPrefix='',$subjectSuffix='',$bodyPrefix='',$bodySuffix='',$replaceAttachName='')
     {
         global $db,$main;
 
@@ -444,10 +449,22 @@ class dynamicQuotation
             $autoEmail = new createNewAutoEmail();
             $dataArray['email_to'] = $this->quotationData['oqqt_active_send_mail'];
 
-            $dataArray['email_subject'] = $this->quotationData['oqqt_active_send_mail_subject'];
+            if ($replaceSubject == ''){
+                $subject = $subjectPrefix.$this->quotationData['oqqt_active_send_mail_subject'].$subjectSuffix;
+            }
+            else {
+                $subject = $replaceSubject;
+            }
+            $dataArray['email_subject'] = $subject;
             $dataArray['email_cc'] = $this->quotationData['oqqt_active_send_mail_cc'];
             $dataArray['email_bcc'] = $this->quotationData['oqqt_active_send_mail_bcc'];
-            $dataArray['email_body'] = $this->quotationData['oqqt_active_send_mail_body'];
+            if ($replaceBody == ''){
+                $body = $bodyPrefix.$this->quotationData['oqqt_active_send_mail_body'].$bodySuffix;
+            }
+            else {
+                $body = $replaceBody;
+            }
+            $dataArray['email_body'] = $body;
             $dataArray['type'] = $this->getQuotationType();
             $dataArray['primary_serial'] = $this->quotationID;
             $dataArray['primary_label'] = $this->getQuotationType() . " SERIAL";
@@ -456,7 +473,9 @@ class dynamicQuotation
             $dataArray['user_ID'] = $this->quotationData['oqq_users_ID'];
             //file attachment filename
             $attachment_file_name = $this->quotationData['oqqt_attach_print_filename'];
-
+            if ($replaceAttachName != ''){
+                $attachment_file_name = $replaceAttachName;
+            }
 
             //fix the subject/body with the ReplaceCodes
             //[QTID]
@@ -484,6 +503,11 @@ class dynamicQuotation
             $link = $main["site_url"]."/dynamic_quotations/quotation_print.php?quotation=".$this->quotationData['oqq_quotations_ID']."&pdf=1";
             $dataArray['email_subject'] = str_replace('[PDFLINK]', $link, $dataArray['email_subject']);
             $dataArray['email_body'] = str_replace('[PDFLINK]', $link, $dataArray['email_body']);
+
+            //[IDENTIFIER]
+            $dataArray['email_subject'] = str_replace('[IDENTIFIER]', $this->quotationData['oqq_unique_identifier'], $dataArray['email_subject']);
+            $dataArray['email_body'] = str_replace('[IDENTIFIER]', $this->quotationData['oqq_unique_identifier'], $dataArray['email_body']);
+            $attachment_file_name = str_replace('[IDENTIFIER]', $this->quotationData['oqq_unique_identifier'], $attachment_file_name);
 
             //file attachment
             if ($this->quotationData['oqqt_attach_print_filename'] != ''){
