@@ -45,7 +45,8 @@ oqq_extra_field_1 = '".addslashes($_POST['extra_field_1'])."',
 oqq_extra_field_2 = '".addslashes($_POST['extra_field_2'])."',
 oqq_extra_field_3 = '".addslashes($_POST['extra_field_3'])."',
 oqq_extra_field_4 = '".addslashes($_POST['extra_field_4'])."',
-oqq_extra_field_5 = '".addslashes($_POST['extra_field_5'])."'
+oqq_extra_field_5 = '".addslashes($_POST['extra_field_5'])."',
+oqq_unique_identifier = '".$db->encrypt(date('G:i:s'))."'
 
 ";
     $sql .= $sql2;

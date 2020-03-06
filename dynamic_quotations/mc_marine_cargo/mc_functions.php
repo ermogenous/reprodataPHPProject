@@ -85,7 +85,7 @@ function mc_shipment_details_3()
                     Personal Effects professionally packed
                 </option>
                 <option value="CPMB - Cyprus Potato Marketing Board" <?php if ($qitem_data['oqqit_rate_4'] == 'CPMB - Cyprus Potato Marketing Board') echo 'selected'; ?>>
-                    CPMB - Cyprus Potato Marketing Board
+                    Cyprus Potatoes
                 </option>
                 <option value="Other" <?php if ($qitem_data['oqqit_rate_4'] == 'Other') echo 'selected'; ?>>
                     Other [Requires Approval]

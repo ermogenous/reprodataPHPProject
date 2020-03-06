@@ -19,7 +19,7 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_allow_quotations'] .= '#2-' . $db->get_check_value($_POST['allow_mc']) . "#";
     $_POST['fld_allow_quotations'] .= '#3-' . $db->get_check_value($_POST['allow_tr']) . "#";
     $_POST['fld_allow_quotations'] .= '#4-' . $db->get_check_value($_POST['allow_hc']) . "#";
-    $_POST['fld_allow_quotations'] .= '#5-' . $db->get_check_value($_POST['allow_hc']) . "#";
+    $_POST['fld_allow_quotations'] .= '#5-' . $db->get_check_value($_POST['allow_crm']) . "#";
 
 
     $db->db_tool_insert_row('oqt_quotations_underwriters', $_POST, 'fld_', 0, 'oqun_');
@@ -37,7 +37,7 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_allow_quotations'] .= '#2-' . $db->get_check_value($_POST['allow_mc']) . "#";
     $_POST['fld_allow_quotations'] .= '#3-' . $db->get_check_value($_POST['allow_tr']) . "#";
     $_POST['fld_allow_quotations'] .= '#4-' . $db->get_check_value($_POST['allow_hc']) . "#";
-    $_POST['fld_allow_quotations'] .= '#5-' . $db->get_check_value($_POST['allow_hc']) . "#";
+    $_POST['fld_allow_quotations'] .= '#5-' . $db->get_check_value($_POST['allow_crm']) . "#";
 
     $_POST['fld_tr_package_selection'] = '';
     if ($_POST['packageBasic'] == 1) {
@@ -231,7 +231,7 @@ $formValidator = new customFormValidator();
                         <li class="nav-item">
                             <a class="nav-link" id="pills-crm-tab" data-toggle="pill" href="#pills-crm"
                                role="tab"
-                               aria-controls="pills-crm" aria-selected="true">CRM</a>
+                               aria-controls="pills-crm" aria-selected="true">CMR</a>
                         </li>
 
                     </ul>

@@ -519,6 +519,7 @@ FormBuilder::buildPageLoader();
                                     <br>[QTLINK] Link for the quotation
                                     <br>[USERSNAME] Name of the creator
                                     <br>[PDFLINK] Link for PDF
+                                    <br>[IDENTIFIER] Link for PDF
                                 </label>
                                 <div class="col-sm-8">
                             <textarea name="fld_active_send_mail" id="fld_active_send_mail"
@@ -559,7 +560,7 @@ FormBuilder::buildPageLoader();
                                             Body: HTML
                                         </label>
                                         <div class="col-9">
-                                    <textarea name="fld_active_send_mail_body" id="fld_active_send_mail_body"
+                                    <textarea name="fld_active_send_mail_body" id="fld_active_send_mail_body" rows="8"
                                               class="form-control"><?php echo $data["oqqt_active_send_mail_body"]; ?></textarea>
                                         </div>
                                     </div>
@@ -606,6 +607,7 @@ FormBuilder::buildPageLoader();
                                     <br>[QTLINK] Link for the quotation
                                     <br>[USERSNAME] Name of the creator
                                     <br>[PDFLINK] Link for PDF
+                                    <br>[IDENTIFIER] Link for PDF
                                 </label>
                                 <div class="col-sm-8">
                             <textarea name="fld_approval_send_mail" id="fld_approval_send_mail"
@@ -646,7 +648,7 @@ FormBuilder::buildPageLoader();
                                             Body: HTML
                                         </label>
                                         <div class="col-9">
-                                    <textarea name="fld_approval_send_mail_body" id="fld_approval_send_mail_body"
+                                    <textarea name="fld_approval_send_mail_body" id="fld_approval_send_mail_body" rows="8"
                                               class="form-control"><?php echo $data["oqqt_approval_send_mail_body"]; ?></textarea>
                                         </div>
                                     </div>

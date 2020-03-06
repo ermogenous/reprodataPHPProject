@@ -337,6 +337,17 @@ class createNewAutoEmail
         }
     }
 
+    /**
+     * @param $emailAndName many emails format: email@email.com||Name break email2@email.com||name
+     * @return $this
+     */
+    public function setEmailTo($emailAndName){
+
+
+
+        return $this;
+    }
+
 }
 
 ?>

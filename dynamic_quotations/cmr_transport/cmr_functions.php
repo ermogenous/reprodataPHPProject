@@ -16,16 +16,54 @@ function modify_post_values($post)
 {
     global $db;
 
-    $post['14_oqqit_rate_13'] = $post['vehicle_1_1'] . "##" . $post['vehicle_1_2'] . "##" . $post['vehicle_1_3'] . "##" . $post['vehicle_1_4'] . "##" . $post['vehicle_1_5'] . "@@";
-    $post['14_oqqit_rate_13'] .= $post['vehicle_2_1'] . "##" . $post['vehicle_2_2'] . "##" . $post['vehicle_2_3'] . "##" . $post['vehicle_2_4'] . "##" . $post['vehicle_2_5'];
+    $post['15_oqqit_rate_8'] = $post['vehicle_1_1'] . "##" . $post['vehicle_1_2'] . "##" . $post['vehicle_1_3'] . "##" . $post['vehicle_1_4'] . "##" . $post['vehicle_1_5'] . "@@";
+    $post['15_oqqit_rate_8'] .= $post['vehicle_2_1'] . "##" . $post['vehicle_2_2'] . "##" . $post['vehicle_2_3'] . "##" . $post['vehicle_2_4'] . "##" . $post['vehicle_2_5'] . "@@";
+    $post['15_oqqit_rate_8'] .= $post['vehicle_3_1'] . "##" . $post['vehicle_3_2'] . "##" . $post['vehicle_3_3'] . "##" . $post['vehicle_3_4'] . "##" . $post['vehicle_3_5'];
 
-    $post['14_oqqit_rate_14'] = $post['vehicle_3_1'] . "##" . $post['vehicle_3_2'] . "##" . $post['vehicle_3_3'] . "##" . $post['vehicle_3_4'] . "##" . $post['vehicle_3_5'] . "@@";
-    $post['14_oqqit_rate_14'] .= $post['vehicle_4_1'] . "##" . $post['vehicle_4_2'] . "##" . $post['vehicle_4_3'] . "##" . $post['vehicle_4_4'] . "##" . $post['vehicle_4_5'];
+    if ($post['vehicleShow_4'] == 1)
+        $post['15_oqqit_rate_9'] = $post['vehicle_4_1'] . "##" . $post['vehicle_4_2'] . "##" . $post['vehicle_4_3'] . "##" . $post['vehicle_4_4'] . "##" . $post['vehicle_4_5'] . "@@";
+    if ($post['vehicleShow_5'] == 1)
+        $post['15_oqqit_rate_9'] .= $post['vehicle_5_1'] . "##" . $post['vehicle_5_2'] . "##" . $post['vehicle_5_3'] . "##" . $post['vehicle_5_4'] . "##" . $post['vehicle_5_5'] . "@@";
+    if ($post['vehicleShow_6'] == 1)
+        $post['15_oqqit_rate_9'] .= $post['vehicle_6_1'] . "##" . $post['vehicle_6_2'] . "##" . $post['vehicle_6_3'] . "##" . $post['vehicle_6_4'] . "##" . $post['vehicle_6_5'];
 
-    $post['14_oqqit_rate_15'] = $post['geographical_1'] . "##" . $post['geographical_2'] . "##" . $post['geographical_3'] . "##" . $post['geographical_4'] . "@@";
-    $post['14_oqqit_rate_15'] .= $db->get_check_value($post['operations_1']) . "##" . $db->get_check_value($post['operations_2']) . "##" . $db->get_check_value($post['operations_3']) . "##" . $db->get_check_value($post['operations_4']) . "@@";
-    $post['14_oqqit_rate_15'] .= $post['goods_1'] . "##" . $post['goods_2'] . "##" . $post['goods_3'] . "##" . $post['goods_4'] . "##" . $post['goods_4'] . "##";
-    $post['14_oqqit_rate_15'] .= $post['goods_5'] . "##" . $post['goods_6'] . "##" . $post['goods_7'] . "##" . $post['goods_8'] . "##" . $post['goods_9'] . "@@";
+    if ($post['vehicleShow_7'] == 1)
+        $post['15_oqqit_rate_10'] = $post['vehicle_7_1'] . "##" . $post['vehicle_7_2'] . "##" . $post['vehicle_7_3'] . "##" . $post['vehicle_7_4'] . "##" . $post['vehicle_7_5'] . "@@";
+    if ($post['vehicleShow_8'] == 1)
+        $post['15_oqqit_rate_10'] .= $post['vehicle_8_1'] . "##" . $post['vehicle_8_2'] . "##" . $post['vehicle_8_3'] . "##" . $post['vehicle_8_4'] . "##" . $post['vehicle_8_5'] . "@@";
+    if ($post['vehicleShow_9'] == 1)
+        $post['15_oqqit_rate_10'] .= $post['vehicle_9_1'] . "##" . $post['vehicle_9_2'] . "##" . $post['vehicle_9_3'] . "##" . $post['vehicle_9_4'] . "##" . $post['vehicle_9_5'];
+
+    if ($post['vehicleShow_10'] == 1)
+        $post['15_oqqit_rate_11'] = $post['vehicle_10_1'] . "##" . $post['vehicle_10_2'] . "##" . $post['vehicle_10_3'] . "##" . $post['vehicle_10_4'] . "##" . $post['vehicle_10_5'] . "@@";
+    if ($post['vehicleShow_11'] == 1)
+        $post['15_oqqit_rate_11'] .= $post['vehicle_11_1'] . "##" . $post['vehicle_11_2'] . "##" . $post['vehicle_11_3'] . "##" . $post['vehicle_11_4'] . "##" . $post['vehicle_11_5'] . "@@";
+    if ($post['vehicleShow_12'] == 1)
+        $post['15_oqqit_rate_11'] .= $post['vehicle_12_1'] . "##" . $post['vehicle_12_2'] . "##" . $post['vehicle_12_3'] . "##" . $post['vehicle_12_4'] . "##" . $post['vehicle_12_5'];
+
+    if ($post['vehicleShow_13'] == 1)
+        $post['15_oqqit_rate_12'] = $post['vehicle_13_1'] . "##" . $post['vehicle_13_2'] . "##" . $post['vehicle_13_3'] . "##" . $post['vehicle_13_4'] . "##" . $post['vehicle_13_5'] . "@@";
+    if ($post['vehicleShow_14'] == 1)
+        $post['15_oqqit_rate_12'] .= $post['vehicle_14_1'] . "##" . $post['vehicle_14_2'] . "##" . $post['vehicle_14_3'] . "##" . $post['vehicle_14_4'] . "##" . $post['vehicle_14_5'] . "@@";
+    if ($post['vehicleShow_15'] == 1)
+        $post['15_oqqit_rate_12'] .= $post['vehicle_15_1'] . "##" . $post['vehicle_15_2'] . "##" . $post['vehicle_15_3'] . "##" . $post['vehicle_15_4'] . "##" . $post['vehicle_15_5'];
+
+    if ($post['vehicleShow_16'] == 1)
+        $post['15_oqqit_rate_13'] = $post['vehicle_16_1'] . "##" . $post['vehicle_16_2'] . "##" . $post['vehicle_16_3'] . "##" . $post['vehicle_16_4'] . "##" . $post['vehicle_16_5'] . "@@";
+    if ($post['vehicleShow_17'] == 1)
+        $post['15_oqqit_rate_13'] .= $post['vehicle_17_1'] . "##" . $post['vehicle_17_2'] . "##" . $post['vehicle_17_3'] . "##" . $post['vehicle_17_4'] . "##" . $post['vehicle_17_5'] . "@@";
+    if ($post['vehicleShow_18'] == 1)
+        $post['15_oqqit_rate_13'] .= $post['vehicle_18_1'] . "##" . $post['vehicle_18_2'] . "##" . $post['vehicle_18_3'] . "##" . $post['vehicle_18_4'] . "##" . $post['vehicle_18_5'];
+
+    if ($post['vehicleShow_19'] == 1)
+        $post['15_oqqit_rate_14'] = $post['vehicle_19_1'] . "##" . $post['vehicle_19_2'] . "##" . $post['vehicle_19_3'] . "##" . $post['vehicle_19_4'] . "##" . $post['vehicle_19_5'] . "@@";
+    if ($post['vehicleShow_20'] == 1)
+        $post['15_oqqit_rate_14'] .= $post['vehicle_20_1'] . "##" . $post['vehicle_20_2'] . "##" . $post['vehicle_20_3'] . "##" . $post['vehicle_20_4'] . "##" . $post['vehicle_20_5'];
+
+    $post['15_oqqit_rate_7'] = $post['geographical_1'] . "##" . $post['geographical_2'] . "##" . $post['geographical_3'] . "##" . $post['geographical_4'] . "@@";
+    $post['15_oqqit_rate_7'] .= $db->get_check_value($post['operations_1']) . "##" . $db->get_check_value($post['operations_2']) . "##" . $db->get_check_value($post['operations_3']) . "##" . $db->get_check_value($post['operations_4']) . "@@";
+    $post['15_oqqit_rate_7'] .= $post['goods_1'] . "##" . $post['goods_2'] . "##" . $post['goods_3'] . "##" . $post['goods_4'] . "##" . $post['goods_5'] . "##";
+    $post['15_oqqit_rate_7'] .= $post['goods_6'] . "##" . $post['goods_7'] . "##" . $post['goods_8'] . "##" . $post['goods_9'] . "@@";
 
 
     $post['15_oqqit_rate_1'] = $post['claims_1_1'] . "##" . $post['claims_1_2'] . "##" . $post['claims_1_3'] . "##" . $post['claims_1_4'] . "##" . $post['claims_1_5'] . "@@";
@@ -161,9 +199,23 @@ function cmr_transport_item_1_main_info()
         </div>
     </div>
 
+    <?php
+
+}
+
+function cmr_transport_item_2_other_details()
+{
+    global $db, $items_data, $qitem_data, $formValidator, $underwriter, $quotationUnderwriter, $formB, $quote;
+    $formB->setLabelClasses('col-sm-4');
+
+    ?>
+
     <div class="row">
         <b>
             <?php show_quotation_text('Αριθμός οχημάτων που θα ασφαλιστούνε', 'Number of vehicles to be Insured'); ?>
+            &nbsp;&nbsp;<i class="fas fa-plus" onclick="addRemoveVehicles('add');" style="cursor: pointer;">
+            </i>&nbsp;&nbsp;&nbsp;<i class="fas fa-minus" onclick="addRemoveVehicles('remove')"
+                                     style="cursor: pointer;"></i>
         </b>
     </div>
 
@@ -178,27 +230,80 @@ function cmr_transport_item_1_main_info()
             <?php show_quotation_text('Τρέϊλερ', 'Trailer'); ?>
         </div>
         <div class="col-3 text-center">
-            <?php show_quotation_text('Τύπος Οχήματος (βλ. κάτω)', 'Vehicle Type (see below)'); ?>
+            <?php show_quotation_text('Τύπος Οχήματος<br>(βλ. κάτω)', 'Vehicle Type<br>(see below)'); ?>
         </div>
     </div>
 
+    <script>
+        let totalVisibleVehicles = 0;
+
+        function addRemoveVehicles(action) {
+
+            if (action == 'add') {
+                if (totalVisibleVehicles < 20) {
+                    totalVisibleVehicles++;
+                    $('#vehicleRow' + totalVisibleVehicles).show();
+                    $('#vehicleShow_' + totalVisibleVehicles).val('1');
+                    //console.log('add ' + totalVisibleVehicles);
+                }
+            }
+            if (action == 'remove') {
+                if (totalVisibleVehicles > 0) {
+                    $('#vehicleRow' + totalVisibleVehicles).hide();
+                    $('#vehicleShow_' + totalVisibleVehicles).val('0');
+                    //console.log('remove ' + totalVisibleVehicles);
+                    totalVisibleVehicles--;
+                }
+            }
+
+        }
+    </script>
+
     <?php
     //Vehicles Data for 1 and 2 exists in these below
-    $vehiclesAB = explode('@@', $qitem_data['oqqit_rate_13']);
-    $vehiclesCD = explode('@@', $qitem_data['oqqit_rate_14']);
+    $vehicles123 = explode('@@', $qitem_data['oqqit_rate_8']);
+    $vehicles456 = explode('@@', $qitem_data['oqqit_rate_9']);
+    $vehicles789 = explode('@@', $qitem_data['oqqit_rate_10']);
+    $vehicles101112 = explode('@@', $qitem_data['oqqit_rate_11']);
+    $vehicles131415 = explode('@@', $qitem_data['oqqit_rate_12']);
+    $vehicles161718 = explode('@@', $qitem_data['oqqit_rate_13']);
+    $vehicles1920 = explode('@@', $qitem_data['oqqit_rate_14']);
 
     //break down the fields for each vehicle
-    $vehicles[1] = explode('##', $vehiclesAB[0]);
-    $vehicles[2] = explode('##', $vehiclesAB[1]);
+    $vehicles[1] = explode('##', $vehicles123[0]);
+    $vehicles[2] = explode('##', $vehicles123[1]);
+    $vehicles[3] = explode('##', $vehicles123[2]);
 
-    $vehicles[3] = explode('##', $vehiclesCD[0]);
-    $vehicles[4] = explode('##', $vehiclesCD[1]);
+    $vehicles[4] = explode('##', $vehicles456[0]);
+    $vehicles[5] = explode('##', $vehicles456[1]);
+    $vehicles[6] = explode('##', $vehicles456[2]);
+
+    $vehicles[7] = explode('##', $vehicles789[0]);
+    $vehicles[8] = explode('##', $vehicles789[1]);
+    $vehicles[9] = explode('##', $vehicles789[2]);
+
+    $vehicles[10] = explode('##', $vehicles101112[0]);
+    $vehicles[11] = explode('##', $vehicles101112[1]);
+    $vehicles[12] = explode('##', $vehicles101112[2]);
+
+    $vehicles[13] = explode('##', $vehicles131415[0]);
+    $vehicles[14] = explode('##', $vehicles131415[1]);
+    $vehicles[15] = explode('##', $vehicles131415[2]);
+
+    $vehicles[16] = explode('##', $vehicles161718[0]);
+    $vehicles[17] = explode('##', $vehicles161718[1]);
+    $vehicles[18] = explode('##', $vehicles161718[2]);
+
+    $vehicles[19] = explode('##', $vehicles1920[0]);
+    $vehicles[20] = explode('##', $vehicles1920[1]);
 
     $vNum = 0;
     foreach ($vehicles as $vehicle) {
         $vNum++;
         ?>
-        <div class="form-group row">
+        <div class="form-group row" style="display: none;" id="vehicleRow<?php echo $vNum; ?>">
+            <input type="hidden" id="vehicleShow_<?php echo $vNum; ?>" name="vehicleShow_<?php echo $vNum; ?>"
+                   value="0">
             <?php
             for ($i = 1; $i <= 3; $i++) {
                 ?>
@@ -257,7 +362,69 @@ function cmr_transport_item_1_main_info()
                 ?>
             </div>
         </div>
+        <script>
+            if ($('#vehicle_<?php echo $vNum;?>_1').val() != '') {
+                addRemoveVehicles('add');
+            }
+        </script>
         <?php
+        $formValidator->addCustomCode('
+            for (i=1; i<=20; i++){
+            
+                if ($("#vehicleShow_"+i).val() == "1"){
+                    if ($("#vehicle_" + i + "_1").val() == "") {
+                        $("#vehicle_" + i + "_1").removeClass("is-valid");
+                        $("#vehicle_" + i + "_1").addClass("is-invalid");
+                        FormErrorFound = true;
+                    }
+                    else {
+                        $("#vehicle_" + i + "_1").removeClass("is-invalid");
+                        $("#vehicle_" + i + "_1").addClass("is-valid");
+                    }
+                    
+                    if ($("#vehicle_" + i + "_2").val() == "") {
+                        $("#vehicle_" + i + "_2").removeClass("is-valid");
+                        $("#vehicle_" + i + "_2").addClass("is-invalid");
+                        FormErrorFound = true;
+                    }
+                    else {
+                        $("#vehicle_" + i + "_2").removeClass("is-invalid");
+                        $("#vehicle_" + i + "_2").addClass("is-valid");
+                    }
+                    
+                    if ($("#vehicle_" + i + "_3").val() == "") {
+                        $("#vehicle_" + i + "_3").removeClass("is-valid");
+                        $("#vehicle_" + i + "_3").addClass("is-invalid");
+                        FormErrorFound = true;
+                    }
+                    else {
+                        $("#vehicle_" + i + "_3").removeClass("is-invalid");
+                        $("#vehicle_" + i + "_3").addClass("is-valid");
+                    }
+                    
+                    if ($("#vehicle_" + i + "_4").val() == "") {
+                        $("#vehicle_" + i + "_4").removeClass("is-valid");
+                        $("#vehicle_" + i + "_4").addClass("is-invalid");
+                        FormErrorFound = true;
+                    }
+                    else {
+                        $("#vehicle_" + i + "_4").removeClass("is-invalid");
+                        $("#vehicle_" + i + "_4").addClass("is-valid");
+                    }
+                    
+                    if ($("#vehicle_" + i + "_4").val() == "Other Special Type" && $("#vehicle_" + i + "_5").val() == "") {
+                        $("#vehicle_" + i + "_5").removeClass("is-valid");
+                        $("#vehicle_" + i + "_5").addClass("is-invalid");
+                        FormErrorFound = true;
+                    }
+                    else {
+                        $("#vehicle_" + i + "_5").removeClass("is-invalid");
+                        $("#vehicle_" + i + "_5").addClass("is-valid");
+                    }
+                }
+            
+            }
+        ');
     }
     ?>
 
@@ -271,10 +438,14 @@ function cmr_transport_item_1_main_info()
         }
 
         $(document).ready(function () {
-            vehiclesTypeOther(1);
-            vehiclesTypeOther(2);
-            vehiclesTypeOther(3);
-            vehiclesTypeOther(4);
+
+            for (i = 1; i <= 20; i++) {
+                vehiclesTypeOther(i);
+            }
+            <?php if ($_GET['quotation'] == ''){ ?>
+            addRemoveVehicles('add');
+            <?php } ?>
+
         });
     </script>
 
@@ -293,7 +464,7 @@ function cmr_transport_item_1_main_info()
     </div>
 
     <?php
-    $questionsAll = explode('@@', $qitem_data['oqqit_rate_15']);
+    $questionsAll = explode('@@', $qitem_data['oqqit_rate_7']);
     $geographic = explode('##', $questionsAll[0]);
     $geoList = [
         show_quotation_text('Διεθνείς μεταφορές εντός Ευρώπης', 'International Transports within Europe', 'return'),
@@ -514,15 +685,9 @@ function cmr_transport_item_1_main_info()
                     $("#goods_9").removeClass("is-invalid");
                 }
                 ');
-
-}
-
-function cmr_transport_item_2_other_details()
-{
-    global $db, $items_data, $qitem_data, $formValidator, $underwriter, $quotationUnderwriter, $formB, $quote;
-    $formB->setLabelClasses('col-sm-4');
-
     ?>
+
+
     <div class="form-group row">
         <b>
             <?php show_quotation_text('Ιστορικό Απαιτήσεων', 'Claims History'); ?>
@@ -1114,7 +1279,7 @@ function cmr_transport_item_2_other_details()
     </div>
 
     <script>
-        function showHideExcessOptions(){
+        function showHideExcessOptions() {
             let selectedOption = $('input[name="15_oqqit_rate_5"]:checked').val();
             //disable all
             $("#option1excess :input").attr("disabled", true);
@@ -1131,11 +1296,21 @@ function cmr_transport_item_2_other_details()
             $("#option" + selectedOption + "excess :input").attr("disabled", false);
         }
 
-        $(document).ready(function(){
+        $(document).ready(function () {
             showHideExcessOptions();
         });
+
     </script>
 
 
     <?php
+}
+
+//make approval for all cover notes by default
+function customCheckForApproval($data)
+{
+    global $db;
+    $result['error'] = true;
+    $result['errorDescription'] = 'This cover note requires approval';
+    return $result;
 }
