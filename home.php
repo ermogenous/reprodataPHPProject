@@ -7,6 +7,7 @@ $db = new Main(1);
 //check if in the layout folder home.php file exists.
 if (is_file($main["local_url"]."/layout/".$db->admin_default_layout."/home.php")){
     include_once($main["local_url"]."/layout/".$db->admin_default_layout."/home.php");
+    exit();
 }
 
 

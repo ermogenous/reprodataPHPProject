@@ -10,6 +10,11 @@ include("../include/main.php");
 
 $db = new Main(1, 'UTF-8');
 $db->show_header();
+
+
+$str = "Michael";
+echo $str{0};
+
 ?>
 
 

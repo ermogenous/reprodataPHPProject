@@ -18,7 +18,7 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
     $main["db_username"] = "mike_db_user";
     $main["db_password"] = "ermogenous";
     $main["db_host"] = "localhost";
-    $main["db_database"] = "reprodata";
+    $main["db_database"] = "insurance";
 
 
     //phpmyadmin -> https://mysqladmin3.secureserver.net/m50/179
