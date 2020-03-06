@@ -318,10 +318,8 @@ function getQuotationHTML($quotationID)
             <td></td>
             <td>
                 Kemter Insurance Agencies, Sub-Agencies and Consultants Ltd<br>
-                Akinita Ieras Mitropolis<br>
-                Block B’, Office 112<br>
-                3040 Limassol<br>
-                Cyprus<br>
+                Akinita Ieras Mitropolis, Block B’, Office 112<br>
+                3040 Limassol, Cyprus<br>
                 Tel.: +357 25 755 952<br>
                 Fax.: +357 25 755 953<br>
                 E-mail:	kemter@kemterinsurance.com<br>
@@ -331,8 +329,7 @@ function getQuotationHTML($quotationID)
         </tr>
         <tr>
             <td colspan="2">
-                <b>Signed By / Υπογράφηκε από: </b>
-                <br><br><br><br><br><br><br>&nbsp;
+                <b>Signed By / Υπογράφηκε από: </b><br><br>
             </td>
             <td valign="top">
                 <b>Issued By / Εκδόθηκε από:</b>
@@ -341,11 +338,12 @@ function getQuotationHTML($quotationID)
         <tr>
             <td></td>
             <td>
+                <img src="' . $main["site_url"] . '/dynamic_quotations/images/santamas_signature_200.png" width="200">
+                <br><br>
                 Γιάννος Σανταμάς<br>
                 Director / Διευθυντής<br>
                 Kemter Insurance Agencies, Sub-Agencies and Consultants Ltd<br>
                 Authorised Coverholder at Lloyd’s<br>&nbsp;
-
             </td>
             <td></td>
         </tr>
@@ -371,13 +369,14 @@ function getQuotationHTML($quotationID)
     
     <table width="900" class="mainFonts">
         <tr>
-            <td colspan="2" align="center">
+            <td align="center">
                 <b>ΣΥΝΤΟΜΗ ΜΟΡΦΗ ΠΛΗΡΟΦΟΡΙΚΗΣ ΕΙΔΟΠΟΙΗΣΗΣ ΓΙΑ ΤΗΝ ΠΡΟΣΤΑΣΙΑ ΠΡΟΣΩΠΙΚΩΝ ΔΕΔΟΜΕΝΩΝ</b>
+                <br><br><br>
             </td>
         </tr>
         <tr>
-            <td colspan="2" align="justify">
-                <b>Ειδοποίηση για τις προσωπικές σας πληροφορίες</b><br>
+            <td align="justify">
+                <b>Ειδοποίηση για τις προσωπικές σας πληροφορίες</b><br><br>
                 <b>Ποιοι είμαστε</b><br>
                 Εμείς είμαστε οι ασφαλιστές που προσδιορίζονται στο ασφαλιστήριο και/ή στο πιστοποιητικό ασφάλισης.<br>
                 <br>
@@ -422,7 +421,105 @@ function getQuotationHTML($quotationID)
                 οποίος θα σας παρέχει με τα στοιχεία επικοινωνίας μας στην πιο κάτω διεύθυνση:
             </td>
         </tr>
+        <tr>
+            <td height="450" valign="top">
+                <br><br>
+                <b>Kemter Insurance Agencies, Sub-Agencies and Consultants Ltd</b><br>
+                Αθηνών 82, <br>
+                Ακίνητα Ι. Μητρόπολης <br>
+                Μπλοκ Β, Γρ. 112-113, <br>
+                3040 Λεμεσός, Κύπρος<br>
+                Τηλ.:					+357 25 755 952<br>
+                Φαξ.:					+357 25 755 953<br>
+                E-mail:					kemter@kemterinsurance.com<br>
+                <br>
+                <b>Ασφαλιστές</b><br>
+                Πρόσβαση στην ειδοποίηση απορρήτου: 	http://xlgoup.com/footer/privacy-and-cookies<br>
+                Ηλεκτρονική διεύθυνση XL Catlin: 		compliance@xlcatlin.com<br>
+                <br>
+                <br>
+                LMA9151 (amended)<br>
+                25 April 2018
+            </td>
+        </tr>
         
+    </table>
+    
+    <table width="900" class="mainFonts">
+        <tr>
+            <td>
+                <img src="' . $db->admin_layout_url . '/images/kemter_logo2.jpg" width="200"><br><br>&nbsp;
+            </td>
+            <td align="right">
+                <img src="' . $db->admin_layout_url . '/images/LLOYDS-Logo.png" width="200">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center">
+                <b>DATA PROTECTION SHORT FORM INFORMATION NOTICE</b><br><br><br>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="justify">
+                <b>Your personal information notice</b><br>
+                <br>
+                <b>Who we are</b> <br>
+                We are the underwriter(s) identified in the contract of insurance and/or in the certificate of insurance. <br>
+                <br>
+                <b>The basics</b><br>
+                We collect and use relevant information about you to provide you with your insurance cover or the 
+                insurance cover that benefits you and to meet our legal obligations. <br>
+                <br>
+                This information includes details such as your name, address and contact details and any other 
+                information that we collect about you in connection with the insurance cover from which you benefit. <br>
+                <br>
+                This information may include more sensitive details such as information about your health and any 
+                criminal convictions you may have. <br>
+                <br>
+                In certain circumstances, we may need your consent to process certain categories of information about you 
+                (including sensitive details such as information about your health and any criminal convictions you may have). 
+                Where we need your consent, we will ask you for it separately. You do not have to give your consent and you 
+                may withdraw your consent at any time. However, if you do not give your consent, or you withdraw your consent, 
+                this may affect our ability to provide the insurance cover from which you benefit and may prevent us from 
+                providing cover for you or handling your claims. <br>
+                <br>
+                The way insurance works means that your information may be shared with, and used by, a number of third 
+                parties in the insurance sector for example, insurers, agents or brokers, reinsurers, loss adjusters, 
+                sub-contractors, regulators, law enforcement agencies, fraud and crime prevention and detection agencies 
+                and compulsory insurance databases. We will only disclose your personal information in connection with 
+                the insurance cover that we provide and to the extent required or permitted by law. <br>
+                <br>
+                <b>Other people\'s details you provide to us</b> 
+                Where you provide us or your agent or broker with details about other people, you must provide this 
+                notice to them. <br>
+                <br>
+                <b>Want more details?</b> 
+                For more information about how we use your personal information please see our full privacy notice(s), 
+                which is/are available online on our website(s) or in other formats on request. <br>
+                <br>
+                <b>Contacting us and your rights</b> <br>
+                You have rights in relation to the information we hold about you, including the right to access your 
+                information. If you wish to exercise your rights, discuss how we use your information or request a copy 
+                of our full privacy notice(s), please contact us, or the agent or broker that arranged your insurance who 
+                will provide you with our contact details at: <br>
+                <br>
+                <b>Kemter Insurance Agencies, Sub-Agencies and Consultants Ltd</b><br>
+                Akinita Ieras Mitropolis, <br>
+                Block B’, Office 112, <br>
+                3040 Limassol, Cyprus<br>
+                Tel.:				+357 25 755 952<br>
+                Fax.:				+357 25 755 953<br>
+                E-mail:				kemter@kemterinsurance.com<br>
+                <br>
+                <b>Underwriters</b> <br>
+                Privacy notice accessible at:		http://xlgroup.com/footer/privacy-and-cookies<br>
+                XL Catlin Privacy email address:	compliance@xlcatlin.com<br>
+                <br>
+                LMA9151 (amended) <br>
+                25 April 2018
+
+            </td>
+        </tr>
     </table>
     
     
