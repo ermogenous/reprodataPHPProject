@@ -160,7 +160,6 @@ if ($_POST["action"] == "save") {
                     $quote->sendEmail();
                 }
             }
-
             $db->commit_transaction();
 
             //no need to redirect if is language change.
@@ -263,6 +262,8 @@ $formB->setLabelClasses('col-sm-4');
     }
 
 </script>
+
+
 <div class="container">
     <div class="row">
         <div class="d-none col-md-1"></div>

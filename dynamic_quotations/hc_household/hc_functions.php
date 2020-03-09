@@ -31,6 +31,7 @@ function insured_amount_custom_rates($array, $values, $quotation_id)
     $propertyYearBuilt = $values[10][6]['rate'];
     $remoteArea = $values[11][7]['rate'];
 
+    /*
     echo $package." - ".$buildingValue." - ".$contentsInHome." - ".$extentionFullTheft;
     echo "<br>";
     echo $accidentsDomesticStuff." - ".$personalPossesions." - ".$valuables;
@@ -43,6 +44,7 @@ function insured_amount_custom_rates($array, $values, $quotation_id)
     echo "<br>";
     echo $propertyYearBuilt." - ".$remoteArea;
     echo "<br>";
+    */
 //exit();
     //calculate premiums
     //section 1 building
@@ -144,8 +146,8 @@ function insured_amount_custom_rates($array, $values, $quotation_id)
     //Discounts
     if ($intruderAlarm == 'Yes'){
         $array[11][9] = ($buildingValue * 0.00005) * -1;
-        echo "Alarm: ";
-        echo $array[11][9];
+        //echo "Alarm: ";
+        //echo $array[11][9];
         //exit();
     }
 

@@ -51,7 +51,7 @@ oqq_unique_identifier = '".$db->encrypt(date('G:i:s'))."'
 ";
     $sql .= $sql2;
 
-    //echo $sql."<hr>";exit();
+    //echo $sql."<hr>";//exit();
     $db->query($sql);
 
     if ($quotation_id == "")
@@ -112,7 +112,7 @@ function insert_item_data_to_db($quotation_type_data, $quotation_id, $item_id)
                     $field_value = $value;
                 }
                 $sql .= ",\n" . $field_name . " = \"" . addslashes($field_value) . "\"";
-//echo $item_id . "_" . $field_name;exit();
+//echo $item_id . "_" . $field_name;//exit();
             }//insured amount fields that are not empty.
 
         }//all the insured amount fields
@@ -146,6 +146,7 @@ function insert_item_data_to_db($quotation_type_data, $quotation_id, $item_id)
 //exit();
     //remove the first comma from the SQL
     $sql = substr($sql, 1);
+    //echo $sql;
 
 
     //STEP2
