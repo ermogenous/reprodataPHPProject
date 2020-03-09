@@ -170,7 +170,7 @@ if ($_POST["action"] == "save") {
                 } else {
                     header("Location: quotations_show.php?lid=" . $quotation_id);
                 }
-                exit();
+                //exit();
             }
         }//if outstanding
         //not allowed to update

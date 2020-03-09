@@ -412,7 +412,7 @@ class dynamicQuotation
             $db->db_tool_insert_row('oqt_quotations_items', $itemNewData,'', 0, '');
         }
 
-        echo "New quotations ID ".$newID;
+        //echo "New quotations ID ".$newID;
 
         return true;
 
