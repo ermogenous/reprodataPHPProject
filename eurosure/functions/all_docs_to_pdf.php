@@ -6,7 +6,7 @@ include("../../scripts/form_builder_class.php");
 include("../../scripts/meBuildDataTable.php");
 $db = new Main();
 
-$sybase = new ODBCCON();
+$sybase = new ODBCCON('EUROTEST');
 
 $db->show_header();
 
@@ -15,12 +15,6 @@ $formValidator = new customFormValidator();
 $formB = new FormBuilder();
 $formB->setLabelClasses('col-sm-3');
 FormBuilder::buildPageLoader();
-
-
-//set print log records to W->withdrawn
-
-//set  "intransactionheaders"."intrh_document_printed" to N
-
 
 ?>
 
@@ -70,80 +64,308 @@ FormBuilder::buildPageLoader();
                                    value="Show Prints" class="btn btn-primary">
                         </div>
                     </div>
+        </form>
+        <?php
+        //set print log records to W->withdrawn
+        //set  "intransactionheaders"."intrh_document_printed" to N
+        //If withdraw all
+        if ($_POST['action'] == 'withdrawAll') {
+            if ($_POST['fld_policy_serial'] > 0) {
+                ?>
+                <div class="row">
+                    <div class="col-12 alert alert-primary">
+                        Updating SCH,CRT,UDD1,END,RNWC Documents to withdrawn
+                    </div>
+                </div>
+                <?php
+                $sybase->beginTransaction();
+                //withdraw all documents SCH,CRT,UDD1,'END','RNWC'
+                $sql = "SELECT
+                        indpl_auto_serial,
+                        indpl_document_type,
+                        indpl_primary_serial,
+                        indpl_secondary_serial,
+                        indpl_print_user,
+                        indpl_filenames 
+                        FROM indocumprnlog 
+                        WHERE indpl_primary_serial = '" . $_POST['fld_policy_serial'] . "'
+                        AND RIGHT(indpl_document_type,1) <> 'W'
+                        ORDER BY indpl_auto_serial ASC";
+                $resultSelect = $sybase->query($sql);
+                while ($line = $sybase->fetch_assoc($resultSelect)) {
 
-                    <?php
-                    if ($_POST['fld_policy_serial'] > 0) {
-                        ?>
+                    ?>
+                    <div class="container-fluid">
                         <div class="row">
-                            <div class="col-12">
-                                <!--
-                                Show HERE the print logs
-                                -->
+                            <div class="col-12 alert alert-warning">
+                                Updating log serial: <?php echo $line['indpl_auto_serial']; ?> DONE
+                            </div>
+                        </div>
+                    </div>
+                    <?php
+
+                    //update to withdrawn
+                    $sqlW1 = "UPDATE indocumprnlog
+                            SET indpl_document_type = STRING(indpl_document_type, 'W'),
+                            indpl_withdrawn_by = 'RERPRINT-INT',
+                            indpl_withdrawn_on = NOW()
+                            WHERE indpl_auto_serial = " . $line['indpl_auto_serial'] . "
+                            AND RIGHT(indpl_document_type,1) <> 'W' /*exclude withdrawn to avoid updating again e.g. SCHWW */
+                            AND indpl_document_type IN ('SCH', 'CRT', 'UDD1', 'END', 'RNWC') ;/* Only Specific document types */ ";
+                    $sybase->query($sqlW1);
+                    ?>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-12 alert alert-warning">
                                 <?php
-                                if ($_POST['action'] == 'showLogs') {
-                                    $sql = "SELECT
-                        indpl_auto_serial as AutoSerial,
-                        indpl_document_type as 'Document Type',
-                        indpl_primary_serial as 'Primary Serial',
-                        indpl_secondary_serial as 'Secondary Serial',
-                        indpl_print_user as 'Print User'
-                        FROM indocumprnlog WHERE indpl_primary_serial = '" . $_POST['fld_policy_serial'] . "'";
-                                    $result = $sybase->query($sql);
-                                    while ($prnt = $sybase->fetch_assoc($result)) {
-                                        $allRecords[] = $prnt;
+                                if ($line['indpl_filenames'] != '') {
+                                    echo "File/s: -> ";
+                                    $files = explode(',', $line['indpl_filenames']);
+                                    foreach ($files as $file) {
+                                        echo $file;
+                                        if (file_exists($file)) {
+                                            echo " Exists Deleting";
+                                            if (unlink($file)) {
+                                                echo " - Deleted";
+                                            } else {
+                                                echo " - Error deleting file";
+                                            }
+                                        } else {
+                                            echo " - File not found";
+                                        }
+                                        echo "<br>";
                                     }
-
-                                    $table = new MEBuildDataTable();
-                                    echo $table->getHeadersFromFieldNames()
-                                        ->makeTableOutput()
-                                        ->setData($allRecords)
-                                        ->makeOutput();
-
+                                } else {
+                                    echo "No file/s";
                                 }
                                 ?>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-12 alert alert-secondary text-center">Debit Notes Prints</div>
+                    </div>
+                    <?php
+                    echo "<hr>";
+                }
+
+                //find all dr/cr
+                $sql = "SELECT
+                        intrh_auto_serial
+                        , intrh_document_number
+                        , intrd_related_type
+                        FROM
+                        inpolicies
+                        JOIN inpolicyendorsement ON inped_financial_policy_abs = inpol_policy_serial
+                        JOIN intransactiondetails ON inped_policy_serial= intrd_policy_serial AND inped_endorsement_serial =
+                        intrd_endorsement_serial and COALESCE(intrd_claim_serial, 0) = 0
+                        JOIN intransactionheaders ON intrd_trh_auto_serial = intrh_auto_serial
+                        WHERE inpol_policy_serial = " . $_POST['fld_policy_serial'] . "
+                        AND intrd_related_type = 'C'
+                        GROUP BY intrh_document_number, intrh_auto_serial, intrd_related_type";
+                //update all this print documents
+                $resultDrCr = $sybase->query($sql);
+                $drCrHtml = '';
+                while ($drCr = $sybase->fetch_assoc($resultDrCr)) {
+                    //set the transaction header to print no
+                    $sqlTrHeaders = "
+                        UPDATE 
+                        intransactionheaders
+                        SET intrh_document_printed = 'N'
+                        WHERE
+                        intrh_auto_serial = " . $drCr['intrh_auto_serial'];
+                    $sybase->query($sqlTrHeaders);
+                    ?>
+                    <div class="row">
+                        <div class="col-12 alert alert-primary">
+                            Updating Dr/Cr note transaction header to printed no
+                            : <?php echo $drCr['intrh_document_number'] . " (" . $drCr['intrh_auto_serial'] . ")"; ?>
+                            - DONE
                         </div>
+                    </div>
+                    <?php
+                    $sqlLogs = "SELECT
+                        indpl_auto_serial,
+                        indpl_document_type,
+                        indpl_primary_serial,
+                        indpl_secondary_serial,
+                        indpl_print_user,
+                        indpl_filenames 
+                        FROM indocumprnlog 
+                        WHERE indpl_primary_serial = '" . $drCr['intrh_auto_serial'] . "'
+                        AND RIGHT(indpl_document_type,1) <> 'W'
+                        AND indpl_document_type IN ('DCN')
+                        ORDER BY indpl_auto_serial ASC";
+                    $resultSelect = $sybase->query($sqlLogs);
+                    while ($line = $sybase->fetch_assoc($resultSelect)) {
+                        $sqlDcnUpdate = "UPDATE indocumprnlog
+                                    SET indpl_document_type = STRING(indpl_document_type, 'W'),
+                                    indpl_withdrawn_by = 'RERPRINT-INT',
+                                    indpl_withdrawn_on = NOW()
+                                    WHERE indpl_auto_serial = '" . $line['indpl_auto_serial'] . "'
+                                    AND RIGHT(indpl_document_type,1) <> 'W' /*exclude withdrawn to avoid updating again e.g. SCHWW */
+                                    AND indpl_document_type IN ('DCN') ;/* Only Specific document types */";
+                        $sybase->query($sqlDcnUpdate);
+                        ?>
                         <div class="row">
-                            <div class="col-12">
-                                <?php
-                                $sql = "SELECT 
+                            <div class="col-12 alert alert-primary">
+                                Updating Dr/Cr note print log: <?php echo $line['indpl_auto_serial'];?> - DONE
+                            </div>
+                        </div>
+
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-12 alert alert-warning">
+                                    <?php
+                                    if ($line['indpl_filenames'] != '') {
+                                        echo "File/s: -> ";
+                                        $files = explode(',', $line['indpl_filenames']);
+                                        foreach ($files as $file) {
+                                            echo $file;
+                                            if (file_exists($file)) {
+                                                echo " Exists Deleting";
+                                                if (unlink($file)) {
+                                                    echo " - Deleted";
+                                                } else {
+                                                    echo " - Error deleting file";
+                                                }
+                                            } else {
+                                                echo " - File not found";
+                                            }
+                                            echo "<br>";
+                                        }
+                                    } else {
+                                        echo "No file/s";
+                                    }
+                                    ?>
+                                </div>
+                            </div>
+                        </div>
+                        <?php
+
+                    }
+
+
+                }//while all print logs
+
+                //commit the transactions
+                $db->commit_transaction();
+                $_POST['action'] = 'showLogs';
+            }
+        }
+        ?>
+
+        <?php
+        if ($_POST['fld_policy_serial'] > 0) {
+            if ($_POST['action'] == 'showLogs') {
+                ?>
+                <form method="post">
+                    <div class="row">
+                        <div class="col-12">
+                            <!--
+                            Show HERE the print logs
+                            -->
+                            <?php
+
+                            $sql = "SELECT
+                                            indpl_auto_serial as AutoSerial,
+                                            indpl_document_type as 'Document Type',
+                                            indpl_primary_serial as 'Primary Serial',
+                                            indpl_secondary_serial as 'Secondary Serial',
+                                            indpl_print_user as 'Print User',
+                                            indpl_filenames 
+                                            FROM indocumprnlog 
+                                            WHERE indpl_primary_serial = '" . $_POST['fld_policy_serial'] . "'
+                                            AND RIGHT(indpl_document_type,1) <> 'W'
+                                            ORDER BY indpl_auto_serial ASC";
+                            $result = $sybase->query($sql);
+                            while ($prnt = $sybase->fetch_assoc($result)) {
+                                $allRecords[] = $prnt;
+                            }
+
+                            $table = new MEBuildDataTable();
+                            echo $table->getHeadersFromFieldNames()
+                                ->makeTableOutput()
+                                ->setData($allRecords)
+                                ->makeOutput();
+
+                            ?>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 alert alert-secondary text-center">Debit Notes Prints</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12">
+                            <?php
+                            $sql = "SELECT 
                                         intrh_auto_serial as 'Auto Serial'
                                         , intrh_document_number as 'Document Number'
                                         , intrd_related_type as 'Related Type'
+                                        , intrh_document_printed as 'Doc Printed'
                                         FROM
                                         inpolicies
                                         JOIN inpolicyendorsement ON inped_financial_policy_abs = inpol_policy_serial
                                         JOIN intransactiondetails ON inped_policy_serial= intrd_policy_serial AND inped_endorsement_serial = intrd_endorsement_serial and COALESCE(intrd_claim_serial, 0) = 0
                                         JOIN intransactionheaders ON intrd_trh_auto_serial = intrh_auto_serial
                                         WHERE inpol_policy_serial = " . $_POST['fld_policy_serial'] . "
-                                        GROUP BY intrh_document_number, intrh_auto_serial, intrd_related_type";
-                                $result = $sybase->query($sql);
-                                while ($prnt = $sybase->fetch_assoc($result)) {
-                                    $drcrRecords[0] = $prnt;
-                                    $table = new MEBuildDataTable();
-                                    echo $table->getHeadersFromFieldNames()
-                                        ->makeTableOutput()
-                                        ->setData($drcrRecords)
-                                        ->makeOutput();
+                                        AND intrd_related_type = 'C'
+                                        GROUP BY intrh_document_number, intrh_auto_serial, intrd_related_type, intrh_document_printed";
+                            $result = $sybase->query($sql);
+                            while ($prnt = $sybase->fetch_assoc($result)) {
+                                $drcrRecords[0] = $prnt;
+                                $table = new MEBuildDataTable();
+                                echo $table->getHeadersFromFieldNames()
+                                    ->makeTableOutput()
+                                    ->setData($drcrRecords)
+                                    ->makeOutput();
 
-
+                                //show the printed docs for each dr/cr
+                                $sql = "SELECT
+                                            indpl_auto_serial as AutoSerial,
+                                            indpl_document_type as 'Document Type',
+                                            indpl_primary_serial as 'Primary Serial',
+                                            indpl_secondary_serial as 'Secondary Serial',
+                                            indpl_print_user as 'Print User',
+                                            indpl_filenames as 'Files'
+                                            FROM indocumprnlog 
+                                            WHERE indpl_primary_serial = '" . $prnt['Auto Serial'] . "'
+                                            AND indpl_document_type = 'DCN'";
+                                $resultd = $sybase->query($sql);
+                                while ($prnt = $sybase->fetch_assoc($resultd)) {
+                                    $allRecordsD[] = $prnt;
                                 }
 
+                                $table = new MEBuildDataTable();
+                                echo $table->getHeadersFromFieldNames()
+                                    ->makeTableOutput()
+                                    ->setData($allRecordsD)
+                                    ->makeOutput();
 
-                                ?>
-                            </div>
+                            }
+
+
+                            ?>
                         </div>
-                        <?php
-                    }
-                    ?>
-                </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-3"></div>
+                        <div class="col-6 text-center">
+                            <input type="hidden" id="action" name="action" value="withdrawAll">
+                            <input type="hidden" id="fld_policy_serial" name="fld_policy_serial"
+                                   value="<?php echo $_POST['fld_policy_serial']; ?>">
+                            <input type="submit" value="Withdraw SCH,CRT,UDD1,END,RNWC,DCN"
+                                   onclick="return confirm('Are you sure you want to withdraw all this records?');"
+                                   class="btn btn-danger">
+                        </div>
+                        <div class="col-3"></div>
+                    </div>
+                </form>
+                <?php
+            }
+        }
+        ?>
+    </div>
 
-                <div class="col-1"></div>
-            </div>
-        </form>
+    <div class="col-1"></div>
+    </div>
     </div>
 
 <?php
