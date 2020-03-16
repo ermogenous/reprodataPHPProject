@@ -203,6 +203,9 @@ Class Installments
                 } else if ($amount == 4) {
                     $data['insert_date'] = date('Y-m-d');
                     $data['policy_ID'] = $this->policyID;
+                    $data['paid_status'] = 'UnPaid';
+                    $data['installment_type'] = 'Divided';
+                    $data['paid_amount'] = 0;
                     //insert first installment same with starting date.
                     $date = date('Y-m-d', mktime(0, 0, 0, $startingDate[1], $startingDate[2], $startingDate[0]));
                     $data['document_date'] = $date;
@@ -225,6 +228,9 @@ Class Installments
                 } else if ($amount == 2) {
                     $data['insert_date'] = date('Y-m-d');
                     $data['policy_ID'] = $this->policyID;
+                    $data['paid_status'] = 'UnPaid';
+                    $data['installment_type'] = 'Divided';
+                    $data['paid_amount'] = 0;
                     //insert first installment same with starting date.
                     $date = date('Y-m-d', mktime(0, 0, 0, $startingDate[1], $startingDate[2], $startingDate[0]));
                     $data['document_date'] = $date;
@@ -239,6 +245,9 @@ Class Installments
                     $data['document_date'] = $date;
                     $data['insert_date'] = date('Y-m-d');
                     $data['policy_ID'] = $this->policyID;
+                    $data['paid_status'] = 'UnPaid';
+                    $data['installment_type'] = 'Divided';
+                    $data['paid_amount'] = 0;
                     $this->insertInstallment($data);
                 }
 

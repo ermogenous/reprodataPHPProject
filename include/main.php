@@ -152,11 +152,11 @@ class Main
             $this->check_login();
 
             //check for language switch
-            if ($_GET['switchLang'] == 'eng' || $_GET['switchLang'] == 'gre'){
+            if ($_GET['switchLang'] == 'eng' || $_GET['switchLang'] == 'gre') {
                 $newData['default_lang'] = $_GET['switchLang'];
-                $this->db_tool_update_row('users', $newData, 'usr_users_ID = '.$this->user_data['usr_users_ID'], $this->user_data['usr_users_ID'],
-                    '','execute','usr_');
-                header("Location: ".$main['site_url']."/home.php");
+                $this->db_tool_update_row('users', $newData, 'usr_users_ID = ' . $this->user_data['usr_users_ID'], $this->user_data['usr_users_ID'],
+                    '', 'execute', 'usr_');
+                header("Location: " . $main['site_url'] . "/home.php");
                 exit();
             }
 
@@ -589,7 +589,7 @@ class Main
         } else {
             $result = mysqli_query($this->db_handle, $sql)
             or die(
-                $this->error($sql . "<hr>" . $this->db_handle->error)
+            $this->error($sql . "<hr>" . $this->db_handle->error)
             );
             if ($this->db_handle->errno != 0) {
                 $this->error($sql . "<hr>" . $this->db_handle->error);
@@ -709,8 +709,9 @@ class Main
 
     }
 
-    public function getNextID($table){
-        $sql = 'SELECT Auto_increment FROM information_schema.tables WHERE table_name="'.$table.'"';
+    public function getNextID($table)
+    {
+        $sql = 'SELECT Auto_increment FROM information_schema.tables WHERE table_name="' . $table . '"';
         $result = $this->query_fetch($sql);
         $return = $result['Auto_increment'];
         return $return;
@@ -926,8 +927,9 @@ class Main
 
     }
 
-    public function enable_jquery_ui_dateTimePicker(){
-        if ($this->enabled_jquery_ui != 'yes'){
+    public function enable_jquery_ui_dateTimePicker()
+    {
+        if ($this->enabled_jquery_ui != 'yes') {
             $this->enable_jquery_ui();
         }
         $this->include_js_file($this->settings["site_url"] . "/scripts/jquery-ui-timepicker-addon.min.js");
@@ -1524,11 +1526,14 @@ class Main
         $this->update_log_file('CUSTOM', 0, $action, 'CUSTOM', 'CUSTOM', $sql);
     }//update_log_file_custom
 
-    function convertDateToEU($date, $date_time = 0, $return_time = 0){
-        return $this->convert_date_format($date,'yyyy-mm-dd','dd/mm/yyyy', $date_time, $return_time);
+    function convertDateToEU($date, $date_time = 0, $return_time = 0)
+    {
+        return $this->convert_date_format($date, 'yyyy-mm-dd', 'dd/mm/yyyy', $date_time, $return_time);
     }
-    function convertDateToUS($date, $date_time = 0, $return_time = 0){
-        return $this->convert_date_format($date,'dd/mm/yyyy','yyyy-mm-dd', $date_time, $return_time);
+
+    function convertDateToUS($date, $date_time = 0, $return_time = 0)
+    {
+        return $this->convert_date_format($date, 'dd/mm/yyyy', 'yyyy-mm-dd', $date_time, $return_time);
     }
 
     function convert_date_format($date, $from_format = 'yyyy-mm-dd', $to_format = 'dd/mm/yyyy', $date_time = 0, $return_time = 0)
@@ -1710,7 +1715,7 @@ class Main
             echo "Error Connecting to Database";
             exit();
         }
-        mysqli_select_db($link,$dbName);
+        mysqli_select_db($link, $dbName);
 
         //get all of the tables
         if ($tables_to_use == '*') {
@@ -1768,7 +1773,7 @@ class Main
 
         //save file
         //$handle = fopen('db-backup-'.time().'-'.(md5(implode(',',$tables))).'.sql','w+');
-        $filename = 'db-backup-' . time().'.sql';
+        $filename = 'db-backup-' . time() . '.sql';
         $handle = fopen($filename, 'w+');
         fwrite($handle, $return);
         fclose($handle);
@@ -1992,16 +1997,27 @@ class Main
         return hexdec($string);
     }
 
-    public function dateDiff($a, $b,$format='dd/mm/yyyy')
+    /** precission floor. Can floor with 2 decimals
+     * @param $val
+     * @param $precision
+     * @return float|int
+     */
+    public function floorp($val, $precision)
     {
-        if ($format == 'yyyy-mm-dd'){
+        $mult = pow(10, $precision); // Can be cached in lookup table
+        return floor($val * $mult) / $mult;
+    }
+
+    public function dateDiff($a, $b, $format = 'dd/mm/yyyy')
+    {
+        if ($format == 'yyyy-mm-dd') {
             $a = $this->convert_date_format($a, 'yyyy-mm-dd', 'dd/mm/yyyy');
             $b = $this->convert_date_format($b, 'yyyy-mm-dd', 'dd/mm/yyyy');
         }
         $aParts = explode('/', $a);
         $bParts = explode('/', $b);
-        $dateA = new DateTime('@'.mktime(0,0,0,$aParts[1], $aParts[0],$aParts[2]));
-        $dateB = new DateTime('@'.mktime(0,0,0,$bParts[1], $bParts[0],$bParts[2]));
+        $dateA = new DateTime('@' . mktime(0, 0, 0, $aParts[1], $aParts[0], $aParts[2]));
+        $dateB = new DateTime('@' . mktime(0, 0, 0, $bParts[1], $bParts[0], $bParts[2]));
         $diff = $dateB->diff($dateA);
         return $diff;
     }
@@ -2010,7 +2026,7 @@ class Main
     public function getNewExpiryDate($curDate, $months, $format = 'dd/mm/yyyy')
     {
         //echo $curDate."\n\n";
-        if ($format == 'yyyy-mm-dd'){
+        if ($format == 'yyyy-mm-dd') {
             $curDate = $this->convert_date_format($curDate, 'yyyy-mm-dd', 'dd/mm/yyyy');
         }
         $newMonth = 0;
@@ -2089,11 +2105,11 @@ class Main
         return $return;
     }
 
-    public function showLangText($eng,$gre){
-        if ($this->user_data['usr_default_lang'] == 'gre'){
+    public function showLangText($eng, $gre)
+    {
+        if ($this->user_data['usr_default_lang'] == 'gre') {
             return $gre;
-        }
-        else {
+        } else {
             return $eng;
         }
     }

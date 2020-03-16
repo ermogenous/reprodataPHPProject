@@ -21,7 +21,7 @@ as clo_subagent_name
 ';
 $table->extra_from_section = ' JOIN users ON usr_users_ID = inaund_user_ID';
 $table->extra_from_section .= ' JOIN users_groups ON usr_users_groups_ID = usg_users_groups_ID';
-
+echo $table->sql;
 $table->generate_data();
 $db->show_header();
 ?>

@@ -73,24 +73,24 @@ function getQuotationHTML($quotationID)
     }
 
     //vehicles
-    $vehiclesAB = explode('@@',$sect1['oqqit_rate_13']);
-    $vehicleA = explode('##',$vehiclesAB[0]);
-    $vehicleB = explode('##',$vehiclesAB[1]);
-    $vehiclesCD = explode('@@',$sect1['oqqit_rate_14']);
-    $vehicleC = explode('##',$vehiclesCD[0]);
-    $vehicleD = explode('##',$vehiclesCD[1]);
+    $vehiclesAB = explode('@@', $sect1['oqqit_rate_13']);
+    $vehicleA = explode('##', $vehiclesAB[0]);
+    $vehicleB = explode('##', $vehiclesAB[1]);
+    $vehiclesCD = explode('@@', $sect1['oqqit_rate_14']);
+    $vehicleC = explode('##', $vehiclesCD[0]);
+    $vehicleD = explode('##', $vehiclesCD[1]);
     $vehiclesList = '';
-    if ($vehicleA[0] != ''){
+    if ($vehicleA[0] != '') {
         $vehiclesList = $vehicleA[0];
     }
-    if ($vehicleB[0] != ''){
-        $vehiclesList .= ', '.$vehicleB[0];
+    if ($vehicleB[0] != '') {
+        $vehiclesList .= ', ' . $vehicleB[0];
     }
-    if ($vehicleC[0] != ''){
-        $vehiclesList .= ', '.$vehicleC[0];
+    if ($vehicleC[0] != '') {
+        $vehiclesList .= ', ' . $vehicleC[0];
     }
-    if ($vehicleD[0] != ''){
-        $vehiclesList .= ', '.$vehicleD[0];
+    if ($vehicleD[0] != '') {
+        $vehiclesList .= ', ' . $vehicleD[0];
     }
 
     $html = '
@@ -160,7 +160,7 @@ function getQuotationHTML($quotationID)
                     Address / Διεύθυνση: 
                 </td>
                 <td>
-                    ' . $quotationData['oqq_insureds_address'] . ', '.$quotationData['oqq_insureds_city'].', '.$quotationData['oqq_insureds_postal_code'].', '.$sect1['oqqit_rate_1'].'
+                    ' . $quotationData['oqq_insureds_address'] . ', ' . $quotationData['oqq_insureds_city'] . ', ' . $quotationData['oqq_insureds_postal_code'] . ', ' . $sect1['oqqit_rate_1'] . '
                 </td>
             </tr>
             
@@ -206,19 +206,10 @@ function getQuotationHTML($quotationID)
             
             <tr>
                 <td>
-                    Gross Freight Receipts / Ακάθαρτες Εισπράξεις Μεταφορών:
-                </td>
-                <td>
-                    €'.$sect1['oqqit_rate_12'].'
-                </td>
-            </tr>
-            
-            <tr>
-                <td>
                     Insured Services / Ασφαλιστικές Υπηρεσίες: 
                 </td>
                 <td>
-                    '.$option.'
+                    ' . $option . '
                 </td>
             </tr>
             
@@ -228,33 +219,6 @@ function getQuotationHTML($quotationID)
                 </td>
                 <td>
                     ' . $vehiclesList . '
-                </td>
-            </tr>
-            
-            <tr>
-                <td>
-                    CLAIMS:
-                </td>
-                <td>
-                    ' . $claimsList . '
-                </td>
-            </tr>
-            
-            <tr>
-                <td>
-                    Premium / Ασφάλιστρα:
-                </td>
-                <td>
-                
-                </td>
-            </tr>
-            
-            <tr>
-                <td>
-                    Stamps / Χαρτόσημα:
-                </td>
-                <td>
-                    €2.00
                 </td>
             </tr>
             
@@ -529,5 +493,6 @@ function getQuotationHTML($quotationID)
         
     </div>
     ';
+    //$html = getProposalHTML($quotationID);
     return $html;
 }

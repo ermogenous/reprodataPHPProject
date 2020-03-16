@@ -158,12 +158,15 @@ if ($_GET['lid'] != '') {
                             ->setFieldDescription('Issue Policy Number')
                             ->setFieldType('select')
                             ->setInputValue($data['inaiss_issue_number'])
+                            ->setInputSelectArrayOptions([
+                                    '1' => 'Yes',
+                                    '0' => 'No'
+                            ])
                             ->buildLabel();
                         ?>
                         <div class="col-sm-4">
                             <?php
-                            $formB->
-                                //->buildInput();
+                            $formB->buildInput();
                             $formValidator->addField(
                                 [
                                     'fieldName' => $formB->fieldName,

@@ -116,6 +116,91 @@ function insuranceCustomItem(){
     <div class="form-group row">
         <?php
         $formB->initSettings()
+            ->setFieldName('fld_char_1')
+            ->setFieldDescription('Insured Type')
+            ->setFieldType('select')
+            ->setInputValue($data['inapit_char_1'])
+            ->setInputSelectArrayOptions([
+                'Individual' => 'Individual',
+                'Group' => 'Group'
+            ])
+            ->buildLabel();
+        ?>
+        <div class="col-sm-3">
+            <?php
+            $formB->buildInput();
+            $formValidator->addField(
+                [
+                    'fieldName' => $formB->fieldName,
+                    'fieldDataType' => 'select',
+                    'required' => true,
+                    'invalidTextAutoGenerate' => true
+                ]);
+            ?>
+
+        </div>
+
+        <?php
+        $formB->initSettings()
+            ->setFieldName('fld_char_2')
+            ->setFieldDescription('Coverage Type')
+            ->setFieldType('select')
+            ->setInputValue($data['inapit_char_2'])
+            ->setInputSelectArrayOptions([
+                'Medical Cover on Full Application' => 'Medical Cover on Full Application',
+                'Medical Cover on Partial Application' => 'Medical Cover on Partial Application',
+                'Medical Cover on Continuing Personal Medical Exclusions' => 'Medical Cover on Continuing Personal Medical Exclusions',
+                'On Medical History Disregarded' => 'On Medical History Disregarded',
+            ])
+            ->setInputSelectAddEmptyOption(true)
+            ->buildLabel();
+        ?>
+        <div class="col-sm-3">
+            <?php
+            $formB->buildInput();
+            $formValidator->addField(
+                [
+                    'fieldName' => $formB->fieldName,
+                    'fieldDataType' => 'select',
+                    'required' => true,
+                    'invalidTextAutoGenerate' => true
+                ]);
+            ?>
+
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <?php
+        $formB->initSettings()
+            ->setFieldName('fld_char_3')
+            ->setFieldDescription(' Area of cover')
+            ->setFieldType('select')
+            ->setInputValue($data['inapit_char_3'])
+            ->setInputSelectArrayOptions([
+                'Worldwide' => 'Worldwide',
+                'Worldwide excluding USA and others' => 'Worldwide excluding USA and others'
+            ])
+            ->buildLabel();
+        ?>
+        <div class="col-sm-3">
+            <?php
+            $formB->buildInput();
+            $formValidator->addField(
+                [
+                    'fieldName' => $formB->fieldName,
+                    'fieldDataType' => 'select',
+                    'required' => true,
+                    'invalidTextAutoGenerate' => true
+                ]);
+            ?>
+
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <?php
+        $formB->initSettings()
             ->setFieldName('fld_premium')
             ->setFieldDescription('Member Premium')
             ->setFieldType('input')
@@ -141,9 +226,17 @@ function insuranceCustomItem(){
         $formB->initSettings()
             ->setFieldName('fld_excess')
             ->setFieldDescription('Excess')
-            ->setFieldType('input')
-            ->setFieldInputType('number')
+            ->setFieldType('select')
             ->setInputValue($data['inapit_excess'])
+            ->setInputSelectArrayOptions([
+                '0' => '0',
+                '150' => '150',
+                '350' => '350',
+                '650' => '650',
+                '1700' => '1700',
+                '3500' => '3500',
+                '6500' => '6500'
+            ])
             ->buildLabel();
         ?>
         <div class="col-sm-3">
@@ -162,5 +255,8 @@ function insuranceCustomItem(){
     </div>
 
 <?php
+    $return['windowHeight'] = 450;
+
+    return $return;
 }
 ?>

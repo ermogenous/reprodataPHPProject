@@ -201,6 +201,7 @@ class AccountsTransaction
             }
         }
         if ($dr != $cr){
+            print_r($linesData);
             $this->error = true;
             $this->errorDescription = 'Dr/Cr do not balance.';
             return false;

@@ -277,7 +277,7 @@ public $companyCommission;
             //issing exists. Must issue new policy number
             $newPolicyNumber = $db->buildNumber($issuing['inaiss_number_prefix'], $issuing['inaiss_number_leading_zeros'], $issuing['inaiss_number_last_used'] + 1);
             $newData['fld_policy_number'] = $newPolicyNumber;
-            $newData['fld_issuing_ID'] = $issuing['inaiss_issue_ID'];
+            $newData['fld_issue_ID'] = $issuing['inaiss_issue_ID'];
             $db->db_tool_update_row('ina_policies', $newData, 'inapol_policy_ID = ' . $this->policyID, $this->policyID, 'fld_', 'execute', 'inapol_');
             //update the current object policy number
             $this->policyData['inapol_policy_number'] = $newPolicyNumber;
@@ -478,12 +478,15 @@ public $companyCommission;
         if ($this->policyData['inapol_status'] == 'Outstanding') {
             //perform validations.
             //1. Check if any installments exists.
-            $totalInstallments = $db->query_fetch("SELECT COUNT(*)as clo_total_installments FROM ina_policy_installments WHERE inapi_policy_ID = " . $this->installmentID);
+            $totalInstallments = $db->query_fetch("SELECT COUNT(*)as clo_total_installments FROM ina_policy_installments 
+                    WHERE inapi_policy_ID = " . $this->installmentID);
             if ($totalInstallments['clo_total_installments'] < 1) {
                 $this->error = true;
                 $this->errorDescription = 'No installments found. You can automatically generate.';
                 return false;
             }
+
+
 
             //2. Check if premium is equal to total premium of items
             $premCheck = $db->query_fetch('SELECT 
@@ -498,6 +501,17 @@ public $companyCommission;
                 $this->errorDescription = 'Policy Premium is not equal with total items premium';
                 return false;
             }
+
+            //3. Check the status of the installments
+            $instCheck = $db->query_fetch("SELECT COUNT(*)as clo_total FROM ina_policy_installments 
+                        WHERE inapi_policy_ID = ".$this->installmentID."
+                        AND (inapi_paid_status IS NULL || inapi_paid_status <> 'UnPaid')");
+            if ($instCheck['clo_total'] > 0){
+                $this->error = true;
+                $this->errorDescription = 'Something wrong with installments. Found empty or not unpaid status';
+                return false;
+            }
+
 
             /*
             if ($this->policyData['inapol_mif'] != $premCheck['clo_total_mif'] && $this->policyData['inapol_process_status'] != 'Endorsement'

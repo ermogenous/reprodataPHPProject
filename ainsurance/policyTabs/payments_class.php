@@ -244,43 +244,51 @@ class PolicyPayment
 
             $transactions = $policy->getAccountTransactionsList();
 
+            //find the rate of the payment. Each commission will be multiplied by this amount
+            $paymentRate = $this->paymentData['inapp_allocated_commission'] / $policy->policyData['inapol_commission'];
 
-            //find the percentage paid based on the total
-            $percentPaid = $this->paymentData['inapp_allocated_commission'] / $policy->policyData['inapol_commission'];
 
-            $newCommission = $this->paymentData['inapp_allocated_commission'];
-
-            $transactions[1]['amount'] = $newCommission;
-            $transactions[2]['amount'] = $newCommission;
-
-            //if subagent commissions
-            if ($transactions[3]['type'] != '' && $policy->policyData['inapol_subagent_commission'] > 0){
-                $newSubCommission = $policy->policyData['inapol_subagent_commission'] * $percentPaid;
-                $newSubCommission = round($newSubCommission,2);
-                $transactions[3]['amount'] = $newSubCommission;
-                $transactions[4]['amount'] = $newSubCommission;
+            //check if any subagents exists from ina_policy
+            //Agent 1
+            if ($policy->policyData['inapol_agent_level1_commission'] > 0){
+                $agents1Commission = $policy->policyData['inapol_agent_level1_commission'] * $paymentRate;
+                $agents1Commission = $db->floorp($agents1Commission,2);
+                $policyNewData['fld_agent_level1_released'] = $policy->policyData['inapol_agent_level1_released'] + $agents1Commission;
             }
-
-            //if subsubagent commissions
-            if ($transactions[5]['type'] != '' && $policy->policyData['inapol_subsubagent_commission'] > 0){
-                $newSubSubCommission = $policy->policyData['inapol_subsubagent_commission'] * $percentPaid;
-                $newSubSubCommission = round($newSubSubCommission,2);
-                $transactions[5]['amount'] = $newSubSubCommission;
-                $transactions[6]['amount'] = $newSubSubCommission;
+            //Agent 2
+            if ($policy->policyData['inapol_agent_level2_commission'] > 0){
+                $agents2Commission = $policy->policyData['inapol_agent_level2_commission'] * $paymentRate;
+                $agents2Commission = $db->floorp($agents2Commission,2);
+                $policyNewData['fld_agent_level2_released'] = $policy->policyData['inapol_agent_level2_released'] + $agents2Commission;
             }
-
+            //Agent 2
+            if ($policy->policyData['inapol_agent_level3_commission'] > 0){
+                $agents3Commission = $policy->policyData['inapol_agent_level3_commission'] * $paymentRate;
+                $agents3Commission = $db->floorp($agents3Commission,2);
+                $policyNewData['fld_agent_level3_released'] = $policy->policyData['inapol_agent_level3_released'] + $agents3Commission;
+            }
+            $policyNewData['fld_commission_released'] = $policy->policyData['inapol_commission_released'] + $this->paymentData['inapp_allocated_commission'];
+            //update the policy with the new release amounts
+            $db->db_tool_update_row('ina_policies',$policyNewData,'inapol_policy_ID = '.$this->policyID,
+                $this->policyID,'fld_','execute','inapol_');
 
             $insuranceSettings = $db->query_fetch('SELECT * FROM ina_settings');
-            //set 1
+            //header data
             $headerData['documentID'] = $insuranceSettings['inaset_ins_comm_ac_document_ID'];
             $headerData['entityID'] = $transactions[1]['entityID'];
             $headerData['comments'] = 'Policy ID:'.$this->policyID." Commissions";
             $headerData['fromModule'] = 'AInsurance';
             $headerData['fromIDDescription'] = 'PaymentID';
             $headerData['fromID'] = $this->paymentID;
-            $transactionsData[1] = $transactions[1];
-            $transactionsData[2] = $transactions[2];
 
+            //Set 1 main office commissions
+            //get the transactions
+            $allTransactionsData = $policy->getAccountTransactionsList();
+            $transactionsData[1] = $allTransactionsData[1];
+            $transactionsData[2] = $allTransactionsData[2];
+            //fix the amounts with the release only amounts
+            $transactionsData[1]['amount'] = $this->paymentData['inapp_allocated_commission'];
+            $transactionsData[2]['amount'] = $this->paymentData['inapp_allocated_commission'];
             include_once('../../accounts/transactions/transactions_class.php');
             $transaction = new AccountsTransaction(0);
             $transaction->makeNewTransaction($headerData, $transactionsData);
@@ -289,10 +297,14 @@ class PolicyPayment
                 $this->errorDescription = $transaction->errorDescription;
                 return false;
             }
-            //set 2
-            if ($transactions[3]['type'] != ''){
-                $transactionsData[1] = $transactions[3];
-                $transactionsData[2] = $transactions[4];
+            //set 2 agent 1 commissions
+            if ($policy->policyData['inapol_agent_level1_commission'] > 0){
+                unset($transactionsData);
+                $transactionsData[1] = $allTransactionsData[3];
+                $transactionsData[2] = $allTransactionsData[4];
+                //fix the amounts
+                $transactionsData[1]['amount'] = $agents1Commission;
+                $transactionsData[2]['amount'] = $agents1Commission;
                 $headerData['entityID'] = $transactions[3]['entityID'];
                 $transaction->makeNewTransaction($headerData, $transactionsData);
                 if ($transaction->error == true){
@@ -302,10 +314,14 @@ class PolicyPayment
                 }
             }
 
-            //set 3
-            if ($transactions[5]['type'] != ''){
-                $transactionsData[1] = $transactions[5];
-                $transactionsData[2] = $transactions[6];
+            //set 3 agent 2 commissions
+            if ($policy->policyData['inapol_agent_level2_commission'] > 0){
+                unset($transactionsData);
+                $transactionsData[1] = $allTransactionsData[5];
+                $transactionsData[2] = $allTransactionsData[6];
+                //fix the amounts
+                $transactionsData[1]['amount'] = $agents2Commission;
+                $transactionsData[2]['amount'] = $agents2Commission;
                 $headerData['entityID'] = $transactions[5]['entityID'];
                 $transaction->makeNewTransaction($headerData, $transactionsData);
                 if ($transaction->error == true){
@@ -315,6 +331,22 @@ class PolicyPayment
                 }
             }
 
+            //set 4agent 3 commissions
+            if ($policy->policyData['inapol_agent_level3_commission'] > 0){
+                unset($transactionsData);
+                $transactionsData[1] = $allTransactionsData[7];
+                $transactionsData[2] = $allTransactionsData[8];
+                //fix the amounts
+                $transactionsData[1]['amount'] = $agents3Commission;
+                $transactionsData[2]['amount'] = $agents3Commission;
+                $headerData['entityID'] = $transactions[7]['entityID'];
+                $transaction->makeNewTransaction($headerData, $transactionsData);
+                if ($transaction->error == true){
+                    $this->error = true;
+                    $this->errorDescription = $transaction->errorDescription;
+                    return false;
+                }
+            }
             //get all accounting transactions of this policy to verify that total amount of commission is correct.
             //if not add the difference in this transaction
 
@@ -324,10 +356,15 @@ class PolicyPayment
         return true;
     }
 
+    /** NOT WORKING. Accounting transactions are not reversed
+     * @return bool
+     */
     public function reversePostPayment()
     {
         global $db;
-
+        $this->errorDescription = 'Reverse post payment not fully functional. A/c transactions are not reversed';
+        $this->error = true;
+        return false;
         //Checks
         if ($this->paymentData['inapp_status'] != 'Applied') {
             $this->error = true;

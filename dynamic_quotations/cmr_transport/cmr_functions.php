@@ -331,11 +331,11 @@ function cmr_transport_item_2_other_details()
                     ->setFieldType('select')
                     ->setInputSelectAddEmptyOption(true)
                     ->setInputSelectArrayOptions([
-                        'Tarpaulin' => 'Tarpaulin',
-                        'Box with cooling unit' => 'Box with cooling unit',
-                        'Box without cooling unit' => 'Box without cooling unit',
-                        'Tank - Silo' => 'Tank - Silo',
-                        'Other Special Type' => 'Other Special Type'
+                        'Tarpaulin' => show_quotation_text('Μουσαμάς','Tarpaulin','return'),
+                        'Box with cooling unit' => show_quotation_text('Κλειστό με Ψυκτικό Μηχάνημα','Box with cooling unit','return'),
+                        'Box without cooling unit' => show_quotation_text('Κλειστό χωρίς Ψυκτικό Μηχάνημα','Box without cooling unit','return'),
+                        'Tank - Silo' => show_quotation_text('Βυτίο - Σιλοφόρο','Tank - Silo','return'),
+                        'Other Special Type' => show_quotation_text('Ειδικών Τύπων ','Other Special Type','return')
                     ])
                     ->setFieldOnChange('vehiclesTypeOther(' . $vNum . ');')
                     ->setInputValue($vehicle[3])
@@ -1287,10 +1287,10 @@ function cmr_transport_item_2_other_details()
             $("#option3excess :input").attr("disabled", true);
             $("#option4excess :input").attr("disabled", true);
             //hide all
-            $('#option1excess').hide();
-            $('#option2excess').hide();
-            $('#option3excess').hide();
-            $('#option4excess').hide();
+            //$('#option1excess').hide();
+            //$('#option2excess').hide();
+            //$('#option3excess').hide();
+            //$('#option4excess').hide();
             //show/enable the selected
             $('#option' + selectedOption + 'excess').show();
             $("#option" + selectedOption + "excess :input").attr("disabled", false);
@@ -1309,8 +1309,20 @@ function cmr_transport_item_2_other_details()
 //make approval for all cover notes by default
 function customCheckForApproval($data)
 {
-    global $db;
+    global $db,$main;
     $result['error'] = true;
     $result['errorDescription'] = 'This cover note requires approval';
+
+    //make the proposal pdf and attach it to the approval email
+    include('proposal_html_print.php');
+    $html = getProposalHTML($data['oqq_quotations_ID']);
+    $mpdf = new \Mpdf\Mpdf([
+        'default_font' => 'dejavusans'
+    ]);
+    $mpdf->WriteHTML($html);
+    $filename = date('YmdGisu')."-proposal.pdf";
+    $mpdf->Output($main['local_url'].'/send_auto_emails/attachment_files/'.$filename, \Mpdf\Output\Destination::FILE);
+    //$dataArray['attachment_files'] = $filename."||".$attachment_file_name;
+    $result['extraAttachments'] = $filename."||Proposal.pdf";
     return $result;
 }

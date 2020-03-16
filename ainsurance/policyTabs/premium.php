@@ -281,8 +281,9 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                     <div class="row">
                         <div class="col-sm-12">
                             Accounts Transactions Console
-                            <textarea disabled style="width: 100%" rows="8"><?php
-                                if ($policy->policyData['inapol_status'] == 'Outstanding') {
+                            <textarea disabled style="width: 100%" rows="10"><?php
+                                //if ($policy->policyData['inapol_status'] == 'Outstanding') {
+                                if (1==1) {
                                     if ($policy->policyData['inainc_enable_commission_release'] == 1){
                                         echo "Commission Release is Active for this Company. Transactions will be generated only on payments.".PHP_EOL;
                                         echo "List of possible accounts transactions below.".PHP_EOL;

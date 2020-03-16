@@ -162,6 +162,15 @@ $totalAccountLines = 15;
 
                         </div>
 
+                        <div class="col-6">
+                            <?php
+                            if ($data['actrn_from_module'] != '')
+                            echo "From:".$data['actrn_from_module']." ";
+
+                            echo "Comments:".$data['actrn_comments'];
+                            ?>
+                        </div>
+
                     </div>
 
                     <div class="form-group row">

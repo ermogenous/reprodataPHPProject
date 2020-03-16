@@ -16,6 +16,7 @@ class ODBCCON
     {
         $this->database = $database;
         $this->databaseHandler = odbc_connect('dsn=' . $database . ';charset=' . $charset . ';', 'PHPINTRANET', 'Php$Intranet');
+        odbc_autocommit($this->databaseHandler,false);
     }
 
     public function query($sql)
@@ -63,18 +64,18 @@ class ODBCCON
 
     public function beginTransaction(){
         $this->startTransaction = true;
-        $this->query('BEGIN TRANSACTION someTransaction;');
+        $this->query('BEGIN TRANSACTION;');
     }
 
     public function rollback(){
         if ($this->startTransaction) {
-            $this->query('ROLLBACK;');
+            odbc_rollback($this->databaseHandler);
         }
     }
 
     public function commit(){
         if ($this->startTransaction) {
-            $this->query('COMMIT;');
+            odbc_commit($this->databaseHandler);
         }
     }
 

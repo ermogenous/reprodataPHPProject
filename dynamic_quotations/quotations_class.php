@@ -18,6 +18,8 @@ class dynamicQuotation
     public $errorType = 'error';
     public $errorDescription = '';
 
+    public $approvalExtraAttachments = '';
+
     function __construct($quotationID)
     {
         global $db;
@@ -170,10 +172,12 @@ class dynamicQuotation
                     $needApproval = true;
                     $this->errorType = 'warning';
                 }
+                $this->approvalExtraAttachments = $result['extraAttachments'];
             }
 
             //if approval is found then change the status of the policy to Pending.
             if ($needApproval == true) {
+
                 $newData['status'] = 'Pending';
                 $this->quotationData['oqq_status'] = 'Pending';
                 //success sending the approval email
@@ -276,6 +280,14 @@ class dynamicQuotation
                     $mpdf->Output($main['local_url'].'/send_auto_emails/attachment_files/'.$filename, \Mpdf\Output\Destination::FILE);
                     $dataArray['attachment_files'] = $filename."||".$attachment_file_name;
                 }
+                if ($this->approvalExtraAttachments != ''){
+                    if ($dataArray['attachment_files'] != ''){
+                        $dataArray['attachment_files'] .= PHP_EOL;
+                    }
+                    $dataArray['attachment_files'] .= $this->approvalExtraAttachments;
+                }
+
+
 
                 //create the record
                 $autoEmailID = $autoEmail->addData($dataArray);

@@ -102,8 +102,8 @@ $formB->setLabelClasses('col-sm-3');
                 <form name="myForm" id="myForm" method="post"
                     <?php $formValidator->echoFormParameters(); ?>>
                     <div class="alert alert-dark text-center">
-                        <b><?php if ($_GET["lid"] == "") echo $db->showLangText("Insert",'Δημιουργία');
-                        else echo $db->showLangText("Update","Ενημέρωση"); ?>
+                        <b><?php if ($_GET["lid"] == "") echo $db->showLangText("Insert", 'Δημιουργία');
+                            else echo $db->showLangText("Update", "Ενημέρωση"); ?>
                             &nbsp;<?php echo $policy->getTypeFullName(); ?></b>
                     </div>
 
@@ -111,25 +111,23 @@ $formB->setLabelClasses('col-sm-3');
                     <?php
                     if ($policy->policyData['inaiss_item_custom_input_file'] != '') {
                         //validate the file
-                        $customFile = $main['local_url']."/ainsurance/custom_items/".$policy->policyData['inaiss_item_custom_input_file'];
-                        if (file_exists($customFile)){
+                        $customFile = $main['local_url'] . "/ainsurance/custom_items/" . $policy->policyData['inaiss_item_custom_input_file'];
+                        if (file_exists($customFile)) {
                             include($customFile);
-                            if (function_exists('insuranceCustomItem')){
-                                insuranceCustomItem();
-                            }
-                            else {
+                            if (function_exists('insuranceCustomItem')) {
+                                $customFileReturn = insuranceCustomItem();
+                            } else {
                                 $db->generateSessionAlertError('Issue custom file function (insuranceCustomItem) does not exists. Check file for the function.');
-                                header("Location: policy_items.php?pid=".$_GET['pid']);
+                                header("Location: policy_items.php?pid=" . $_GET['pid']);
                                 exit();
                             }
-                        }
-                        else {
+                        } else {
                             $db->generateSessionAlertError('Issue custom file does not exists. Check file name.');
-                            header("Location: policy_items.php?pid=".$_GET['pid']);
+                            header("Location: policy_items.php?pid=" . $_GET['pid']);
                             exit();
                         }
-                        
-                        
+
+
                         ?>
 
                         <?php
@@ -660,19 +658,20 @@ $formB->setLabelClasses('col-sm-3');
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
                             <input name="pid" type="hidden" id="pid" value="<?php echo $_GET["pid"]; ?>">
                             <input name="type" type="hidden" id="type" value="<?php echo $_GET["type"]; ?>">
-                            <input type="button" value="<?php echo $db->showLangText('Back','Πίσω');?>" class="btn btn-secondary" name="BtnBack" id="BtnBack"
+                            <input type="button" value="<?php echo $db->showLangText('Back', 'Πίσω'); ?>"
+                                   class="btn btn-secondary" name="BtnBack" id="BtnBack"
                                    style="donotdisable"
                                    onclick="window.location.assign('policy_items.php?pid=<?php echo $_GET['pid'] . "&type=" . $_GET['type']; ?>')">
                             <?php
                             if ($policy->policyData['inapol_status'] == 'Outstanding') {
                                 ?>
                                 <input type="submit" name="Save" id="Save"
-                                       value="<?php echo $db->showLangText('Save ','Αποθήκευση ').$label; ?>"
+                                       value="<?php echo $db->showLangText('Save ', 'Αποθήκευση ') . $label; ?>"
                                        class="btn btn-secondary" onclick="submitForm('save')">
                                 <input type="submit" name="Submit" id="Submit"
                                        value="<?php if ($_GET["lid"] == "")
-                                           echo $db->showLangText("Insert ","Δημιουργία ");
-                                       else echo $db->showLangText("Update ","Αποθήκευση ");
+                                           echo $db->showLangText("Insert ", "Δημιουργία ");
+                                       else echo $db->showLangText("Update ", "Αποθήκευση ");
                                        echo $label; ?>"
                                        class="btn btn-secondary" onclick="submitForm('exit')">
                                 <input type="hidden" name="sub-action" id="sub-action" value="">
@@ -702,6 +701,11 @@ $formB->setLabelClasses('col-sm-3');
             else if ($_GET['type'] == 'RiskLocation'){
             ?>
             $('#policyItemsTab', window.parent.document).height('450px');
+            <?php
+            }
+            else if ($customFileReturn['windowHeight'] > 0){
+            ?>
+            $('#policyItemsTab', window.parent.document).height('<?php echo $customFileReturn['windowHeight'];?>px');
             <?php
             }
             else {

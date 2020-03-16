@@ -8,24 +8,24 @@
 
 include("../../include/main.php");
 $db = new Main();
-$db->admin_title = "AInsurance Company Modify";
+$db->admin_title = "AInsurance Policy Input Form Modify";
 
 
 if ($_POST["action"] == "insert") {
     $db->check_restriction_area('insert');
 
-    $db->working_section = 'AInsurance Company Package Insert';
-    $db->db_tool_insert_row('ina_insurance_company_packages', $_POST, 'fld_',0, 'inaincpk_');
-    header("Location: insurance_company_packages.php");
+    $db->working_section = 'Insurance Policy Input Form Insert';
+    $db->db_tool_insert_row('ina_input_forms', $_POST, 'fld_',0, 'inaif_');
+    header("Location: input_forms.php");
     exit();
 
 } else if ($_POST["action"] == "update") {
     $db->check_restriction_area('update');
-    $db->working_section = 'AInsurance Company Package Modify';
+    $db->working_section = 'Insurance Policy Input Form Modify';
 
-    $db->db_tool_update_row('ina_insurance_company_packages', $_POST, "`inaincpk_insurance_company_package_ID` = " . $_POST["lid"],
-        $_POST["lid"], 'fld_', 'execute', 'inaincpk_');
-    header("Location: insurance_company_packages.php");
+    $db->db_tool_update_row('ina_input_forms', $_POST, "`inaif_input_form_ID` = " . $_POST["lid"],
+        $_POST["lid"], 'fld_', 'execute', 'inaif_');
+    header("Location: input_forms.php");
     exit();
 
 
@@ -33,8 +33,8 @@ if ($_POST["action"] == "insert") {
 
 
 if ($_GET["lid"] != "") {
-    $db->working_section = 'AInsurance Company Package Get data';
-    $sql = "SELECT * FROM `ina_insurance_company_packages` WHERE `inaincpk_insurance_company_package_ID` = " . $_GET["lid"];
+    $db->working_section = 'Insurance Policy Input Form Get data';
+    $sql = "SELECT * FROM `ina_input_forms` WHERE `inaif_input_form_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
 }
 else {
@@ -55,7 +55,7 @@ $formValidator = new customFormValidator();
                     <?php $formValidator->echoFormParameters(); ?>>
                     <div class="alert alert-dark text-center">
                         <b><?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?>
-                            &nbsp;Insurance Company Package</b>
+                            &nbsp;Insurance Policy Input Form</b>
                     </div>
 
                     <div class="form-group row">
@@ -63,8 +63,8 @@ $formValidator = new customFormValidator();
                         <div class="col-sm-8">
                             <select name="fld_status" id="fld_status"
                                     class="form-control">
-                                <option value="Active" <?php if ($data['inaincpk_status'] == 'Active') echo 'selected';?>>Active</option>
-                                <option value="InActive" <?php if ($data['inaincpk_status'] == 'InActive') echo 'selected';?>>In-active</option>
+                                <option value="Active" <?php if ($data['inaif_status'] == 'Active') echo 'selected';?>>Active</option>
+                                <option value="InActive" <?php if ($data['inaif_status'] == 'InActive') echo 'selected';?>>In-active</option>
                             </select>
                             <?php
                             $formValidator->addField([
@@ -89,7 +89,7 @@ $formValidator = new customFormValidator();
                                 while ($comp = $db->fetch_assoc($result)) {
                                     ?>
                                     <option value="<?php echo $comp['inainc_insurance_company_ID'];?>"
-                                        <?php if ($data['inaincpk_insurance_company_ID'] == $comp['inainc_insurance_company_ID'])
+                                        <?php if ($data['inaif_insurance_company_ID'] == $comp['inainc_insurance_company_ID'])
                                             echo "selected=\"selected\""; ?>>
                                         <?php echo $comp['inainc_name'];?>
                                     </option>
@@ -115,25 +115,25 @@ $formValidator = new customFormValidator();
                             <select name="fld_type" id="fld_type"
                                     class="form-control">
                                 <option value=""></option>
-                                <option value="Motor" <?php if ($data['inaincpk_type'] == 'Motor') echo "selected=\"selected\""; ?>>
+                                <option value="Motor" <?php if ($data['inaif_type'] == 'Motor') echo "selected=\"selected\""; ?>>
                                     Motor
                                 </option>
-                                <option value="Fire" <?php if ($data['inaincpk_type'] == 'Fire') echo "selected=\"selected\""; ?>>
+                                <option value="Fire" <?php if ($data['inaif_type'] == 'Fire') echo "selected=\"selected\""; ?>>
                                     Fire
                                 </option>
-                                <option value="PA" <?php if ($data['inaincpk_type'] == 'PA') echo "selected=\"selected\""; ?>>
+                                <option value="PA" <?php if ($data['inaif_type'] == 'PA') echo "selected=\"selected\""; ?>>
                                     PA
                                 </option>
-                                <option value="EL" <?php if ($data['inaincpk_type'] == 'EL') echo "selected=\"selected\""; ?>>
+                                <option value="EL" <?php if ($data['inaif_type'] == 'EL') echo "selected=\"selected\""; ?>>
                                     EL
                                 </option>
-                                <option value="PI" <?php if ($data['inaincpk_type'] == 'PI') echo "selected=\"selected\""; ?>>
+                                <option value="PI" <?php if ($data['inaif_type'] == 'PI') echo "selected=\"selected\""; ?>>
                                     PI
                                 </option>
-                                <option value="PL" <?php if ($data['inaincpk_type'] == 'PL') echo "selected=\"selected\""; ?>>
+                                <option value="PL" <?php if ($data['inaif_type'] == 'PL') echo "selected=\"selected\""; ?>>
                                     PL
                                 </option>
-                                <option value="Medical" <?php if ($data['inaincpk_type'] == 'Medical') echo "selected=\"selected\""; ?>>
+                                <option value="Medical" <?php if ($data['inaif_type'] == 'Medical') echo "selected=\"selected\""; ?>>
                                     Medical
                                 </option>
                             </select>
@@ -149,27 +149,11 @@ $formValidator = new customFormValidator();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_code" class="col-sm-4 col-form-label">Code</label>
-                        <div class="col-sm-8">
-                            <input name="fld_code" type="text" id="fld_code"
-                                   class="form-control"
-                                   value="<?php echo $data["inaincpk_code"]; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_code",
-                                "fieldDataType" => "text",
-                                "required" => true,
-                            ]);
-                            ?>
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
                         <label for="fld_name" class="col-sm-4 col-form-label">Name</label>
                         <div class="col-sm-8">
                             <input name="fld_name" type="text" id="fld_name"
                                    class="form-control"
-                                   value="<?php echo $data["inaincpk_name"]; ?>">
+                                   value="<?php echo $data["inaif_name"]; ?>">
                             <?php
                             $formValidator->addField([
                                 "fieldName" => "fld_name",
@@ -185,7 +169,7 @@ $formValidator = new customFormValidator();
                         <div class="col-sm-8">
                             <input name="fld_description" type="text" id="fld_description"
                                    class="form-control"
-                                   value="<?php echo $data["inaincpk_description"]; ?>">
+                                   value="<?php echo $data["inaif_description"]; ?>">
                             <?php
                             $formValidator->addField([
                                 "fieldName" => "fld_description",
@@ -203,8 +187,9 @@ $formValidator = new customFormValidator();
                                    value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
                             <input type="button" value="Back" class="btn btn-secondary"
-                                   onclick="window.location.assign('insurance_company_packages.php')" >
-                            <input type="submit" name="Submit" id="Submit" value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Package"
+                                   onclick="window.location.assign('input_forms.php')" >
+                            <input type="submit" name="Submit" id="Submit"
+                                   value="<?php if ($_GET["lid"] == "") echo "Insert"; else echo "Update"; ?> Input Form"
                                    class="btn btn-secondary">
                         </div>
                     </div>

@@ -422,6 +422,10 @@ function template_header()
                                     <i class="fas fa-users"></i> Insurance Agents</a>
 
                                 <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/ainsurance/input_forms/input_forms.php">
+                                    <i class="fab fa-wpforms"></i> Policy Input Froms</a>
+
+                                <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/send_auto_emails/send_auto_emails.php">
                                     <i class="fas fa-envelope"></i> Auto Emails</a>
 
