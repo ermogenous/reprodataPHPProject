@@ -19,9 +19,9 @@ class Policy
     public $mif;
     public $fees;
     public $commission;
-public $companyCommission;
+    public $companyCommission;
     public $commissionCalculation;
-        public $error = false;//holds the commission % based on the underwriter/type/company
+    public $error = false;//holds the commission % based on the underwriter/type/company
     public $errorDescription;
     private $validForActive = false;
     private $totalItems = 0;
@@ -43,7 +43,7 @@ public $companyCommission;
         }
         $this->loadInsuranceSettings();
 
-        $result = $db->query('
+        $sql = '
           SELECT * FROM 
           ina_policies 
           LEFT OUTER JOIN ina_insurance_companies ON inapol_insurance_company_ID = inainc_insurance_company_ID
@@ -51,7 +51,9 @@ public $companyCommission;
           LEFT OUTER JOIN ina_issuing ON inaiss_issue_ID = inapol_issue_ID
           WHERE 
           inapol_underwriter_ID ' . $this->getAgentWhereClauseSql() . '
-          AND inapol_policy_ID = ' . $policyID);
+          AND inapol_policy_ID = ' . $policyID;
+        $result = $db->query($sql);
+        //echo $sql;exit();
         $this->policyData = $db->fetch_assoc($result);
         //if no record then redirect to policies for security
         if ($db->num_rows($result) < 1) {
@@ -103,7 +105,7 @@ public $companyCommission;
 
     //STATIC FUNCTIONS
 
-    public static function getAgentWhereClauseSql($whatToReturn = 'where')
+    public static function getAgentWhereClauseSql_OLD($whatToReturn = 'where')
     {
         global $db;
 
@@ -122,8 +124,9 @@ public $companyCommission;
 		  JOIN ina_underwriters ON inaund_user_ID = usr_users_ID 
           WHERE 
           usg_users_groups_ID = " . $db->user_data['usr_users_groups_ID'] . "
-          AND inaund_vertical_level > " . $underwriter['inaund_vertical_level'];
-        //echo $sql;
+          AND inaund_vertical_level >= " . $underwriter['inaund_vertical_level'];
+        echo $sql;
+        exit();
         $result = $db->query($sql);
         while ($row = $db->fetch_assoc($result)) {
             //print_r($row);
@@ -146,6 +149,43 @@ public $companyCommission;
             return $totalFound;
         }
 
+    }
+
+    public static function getAgentWhereClauseSql($whatToReturn = 'where')
+    {
+        global $db;
+
+        //first get the underwriter
+        $underwriter = $db->query_fetch('
+            SELECT * FROM ina_underwriters 
+            JOIN users ON usr_users_ID = inaund_user_ID
+            WHERE inaund_user_ID = ' . $db->user_data['usr_users_ID']);
+
+        //if vertical level 0 then view all
+        if ($underwriter['inaund_vertical_level'] == '0'){
+            $where = ' > 0';
+        }
+        //if vertical level between 1 and 9
+        //can view his own and above
+        if ($underwriter['inaund_vertical_level'] > 0 && $underwriter['inaund_vertical_level'] < 10){
+            //his own
+            $where = ' IN ('.$underwriter['inaund_underwriter_ID'];
+            $sql = '
+            SELECT * FROM ina_underwriters 
+            JOIN users ON usr_users_ID = inaund_user_ID
+            WHERE inaund_vertical_level > '.$underwriter['inaund_vertical_level'].'
+            ';
+            $result = $db->query($sql);
+            while ($row = $db->fetch_assoc($result)){
+                $where .= $row['inaund_underwriter_ID'].",";
+            }
+            $where = $db->remove_last_char($where);
+            $where = $where.")";
+        }
+        if ($underwriter['inaund_vertical_level'] == 10){
+            $where = ' = '.$underwriter['inaund_underwriter_ID'];
+        }
+        return $where;
     }
 
     public static function getUnderwriterData()
@@ -230,12 +270,12 @@ public $companyCommission;
 
     public function getCertificateNumber()
     {
-        if ($this->policyData['inapol_issue_ID'] == '' || $this->policyData['inapol_issue_ID'] == 0){
+        if ($this->policyData['inapol_issue_ID'] == '' || $this->policyData['inapol_issue_ID'] == 0) {
             return '';
         }
 
-        if ($this->policyData['inapol_process_status'] == 'New'){
-            return $this->policyData['inapol_policy_number']."/R00/E00";
+        if ($this->policyData['inapol_process_status'] == 'New') {
+            return $this->policyData['inapol_policy_number'] . "/R00/E00";
         }
 
     }
@@ -487,7 +527,6 @@ public $companyCommission;
             }
 
 
-
             //2. Check if premium is equal to total premium of items
             $premCheck = $db->query_fetch('SELECT 
               SUM(inapit_premium)as clo_total_premium,
@@ -504,9 +543,9 @@ public $companyCommission;
 
             //3. Check the status of the installments
             $instCheck = $db->query_fetch("SELECT COUNT(*)as clo_total FROM ina_policy_installments 
-                        WHERE inapi_policy_ID = ".$this->installmentID."
+                        WHERE inapi_policy_ID = " . $this->installmentID . "
                         AND (inapi_paid_status IS NULL || inapi_paid_status <> 'UnPaid')");
-            if ($instCheck['clo_total'] > 0){
+            if ($instCheck['clo_total'] > 0) {
                 $this->error = true;
                 $this->errorDescription = 'Something wrong with installments. Found empty or not unpaid status';
                 return false;
@@ -1459,6 +1498,12 @@ public $companyCommission;
         $newData['inapol_fees'] = 0;
         $newData['inapol_stamps'] = 0;
         $newData['inapol_replacing_ID'] = $this->policyID;
+        //make subagets fields all to zero
+        $newData['inapol_agent_level1_released'] = 0;
+        $newData['inapol_agent_level2_released'] = 0;
+        $newData['inapol_agent_level3_released'] = 0;
+        $newData['inapol_subagent_commission'] = 0;
+        $newData['inapol_subsubagent_commission'] = 0;
 
         unset($newData['inapol_created_date_time']);
         unset($newData['inapol_created_by']);

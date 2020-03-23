@@ -19,6 +19,9 @@ if ($_POST["action"] == "insert") {
     $db->working_section = 'Accounts Entity Inserting';
 
     $_POST['fld_birthdate'] = $db->convertDateToUS($_POST['fld_birthdate']);
+    if ($_POST['fld_birthdate'] == ''){
+        $_POST['fld_birthdate'] = '0000-00-00';
+    }
 
     $db->db_tool_insert_row('ac_entities', $_POST, 'fld_', 0, 'acet_');
     header("Location: entities.php");

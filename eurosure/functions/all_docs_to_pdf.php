@@ -1,4 +1,5 @@
 <?php
+
 include("../../include/main.php");
 include("../lib/odbccon.php");
 include("../../scripts/form_validator_class.php");
@@ -6,7 +7,7 @@ include("../../scripts/form_builder_class.php");
 include("../../scripts/meBuildDataTable.php");
 $db = new Main();
 
-$sybase = new ODBCCON('EUROTEST');
+$sybase = new ODBCCON();
 
 $db->show_header();
 
@@ -246,7 +247,7 @@ FormBuilder::buildPageLoader();
                 }//while all print logs
 
                 //commit the transactions
-                $db->commit_transaction();
+                $sybase->commit();
                 $_POST['action'] = 'showLogs';
             }
         }
@@ -264,7 +265,9 @@ FormBuilder::buildPageLoader();
                             -->
                             <?php
 
-                            $sql = "SELECT
+                            $sql = "
+
+    select
                                             indpl_auto_serial as AutoSerial,
                                             indpl_document_type as 'Document Type',
                                             indpl_primary_serial as 'Primary Serial',
@@ -329,6 +332,7 @@ FormBuilder::buildPageLoader();
                                             WHERE indpl_primary_serial = '" . $prnt['Auto Serial'] . "'
                                             AND indpl_document_type = 'DCN'";
                                 $resultd = $sybase->query($sql);
+                                $allRecordsD = [];
                                 while ($prnt = $sybase->fetch_assoc($resultd)) {
                                     $allRecordsD[] = $prnt;
                                 }

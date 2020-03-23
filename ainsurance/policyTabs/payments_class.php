@@ -18,6 +18,7 @@ class PolicyPayment
     public $newUnAllocatedID = 0;
 
     private $policyID;
+    private $installmentID; //the id of the primary policy which holds the commissions. In case of endorsements/cancellations
     private $allowedModify = true;
 
     function __construct($paymentID)
@@ -29,6 +30,7 @@ class PolicyPayment
             JOIN ina_policies ON inapp_policy_ID = inapol_policy_ID
             WHERE inapp_policy_payment_ID = ' . $paymentID);
         $this->paymentID = $paymentID;
+        $this->installmentID = $this->paymentData['inapol_installment_ID'];
         $this->policyID = $this->paymentData['inapol_installment_ID'];
 
         if ($this->paymentData['inapp_locked'] == 1 || $this->paymentData['inapp_status'] != 'Outstanding') {
@@ -269,7 +271,8 @@ class PolicyPayment
             }
             $policyNewData['fld_commission_released'] = $policy->policyData['inapol_commission_released'] + $this->paymentData['inapp_allocated_commission'];
             //update the policy with the new release amounts
-            $db->db_tool_update_row('ina_policies',$policyNewData,'inapol_policy_ID = '.$this->policyID,
+            //update the primary policy with installment id
+            $db->db_tool_update_row('ina_policies',$policyNewData,'inapol_policy_ID = '.$this->installmentID,
                 $this->policyID,'fld_','execute','inapol_');
 
             $insuranceSettings = $db->query_fetch('SELECT * FROM ina_settings');

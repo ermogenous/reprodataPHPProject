@@ -27,6 +27,7 @@
 include("common.php");
 require_once($main["local_url"] . '/vendor/autoload.php');
 
+
 class Main
 {
 
@@ -215,7 +216,7 @@ class Main
         //exit();
         //}
         if ($retrive_data == 1) {
-            $details = json_decode(file_get_contents("https://ipinfo.io/{$ip}/json"));
+            @$details = json_decode(file_get_contents("https://ipinfo.io/{$ip}/json"));
             //if ($ip == '81.4.137.26') {echo $details;}
             $field_data["fld_ipl_ip"] = $ip;
             $field_data["fld_ipl_hostname"] = $details->hostname;
@@ -1953,7 +1954,7 @@ class Main
             }
 
         } else {
-            return 'cst_for_user_group_ID = ' . $this->user_data['usr_users_ID'];
+            return 'cst_for_user_group_ID = ' . $this->user_data['usr_users_groups_ID'];
         }
 
     }

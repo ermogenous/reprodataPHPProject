@@ -165,7 +165,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                         ?>
                         <div class="form-group row">
                             <label for="fld_agent_level1_commission" class="col-sm-9 text-right col-form-label">
-                                Sub Level 1 Comm.: <?php echo $subLevel1['usr_name'] . " " . $policy->policyData['inapol_agent_level1_percent'] . "%"; ?>
+                                Sub Level 1 Comm.: <?php echo $subLevel1['usr_name'] . " <b>" . $policy->policyData['inapol_agent_level1_percent'] . "%"; ?></b>
                             </label>
                             <div class="col-sm-3">
                                 <input type="text" id="fld_agent_level1_commission" name="fld_agent_level1_commission"
@@ -191,7 +191,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                         ?>
                         <div class="form-group row">
                             <label for="fld_agent_level2_commission" class="col-sm-9 text-right col-form-label">
-                                Sub Level 2 Commission: <?php echo $subLevel2['usr_name'] . " " . $policy->policyData['inapol_agent_level2_percent'] . "%"; ?>
+                                Sub Level 2 Commission: <?php echo $subLevel2['usr_name'] . " <b>" . $policy->policyData['inapol_agent_level2_percent'] . "%"; ?></b>
                             </label>
                             <div class="col-sm-3">
                                 <input type="text" id="fld_agent_level2_commission" name="fld_agent_level2_commission"
@@ -217,7 +217,7 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                         ?>
                         <div class="form-group row">
                             <label for="fld_agent_level3_commission" class="col-sm-9 text-right col-form-label">
-                                Sub Level 3 Commission: <?php echo $subLevel3['usr_name'] . " " . $policy->policyData['inapol_agent_level3_percent'] . "%"; ?>
+                                Sub Level 3 Commission: <?php echo $subLevel3['usr_name'] . " <b>" . $policy->policyData['inapol_agent_level3_percent'] . "%"; ?></b>
                             </label>
                             <div class="col-sm-3">
                                 <input type="text" id="fld_agent_level3_commission" name="fld_agent_level3_commission"

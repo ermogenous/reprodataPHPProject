@@ -21,9 +21,11 @@ if ($_GET['section'] == 'customers') {
               cst_work_tel_1 as work_tel,
               cst_mobile_1 as mobile
                FROM customers 
+               JOIN users ON usr_users_ID = cst_user_ID
                JOIN ina_underwriters ON inaund_user_ID = cst_user_ID
                WHERE 
                inaund_underwriter_ID ".Policy::getAgentWhereClauseSql()."
+               #AND cst_for_user_group_ID = ".$db->user_data['usr_users_groups_ID']." 
                AND 
                 (
                 CONCAT(cst_identity_card, ' ', cst_name, ' ', cst_surname) 

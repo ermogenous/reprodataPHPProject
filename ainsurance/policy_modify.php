@@ -15,9 +15,15 @@ $db->admin_title = "AInsurance Policy Modify";
 
 if ($_POST["action"] == "insert") {
     $db->check_restriction_area('insert');
-    $db->start_transaction();;
+    $db->start_transaction();
 
-    $_POST['fld_for_user_group_ID'] = $db->user_data['usr_users_groups_ID'];
+    //find the group of the underwriter specified on the policy
+    $policyUnderwriter = $db->query_fetch('
+        SELECT * FROM ina_underwriters 
+        JOIN users ON usr_users_ID = inaund_user_ID
+        WHERE inaund_underwriter_ID = '.$_POST['fld_underwriter_ID']);
+
+    $_POST['fld_for_user_group_ID'] = $policyUnderwriter['usr_users_groups_ID'];
     $_POST['fld_period_starting_date'] = $db->convert_date_format($_POST['fld_period_starting_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $_POST['fld_starting_date'] = $db->convert_date_format($_POST['fld_starting_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $_POST['fld_expiry_date'] = $db->convert_date_format($_POST['fld_expiry_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
@@ -40,6 +46,7 @@ if ($_POST["action"] == "insert") {
 
     //validate policy number
     $policy = new Policy($newID);
+
     if ($policy->validatePolicyNumber() == false) {
         $db->generateSessionAlertError($policy->errorDescription);
         //reset the policy number
@@ -150,6 +157,7 @@ $db->show_header();
                                         1=1 
                                         " . $groupFilter . " 
                                         AND inaund_status = 'Active' 
+                                        AND inaund_subagent_ID != 0
                                         ORDER BY usr_name ASC";
                                 echo $sql;
                                 $result = $db->query($sql);

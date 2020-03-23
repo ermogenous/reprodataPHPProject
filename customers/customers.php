@@ -10,6 +10,7 @@ $db->show_header();
 
 $table = new draw_table('customers', 'cst_customer_ID', 'ASC');
 $table->extras = $db->CustomersWhere();
+
 if ($_POST['search'] == 'search') {
     if ($_POST['search_field-id'] > 0){
         $table->extras .= " AND cst_customer_ID = ".$_POST['search_field-id'];

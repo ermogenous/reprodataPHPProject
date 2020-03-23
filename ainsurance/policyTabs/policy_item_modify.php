@@ -21,7 +21,7 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_policy_ID'] = $_POST['pid'];
     $_POST['fld_type'] = $_POST['type'];
     $_POST['fld_mb_birth_date'] = $db->convertDateToUS($_POST['fld_mb_birth_date']);
-    $db->db_tool_insert_row('ina_policy_items', $_POST, 'fld_', 0, 'inapit_');
+    $newID = $db->db_tool_insert_row('ina_policy_items', $_POST, 'fld_', 1, 'inapit_');
 
     //update the policy
     $policy = new Policy($_GET['pid']);
@@ -33,7 +33,7 @@ if ($_POST["action"] == "insert") {
         header("Location: policy_items.php?rel=yes&pid=" . $_POST['pid'] . "&type=" . $_POST['type']);
         exit();
     } else {
-        $_GET['lid'] = $_POST['lid'];
+        $_GET['lid'] = $newID;
         $_GET['pid'] = $_POST['pid'];
         $_GET['type'] = $_POST['type'];
     }

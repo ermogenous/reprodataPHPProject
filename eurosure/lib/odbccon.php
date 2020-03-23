@@ -26,7 +26,9 @@ class ODBCCON
             throw new ErrorException($errstr, $errno, 0, $errfile, $errline);
         });
         try{
+            //echo $sql;
             $result = odbc_exec($this->databaseHandler, $sql);
+            $this->checkSqlForLog($sql);
             return $result;
         }
         catch (Exception $e){
@@ -60,6 +62,31 @@ class ODBCCON
             exit();
         }
 
+    }
+
+    private function checkSqlForLog($sql){
+        global $db;
+        $explode = explode(" ",$sql);
+        //remove any breaks
+        foreach($explode as $word){
+            //remove spaces
+            $word = str_replace(" ","",$word);
+            //remove breaks
+            $word = str_replace(PHP_EOL,"",$word);
+            //check to find what kind of sql is
+            //echo "::".$word."::<br>";
+            //convert to lowercase
+            $word = strtolower($word);
+            if ($word == 'select'){
+
+            }
+            else if ($word == 'update'){
+                $db->update_log_file('SyBase',0,'SyBase Query','','',$sql);
+            }
+            else if ($word == 'delete'){
+                $db->update_log_file('SyBase',0,'SyBase Query','','',$sql);
+            }
+        }
     }
 
     public function beginTransaction(){
@@ -96,5 +123,9 @@ class ODBCCON
     public function query_fetch($sql){
         $result = $this->query($sql);
         return $this->fetch_assoc($result);
+    }
+
+    public function getDatabaseName(){
+        return $this->database;
     }
 }

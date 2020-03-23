@@ -195,22 +195,27 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="form-group row">
                         <label for="fld_vertical_level" class="col-sm-3 col-form-label">Vertical Level</label>
-                        <div class="col-3">
+                        <div class="col-9">
                             <select name="fld_vertical_level" id="fld_vertical_level"
                                     class="form-control">
-                                <?php for ($i = 0; $i <= 10; $i++) { ?>
-                                    <option value="<?php echo $i;?>" <?php if ($i == $data['inaund_vertical_level']) echo "selected";?>><?php echo $i;?></option>
-                                <?php } ?>
+                                    <option value="0" <?php if ('0' == $data['inaund_vertical_level']) echo "selected";?>>0 - Can see everything</option>
+                                    <option value="1" <?php if ('1' == $data['inaund_vertical_level']) echo "selected";?>>1 - View 2 up to 10</option>
+                                    <option value="2" <?php if ('2' == $data['inaund_vertical_level']) echo "selected";?>>2 - View 3 up to 10</option>
+                                    <option value="3" <?php if ('3' == $data['inaund_vertical_level']) echo "selected";?>>3 - View 4 up to 10</option>
+                                    <option value="4" <?php if ('4' == $data['inaund_vertical_level']) echo "selected";?>>4 - View 5 up to 10</option>
+                                    <option value="5" <?php if ('5' == $data['inaund_vertical_level']) echo "selected";?>>5 - View 6 up to 10</option>
+                                    <option value="6" <?php if ('6' == $data['inaund_vertical_level']) echo "selected";?>>6 - View 7 up to 10</option>
+                                    <option value="7" <?php if ('7' == $data['inaund_vertical_level']) echo "selected";?>>7 - View 8 up to 10</option>
+                                    <option value="8" <?php if ('8' == $data['inaund_vertical_level']) echo "selected";?>>8 - View 9 up to 10</option>
+                                    <option value="9" <?php if ('9' == $data['inaund_vertical_level']) echo "selected";?>>9 - View 10 up to 10</option>
+                                    <option value="10" <?php if ('10' == $data['inaund_vertical_level']) echo "selected";?>>10 - View only his own</option>
                             </select>
-                        </div>
-                        <div class="col-6">
-                            Applies in the same user group
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="form-group row">
                         <label for="fld_subagent_ID" class="col-sm-3 col-form-label">Sub Agent</label>
                         <div class="col-3">
                             <select name="fld_subagent_ID" id="fld_subagent_ID"
@@ -219,22 +224,26 @@ $formValidator = new customFormValidator();
                                 <option value="-1" <?php if ($data["inaund_subagent_ID"] == '-1') echo "selected=\"selected\""; ?>>Yes - Top</option>
                                 <option value="" disabled>------------</option>
                                 <?php
-                                $sql = 'SELECT * FROM
+                                if ($_GET['lid'] != '') {
+                                    $sql = 'SELECT * FROM
                                 ina_underwriters
                                 JOIN users ON usr_users_ID = inaund_user_ID
                                 WHERE
-                                inaund_user_ID != '.$_GET['lid'].'
+                                inaund_user_ID != ' . $_GET['lid'] . '
                                 AND inaund_subagent_ID != 0
                                 #AND inaund_subagent_ID = -1 
                                 ORDER BY usr_name ASC';
-                                $result = $db->query($sql);
-                                while ($row = $db->fetch_assoc($result)){
+                                    $result = $db->query($sql);
+                                    while ($row = $db->fetch_assoc($result)) {
+                                        ?>
+                                        <option value="<?php echo $row['inaund_underwriter_ID']; ?>"
+                                            <?php if ($data["inaund_subagent_ID"] == $row['inaund_underwriter_ID']) echo "selected=\"selected\""; ?>>
+                                            <?php echo $row['usr_name']; ?>
+                                        </option>
+                                        <?php
+                                    }
+                                }
                                 ?>
-                                    <option value="<?php echo $row['inaund_underwriter_ID'];?>"
-                                        <?php if ($data["inaund_subagent_ID"] == $row['inaund_underwriter_ID']) echo "selected=\"selected\""; ?>>
-                                        <?php echo $row['usr_name'];?>
-                                    </option>
-                                <?php } ?>
                             </select>
                         </div>
                         <div class="col-6">
@@ -242,7 +251,7 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="form-group row">
                         <label for="fld_subagent_dr_account_ID" class="col-sm-4 col-form-label">Sub Agent Dr. Account</label>
                         <div class="col-8">
                             <select name="fld_subagent_dr_account_ID" id="fld_subagent_dr_account_ID"
@@ -273,7 +282,7 @@ $formValidator = new customFormValidator();
 
                     </div>
 
-                    <div class="row">
+                    <div class="form-group row">
                         <label for="fld_subagent_cr_account_ID" class="col-sm-4 col-form-label">Sub Agent Cr. Account</label>
                         <div class="col-8">
                             <select name="fld_subagent_cr_account_ID" id="fld_subagent_cr_account_ID"
@@ -304,7 +313,7 @@ $formValidator = new customFormValidator();
 
                     </div>
 
-                    <div class="row">
+                    <div class="form-group row">
                         <div class="col-12">
                             If advanced accounts and not sub agent then the commissions percentages for each company are not used.<br>
                             The ones from the insurance company will be used.
@@ -313,13 +322,13 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
 
-                    <div class="row alert alert-success text-center">
+                    <div class="form-group row alert alert-success text-center">
                         <div class="col-12">
                             <b>Insurance Types</b>
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="form-group row">
                         <label for="fld_use_motor"
                                class="col-sm-9">Motor</label>
                         <div class="col-sm-3" style="height: 45px;">
@@ -342,7 +351,7 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="form-group row">
                         <label for="fld_use_fire"
                                class="col-sm-9">Fire</label>
                         <div class="col-sm-3" style="height: 45px;">
@@ -365,7 +374,7 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="form-group row">
                         <label for="fld_use_pa"
                                class="col-sm-9">Personal Accident</label>
                         <div class="col-sm-3" style="height: 45px;">
@@ -388,7 +397,7 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="form-group row">
                         <label for="fld_use_el"
                                class="col-sm-9">Employers Liability</label>
                         <div class="col-sm-3" style="height: 45px;">
@@ -411,7 +420,7 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="form-group row">
                         <label for="fld_use_pi"
                                class="col-sm-9">Professional Indemnity</label>
                         <div class="col-sm-3" style="height: 45px;">
@@ -434,7 +443,7 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="form-group row">
                         <label for="fld_use_pl"
                                class="col-sm-9">Public Liability</label>
                         <div class="col-sm-3" style="height: 45px;">
@@ -457,7 +466,7 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="form-group row">
                         <label for="fld_use_medical"
                                class="col-sm-9">Medical</label>
                         <div class="col-sm-3" style="height: 45px;">
@@ -480,7 +489,7 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="form-group row">
                         <label for="fld_use_travel"
                                class="col-sm-9">Travel</label>
                         <div class="col-sm-3" style="height: 45px;">
@@ -503,7 +512,7 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
 
-                    <div class="row alert alert-success text-center">
+                    <div class="form-group row alert alert-success text-center">
                         <div class="col-12">
                             <b>Insurance Companies</b>
                         </div>
@@ -524,7 +533,7 @@ $formValidator = new customFormValidator();
                             $undCompanies[$row['inainc_insurance_company_ID']]['inaunc_status'] = 'Inactive';
                         }
                         ?>
-                        <div class="row">
+                        <div class="form-group row">
                             <label for="inc_id_<?php echo $row['inainc_insurance_company_ID']; ?>"
                                    class="col-sm-9"><?php echo $row['inainc_name']; ?></label>
                             <div class="col-sm-3" style="height: 45px;">

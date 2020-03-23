@@ -53,6 +53,7 @@ Class Installments
 
             //now calculate the commissions.
             $perInstComm = bcdiv(($this->policyCommission / $this->totalInstallments), 1, 2);
+
             $commSum = 0;
             for ($i = 0; $i < $this->totalInstallments; $i++) {
                 $commAmount[$i] = $perInstComm;
@@ -257,7 +258,7 @@ Class Installments
 
         } else {
             $this->error = true;
-            $this->errorDescription = 'Policy must be Outstanding to generate recursive installments';
+            $this->errorDescription = 'Policy must be Outstanding to generate devided installments';
             return false;
         }
     }

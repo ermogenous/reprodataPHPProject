@@ -32,8 +32,10 @@ class MEBuildDataTable {
             <tr>
                 ';
 
-        foreach($this->dataHeader as $value){
-            $html .= "<td>".$value."</td>";
+        if (!empty($this->dataHeader)) {
+            foreach ($this->dataHeader as $value) {
+                $html .= "<td>" . $value . "</td>";
+            }
         }
 
         $html .='
@@ -94,8 +96,10 @@ class MEBuildDataTable {
         }
         else if ($this->whereAreHeaders == 'fieldNames'){
             $this->dataLines = $this->data;
-            foreach($this->data[0] as $name => $value){
-                $this->dataHeader[] = $name;
+            if (!empty($this->dataLines)) {
+                foreach ($this->data[0] as $name => $value) {
+                    $this->dataHeader[] = $name;
+                }
             }
         }
 

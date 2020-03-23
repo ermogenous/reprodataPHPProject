@@ -409,7 +409,7 @@ function template_header()
 }//template_header
 function template_footer()
 {
-    global $db, $main;
+    global $db, $main, $sybase;
 
 if ($db->admin_layout_printer != 'yes')
 {
@@ -417,6 +417,31 @@ if ($db->admin_layout_printer != 'yes')
     ?>
 
 <br>
+    <?php
+    if (!empty($sybase)) {
+        $sybaseConnection = $sybase->getDatabaseName();
+    }
+    else {
+        $sybaseConnection = '';
+    }
+if ($sybaseConnection != '') {
+    if ($sybaseConnection == 'EUROTEST') {
+        $sybaseClass = 'alert-danger';
+    } else {
+        $sybaseClass = 'alert-success';
+    }
+    ?>
+    <div class="row ">
+        <div class="col-12 alert <?php echo $sybaseClass; ?> text-center">
+            <b>Connected to
+            <?php
+            echo $sybaseConnection;
+            ?></b>
+        </div>
+    </div>
+    <?php
+}
+    ?>
     <div class="container-fluid">
         <div class="row">&nbsp</div>
         <div class="row glyphicon-copyright-mark footer-bar <?php if ($db->imitationMode === true) echo 'alert alert-danger'; ?>">
