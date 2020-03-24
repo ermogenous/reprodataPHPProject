@@ -322,6 +322,31 @@ if ($_GET['lid'] != '') {
                         </div>
                     </div>
 
+                    <div class="form-group row">
+                        <?php
+                        $formB->initSettings()
+                            ->setFieldName('fld_item_custom_view_file')
+                            ->setFieldDescription('Custom Item File')
+                            ->setFieldType('input')
+                            ->setInputValue($data['inaiss_item_custom_view_file'])
+                            ->setLabelTitle('This will replace the items List table. Under ainsurance/custom_items folder put the custom file and enter here its filename. Leave empty to use defaults')
+                            ->buildLabel();
+                        ?>
+                        <div class="col-sm-4">
+                            <?php
+                            $formB->buildInput();
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => $formB->fieldName,
+                                    'fieldDataType' => 'text',
+                                    'required' => false,
+                                    'invalidTextAutoGenerate' => true
+                                ]);
+                            ?>
+
+                        </div>
+                    </div>
+
 
                     <div class="col-12" style="height: 25px;"></div>
 

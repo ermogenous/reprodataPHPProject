@@ -1494,6 +1494,7 @@ class Main
 
             }
             $sql = "DELETE FROM `" . $table . "` WHERE " . $where_clause . " LIMIT 1";
+            //echo $sql;
             $this->query($sql);
 
             //update the log file

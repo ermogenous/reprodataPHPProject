@@ -20,7 +20,7 @@ $list->setTable('ac_transactions','TransactionsList')
     ->setSqlSelect('acdoc_name','Document')
     ->setSqlSelect('actrn_status','Status')
     ->setSqlFrom('JOIN ac_documents ON acdoc_document_ID = actrn_document_ID')
-    ->setSqlOrder('ID', 'ASC')
+    ->setSqlOrder('ID', 'DESC')
     ->setPerPage(50)
     ->generateData();
 

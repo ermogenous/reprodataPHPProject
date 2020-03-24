@@ -43,6 +43,9 @@ if ($_POST["action"] == "insert") {
     $db->working_section = 'AInsurance Policy Installment Modify';
     $db->start_transaction();
 
+    unset($_POST['fld_insert_date']);
+    unset($_POST['fld_last_payment_date']);
+
     $_POST['fld_document_date'] = $db->convert_date_format($_POST['fld_document_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $db->db_tool_update_row('ina_policy_installments', $_POST, "`inapi_policy_installments_ID` = " . $_POST["lid"],
         $_POST["lid"], 'fld_', 'execute', 'inapi_');

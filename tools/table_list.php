@@ -557,7 +557,7 @@ class TableList
             if ($this->totalPages < 11) {
                 for ($i = 1; $i <= $this->totalPages; $i++) {
                     if ($i != $this->currentPage)
-                        $this->pagesLinksHtml .= " < a href = \"?TlGoToPage=" . $i . "\">" . $i . "</a>&nbsp;&nbsp;";
+                        $this->pagesLinksHtml .= " <a href = \"?TlGoToPage=" . $i . "\">" . $i . "</a>&nbsp;&nbsp;";
                     else
                         $this->pagesLinksHtml .= $i . "&nbsp;&nbsp;";
                 }

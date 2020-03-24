@@ -15,6 +15,7 @@ class Policy
     public $newCancellationID;
     public $installmentID;
     public $policyData;
+    public $primaryPolicyData;
     public $totalPremium;
     public $mif;
     public $fees;
@@ -87,6 +88,8 @@ class Policy
         $this->commissionCalculation = $commData['inaunc_commission_calculation'];
 
         $this->installmentID = $this->policyData['inapol_installment_ID'];
+        //get the primary policy data
+        $this->primaryPolicyData = $db->query_fetch('SELECT * FROM ina_policies WHERE inapol_policy_ID = '.$this->installmentID);
 
         $this->totalPremium = round(($this->policyData['inapol_premium'] + /*$this->policyData['inapol_mif'] +*/
             $this->policyData['inapol_fees'] + $this->policyData['inapol_stamps']), 2);
@@ -478,24 +481,26 @@ class Policy
         global $db;
 
         if ($this->policyData['inapol_status'] == 'Outstanding') {
+            echo "here";
             //first delete the policy items
             //delete one by one for log file entries
-            $result = $db->query_fetch('SELECT * FROM ina_policy_items WHERE inapit_policy_ID = ' . $this->policyID);
+            $sql = 'SELECT * FROM ina_policy_items WHERE inapit_policy_ID = ' . $this->policyID;
+            $result = $db->query($sql);
             while ($pit = $db->fetch_assoc($result)) {
-
                 $db->db_tool_delete_row('ina_policy_items', $pit['inapit_policy_item_ID'], 'inapit_policy_item_ID = ' . $pit['inapit_policy_item_ID']);
-
             }
 
             //delete installments if any
             $instResult = $db->query('SELECT * FROM ina_policy_installments WHERE inapi_policy_ID = ' . $this->policyID);
             while ($inst = $db->fetch_assoc($instResult)) {
-                $db->db_tool_delete_row('ina_policy_installments', $inst['inapi_policy_installments_ID'], 'inapi_policy_installments_ID = ' . $inst['inapi_policy_installments_ID']);
+                $db->db_tool_delete_row('ina_policy_installments', $inst['inapi_policy_installments_ID'],
+                    'inapi_policy_installments_ID = ' . $inst['inapi_policy_installments_ID']);
             }
+
 
             //if its replacing another policy. fix previous policy
             if ($this->policyData['inapol_replacing_ID'] > 0) {
-                $newData['replaced_by_ID'] = null;
+                $newData['replaced_by_ID'] = 0;
                 $db->db_tool_update_row('ina_policies', $newData, 'inapol_policy_ID = ' . $this->policyData['inapol_replacing_ID'], $this->policyData['inapol_replacing_ID'],
                     '', 'execute', 'inapol_');
             }
@@ -542,9 +547,11 @@ class Policy
             }
 
             //3. Check the status of the installments
-            $instCheck = $db->query_fetch("SELECT COUNT(*)as clo_total FROM ina_policy_installments 
+            $sql = "SELECT COUNT(*)as clo_total FROM ina_policy_installments 
                         WHERE inapi_policy_ID = " . $this->installmentID . "
-                        AND (inapi_paid_status IS NULL || inapi_paid_status <> 'UnPaid')");
+                        AND (inapi_paid_status IS NULL || inapi_paid_status = '')";
+
+            $instCheck = $db->query_fetch($sql);
             if ($instCheck['clo_total'] > 0) {
                 $this->error = true;
                 $this->errorDescription = 'Something wrong with installments. Found empty or not unpaid status';
@@ -1265,6 +1272,26 @@ class Policy
         $newData['replacing_ID'] = $this->policyID;
         $instNewData['installment_ID'] = $this->policyData['inapol_installment_ID'];
 
+        //fix the commissions based on the previous phase rates
+        //1. get the rates
+        $commissionRateAgent1 = $this->primaryPolicyData['inapol_agent_level1_commission'] / $this->primaryPolicyData['inapol_premium'];
+        $commissionRateAgent2 = $this->primaryPolicyData['inapol_agent_level2_commission'] / $this->primaryPolicyData['inapol_premium'];
+        $commissionRateAgent3 = $this->primaryPolicyData['inapol_agent_level3_commission'] / $this->primaryPolicyData['inapol_premium'];
+
+        //set the commissions
+        //$newData['commission'] = $db->floorp($premium * $commissionRate,2);
+        $newData['agent_level1_commission'] = $db->floorp($premium * $commissionRateAgent1,2);;
+        $newData['agent_level2_commission'] = $db->floorp($premium * $commissionRateAgent2,2);;
+        $newData['agent_level3_commission'] = $db->floorp($premium * $commissionRateAgent3,2);;
+
+        //set the rates
+        $newData['agent_level1_percent'] = $commissionRateAgent1 * 100;
+        $newData['agent_level2_percent'] = $commissionRateAgent2 * 100;
+        $newData['agent_level3_percent'] = $commissionRateAgent3 * 100;
+        //agent 1 adds agent2 & 3
+        $newData['agent_level1_percent'] += $newData['agent_level2_percent'] + $newData['agent_level3_percent'];
+        //aget 2 adds agent 3
+        $newData['agent_level2_percent'] += $newData['agent_level3_percent'];
 
         unset($newData['created_date_time']);
         unset($newData['created_by']);
@@ -1272,6 +1299,7 @@ class Policy
         unset($newData['last_update_by']);
         unset($newData['replaced_by_ID']);
         unset($newData['policy_ID']);
+
 
         $newPolicyID = $db->db_tool_insert_row('ina_policies', $newData, '', 1, 'inapol_');
         $this->newCancellationID = $newPolicyID;
@@ -1499,11 +1527,34 @@ class Policy
         $newData['inapol_stamps'] = 0;
         $newData['inapol_replacing_ID'] = $this->policyID;
         //make subagets fields all to zero
+        $newData['inapol_commission_released'] = 0;
         $newData['inapol_agent_level1_released'] = 0;
         $newData['inapol_agent_level2_released'] = 0;
         $newData['inapol_agent_level3_released'] = 0;
         $newData['inapol_subagent_commission'] = 0;
         $newData['inapol_subsubagent_commission'] = 0;
+
+        //fix the commissions based on the previous phase rates
+        //1. get the rates
+        $commissionRate = $this->primaryPolicyData['inapol_commission'] / $this->primaryPolicyData['inapol_premium'];
+        $commissionRateAgent1 = $this->primaryPolicyData['inapol_agent_level1_commission'] / $this->primaryPolicyData['inapol_premium'];
+        $commissionRateAgent2 = $this->primaryPolicyData['inapol_agent_level2_commission'] / $this->primaryPolicyData['inapol_premium'];
+        $commissionRateAgent3 = $this->primaryPolicyData['inapol_agent_level3_commission'] / $this->primaryPolicyData['inapol_premium'];
+
+        //set the commissions
+        $newData['inapol_commission'] = $db->floorp($premium * $commissionRate,2);
+        $newData['inapol_agent_level1_commission'] = $db->floorp($premium * $commissionRateAgent1,2);;
+        $newData['inapol_agent_level2_commission'] = $db->floorp($premium * $commissionRateAgent2,2);;
+        $newData['inapol_agent_level3_commission'] = $db->floorp($premium * $commissionRateAgent3,2);;
+
+        //set the rates
+        $newData['inapol_agent_level1_percent'] = $commissionRateAgent1 * 100;
+        $newData['inapol_agent_level2_percent'] = $commissionRateAgent2 * 100;
+        $newData['inapol_agent_level3_percent'] = $commissionRateAgent3 * 100;
+        //agent 1 adds agent2 & 3
+        $newData['inapol_agent_level1_percent'] += $newData['inapol_agent_level2_percent'] + $newData['inapol_agent_level3_percent'];
+        //aget 2 adds agent 3
+        $newData['inapol_agent_level2_percent'] += $newData['inapol_agent_level3_percent'];
 
         unset($newData['inapol_created_date_time']);
         unset($newData['inapol_created_by']);
@@ -1512,16 +1563,22 @@ class Policy
         unset($newData['inapol_replaced_by_ID']);
         unset($newData['inapol_policy_ID']);
 
+        //remove the prefix inapol_ for auto insert by and date to work
+        $newDataFixed = [];
+        foreach($newData as $fieldName => $fieldValue){
+            $newDataFixed[substr($fieldName,7)] = $fieldValue;
+        }
+
         //create the record in db
         //echo "Create policy<br>\n";
         //print_r($newData);
-        $newPolicyID = $db->db_tool_insert_row('ina_policies', $newData, '', 1);
+        $newPolicyID = $db->db_tool_insert_row('ina_policies', $newDataFixed, '', 1,'inapol_');
         $this->newEndorsementID = $newPolicyID;
         //update the current
         //echo "Update Current<br>\n";
-        $curNewData['inapol_replaced_by_ID'] = $newPolicyID;
+        $curNewData['replaced_by_ID'] = $newPolicyID;
         $db->db_tool_update_row('ina_policies', $curNewData, 'inapol_policy_ID = ' . $this->policyID,
-            $this->policyID, '', 'execute', '');
+            $this->policyID, '', 'execute', 'inapol_');
 
         //create the items.
         //get them all
@@ -1534,8 +1591,19 @@ class Policy
             unset($newItemData['inapit_last_update_date_time']);
             unset($newItemData['inapit_last_update_by']);
             unset($newItemData['inapit_policy_item_ID']);
+            //in case the below are empty must be removed because it generates db error is empty
+            foreach($newItemData as $fieldName => $fieldValue){
+                if ($newItemData[$fieldName] == ''){
+                    unset($newItemData[$fieldName]);
+                }
+            }
+            //remove the prefix for the insert/update auto mechanism to work
+            $newItemDataFixed = [];
+            foreach($newItemData as $fieldName => $fieldValue){
+                $newItemDataFixed[substr($fieldName,7)] = $fieldValue;
+            }
             //echo "Create Item<br>\n";
-            $db->db_tool_insert_row('ina_policy_items', $newItemData, '');
+            $db->db_tool_insert_row('ina_policy_items', $newItemDataFixed, '',0,'inapit_');
         }
 
         //no installments for the endorsement
@@ -1613,6 +1681,23 @@ class Policy
         }
     }
 
+    //return if any issuing record exists for this policy
+    public function getIssuingData(){
+        global $db;
+
+        $sql = "SELECT * FROM ina_issuing WHERE 
+                inaiss_insurance_company_ID = ".$this->policyData['inapol_insurance_company_ID']."
+                AND inaiss_insurance_type = '".$this->policyData['inapol_type_code']."'";
+        $data = $db->query_fetch($sql);
+
+        if ($data['inaiss_issue_ID'] > 0){
+            return $data;
+        }
+        else {
+            return false;
+        }
+
+    }
 }
 
 function getPolicyClass($status)
