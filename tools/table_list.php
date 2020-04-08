@@ -205,6 +205,12 @@ class TableList
         return $this;
     }
 
+    /** At the end of the modifyLink the lid will be added automatically
+     * ->setModifyLink('policy_item_modify.php?pid='.$_GET['pid'].'&type='.$_GET['type'].'&lid=')
+     * @param $link
+     * @param string $target
+     * @return $this
+     */
     public function setModifyLink($link, $target = '_self')
     {
         $this->modifyLink = $link;
@@ -212,6 +218,11 @@ class TableList
         return $this;
     }
 
+    /**At the end of the deleteyLink the lid will be added automatically
+     * ->setDeleteLink('policy_item_delete.php?pid='.$_GET['pid'].'&type='.$_GET['type'].'&lid=')
+     * @param $link
+     * @return $this
+     */
     public function setDeleteLink($link)
     {
         $this->deleteLink = $link;

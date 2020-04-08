@@ -26,7 +26,8 @@ Class Installments
           SELECT cur.*,
           (SELECT inapol_installment_ID FROM ina_policies as prev WHERE prev.inapol_policy_ID = cur.inapol_replacing_ID )as clo_prev_installment_ID 
           FROM ina_policies as cur WHERE cur.inapol_policy_ID = ' . $this->policyID);
-        $this->totalPolicyPremium = ($this->policyData['inapol_premium'] + $this->policyData['inapol_mif'] + $this->policyData['inapol_fees'] + $this->policyData['inapol_stamps']);
+        $this->totalPolicyPremium = ($this->policyData['inapol_premium'] /*+ $this->policyData['inapol_mif']*/
+                + $this->policyData['inapol_fees'] + $this->policyData['inapol_stamps'] + $this->policyData['inapol_special_discount']);
         $this->policyCommission = $this->policyData['inapol_commission'];
         $instResult = $db->query('SELECT * FROM ina_policy_installments WHERE inapi_policy_ID = ' . $this->policyID);
         $this->totalInstallments = $db->num_rows($instResult);

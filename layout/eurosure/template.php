@@ -132,11 +132,6 @@ function template_header()
                                    href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/period_production_new.php"><i
                                             class="fas fa-eye"></i> <?php echo $db->showLangText('Production', 'Παραγωγή'); ?>
                                 </a>
-                                <a class="dropdown-item disabled" href="#">Users</a>
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/eurosure/reports/users/users_permissions_list.php"><i
-                                            class="fas fa-eye"></i> <?php echo $db->showLangText('Users Permissions List', 'Λίστα δικαιωμάτων χρηστών'); ?>
-                                </a>
                             </div>
                         </li>
                         <?php
@@ -145,7 +140,7 @@ function template_header()
 
                     <!-- Functions -->
                     <?php
-                    if ($db->user_data['usr_user_rights'] < 8) {
+                    if ($db->user_data['usr_user_rights'] <= 2) {
                         ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -162,6 +157,11 @@ function template_header()
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/eurosure/functions/all_docs_to_pdf.php"><i
                                             class="fas fa-eye"></i> <?php echo $db->showLangText('Save all docs to PDF', 'Φύλαξη Αρχείων σε PDF'); ?>
+                                </a>
+
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/eurosure/functions/update_access_clients.php"><i
+                                            class="fas fa-eye"></i> <?php echo $db->showLangText('Clients List for Access Fire', 'Clients List for Access Fire'); ?>
                                 </a>
                             </div>
                         </li>

@@ -58,6 +58,21 @@ if ($_GET['action'] == 'activate') {
         header('Location: policy_change_status.php?lid=' . $_GET['lid']);
         exit();
     }
+} else if ($_GET['action'] == 'renew') {
+    $policy = new Policy($_GET['lid']);
+
+    $db->start_transaction();
+    if ($policy->reviewPolicy() == true) {
+        $db->generateSessionAlertSuccess('Policy ' . $policy->policyData['inapol_policy_number'] . ' reviewed');
+        $db->commit_transaction();
+        header('Location: policies.php');
+        exit();
+    } else {
+        $db->generateSessionAlertError($policy->errorDescription);
+        $db->rollback_transaction();
+        header('Location: policy_change_status.php?lid=' . $_GET['lid']);
+        exit();
+    }
 }
 
 
@@ -115,18 +130,20 @@ $db->show_header();
                 <div class="row">
                     <div class="col-12">&nbsp;</div>
                 </div>
-
+                <?php
+                $buttonLength = 120;
+                ?>
                 <div class="card">
                     <div class="card-body">
                         <p class="card-text text-center">
-                            <button type="button" value="Back" style="width: 140px;" class="btn btn-primary"
+                            <button type="button" value="Back" style="width: <?php echo $buttonLength;?>px;" class="btn btn-primary"
                                     onclick="goBack();">
                                 <?php echo $db->showLangText('Back','Πίσω');?>
                             </button>
                             <?php
                             if ($data['inapol_status'] == 'Outstanding') {
                                 ?>
-                                <button type="button" value="Activate" style="width: 140px;"
+                                <button type="button" value="Activate" style="width: <?php echo $buttonLength;?>px;"
                                         class="btn inapolActiveColor" onclick="activatePolicy();">
                                     <?php echo $db->showLangText('Activate','Ενεργοποίηση');?>
                                 </button>
@@ -134,7 +151,7 @@ $db->show_header();
                             }
                             if ($data['inapol_status'] == 'Outstanding') {
                                 ?>
-                                <button type="button" value="Delete" style="width: 140px;"
+                                <button type="button" value="Delete" style="width: <?php echo $buttonLength;?>px;"
                                         class="btn inapolDeletedColor" onclick="deletePolicy();">
                                     <?php echo $db->showLangText('Delete','Διαγραφή');?>
                                 </button>
@@ -142,18 +159,22 @@ $db->show_header();
                             }
                             if ($data['inapol_status'] == 'Active') {
                                 ?>
-                                <button type="button" value="Cancel" style="width: 150px;"
+                                <button type="button" value="Cancel" style="width: <?php echo $buttonLength;?>px;"
                                         class="btn inapolCancelledColor" onclick="cancelPolicy();">
                                     <?php echo $db->showLangText('Cancellation','Ακύρωση');?>
                                 </button>
-                                <button type="button" value="Cancel" style="width: 150px;"
+                                <button type="button" value="Cancel" style="width: <?php echo $buttonLength;?>px;"
                                         class="btn inapolEndorsenentColor" onclick="endorsePolicy();">
                                     <?php echo $db->showLangText('Endorse','Τροποποίηση');?>
+                                </button>
+                                <button type="button" value="Renew" style="width: <?php echo $buttonLength;?>px;"
+                                        class="btn inapolCancelledColor" onclick="renewPolicy();">
+                                    <?php echo $db->showLangText('Renew','Ανανέωση');?>
                                 </button>
                                 <?php
                             }
                             ?>
-                            <button type="button" value="Modify" style="width: 150px;" class="btn btn-success"
+                            <button type="button" value="Modify" style="width: <?php echo $buttonLength;?>px;" class="btn btn-success"
                                     onclick="modifyPolicy();">
                                 <?php if ($data['inapol_status'] == 'Outstanding') echo 'Modify'; else echo 'View'; ?>
                             </button>
@@ -185,6 +206,13 @@ $db->show_header();
 
             if (confirm('<?php echo $db->showLangText('Are you sure you want to cancel this Policy?','Είστε βέβαιοι ότι θέλετε να ακυρώσετε αυτό το συμβόλαιο;');?>')) {
                 window.location.assign('policy_cancellation.php?pid=<?php echo $_GET['lid'];?>');
+            }
+        }
+
+        function renewPolicy() {
+
+            if (confirm('<?php echo $db->showLangText('Are you sure you want to renew this Policy?','Είστε βέβαιοι ότι θέλετε να ανανεώσεται αυτό το συμβόλαιο;');?>')) {
+                window.location.assign('?lid=<?php echo $_GET['lid'];?>&action=renew');
             }
         }
 

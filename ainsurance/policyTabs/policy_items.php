@@ -32,6 +32,9 @@ if ($_GET['pid'] > 0) {
     if ($issuing != false) {
         if (file_exists('../custom_items/'.$issuing['inaiss_item_custom_view_file'])){
             include('../custom_items/'.$issuing['inaiss_item_custom_view_file']);
+            //find the total item records for window height at the bottom of the page
+            $sql = "SELECT COUNT(*)as clo_total FROM ina_policy_items WHERE inapit_policy_ID = ".$_GET['pid'];
+            $totalLines = $db->query_fetch($sql)['clo_total'];
         }
         else {
             ?>
@@ -141,24 +144,30 @@ if ($_GET['pid'] > 0) {
                 }
             }
 
-            //every time this page loads reload the premium tab
-            $(document).ready(function () {
 
-                <?php if ($_GET['rel'] == 'yes') { ?>
-                parent.window.frames['premTab'].location.reload(true);
-                parent.window.frames['installmentsTab'].location.reload(true);
-                <?php } ?>
-
-                let fixedPx = 100;
-                let totalPx = fixedPx + (<?php echo $totalLines;?> * 60
-            )
-                ;
-                $('#policyItemsTab', window.parent.document).height(totalPx + 'px');
-
-            });
         </script>
         <?php
     }
 }
+
+?>
+<script>
+    //every time this page loads reload the premium tab
+    $(document).ready(function () {
+
+        <?php if ($_GET['rel'] == 'yes') { ?>
+        parent.window.frames['premTab'].location.reload();
+        parent.window.frames['installmentsTab'].location.reload();
+        <?php } ?>
+
+        let fixedPx = 180;
+        let totalPx = fixedPx + (<?php echo $totalLines;?> * 60
+    )
+        ;
+        $('#policyItemsTab', window.parent.document).height(totalPx + 'px');
+
+    });
+</script>
+<?php
 $db->show_empty_footer();
 ?>

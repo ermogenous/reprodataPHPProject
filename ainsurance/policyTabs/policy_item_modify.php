@@ -690,7 +690,7 @@ $formB->setLabelClasses('col-sm-3');
 
         //every time this page loads reload the premium tab
         $(document).ready(function () {
-            parent.window.frames['premTab'].location.reload(true);
+            parent.window.frames['premTab'].location.reload();
 
             <?php
             if ($_GET['type'] == 'Vehicle'){

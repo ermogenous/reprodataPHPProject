@@ -162,55 +162,103 @@ function template_header()
                     <?php if ($db->dbSettings['ina_enable_agent_insurance']['value'] == 1 && $db->user_data['usr_user_rights'] < 8) { ?>
                         <!-- Agent Insurance -->
                         <li class="nav-item dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                               class="nav-link dropdown-toggle">
                                 <i class="fas fa-clipboard-list"></i> <?php echo $db->showLangText('Agent Insurance', 'Ασφαληστικό'); ?>
                                 <i class="fas fa-caret-down"></i>
                             </a>
-                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/ainsurance/policies.php">
-                                    <i class="far fa-calendar-alt"></i> <?php echo $db->showLangText('View Policies', 'Προβολή Συμβολαίων'); ?>
-                                </a>
-
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/ainsurance/policy_modify.php">
-                                    <i class="far fa-calendar-alt"></i> <?php echo $db->showLangText('New Policy', 'Νέο Συμβόλαιο'); ?>
-                                </a>
-
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/ainsurance/review/view_renewals.php">
-                                    <i class="fas fa-retweet"></i> <?php echo $db->showLangText('Review', 'Ανανεώσεις'); ?>
-                                </a>
-
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/ainsurance/unallocated/unallocated.php">
-                                    <i class="fas fa-wallet"></i> <?php echo $db->showLangText('View UnAllocated', 'Προβολή Μη Κατανεμημένων'); ?>
-                                </a>
-
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/ainsurance/reports/production_report.php">
-                                    <i class="fas fa-table"></i> <?php echo $db->showLangText('Production Report', 'Αναφορά Παραγωγής'); ?>
-                                </a>
-
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/ainsurance/reports/statement.php">
-                                    <i class="fas fa-table"></i> <?php echo $db->showLangText('Statement', 'Δήλωση Λογαριασμού'); ?>
-                                </a>
-
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/ainsurance/index.php">
-                                    <i class="fas fa-table"></i> <?php echo $db->showLangText('View Unpaid', 'Προβολή Απλήρωτων'); ?>
-                                </a>
-
-                                <?php if ($db->user_data["usr_user_rights"] == 0) { ?>
+                            <ul aria-labelledby="dropdownMenu1" class="dropdown-menu border-0 shadow">
+                                <li>
                                     <a class="dropdown-item"
-                                       href="<?php echo $main["site_url"]; ?>/ainsurance/ainsurance_settings.php">
-                                        <i class="fas fa-screwdriver"></i> <?php echo $db->showLangText('Settings', 'Ρυθμίσεις'); ?>
+                                       href="<?php echo $main["site_url"]; ?>/ainsurance/policies.php">
+                                        <i class="far fa-calendar-alt"></i> <?php echo $db->showLangText('View Policies', 'Προβολή Συμβολαίων'); ?>
                                     </a>
-                                <?php } ?>
+                                </li>
 
-                            </div>
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/ainsurance/policy_modify.php">
+                                        <i class="far fa-calendar-alt"></i> <?php echo $db->showLangText('New Policy', 'Νέο Συμβόλαιο'); ?>
+                                    </a>
+
+                                </li>
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/ainsurance/review/view_renewals.php">
+                                        <i class="fas fa-retweet"></i> <?php echo $db->showLangText('Review', 'Ανανεώσεις'); ?>
+                                    </a>
+                                </li>
+
+                                <li>
+                                    <?php if ($db->user_data["usr_user_rights"] == 0) { ?>
+                                        <a class="dropdown-item"
+                                           href="<?php echo $main["site_url"]; ?>/ainsurance/ainsurance_settings.php">
+                                            <i class="fas fa-screwdriver"></i> <?php echo $db->showLangText('Settings', 'Ρυθμίσεις'); ?>
+                                        </a>
+                                    <?php } ?>
+                                </li>
+
+                                <li class="dropdown-divider"></li>
+
+                                <!-- Level two dropdown-->
+                                <li class="dropdown-submenu">
+                                    <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown"
+                                       aria-haspopup="true"
+                                       aria-expanded="false" class="dropdown-item dropdown-toggle">
+                                        <i class="far fa-file-alt"></i> Reports &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <i class="fas fa-chevron-right"></i>
+                                    </a>
+                                    <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
+                                        <li>
+                                            <a class="dropdown-item"
+                                               href="<?php echo $main["site_url"]; ?>/ainsurance/reports/statement.php">
+                                                <i class="fas fa-table"></i> <?php echo $db->showLangText('Statement', 'Δήλωση Λογαριασμού'); ?>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item"
+                                               href="<?php echo $main["site_url"]; ?>/ainsurance/reports/production_report.php">
+                                                <i class="fas fa-table"></i> <?php echo $db->showLangText('Production Report', 'Αναφορά Παραγωγής'); ?>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item"
+                                               href="<?php echo $main["site_url"]; ?>/ainsurance/unallocated/unallocated.php">
+                                                <i class="fas fa-wallet"></i> <?php echo $db->showLangText('View UnAllocated', 'Προβολή Μη Κατανεμημένων'); ?>
+                                            </a>
+                                        </li>
+
+
+
+                                        <!-- Level three dropdown-->
+                                        <li class="dropdown-submenu">
+                                            <a id="dropdownMenu3" href="#" role="button" data-toggle="dropdown"
+                                               aria-haspopup="true" aria-expanded="false"
+                                               class="dropdown-item dropdown-toggle">
+                                                UnPaid Installments
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                            <ul aria-labelledby="dropdownMenu3" class="dropdown-menu border-0 shadow">
+                                                <li>
+                                                    <a class="dropdown-item"
+                                                       href="<?php echo $main["site_url"]; ?>/ainsurance/reports/unpaid/unpaid_report.php">
+                                                        <i class="fas fa-table"></i> <?php echo $db->showLangText('View Unpaid', 'Προβολή Απλήρωτων'); ?>
+                                                    </a>
+                                                </li>
+
+                                            </ul>
+                                        </li>
+                                        <!-- End Level three -->
+                                    </ul>
+                                </li>
+                                <!-- End Level two -->
+
+                            </ul>
                         </li>
                     <?php } ?>
 
@@ -420,6 +468,10 @@ function template_header()
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/underwriters/underwriters.php">
                                     <i class="fas fa-users"></i> Insurance Agents</a>
+
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/ainsurance/overwrite_agents/overwrites.php">
+                                    <i class="fas fa-users"></i> Agents Overwrites</a>
 
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/ainsurance/input_forms/input_forms.php">

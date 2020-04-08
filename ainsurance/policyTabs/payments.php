@@ -198,8 +198,8 @@ if ($_GET['pid'] > 0) {
             $(document).ready(function () {
 
                 <?php if ($_GET['rel'] == 'yes') { ?>
-                parent.window.frames['premTab'].location.reload(true);
-                parent.window.frames['installmentsTab'].location.reload(true);
+                parent.window.frames['premTab'].location.reload();
+                parent.window.frames['installmentsTab'].location.reload();
                 <?php } ?>
 
                 let fixedPx = 200;

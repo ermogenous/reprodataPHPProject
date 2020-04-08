@@ -92,6 +92,18 @@ if ($_POST["action"] == "insert") {
             $_POST["lid"], 'fld_', 'execute', 'inapol_');
     }
 
+    //validate policy number
+    if ($policy->validatePolicyNumber() == false) {
+        $db->generateSessionAlertError($policy->errorDescription);
+        //reset the policy number
+        $resetNumData['policy_number'] = '';
+        $db->db_tool_update_row('ina_policies', $resetNumData, 'inapol_policy_ID = ' . $_POST['lid'], $_POST['lid'],
+            '', 'execute', 'inapol_');
+        $db->commit_transaction();
+        header("Location: policy_modify.php?lid=" . $_POST['lid']);
+        exit();
+    }
+
     if ($_POST['sub-action'] == 'exit') {
         header("Location: policies.php");
         exit();
@@ -361,6 +373,7 @@ $db->show_header();
                             <?php echo $db->showLangText('Policy Number', 'Αρ.Συμβολαίου'); ?>
                         </label>
                         <div class="col-md-2">
+                            <input type="hidden" id="policyNumberIssue" name="policyNumberIssue" value="false">
                             <input name="fld_policy_number" type="text" id="fld_policy_number"
                                    class="form-control" onkeyup="$('#policyNumberValidation').val('error');"
                                    value="<?php echo $data["inapol_policy_number"]; ?>">
@@ -584,7 +597,13 @@ $db->show_header();
                     </div>
 
                     <div class="form-group row">
-                        <div class="col-md-6"></div>
+                        <label for="fld_comments" class="col-md-2 col-form-label">
+                            <?php echo $db->showLangText('Comments', 'Σχόλια'); ?>
+                        </label>
+                        <div class="col-md-4">
+                            <textarea class="form-control" name="fld_comments" type="text" id="fld_comments"
+                            rows="4"><?php echo $data['inapol_comments'];?></textarea>
+                        </div>
 
                         <label for="fld_financial_date" class="col-md-3 col-form-label">
                             <?php echo $db->showLangText('Financial Date', 'Ημερομηνία Παραγωγής'); ?>
@@ -891,6 +910,9 @@ $db->show_header();
                                 if (data[0]['inaiss_issue_ID'] > 0) {
                                     issuingExists(data);
                                 }
+                                else {
+                                    issuingNotExists();
+                                }
                             }
 
                         }
@@ -905,10 +927,16 @@ $db->show_header();
         function issuingExists(issuingData) {
             //console.log(issuingData);
             //check if new or renewal
-            let policyProcess = $('#fld_process_status').val();
+            //let policyProcess = $('#fld_process_status').val();
             //disable the policy number field
-            $('#fld_policy_number').attr('disabled', true);
+            //$('#fld_policy_number').attr('disabled', true);
             //console.log(policyProcess);
+            if ($('#fld_policy_number').val() == '') {
+                $('#fld_policy_number').val('#issue');
+            }
+        }
+
+        function issuingNotExists(){
         }
 
         $(document).ready(function () {

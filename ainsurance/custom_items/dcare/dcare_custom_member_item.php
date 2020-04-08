@@ -254,8 +254,54 @@ function insuranceCustomItem(){
         </div>
     </div>
 
+    <div class="form-group row">
+        <?php
+        $formB->setLabelClasses('col-sm-2');
+        $formB->initSettings()
+            ->setFieldName('fld_longtext_1')
+            ->setFieldDescription('Internal Notes')
+            ->setFieldType('textarea')
+            ->setInputValue($data['inapit_longtext_1'])
+            ->buildLabel();
+        ?>
+        <div class="col-sm-4">
+            <?php
+            $formB->buildInput();
+            $formValidator->addField(
+                [
+                    'fieldName' => $formB->fieldName,
+                    'fieldDataType' => 'textarea',
+                    'required' => false
+                ]);
+            ?>
+
+        </div>
+
+        <?php
+        $formB->initSettings()
+            ->setFieldName('fld_longtext_2')
+            ->setFieldDescription('Certificate Notes')
+            ->setFieldType('textarea')
+            ->setInputValue($data['inapit_longtext_2'])
+            ->buildLabel();
+        ?>
+        <div class="col-sm-4">
+            <?php
+            $formB->buildInput();
+            $formValidator->addField(
+                [
+                    'fieldName' => $formB->fieldName,
+                    'fieldDataType' => 'textarea',
+                    'required' => false
+                ]);
+            $formB->setLabelClasses('col-sm-3');
+            ?>
+
+        </div>
+    </div>
+
 <?php
-    $return['windowHeight'] = 450;
+    $return['windowHeight'] = 500;
 
     return $return;
 }

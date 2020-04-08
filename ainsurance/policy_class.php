@@ -92,7 +92,7 @@ class Policy
         $this->primaryPolicyData = $db->query_fetch('SELECT * FROM ina_policies WHERE inapol_policy_ID = '.$this->installmentID);
 
         $this->totalPremium = round(($this->policyData['inapol_premium'] + /*$this->policyData['inapol_mif'] +*/
-            $this->policyData['inapol_fees'] + $this->policyData['inapol_stamps']), 2);
+            $this->policyData['inapol_fees'] + $this->policyData['inapol_stamps'] + $this->policyData['inapol_special_discount']), 2);
         $this->commission = $this->policyData['inapol_commission'];
 
         $result = $db->query_fetch('SELECT COUNT(*)as clo_total FROM ina_policy_items WHERE inapit_policy_ID = ' . $this->policyID);
@@ -318,16 +318,22 @@ class Policy
         $issuing = $db->query_fetch($sql);
         if ($issuing['inaiss_issue_ID'] > 0) {
             //issing exists. Must issue new policy number
-            $newPolicyNumber = $db->buildNumber($issuing['inaiss_number_prefix'], $issuing['inaiss_number_leading_zeros'], $issuing['inaiss_number_last_used'] + 1);
-            $newData['fld_policy_number'] = $newPolicyNumber;
-            $newData['fld_issue_ID'] = $issuing['inaiss_issue_ID'];
-            $db->db_tool_update_row('ina_policies', $newData, 'inapol_policy_ID = ' . $this->policyID, $this->policyID, 'fld_', 'execute', 'inapol_');
-            //update the current object policy number
-            $this->policyData['inapol_policy_number'] = $newPolicyNumber;
 
-            //update the last used number in issuing
-            $newIssuingData['fld_number_last_used'] = $issuing['inaiss_number_last_used'] + 1;
-            $db->db_tool_update_row('ina_issuing', $newIssuingData, 'inaiss_issue_ID = ' . $issuing['inaiss_issue_ID'], $issuing['inaiss_issue_ID'], 'fld_', 'execute', 'inaiss_');
+            $newPolicyNumber = $db->buildNumber($issuing['inaiss_number_prefix'], $issuing['inaiss_number_leading_zeros'],
+                $issuing['inaiss_number_last_used'] + 1);
+            //check if the policy number field is empty or #issue tag is defined. Only then issue number
+            if ($this->policyData['inapol_policy_number'] == '' || $this->policyData['inapol_policy_number'] == '#issue') {
+                $newData['fld_policy_number'] = $newPolicyNumber;
+                //update the current object policy number
+                $this->policyData['inapol_policy_number'] = $newPolicyNumber;
+                //update the last used number in issuing
+                $newIssuingData['fld_number_last_used'] = $issuing['inaiss_number_last_used'] + 1;
+                $db->db_tool_update_row('ina_issuing', $newIssuingData, 'inaiss_issue_ID = ' . $issuing['inaiss_issue_ID'],
+                    $issuing['inaiss_issue_ID'], 'fld_', 'execute', 'inaiss_');
+            }
+            $newData['fld_issue_ID'] = $issuing['inaiss_issue_ID'];
+            $db->db_tool_update_row('ina_policies', $newData, 'inapol_policy_ID = ' . $this->policyID,
+                $this->policyID, 'fld_', 'execute', 'inapol_');
         }
 
 
@@ -652,6 +658,9 @@ class Policy
         return true;
     }
 
+    /**
+     * @return bool
+     */
     public function applyEndorsementAmount()
     {
         global $db;
@@ -1266,6 +1275,7 @@ class Policy
         $newData['process_status'] = 'Cancellation';
         $newData['premium'] = $premium;
         $newData['mif'] = 0;
+        $newData['special_discount'] = 0;
         $newData['commission'] = $commission;
         $newData['fees'] = $fees;
         $newData['stamps'] = 0;
@@ -1329,6 +1339,7 @@ class Policy
             $return['commission'] += $row['inapol_commission'];
             $return['fees'] += $row['inapol_fees'];
             $return['stamps'] += $row['inapol_stamps'];
+            $return['specialDiscount'] += $row['inapol_special_discount'];
         }
         return $return;
     }
@@ -1403,7 +1414,8 @@ class Policy
         //find the total amounts from all the phases if endorsements exists
         $sql = 'SELECT
             SUM(inapol_premium)as clo_premium,
-            SUM(inapol_commission)as clo_commission
+            SUM(inapol_commission)as clo_commission,
+            SUM(inapol_special_discount)as clo_special_discount
             FROM
             ina_policies
             WHERE
@@ -1415,6 +1427,8 @@ class Policy
         $newData['inapol_commission'] = $totalAmounts['clo_commission'];
         $newData['inapol_fees'] = 0;
         $newData['inapol_stamps'] = 0;
+        $newData['inapol_special_discount'] = $totalAmounts['clo_special_discount'];
+
         $newData['inapol_replacing_ID'] = $this->policyID;
 
         unset($newData['inapol_created_date_time']);
@@ -1423,6 +1437,13 @@ class Policy
         unset($newData['inapol_last_update_by']);
         unset($newData['inapol_replaced_by_ID']);
         unset($newData['inapol_policy_ID']);
+
+        //in case the below are empty must be removed because it generates db error is empty
+        foreach($newData as $fieldName => $fieldValue){
+            if ($newData[$fieldName] == ''){
+                unset($newData[$fieldName]);
+            }
+        }
 
         //create the record in db
         //echo "Create policy<br>\n";
@@ -1525,6 +1546,7 @@ class Policy
         $newData['inapol_commission'] = 0;
         $newData['inapol_fees'] = 0;
         $newData['inapol_stamps'] = 0;
+        $newData['inapol_special_discount'] = 0;
         $newData['inapol_replacing_ID'] = $this->policyID;
         //make subagets fields all to zero
         $newData['inapol_commission_released'] = 0;

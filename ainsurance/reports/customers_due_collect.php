@@ -14,7 +14,7 @@
  * @param $upToDate -> show records only upto that date inclusive
  * @return $html
  */
-function customers_due_collect($asAtDate, $upToDate = '')
+function customers_due_collect($asAtDate, $upToDate = '',$filters = [])
 {
     global $db, $main;
     include_once($main["local_url"] . "/ainsurance/policy_class.php");
@@ -25,6 +25,14 @@ function customers_due_collect($asAtDate, $upToDate = '')
     }
     else {
         $asAt = $upToDate;
+    }
+
+    if ($filters['agent'] != ''){
+        $agentFilter = 'AND inaund_underwriter_ID = "'.$filters['agent'].'"';
+    }
+
+    if ($filters['insuranceType'] != ''){
+        $insuranceTypeFilter = "AND inapol_type_code = '".$filters['insuranceType']."'";
     }
 
     $sql = "
@@ -39,8 +47,12 @@ function customers_due_collect($asAtDate, $upToDate = '')
         ina_policy_installments
         JOIN ina_policies ON inapol_policy_ID = inapi_policy_ID
         JOIN customers ON cst_customer_ID = inapol_customer_ID
+        JOIN ina_underwriters ON inaund_underwriter_ID = inapol_underwriter_ID
+        JOIN users ON usr_users_ID = inaund_user_ID
         WHERE
         inapol_underwriter_ID " . Policy::getAgentWhereClauseSql()."
+        ".$agentFilter."
+        ".$insuranceTypeFilter."
         AND inapi_paid_status IN ('UnPaid','Partial')
         AND inapi_document_date <= '".$db->convert_date_format($asAt,'dd/mm/yyyy','yyyy-mm-dd')."'
         ORDER BY inapi_document_date ASC
@@ -52,6 +64,7 @@ function customers_due_collect($asAtDate, $upToDate = '')
     <table class="table table-hover" id="myTableList">
       <thead>
         <tr>
+          <th scope="col" class="d-sm-table-cell">Agent</th>
           <th scope="col" class="d-sm-table-cell">Name</th>
           <th scope="col" class="d-none d-md-table-cell">Policy</th>
           <th scope="col" class="d-none d-md-table-cell">Item</th>
@@ -68,6 +81,7 @@ function customers_due_collect($asAtDate, $upToDate = '')
         $html .= '
             <tr class="'.($row['clo_overdue'] == 1? "alert-danger": "").'"
             >
+              <th class="d-sm-table-cell" scope="row">'.$row['usr_name'].'</th>
               <th class="d-sm-table-cell" scope="row">'.$row['cst_name'].' '.$row['cst_surname'].'</th>
               <td class="d-none d-md-table-cell">'.$row['inapol_policy_number'].'</td>
               <td class="d-none d-md-table-cell">'.$row['clo_item_list'].'</td>

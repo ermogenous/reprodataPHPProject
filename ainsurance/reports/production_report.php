@@ -41,7 +41,7 @@ $db->show_header();
                     </div>
                     <div class="row d-none d-md-block" style="height: 35px;"></div>
 
-                    <div class="row">
+                    <div class="form-group row">
                         <label for="company" class="col-sm-3"><?php echo $db->showLangText('Company','Εταιρία');?></label>
                         <div class="col-sm-3">
                             <select class="form-control" id="company" name="company">
@@ -78,8 +78,50 @@ $db->show_header();
                             ?>
                         </div>
                     </div>
-                    <div class="row">
-                        <label for="financialDateFrom" class="col-sm-3"><?php echo $db->showLangText('Financial Date From:','Λογιστική Ημερομηνία Από:');?></label>
+                    <div class="form-group row">
+                        <label for="financialDateFrom" class="col-sm-3">
+                            <?php echo $db->showLangText('Agents:','Ασφαλιστές:');?>
+                        </label>
+                        <div class="col-sm-3">
+                            <select class="form-control" id="agents" name="agents">
+                                <option value="ALL"
+                                    <?php if ($_POST['agents'] == 'ALL') echo 'selected'; ?>>
+                                    <?php echo $db->showLangText('ALL','ΌΛΟΙ');?>
+                                </option>
+                                <?php
+                                $sql = "SELECT * FROM 
+                                  ina_underwriters
+                                  JOIN users ON usr_users_ID = inaund_user_ID
+                                  WHERE
+                                  inaund_status = 'Active' AND
+                                  inaund_subagent != 0";
+                                $result = $db->query($sql);
+                                while ($comp = $db->fetch_assoc($result)) {
+                                    ?>
+                                    <option value="<?php echo $comp['inaund_underwriter_ID']; ?>"
+                                        <?php if ($_POST['agents'] == $comp['inaund_underwriter_ID']) echo 'selected'; ?>>
+                                        <?php echo $comp['usr_name']; ?>
+                                    </option>
+                                    <?php
+                                }
+                                ?>
+
+                            </select>
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'company',
+                                    'fieldDataType' => 'select',
+                                    'required' => true,
+                                    'invalidText' => 'Must select Company'
+                                ]);
+                            ?>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="financialDateFrom" class="col-sm-3">
+                            <?php echo $db->showLangText('Financial Date From:','Λογιστική Ημερομηνία Από:');?>
+                        </label>
                         <div class="col-sm-2">
                             <input type="text" id="financialDateFrom" name="financialDateFrom"
                                    class="form-control" value="">
@@ -115,7 +157,7 @@ $db->show_header();
 
                     </div>
 
-                    <div class="row">
+                    <div class="form-group row">
                         <label for="startingDateFrom" class="col-form-label col-sm-3"><?php echo $db->showLangText('Starting Date From:','Ημερομηνία Έναρξης Από:');?></label>
                         <div class="col-sm-2">
                             <input type="text" id="startingDateFrom" name="startingDateFrom"
@@ -150,7 +192,7 @@ $db->show_header();
                         </div>
                     </div>
 
-                    <div class="row">
+                    <div class="form-group row">
                         <label for="groupBy1" class="col-sm-3"><?php echo $db->showLangText('Group By','Ομαδοποίηση');?></label>
                         <div class="col-sm-2">
                             <select class="form-control" id="groupBy1" name="groupBy1" onchange="checkGroupBy()">
@@ -158,6 +200,9 @@ $db->show_header();
                                 </option>
                                 <option value="Company" <?php if ($_POST['groupBy1'] == 'Company') echo 'selected'; ?>>
                                     <?php echo $db->showLangText('Company','Εταιρία');?>
+                                </option>
+                                <option value="Agent" <?php if ($_POST['groupBy1'] == 'Agent') echo 'selected'; ?>>
+                                    <?php echo $db->showLangText('Agent','Ασφαλιστή');?>
                                 </option>
                                 <option value="Customer" <?php if ($_POST['groupBy1'] == 'Customer') echo 'selected'; ?>>
                                     <?php echo $db->showLangText('Customer','Πελάτης');?>
@@ -177,6 +222,9 @@ $db->show_header();
                                 <option value="Company" <?php if ($_POST['groupBy2'] == 'Company') echo 'selected'; ?>>
                                     <?php echo $db->showLangText('Company','Εταιρία');?>
                                 </option>
+                                <option value="Agent" <?php if ($_POST['groupBy2'] == 'Agent') echo 'selected'; ?>>
+                                    <?php echo $db->showLangText('Agent','Ασφαλιστή');?>
+                                </option>
                                 <option value="Customer" <?php if ($_POST['groupBy2'] == 'Customer') echo 'selected'; ?>>
                                     <?php echo $db->showLangText('Customer','Πελάτης');?>
                                 </option>
@@ -195,6 +243,9 @@ $db->show_header();
                                 <option value="Company" <?php if ($_POST['groupBy3'] == 'Company') echo 'selected'; ?>>
                                     <?php echo $db->showLangText('Company','Εταιρία');?>
                                 </option>
+                                <option value="Agent" <?php if ($_POST['groupBy3'] == 'Agent') echo 'selected'; ?>>
+                                    <?php echo $db->showLangText('Agent','Ασφαλιστή');?>
+                                </option>
                                 <option value="Customer" <?php if ($_POST['groupBy3'] == 'Customer') echo 'selected'; ?>>
                                     <?php echo $db->showLangText('Customer','Πελάτης');?>
                                 </option>
@@ -212,6 +263,9 @@ $db->show_header();
                                 </option>
                                 <option value="Company" <?php if ($_POST['groupBy4'] == 'Company') echo 'selected'; ?>>
                                     <?php echo $db->showLangText('Company','Εταιρία');?>
+                                </option>
+                                <option value="Agent" <?php if ($_POST['groupBy4'] == 'Agent') echo 'selected'; ?>>
+                                    <?php echo $db->showLangText('Agent','Ασφαλιστή');?>
                                 </option>
                                 <option value="Customer" <?php if ($_POST['groupBy4'] == 'Customer') echo 'selected'; ?>>
                                     <?php echo $db->showLangText('Customer','Πελάτης');?>
@@ -299,6 +353,12 @@ $db->show_header();
                                         $compFilter = 'AND inapol_insurance_company_ID = ' . $_POST['company'];
                                     }
 
+                                    //agents filter
+                                    $agentsFilter = '';
+                                    if ($_POST['agents'] != 'ALL'){
+                                        $agentsFilter = 'AND inapol_underwriter_ID = '.$_POST['agents'];
+                                    }
+
                                     //financial date filter
                                     $finDateFilter = '';
                                     if ($_POST['financialDateFrom'] != '') {
@@ -323,6 +383,11 @@ $db->show_header();
                                                 $groupBy .= ',inainc_name';
                                                 $colField[$i] = 'inainc_name';
                                                 $colName[$i] = $db->showLangText('Company','Εταιρεία');
+                                            }
+                                            else if ($_POST['groupBy'.$i] == 'Agent'){
+                                                $groupBy .= ',usr_name';
+                                                $colField[$i] = 'usr_name';
+                                                $colName[$i] = $db->showLangText('Agent','Ασφαλιστή');
                                             }
                                             else if ($_POST['groupBy'.$i] == 'Customer'){
                                                 $groupBy .= ',cst_name,cst_surname';
@@ -366,15 +431,19 @@ $db->show_header();
                                     SUM(inapol_fees) as clo_total_fees,
                                     SUM(inapol_stamps) as clo_total_stamps,
                                     SUM(inapol_commission) as clo_total_commission,
-                                    SUM(inapol_premium + inapol_fees + inapol_stamps)as clo_gross_premium
+                                    SUM(inapol_special_discount)as clo_total_special_discount,
+                                    SUM(inapol_premium + inapol_fees + inapol_stamps + inapol_special_discount)as clo_gross_premium
                                     " . $groupBy . "
                                     FROM
                                     ina_policies
                                     JOIN ina_insurance_companies ON inapol_insurance_company_ID = inainc_insurance_company_ID
                                     JOIN customers ON cst_customer_ID = inapol_customer_ID
+                                    JOIN ina_underwriters ON inaund_underwriter_ID = inapol_underwriter_ID
+                                    JOIN users ON usr_users_ID = inaund_user_ID
                                     WHERE
                                     inapol_status IN ('Active','Archived')
                                     ".$compFilter."
+                                    ".$agentsFilter."
                                     ".$finDateFilter."
                                     ".$startingDateFilter."
                                     AND inapol_underwriter_ID " . Policy::getAgentWhereClauseSql() . "

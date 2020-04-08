@@ -195,7 +195,8 @@ class PolicyPayment
             $payNewData['allocated_commission'] = $totalAllocatedCommission;
             //sub agent
             //echo "Total Amount:".$totalAllocatedAmount."<br>";
-            $totalPremium = $this->paymentData['inapol_premium'] + $this->paymentData['inapol_fees'] + $this->paymentData['inapol_stamps'];
+            $totalPremium = $this->paymentData['inapol_premium'] + $this->paymentData['inapol_fees']
+                + $this->paymentData['inapol_stamps'] + $this->paymentData['inapol_special_discount'];
             //echo "Total Premium:".$totalPremium."<br>";
             $percentAllocated = $totalAllocatedAmount / $totalPremium;
             //echo "Percent:".$percentAllocated."<br>";

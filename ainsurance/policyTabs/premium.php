@@ -17,6 +17,10 @@ if ($_POST['action'] == 'update') {
     $db->working_section = 'AInsurance Policy Premium Update';
     $db->start_transaction();
 
+    if ($_POST['fld_special_discount'] > 0){
+        $_POST['fld_special_discount'] = $_POST['fld_special_discount']  * -1;
+    }
+
     $db->db_tool_update_row('ina_policies', $_POST, "`inapol_policy_ID` = " . $_POST["pid"],
         $_POST["pid"], 'fld_', 'execute', 'inapol_');
 
@@ -38,6 +42,9 @@ $formValidator = new customFormValidator();
 if ($policy->policyData['inapol_status'] != 'Outstanding') {
     $formValidator->disableForm();
 }
+
+include('../../scripts/form_builder_class.php');
+FormBuilder::buildPageLoader();
 
 //echo $db->prepare_text_as_html(print_r($data, true));
 ?>
@@ -159,12 +166,38 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
 
                     </div>
 
-                    <?php
-                    if ($policy->policyData['inapol_agent_level1_ID'] > 0) {
-                            $subLevel1 = $db->query_fetch('SELECT * FROM ina_underwriters JOIN users ON usr_users_ID = inaund_user_ID WHERE inaund_underwriter_ID = '.$policy->policyData['inapol_agent_level1_ID']);
-                        ?>
+
                         <div class="form-group row">
-                            <label for="fld_agent_level1_commission" class="col-sm-9 text-right col-form-label">
+                            <label for="fld_special_discount" class="col-sm-3 col-form-label">
+                                Special Discount
+                            </label>
+                            <div class="col-sm-3">
+                                <?php
+                                if ($policy->policyData["inapol_special_discount"] == ''){
+                                    $policy->policyData["inapol_special_discount"] = 0;
+                                }
+                                ?>
+                                <input type="text" id="fld_special_discount" name="fld_special_discount"
+                                       class="form-control alert-danger"
+                                       required onchange="updateGrossPremium();"
+                                       value="<?php echo $policy->policyData["inapol_special_discount"]; ?>">
+                                <?php
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => 'fld_special_discount',
+                                        'fieldDataType' => 'number',
+                                        'required' => false,
+                                        'invalidText' => 'Test'
+                                    ]);
+                                ?>
+                            </div>
+
+
+                            <?php
+                            if ($policy->policyData['inapol_agent_level1_ID'] > 0) {
+                            $subLevel1 = $db->query_fetch('SELECT * FROM ina_underwriters JOIN users ON usr_users_ID = inaund_user_ID WHERE inaund_underwriter_ID = '.$policy->policyData['inapol_agent_level1_ID']);
+                            ?>
+                            <label for="fld_agent_level1_commission" class="col-sm-3 text-right col-form-label">
                                 Sub Level 1 Comm.: <?php echo $subLevel1['usr_name'] . " <b>" . $policy->policyData['inapol_agent_level1_percent'] . "%"; ?></b>
                             </label>
                             <div class="col-sm-3">
@@ -182,15 +215,20 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                                     ]);
                                 ?>
                             </div>
+                            <?php } ?>
                         </div>
-                    <?php } ?>
 
-                    <?php
-                    if ($policy->policyData['inapol_agent_level2_ID'] > 0) {
-                        $subLevel2 = $db->query_fetch('SELECT * FROM ina_underwriters JOIN users ON usr_users_ID = inaund_user_ID WHERE inaund_underwriter_ID = '.$policy->policyData['inapol_agent_level2_ID'])
-                        ?>
+
+
                         <div class="form-group row">
-                            <label for="fld_agent_level2_commission" class="col-sm-9 text-right col-form-label">
+                            <div class="col-sm-5">
+                                Applies to Gross & Sub agents but not on company commission
+                            </div>
+                            <?php
+                            if ($policy->policyData['inapol_agent_level2_ID'] > 0) {
+                            $subLevel2 = $db->query_fetch('SELECT * FROM ina_underwriters JOIN users ON usr_users_ID = inaund_user_ID WHERE inaund_underwriter_ID = '.$policy->policyData['inapol_agent_level2_ID'])
+                            ?>
+                            <label for="fld_agent_level2_commission" class="col-sm-4 text-right col-form-label">
                                 Sub Level 2 Commission: <?php echo $subLevel2['usr_name'] . " <b>" . $policy->policyData['inapol_agent_level2_percent'] . "%"; ?></b>
                             </label>
                             <div class="col-sm-3">
@@ -208,14 +246,20 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                                     ]);
                                 ?>
                             </div>
+                            <?php } ?>
                         </div>
-                    <?php } ?>
 
-                    <?php
-                    if ($policy->policyData['inapol_agent_level3_ID'] > 0) {
-                        $subLevel3 = $db->query_fetch('SELECT * FROM ina_underwriters JOIN users ON usr_users_ID = inaund_user_ID WHERE inaund_underwriter_ID = '.$policy->policyData['inapol_agent_level3_ID'])
-                        ?>
+
+
                         <div class="form-group row">
+                            <?php
+                            $formB = new FormBuilder();
+                            $formB->setFieldName('')
+                            ?>
+                            <?php
+                            if ($policy->policyData['inapol_agent_level3_ID'] > 0) {
+                            $subLevel3 = $db->query_fetch('SELECT * FROM ina_underwriters JOIN users ON usr_users_ID = inaund_user_ID WHERE inaund_underwriter_ID = '.$policy->policyData['inapol_agent_level3_ID'])
+                            ?>
                             <label for="fld_agent_level3_commission" class="col-sm-9 text-right col-form-label">
                                 Sub Level 3 Commission: <?php echo $subLevel3['usr_name'] . " <b>" . $policy->policyData['inapol_agent_level3_percent'] . "%"; ?></b>
                             </label>
@@ -234,8 +278,9 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
                                     ]);
                                 ?>
                             </div>
+                            <?php } ?>
                         </div>
-                    <?php } ?>
+
 
                     <div class="form-group row">
                         <div class="col-sm-5 col-form-label"></div>
@@ -317,8 +362,10 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
             let fees = $('#fld_fees').val() * 1;
             //let mif = $('#fld_mif').val() * 1;
             let stamps = $('#fld_stamps').val() * 1;
+            checkSpecialDiscountIfNegative();
+            let specialDiscount = $('#fld_special_discount').val() * 1;
 
-            grossPremium = premium + fees + stamps;
+            grossPremium = premium + fees + stamps + specialDiscount;
 
             $('#grossPremium').html(
                 grossPremium.toFixed(2)
@@ -329,6 +376,8 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
             //console.log('Calculating Commission');
             let premium = $('#fld_premium').val() * 1;
             let fees = $('#fld_fees').val() * 1;
+            checkSpecialDiscountIfNegative();
+            let specialDiscount = $('#fld_special_discount').val() * 1;
             let commPercent = $('#commissionPercent').val() * 1;
             let commCalculation = '<?php echo $policy->commissionCalculation;?>';
             let commission = 0;
@@ -344,6 +393,8 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
             }
             commission = commission.toFixed(2);
             $('#fld_commission').val(commission);
+
+            premium = premium + specialDiscount;
 
             let subAgentLevel1 = '<?php echo $policy->policyData['inapol_agent_level1_ID'];?>';
             //sub agent commission
@@ -403,14 +454,22 @@ if ($policy->policyData['inapol_status'] != 'Outstanding') {
 
             <?php if ($_GET['rel'] == 'yes') { ?>
             //every time this page loads reload the premium tab
-            parent.window.frames['installmentsTab'].location.reload(true);
+            parent.window.frames['installmentsTab'].location.reload();
             <?php } ?>
-            $('#premTab', window.parent.document).height('660px');
+            $('#premTab', window.parent.document).height('800px');
             //check if commission field is empty or zero then calculate
             if ($('#fld_commission').val() == '') {
                 calculateCommission();
             }
         });
+
+        function checkSpecialDiscountIfNegative(){
+            let specialDiscount = $('#fld_special_discount').val() * 1;
+            if (specialDiscount > 0){
+                specialDiscount = specialDiscount * -1;
+                $('#fld_special_discount').val(specialDiscount)
+            }
+        }
 
 
     </script>
