@@ -17,11 +17,13 @@ $db->show_empty_header();
 
 $list = new TableList();
 $list->setTable('ina_overwrite_agents', 'InsuranceOverwriteAgents')
+    ->setSqlFrom('JOIN ina_overwrites ON inaovr_overwrite_ID = inaova_overwrite_ID')
     ->setSqlFrom('JOIN ina_underwriters ON inaund_underwriter_ID = inaova_underwriter_ID')
     ->setSqlFrom('JOIN users ON usr_users_ID = inaund_user_ID')
     ->setSqlSelect('inaova_overwrite_agent_ID', 'ID')
     ->setSqlSelect('usr_name', 'Name')
     ->setSqlSelect('inaova_status', 'Status')
+    ->setSqlWhere('inaova_overwrite_ID = '.$_GET['oid'])
     //->setSqlFrom('JOIN ac_documents ON acdoc_document_ID = actrn_document_ID')
     ->setSqlOrder('inaova_overwrite_agent_ID', 'ASC')
     ->setPerPage(50)

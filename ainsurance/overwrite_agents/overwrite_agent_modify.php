@@ -19,6 +19,9 @@ if ($_POST['action'] == 'insert') {
 
     $db->start_transaction();
 
+    //set the overwrite ID
+    $_POST['fld_overwrite_ID'] = $_POST['oid'];
+
     $db->db_tool_insert_row('ina_overwrite_agents', $_POST, 'fld_', 0, 'inaova_');
 
     $db->commit_transaction();
@@ -124,7 +127,7 @@ FormBuilder::buildPageLoader();
                             ->setFieldDescription('Motor New Policy Commission %')
                             ->setLabelClasses('col-sm-3')
                             ->setFieldType('input')
-                            ->setFieldInputType('number')
+                            ->setFieldInputType('text')
                             ->setInputValue($data['inaova_comm_motor_new'])
                             ->buildLabel();
                         ?>
@@ -147,7 +150,7 @@ FormBuilder::buildPageLoader();
                             ->setFieldDescription('Motor Renewal Policy Commission %')
                             ->setLabelClasses('col-sm-3')
                             ->setFieldType('input')
-                            ->setFieldInputType('number')
+                            ->setFieldInputType('text')
                             ->setInputValue($data['inaova_comm_motor_renewal'])
                             ->buildLabel();
                         ?>
@@ -172,7 +175,7 @@ FormBuilder::buildPageLoader();
                             ->setFieldDescription('Fire New Policy Commission %')
                             ->setLabelClasses('col-sm-3')
                             ->setFieldType('input')
-                            ->setFieldInputType('number')
+                            ->setFieldInputType('text')
                             ->setInputValue($data['inaova_comm_fire_new'])
                             ->buildLabel();
                         ?>
@@ -195,7 +198,7 @@ FormBuilder::buildPageLoader();
                             ->setFieldDescription('Fire Renewal Policy Commission %')
                             ->setLabelClasses('col-sm-3')
                             ->setFieldType('input')
-                            ->setFieldInputType('number')
+                            ->setFieldInputType('text')
                             ->setInputValue($data['inaova_comm_fire_renewal'])
                             ->buildLabel();
                         ?>
@@ -221,7 +224,7 @@ FormBuilder::buildPageLoader();
                             ->setFieldDescription('PA New Policy Commission %')
                             ->setLabelClasses('col-sm-3')
                             ->setFieldType('input')
-                            ->setFieldInputType('number')
+                            ->setFieldInputType('text')
                             ->setInputValue($data['inaova_comm_pa_new'])
                             ->buildLabel();
                         ?>
@@ -244,7 +247,7 @@ FormBuilder::buildPageLoader();
                             ->setFieldDescription('PA Renewal Policy Commission %')
                             ->setLabelClasses('col-sm-3')
                             ->setFieldType('input')
-                            ->setFieldInputType('number')
+                            ->setFieldInputType('text')
                             ->setInputValue($data['inaova_comm_pa_renewal'])
                             ->buildLabel();
                         ?>
@@ -270,7 +273,7 @@ FormBuilder::buildPageLoader();
                             ->setFieldDescription('EL New Policy Commission %')
                             ->setLabelClasses('col-sm-3')
                             ->setFieldType('input')
-                            ->setFieldInputType('number')
+                            ->setFieldInputType('text')
                             ->setInputValue($data['inaova_comm_el_new'])
                             ->buildLabel();
                         ?>
@@ -293,7 +296,7 @@ FormBuilder::buildPageLoader();
                             ->setFieldDescription('EL Renewal Policy Commission %')
                             ->setLabelClasses('col-sm-3')
                             ->setFieldType('input')
-                            ->setFieldInputType('number')
+                            ->setFieldInputType('text')
                             ->setInputValue($data['inaova_comm_el_renewal'])
                             ->buildLabel();
                         ?>
@@ -319,7 +322,7 @@ FormBuilder::buildPageLoader();
                             ->setFieldDescription('PI New Policy Commission %')
                             ->setLabelClasses('col-sm-3')
                             ->setFieldType('input')
-                            ->setFieldInputType('number')
+                            ->setFieldInputType('text')
                             ->setInputValue($data['inaova_comm_pi_new'])
                             ->buildLabel();
                         ?>
@@ -342,7 +345,7 @@ FormBuilder::buildPageLoader();
                             ->setFieldDescription('PI Renewal Policy Commission %')
                             ->setLabelClasses('col-sm-3')
                             ->setFieldType('input')
-                            ->setFieldInputType('number')
+                            ->setFieldInputType('text')
                             ->setInputValue($data['inaova_comm_pi_renewal'])
                             ->buildLabel();
                         ?>
@@ -368,7 +371,7 @@ FormBuilder::buildPageLoader();
                             ->setFieldDescription('PL New Policy Commission %')
                             ->setLabelClasses('col-sm-3')
                             ->setFieldType('input')
-                            ->setFieldInputType('number')
+                            ->setFieldInputType('text')
                             ->setInputValue($data['inaova_comm_pl_new'])
                             ->buildLabel();
                         ?>
@@ -391,7 +394,7 @@ FormBuilder::buildPageLoader();
                             ->setFieldDescription('PL Renewal Policy Commission %')
                             ->setLabelClasses('col-sm-3')
                             ->setFieldType('input')
-                            ->setFieldInputType('number')
+                            ->setFieldInputType('text')
                             ->setInputValue($data['inaova_comm_pl_renewal'])
                             ->buildLabel();
                         ?>
@@ -417,7 +420,7 @@ FormBuilder::buildPageLoader();
                             ->setFieldDescription('Medical New Policy Commission %')
                             ->setLabelClasses('col-sm-3')
                             ->setFieldType('input')
-                            ->setFieldInputType('number')
+                            ->setFieldInputType('text')
                             ->setInputValue($data['inaova_comm_medical_new'])
                             ->buildLabel();
                         ?>
@@ -440,7 +443,7 @@ FormBuilder::buildPageLoader();
                             ->setFieldDescription('Medical Renewal Policy Commission %')
                             ->setLabelClasses('col-sm-3')
                             ->setFieldType('input')
-                            ->setFieldInputType('number')
+                            ->setFieldInputType('text')
                             ->setInputValue($data['inaova_comm_medical_renewal'])
                             ->buildLabel();
                         ?>
@@ -466,7 +469,7 @@ FormBuilder::buildPageLoader();
                             ->setFieldDescription('Travel New Policy Commission %')
                             ->setLabelClasses('col-sm-3')
                             ->setFieldType('input')
-                            ->setFieldInputType('number')
+                            ->setFieldInputType('text')
                             ->setInputValue($data['inaova_comm_travel_new'])
                             ->buildLabel();
                         ?>
@@ -489,7 +492,7 @@ FormBuilder::buildPageLoader();
                             ->setFieldDescription('Travel Renewal Policy Commission %')
                             ->setLabelClasses('col-sm-3')
                             ->setFieldType('input')
-                            ->setFieldInputType('number')
+                            ->setFieldInputType('text')
                             ->setInputValue($data['inaova_comm_travel_renewal'])
                             ->buildLabel();
                         ?>

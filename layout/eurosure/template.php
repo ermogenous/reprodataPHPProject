@@ -119,7 +119,7 @@ function template_header()
 
                     <!-- Reports -->
                     <?php
-                    if ($db->user_data['usr_user_rights'] < 8) {
+                    if ($db->user_data['usr_user_rights'] < 3) {
                         ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"

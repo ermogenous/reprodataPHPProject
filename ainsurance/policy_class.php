@@ -89,7 +89,7 @@ class Policy
 
         $this->installmentID = $this->policyData['inapol_installment_ID'];
         //get the primary policy data
-        $this->primaryPolicyData = $db->query_fetch('SELECT * FROM ina_policies WHERE inapol_policy_ID = '.$this->installmentID);
+        $this->primaryPolicyData = $db->query_fetch('SELECT * FROM ina_policies WHERE inapol_policy_ID = ' . $this->installmentID);
 
         $this->totalPremium = round(($this->policyData['inapol_premium'] + /*$this->policyData['inapol_mif'] +*/
             $this->policyData['inapol_fees'] + $this->policyData['inapol_stamps'] + $this->policyData['inapol_special_discount']), 2);
@@ -165,28 +165,28 @@ class Policy
             WHERE inaund_user_ID = ' . $db->user_data['usr_users_ID']);
 
         //if vertical level 0 then view all
-        if ($underwriter['inaund_vertical_level'] == '0'){
+        if ($underwriter['inaund_vertical_level'] == '0') {
             $where = ' > 0';
         }
         //if vertical level between 1 and 9
         //can view his own and above
-        if ($underwriter['inaund_vertical_level'] > 0 && $underwriter['inaund_vertical_level'] < 10){
+        if ($underwriter['inaund_vertical_level'] > 0 && $underwriter['inaund_vertical_level'] < 10) {
             //his own
-            $where = ' IN ('.$underwriter['inaund_underwriter_ID'];
+            $where = ' IN (' . $underwriter['inaund_underwriter_ID'];
             $sql = '
             SELECT * FROM ina_underwriters 
             JOIN users ON usr_users_ID = inaund_user_ID
-            WHERE inaund_vertical_level > '.$underwriter['inaund_vertical_level'].'
+            WHERE inaund_vertical_level > ' . $underwriter['inaund_vertical_level'] . '
             ';
             $result = $db->query($sql);
-            while ($row = $db->fetch_assoc($result)){
-                $where .= $row['inaund_underwriter_ID'].",";
+            while ($row = $db->fetch_assoc($result)) {
+                $where .= $row['inaund_underwriter_ID'] . ",";
             }
             $where = $db->remove_last_char($where);
-            $where = $where.")";
+            $where = $where . ")";
         }
-        if ($underwriter['inaund_vertical_level'] == 10){
-            $where = ' = '.$underwriter['inaund_underwriter_ID'];
+        if ($underwriter['inaund_vertical_level'] == 10) {
+            $where = ' = ' . $underwriter['inaund_underwriter_ID'];
         }
         return $where;
     }
@@ -595,6 +595,13 @@ class Policy
                 && $this->policyData['inapol_process_status'] != 'Cancellation') {
                 $this->error = true;
                 $this->errorDescription = 'Installments Commission is not equal with policy commission. Re-Calculate installments.';
+                return false;
+            }
+
+            //check if fees is empty
+            if ($this->policyData['inapol_fees'] == '' || $this->policyData['inapol_fees'] == null){
+                $this->error = true;
+                $this->errorDescription = 'Policy fees are not specified';
                 return false;
             }
 
@@ -1290,9 +1297,9 @@ class Policy
 
         //set the commissions
         //$newData['commission'] = $db->floorp($premium * $commissionRate,2);
-        $newData['agent_level1_commission'] = $db->floorp($premium * $commissionRateAgent1,2);;
-        $newData['agent_level2_commission'] = $db->floorp($premium * $commissionRateAgent2,2);;
-        $newData['agent_level3_commission'] = $db->floorp($premium * $commissionRateAgent3,2);;
+        $newData['agent_level1_commission'] = $db->floorp($premium * $commissionRateAgent1, 2);;
+        $newData['agent_level2_commission'] = $db->floorp($premium * $commissionRateAgent2, 2);;
+        $newData['agent_level3_commission'] = $db->floorp($premium * $commissionRateAgent3, 2);;
 
         //set the rates
         $newData['agent_level1_percent'] = $commissionRateAgent1 * 100;
@@ -1425,7 +1432,6 @@ class Policy
         $newData['inapol_premium'] = $totalAmounts['clo_premium'];
         $newData['inapol_mif'] = 0;
         $newData['inapol_commission'] = $totalAmounts['clo_commission'];
-        $newData['inapol_fees'] = 0;
         $newData['inapol_stamps'] = 0;
         $newData['inapol_special_discount'] = $totalAmounts['clo_special_discount'];
 
@@ -1437,10 +1443,12 @@ class Policy
         unset($newData['inapol_last_update_by']);
         unset($newData['inapol_replaced_by_ID']);
         unset($newData['inapol_policy_ID']);
+        //remove the policy fees field so that the policy cannot activate so the user to update it
+        unset($newData['inapol_fees']);
 
         //in case the below are empty must be removed because it generates db error is empty
-        foreach($newData as $fieldName => $fieldValue){
-            if ($newData[$fieldName] == ''){
+        foreach ($newData as $fieldName => $fieldValue) {
+            if ($newData[$fieldName] == '' && $newData[$fieldName] != 0) {
                 unset($newData[$fieldName]);
             }
         }
@@ -1564,10 +1572,10 @@ class Policy
         $commissionRateAgent3 = $this->primaryPolicyData['inapol_agent_level3_commission'] / $this->primaryPolicyData['inapol_premium'];
 
         //set the commissions
-        $newData['inapol_commission'] = $db->floorp($premium * $commissionRate,2);
-        $newData['inapol_agent_level1_commission'] = $db->floorp($premium * $commissionRateAgent1,2);;
-        $newData['inapol_agent_level2_commission'] = $db->floorp($premium * $commissionRateAgent2,2);;
-        $newData['inapol_agent_level3_commission'] = $db->floorp($premium * $commissionRateAgent3,2);;
+        $newData['inapol_commission'] = $db->floorp($premium * $commissionRate, 2);
+        $newData['inapol_agent_level1_commission'] = $db->floorp($premium * $commissionRateAgent1, 2);;
+        $newData['inapol_agent_level2_commission'] = $db->floorp($premium * $commissionRateAgent2, 2);;
+        $newData['inapol_agent_level3_commission'] = $db->floorp($premium * $commissionRateAgent3, 2);;
 
         //set the rates
         $newData['inapol_agent_level1_percent'] = $commissionRateAgent1 * 100;
@@ -1587,14 +1595,14 @@ class Policy
 
         //remove the prefix inapol_ for auto insert by and date to work
         $newDataFixed = [];
-        foreach($newData as $fieldName => $fieldValue){
-            $newDataFixed[substr($fieldName,7)] = $fieldValue;
+        foreach ($newData as $fieldName => $fieldValue) {
+            $newDataFixed[substr($fieldName, 7)] = $fieldValue;
         }
 
         //create the record in db
         //echo "Create policy<br>\n";
         //print_r($newData);
-        $newPolicyID = $db->db_tool_insert_row('ina_policies', $newDataFixed, '', 1,'inapol_');
+        $newPolicyID = $db->db_tool_insert_row('ina_policies', $newDataFixed, '', 1, 'inapol_');
         $this->newEndorsementID = $newPolicyID;
         //update the current
         //echo "Update Current<br>\n";
@@ -1614,18 +1622,18 @@ class Policy
             unset($newItemData['inapit_last_update_by']);
             unset($newItemData['inapit_policy_item_ID']);
             //in case the below are empty must be removed because it generates db error is empty
-            foreach($newItemData as $fieldName => $fieldValue){
-                if ($newItemData[$fieldName] == ''){
+            foreach ($newItemData as $fieldName => $fieldValue) {
+                if ($newItemData[$fieldName] == '') {
                     unset($newItemData[$fieldName]);
                 }
             }
             //remove the prefix for the insert/update auto mechanism to work
             $newItemDataFixed = [];
-            foreach($newItemData as $fieldName => $fieldValue){
-                $newItemDataFixed[substr($fieldName,7)] = $fieldValue;
+            foreach ($newItemData as $fieldName => $fieldValue) {
+                $newItemDataFixed[substr($fieldName, 7)] = $fieldValue;
             }
             //echo "Create Item<br>\n";
-            $db->db_tool_insert_row('ina_policy_items', $newItemDataFixed, '',0,'inapit_');
+            $db->db_tool_insert_row('ina_policy_items', $newItemDataFixed, '', 0, 'inapit_');
         }
 
         //no installments for the endorsement
@@ -1704,21 +1712,62 @@ class Policy
     }
 
     //return if any issuing record exists for this policy
-    public function getIssuingData(){
+    public function getIssuingData()
+    {
         global $db;
 
         $sql = "SELECT * FROM ina_issuing WHERE 
-                inaiss_insurance_company_ID = ".$this->policyData['inapol_insurance_company_ID']."
-                AND inaiss_insurance_type = '".$this->policyData['inapol_type_code']."'";
+                inaiss_insurance_company_ID = " . $this->policyData['inapol_insurance_company_ID'] . "
+                AND inaiss_insurance_type = '" . $this->policyData['inapol_type_code'] . "'";
         $data = $db->query_fetch($sql);
 
-        if ($data['inaiss_issue_ID'] > 0){
+        if ($data['inaiss_issue_ID'] > 0) {
             return $data;
-        }
-        else {
+        } else {
             return false;
         }
 
+    }
+
+    /** finds overwrites for this policy. Returns array of all details
+     * @return mixed
+     */
+    public function getAllOverwrites()
+    {
+        global $db;
+        $list = [];
+        if ($this->policyData['inapol_process_status'] == 'New' || $this->policyData['inapol_process_status'] == 'Renewal') {
+            $sql = "SELECT * FROM 
+            ina_overwrites
+            JOIN ina_overwrite_agents ON inaovr_overwrite_ID = inaova_overwrite_ID
+            JOIN ina_underwriters ON inaund_underwriter_ID = inaovr_underwriter_ID
+            JOIN users ON usr_users_ID = inaund_user_ID
+            WHERE
+            inaova_underwriter_ID = " . $this->policyData['inapol_underwriter_ID'];
+            $result = $db->query($sql);
+            //find the proper type commission
+            $comm = 'inaova_comm_'.strtolower($this->policyData['inapol_type_code'])
+                ."_".strtolower($this->policyData['inapol_process_status']);
+            $i = 0;
+            while ($row = $db->fetch_assoc($result)) {
+                $i++;
+                $list[$i]['overwriteID'] = $row['inaovr_overwrite_ID'];
+                $list[$i]['ID'] = $row['inaund_underwriter_ID'];
+                $list[$i]['name'] = $row['usr_name'];
+                $list[$i]['percent'] = $row[$comm];
+            }
+        }
+
+        return $list;
+    }
+
+    //input the list from the previous function getAllOverwrites to get a list for drop down to inject in formbuilder->setInputSelectArrayOptions
+    public function prepareOverwritesFromDropDown($list){
+        $output = [];
+        foreach($list as $row){
+            $output[$row['overwriteID']."-".$row['ID']] = $row['name']." - ".$row['percent']."%";
+        }
+        return $output;
     }
 }
 

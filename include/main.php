@@ -411,7 +411,8 @@ class Main
             //get the folder details.
             //get the currenct folder
             $folder = substr($_SERVER['PHP_SELF'], strlen($this->settings["remote_folder"]) + 1);
-//echo $folder."<br>";
+//echo $folder." - ".$this->settings['remote_folder']."<br>";
+
             $pos = strripos($folder, '/');
             //$folder = substr($folder, 0, $pos + 1);
             $folder = substr($folder, 0, $pos);

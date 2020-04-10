@@ -17,10 +17,15 @@ if ($_POST['action'] == 'update') {
     $db->working_section = 'AInsurance Policy Premium Update';
     $db->start_transaction();
 
-    if ($_POST['fld_special_discount'] > 0){
-        $_POST['fld_special_discount'] = $_POST['fld_special_discount']  * -1;
+    if ($_POST['fld_special_discount'] > 0) {
+        $_POST['fld_special_discount'] = $_POST['fld_special_discount'] * -1;
     }
 
+    if ($_POST['fld_overwrite_ID'] != ''){
+        $overwriteSplit = explode('-',$_POST['fld_overwrite_ID']);
+        $_POST['fld_overwrite_ID'] = $overwriteSplit[0];
+        $_POST['fld_overwrite_agent_ID'] = $overwriteSplit[1];
+    }
     $db->db_tool_update_row('ina_policies', $_POST, "`inapol_policy_ID` = " . $_POST["pid"],
         $_POST["pid"], 'fld_', 'execute', 'inapol_');
 
@@ -35,6 +40,7 @@ if ($_POST['action'] == 'update') {
 $policy = new Policy($_GET['pid']);
 $policyUnderwriter = $policy->getPolicyUnderwriterData();
 
+$db->enable_jquery_ui();
 $db->show_empty_header();
 
 include('../../scripts/form_validator_class.php');
@@ -167,38 +173,39 @@ FormBuilder::buildPageLoader();
                     </div>
 
 
-                        <div class="form-group row">
-                            <label for="fld_special_discount" class="col-sm-3 col-form-label">
-                                Special Discount
-                            </label>
-                            <div class="col-sm-3">
-                                <?php
-                                if ($policy->policyData["inapol_special_discount"] == ''){
-                                    $policy->policyData["inapol_special_discount"] = 0;
-                                }
-                                ?>
-                                <input type="text" id="fld_special_discount" name="fld_special_discount"
-                                       class="form-control alert-danger"
-                                       required onchange="updateGrossPremium();"
-                                       value="<?php echo $policy->policyData["inapol_special_discount"]; ?>">
-                                <?php
-                                $formValidator->addField(
-                                    [
-                                        'fieldName' => 'fld_special_discount',
-                                        'fieldDataType' => 'number',
-                                        'required' => false,
-                                        'invalidText' => 'Test'
-                                    ]);
-                                ?>
-                            </div>
-
-
+                    <div class="form-group row">
+                        <label for="fld_special_discount" class="col-sm-3 col-form-label">
+                            Special Discount
+                        </label>
+                        <div class="col-sm-3">
                             <?php
-                            if ($policy->policyData['inapol_agent_level1_ID'] > 0) {
-                            $subLevel1 = $db->query_fetch('SELECT * FROM ina_underwriters JOIN users ON usr_users_ID = inaund_user_ID WHERE inaund_underwriter_ID = '.$policy->policyData['inapol_agent_level1_ID']);
+                            if ($policy->policyData["inapol_special_discount"] == '') {
+                                $policy->policyData["inapol_special_discount"] = 0;
+                            }
+                            ?>
+                            <input type="text" id="fld_special_discount" name="fld_special_discount"
+                                   class="form-control alert-danger"
+                                   required onchange="updateGrossPremium();"
+                                   value="<?php echo $policy->policyData["inapol_special_discount"]; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_special_discount',
+                                    'fieldDataType' => 'number',
+                                    'required' => false,
+                                    'invalidText' => 'Test'
+                                ]);
+                            ?>
+                        </div>
+
+
+                        <?php
+                        if ($policy->policyData['inapol_agent_level1_ID'] > 0) {
+                            $subLevel1 = $db->query_fetch('SELECT * FROM ina_underwriters JOIN users ON usr_users_ID = inaund_user_ID WHERE inaund_underwriter_ID = ' . $policy->policyData['inapol_agent_level1_ID']);
                             ?>
                             <label for="fld_agent_level1_commission" class="col-sm-3 text-right col-form-label">
-                                Sub Level 1 Comm.: <?php echo $subLevel1['usr_name'] . " <b>" . $policy->policyData['inapol_agent_level1_percent'] . "%"; ?></b>
+                                Sub Level 1
+                                Comm.: <?php echo $subLevel1['usr_name'] . " <b>" . $policy->policyData['inapol_agent_level1_percent'] . "%"; ?></b>
                             </label>
                             <div class="col-sm-3">
                                 <input type="text" id="fld_agent_level1_commission" name="fld_agent_level1_commission"
@@ -215,21 +222,21 @@ FormBuilder::buildPageLoader();
                                     ]);
                                 ?>
                             </div>
-                            <?php } ?>
+                        <?php } ?>
+                    </div>
+
+
+                    <div class="form-group row">
+                        <div class="col-sm-5">
+                            Applies to Gross & Sub agents but not on company commission
                         </div>
-
-
-
-                        <div class="form-group row">
-                            <div class="col-sm-5">
-                                Applies to Gross & Sub agents but not on company commission
-                            </div>
-                            <?php
-                            if ($policy->policyData['inapol_agent_level2_ID'] > 0) {
-                            $subLevel2 = $db->query_fetch('SELECT * FROM ina_underwriters JOIN users ON usr_users_ID = inaund_user_ID WHERE inaund_underwriter_ID = '.$policy->policyData['inapol_agent_level2_ID'])
+                        <?php
+                        if ($policy->policyData['inapol_agent_level2_ID'] > 0) {
+                            $subLevel2 = $db->query_fetch('SELECT * FROM ina_underwriters JOIN users ON usr_users_ID = inaund_user_ID WHERE inaund_underwriter_ID = ' . $policy->policyData['inapol_agent_level2_ID'])
                             ?>
                             <label for="fld_agent_level2_commission" class="col-sm-4 text-right col-form-label">
-                                Sub Level 2 Commission: <?php echo $subLevel2['usr_name'] . " <b>" . $policy->policyData['inapol_agent_level2_percent'] . "%"; ?></b>
+                                Sub Level 2
+                                Commission: <?php echo $subLevel2['usr_name'] . " <b>" . $policy->policyData['inapol_agent_level2_percent'] . "%"; ?></b>
                             </label>
                             <div class="col-sm-3">
                                 <input type="text" id="fld_agent_level2_commission" name="fld_agent_level2_commission"
@@ -246,22 +253,17 @@ FormBuilder::buildPageLoader();
                                     ]);
                                 ?>
                             </div>
-                            <?php } ?>
-                        </div>
+                        <?php } ?>
+                    </div>
 
-
-
-                        <div class="form-group row">
-                            <?php
-                            $formB = new FormBuilder();
-                            $formB->setFieldName('')
-                            ?>
-                            <?php
-                            if ($policy->policyData['inapol_agent_level3_ID'] > 0) {
-                            $subLevel3 = $db->query_fetch('SELECT * FROM ina_underwriters JOIN users ON usr_users_ID = inaund_user_ID WHERE inaund_underwriter_ID = '.$policy->policyData['inapol_agent_level3_ID'])
-                            ?>
+                    <?php
+                    if ($policy->policyData['inapol_agent_level3_ID'] > 0) {
+                    $subLevel3 = $db->query_fetch('SELECT * FROM ina_underwriters JOIN users ON usr_users_ID = inaund_user_ID WHERE inaund_underwriter_ID = ' . $policy->policyData['inapol_agent_level3_ID'])
+                    ?>
+                    <div class="form-group row">
                             <label for="fld_agent_level3_commission" class="col-sm-9 text-right col-form-label">
-                                Sub Level 3 Commission: <?php echo $subLevel3['usr_name'] . " <b>" . $policy->policyData['inapol_agent_level3_percent'] . "%"; ?></b>
+                                Sub Level 3
+                                Commission: <?php echo $subLevel3['usr_name'] . " <b>" . $policy->policyData['inapol_agent_level3_percent'] . "%"; ?></b>
                             </label>
                             <div class="col-sm-3">
                                 <input type="text" id="fld_agent_level3_commission" name="fld_agent_level3_commission"
@@ -278,9 +280,127 @@ FormBuilder::buildPageLoader();
                                     ]);
                                 ?>
                             </div>
-                            <?php } ?>
-                        </div>
+                    </div>
+                    <?php }
 
+                    $overwriteListDetails = $policy->getAllOverwrites();
+                    if (count($overwriteListDetails) > 0) {
+                        ?>
+                        <div class="form-group row">
+                            <?php
+
+                            $overwriteList = $policy->prepareOverwritesFromDropDown($overwriteListDetails);
+                            //add extra option NO
+                            $overwriteList['0-0'] = 'No Overwrite';
+
+                            $formB = new FormBuilder();
+                            $formB->setFieldName('fld_overwrite_ID')
+                                ->setFieldDescription('Overwrite Agent')
+                                ->setLabelClasses('col-sm-2')
+                                ->setFieldType('select')
+                                ->setInputValue($policy->policyData['inapol_overwrite_ID'] . "-" . $policy->policyData['inapol_overwrite_agent_ID'])
+                                ->setInputSelectArrayOptions($overwriteList)
+                                ->setFieldOnChange('changeOfOverwrite();')
+                                ->buildLabel();
+                            ?>
+                            <div class="col-3">
+                                <?php
+                                $formB->buildInput();
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => $formB->fieldName,
+                                        'fieldDataType' => 'select',
+                                        'required' => true,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
+                            </div>
+                            <?php
+                            $formB = new FormBuilder();
+                            $formB->setFieldName('fld_overwrite_commission')
+                                ->setFieldDescription('Amount')
+                                ->setLabelClasses('col-sm-1')
+                                ->setFieldType('input')
+                                ->setFieldInputType('text')
+                                ->setInputValue($policy->policyData['inapol_overwrite_commission'])
+                                ->setFieldOnKeyUp('calculateOverwritePercent();')
+                                ->buildLabel();
+                            ?>
+                            <div class="col-2">
+                                <?php
+                                $formB->buildInput();
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => $formB->fieldName,
+                                        'fieldDataType' => 'number',
+                                        'required' => true,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
+                            </div>
+                            <?php
+                            $formB = new FormBuilder();
+                            $formB->setFieldName('fld_overwrite_percent')
+                                ->setFieldDescription('Percent')
+                                ->setLabelClasses('col-sm-1')
+                                ->setFieldType('input')
+                                ->setFieldInputType('text')
+                                ->setInputValue($policy->policyData['inapol_overwrite_percent'])
+                                ->setFieldOnKeyUp('calculateOverwrite();')
+                                ->buildLabel();
+                            ?>
+                            <div class="col-2">
+                                <?php
+                                $formB->buildInput();
+                                $formValidator->addField(
+                                    [
+                                        'fieldName' => $formB->fieldName,
+                                        'fieldDataType' => 'number',
+                                        'required' => true,
+                                        'invalidTextAutoGenerate' => true
+                                    ]);
+                                ?>
+                            </div>
+                        </div>
+                        <?php
+                    }
+                    ?>
+                    <script>
+                        let overwriteList = [];
+                        overwriteList['0-0'] = 0;
+                    <?php
+                    //build the array for javascript overwrites
+                    foreach($overwriteListDetails as $over){
+                        echo "overwriteList['".$over['overwriteID']."-".$over['ID']."'] = ".$over['percent'].";".PHP_EOL;
+                    }
+                    ?>
+                        function changeOfOverwrite(){
+                            let selected = $('#fld_overwrite_ID').val();
+                            //set the percentage
+                            $('#fld_overwrite_percent').val(overwriteList[selected]);
+                            calculateOverwrite();
+                        }
+
+                        function calculateOverwrite(){
+                            let premium = $('#fld_premium').val() * 1;
+                            let specialDiscount = $('#fld_special_discount').val() * 1;
+                            let commissionPercent = $('#fld_overwrite_percent').val() * 1;
+                            let netPremium = premium + specialDiscount;
+                            let commissionAmount = netPremium * (commissionPercent / 100);
+                            commissionAmount = commissionAmount.toFixed(2);
+                            $('#fld_overwrite_commission').val(commissionAmount);
+                        }
+
+                        function calculateOverwritePercent(){
+                            let premium = $('#fld_premium').val() * 1;
+                            let specialDiscount = $('#fld_special_discount').val() * 1;
+                            let overwriteAmount = $('#fld_overwrite_commission').val() * 1;
+                            let netPremium = premium + specialDiscount;
+                            let commissionPercent = (overwriteAmount / netPremium) * 100;
+                            commissionPercent = commissionPercent.toFixed(4);
+                            $('#fld_overwrite_percent').val(commissionPercent);
+                        }
+                    </script>
 
                     <div class="form-group row">
                         <div class="col-sm-5 col-form-label"></div>
@@ -328,10 +448,10 @@ FormBuilder::buildPageLoader();
                             Accounts Transactions Console
                             <textarea disabled style="width: 100%" rows="10"><?php
                                 //if ($policy->policyData['inapol_status'] == 'Outstanding') {
-                                if (1==1) {
-                                    if ($policy->policyData['inainc_enable_commission_release'] == 1){
-                                        echo "Commission Release is Active for this Company. Transactions will be generated only on payments.".PHP_EOL;
-                                        echo "List of possible accounts transactions below.".PHP_EOL;
+                                if (1 == 1) {
+                                    if ($policy->policyData['inainc_enable_commission_release'] == 1) {
+                                        echo "Commission Release is Active for this Company. Transactions will be generated only on payments." . PHP_EOL;
+                                        echo "List of possible accounts transactions below." . PHP_EOL;
                                     }
                                     $transactionData = $policy->getAccountTransactionsList();
                                     foreach ($transactionData as $num => $trans) {
@@ -374,6 +494,12 @@ FormBuilder::buildPageLoader();
 
         function calculateCommission() {
             //console.log('Calculating Commission');
+            if (confirm('This will reset commissions. Are you sure?')){
+                //do nothing allow to proceed
+            }
+            else {
+                return false;//stop the procedure
+            }
             let premium = $('#fld_premium').val() * 1;
             let fees = $('#fld_fees').val() * 1;
             checkSpecialDiscountIfNegative();
@@ -384,11 +510,9 @@ FormBuilder::buildPageLoader();
 
             if (commCalculation == 'commNetPrem') {
                 commission = (premium * commPercent) / 100;
-            }
-            else if (commCalculation == 'commNetPremFees') {
+            } else if (commCalculation == 'commNetPremFees') {
                 commission = ((premium + fees) * commPercent) / 100;
-            }
-            else {
+            } else {
                 commission = (premium * commPercent) / 100;
             }
             commission = commission.toFixed(2);
@@ -446,6 +570,7 @@ FormBuilder::buildPageLoader();
                 level2Comm = level2Comm.toFixed(2);
                 $('#fld_agent_level2_commission').val(level2Comm);
             }
+            changeOfOverwrite();
 
         }
 
@@ -463,9 +588,9 @@ FormBuilder::buildPageLoader();
             }
         });
 
-        function checkSpecialDiscountIfNegative(){
+        function checkSpecialDiscountIfNegative() {
             let specialDiscount = $('#fld_special_discount').val() * 1;
-            if (specialDiscount > 0){
+            if (specialDiscount > 0) {
                 specialDiscount = specialDiscount * -1;
                 $('#fld_special_discount').val(specialDiscount)
             }
