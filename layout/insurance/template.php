@@ -262,7 +262,11 @@ function template_header()
                         </li>
                     <?php } ?>
 
-                    <?php if ($db->get_setting('ac_advanced_accounts_enable') == 1) { ?>
+                    <?php if ($db->get_setting('ac_advanced_accounts_enable') == 1
+                                && (
+                                        $db->user_data['usr_user_rights'] == 0
+                                        || $db->user_data['usr_users_groups_ID'] == 9
+                        )               || $db->user_data['usr_users_groups_ID'] == 8) { ?>
                         <!-- Accounts -->
                         <!--
                         <li class="nav-item dropdown">
@@ -445,7 +449,9 @@ function template_header()
                             </div>
                         </li>
                     <?php } ?>
-                    <?php if ($db->user_data["usr_user_rights"] == 0 && $db->dbSettings['ina_enable_agent_insurance']['value'] == 1) { ?>
+                    <?php
+                    if (($db->user_data["usr_user_rights"] == 0 || $db->user_data['usr_users_groups_ID'] == 8)
+                                && $db->dbSettings['ina_enable_agent_insurance']['value'] == 1) { ?>
                         <!-- Insurance Agents Settings -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"

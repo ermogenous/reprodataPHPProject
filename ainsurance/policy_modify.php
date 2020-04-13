@@ -30,7 +30,7 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_financial_date'] = $db->convertDateToUS($_POST['fld_financial_date']);
     $_POST['fld_status'] = 'Outstanding';
     //build the subagentsID
-    Policy::buildSubAgentsIDsFromPOST();
+    Policy::buildSubAgentsIDsFromPOST($_POST['fld_process_status']);
 
     //init fields
     $_POST['fld_replacing_ID'] = 0;
@@ -86,7 +86,7 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_financial_date'] = $db->convertDateToUS($_POST['fld_financial_date']);
 
     //build the subagentsID
-    Policy::buildSubAgentsIDsFromPOST();
+    Policy::buildSubAgentsIDsFromPOST($policy->primaryPolicyData['inapol_process_status']);
     if ($policy->policyData['inapol_status'] == 'Outstanding') {
         $db->db_tool_update_row('ina_policies', $_POST, "`inapol_policy_ID` = " . $_POST["lid"],
             $_POST["lid"], 'fld_', 'execute', 'inapol_');
@@ -889,7 +889,7 @@ $db->show_header();
             //console.log('checkIfIssuing');
             let company = $('#fld_insurance_company_ID').val();
             let insuranceType = $('#fld_type_code').val();
-            $('#fld_policy_number').attr('disabled', false);
+            //$('#fld_policy_number').attr('disabled', false);
 
             if (company != '' && insuranceType != '') {
                 //console.log(company + ' -> ' + insuranceType);

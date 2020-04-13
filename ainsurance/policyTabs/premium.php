@@ -303,7 +303,7 @@ FormBuilder::buildPageLoader();
                                 ->setFieldOnChange('changeOfOverwrite();')
                                 ->buildLabel();
                             ?>
-                            <div class="col-3">
+                            <div class="col-4">
                                 <?php
                                 $formB->buildInput();
                                 $formValidator->addField(
@@ -492,13 +492,14 @@ FormBuilder::buildPageLoader();
             );
         }
 
-        function calculateCommission() {
+        function calculateCommission(ignoreConfirm = false) {
             //console.log('Calculating Commission');
-            if (confirm('This will reset commissions. Are you sure?')){
-                //do nothing allow to proceed
-            }
-            else {
-                return false;//stop the procedure
+            if (ignoreConfirm == false) {
+                if (confirm('This will reset commissions. Are you sure?')) {
+                    //do nothing allow to proceed
+                } else {
+                    return false;//stop the procedure
+                }
             }
             let premium = $('#fld_premium').val() * 1;
             let fees = $('#fld_fees').val() * 1;
@@ -570,7 +571,7 @@ FormBuilder::buildPageLoader();
                 level2Comm = level2Comm.toFixed(2);
                 $('#fld_agent_level2_commission').val(level2Comm);
             }
-            changeOfOverwrite();
+            calculateOverwrite();
 
         }
 
@@ -581,10 +582,10 @@ FormBuilder::buildPageLoader();
             //every time this page loads reload the premium tab
             parent.window.frames['installmentsTab'].location.reload();
             <?php } ?>
-            $('#premTab', window.parent.document).height('800px');
+            $('#premTab', window.parent.document).height('850px');
             //check if commission field is empty or zero then calculate
             if ($('#fld_commission').val() == '') {
-                calculateCommission();
+                calculateCommission(true);
             }
         });
 

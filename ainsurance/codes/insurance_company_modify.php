@@ -68,11 +68,14 @@ $db->show_header();
 include('../../scripts/form_validator_class.php');
 $formValidator = new customFormValidator();
 $formValidator->showErrorList();
+
+include('../../scripts/form_builder_class.php');
+FormBuilder::buildPageLoader();
 ?>
 <div class="container">
     <div class="row">
-        <div class="col-lg-2 col-md-2 hidden-xs hidden-sm"></div>
-        <div class="col-lg-8 col-md-2 col-xs-12 col-sm-12">
+        <div class="col-lg-1 col-md-1 hidden-xs hidden-sm"></div>
+        <div class="col-lg-10 col-md-10 col-xs-12 col-sm-12">
             <form name="myForm" id="myForm" method="post" action=""
                 <?php $formValidator->echoFormParameters(); ?>>
                 <div class="alert alert-dark text-center">
@@ -476,130 +479,386 @@ $formValidator->showErrorList();
                     </div>
                 </div>
 
-                <div class="row">
-                    <label for="fld_commission_motor"
-                           class="col-sm-5">Motor Commission %</label>
-                    <div class="col-sm-4" style="height: 45px;">
-                        <input type="text" id="fld_commission_motor" name="fld_commission_motor"
-                               class="form-control" value="<?php echo $data['inainc_commission_motor']; ?>">
+                <div class="row form-group">
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_commission_motor_new')
+                        ->setFieldDescription('Motor Commission New %')
+                        ->setLabelClasses('col-sm-4')
+                        ->setFieldType('input')
+                        ->setFieldInputType('text')
+                        ->setInputValue($data['inainc_commission_motor_new'])
+                        ->buildLabel();
+                    ?>
+                    <div class="col-2">
                         <?php
-                        $formValidator->addField([
-                            "fieldName" => "fld_commission_motor",
-                            "fieldDataType" => "number",
-                            "required" => false,
-                        ]);
+                        $formB->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
+                        ?>
+                    </div>
+
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_commission_motor_renewal')
+                        ->setFieldDescription('Motor Commission Renewal %')
+                        ->setLabelClasses('col-sm-4')
+                        ->setFieldType('input')
+                        ->setFieldInputType('text')
+                        ->setInputValue($data['inainc_commission_motor_renewal'])
+                        ->buildLabel();
+                    ?>
+                    <div class="col-2">
+                        <?php
+                        $formB->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
                         ?>
                     </div>
                 </div>
 
-                <div class="row">
-                    <label for="fld_commission_fire"
-                           class="col-sm-5">Fire</label>
-                    <div class="col-sm-4" style="height: 45px;">
-                        <input type="text" id="fld_commission_fire" name="fld_commission_fire"
-                               class="form-control" value="<?php echo $data['inainc_commission_fire']; ?>">
+                <div class="row form-group">
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_commission_fire_new')
+                        ->setFieldDescription('Fire Commission New %')
+                        ->setLabelClasses('col-sm-4')
+                        ->setFieldType('input')
+                        ->setFieldInputType('text')
+                        ->setInputValue($data['inainc_commission_fire_new'])
+                        ->buildLabel();
+                    ?>
+                    <div class="col-2">
                         <?php
-                        $formValidator->addField([
-                            "fieldName" => "fld_commission_fire",
-                            "fieldDataType" => "number",
-                            "required" => false,
-                        ]);
+                        $formB->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
+                        ?>
+                    </div>
+
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_commission_fire_renewal')
+                        ->setFieldDescription('Fire Commission Renewal %')
+                        ->setLabelClasses('col-sm-4')
+                        ->setFieldType('input')
+                        ->setFieldInputType('text')
+                        ->setInputValue($data['inainc_commission_fire_renewal'])
+                        ->buildLabel();
+                    ?>
+                    <div class="col-2">
+                        <?php
+                        $formB->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
                         ?>
                     </div>
                 </div>
 
-                <div class="row">
-                    <label for="fld_commission_pa"
-                           class="col-sm-5">Personal Accident</label>
-                    <div class="col-sm-4" style="height: 45px;">
-                        <input type="text" id="fld_commission_pa" name="fld_commission_pa"
-                               class="form-control" value="<?php echo $data['inainc_commission_pa']; ?>">
+                <div class="row form-group">
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_commission_pa_new')
+                        ->setFieldDescription('Personal Accident Comm. New %')
+                        ->setLabelClasses('col-sm-4')
+                        ->setFieldType('input')
+                        ->setFieldInputType('text')
+                        ->setInputValue($data['inainc_commission_pa_new'])
+                        ->buildLabel();
+                    ?>
+                    <div class="col-2">
                         <?php
-                        $formValidator->addField([
-                            "fieldName" => "fld_commission_pa",
-                            "fieldDataType" => "number",
-                            "required" => false,
-                        ]);
+                        $formB->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
+                        ?>
+                    </div>
+
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_commission_pa_renewal')
+                        ->setFieldDescription('Personal Accident Comm. Renewal %')
+                        ->setLabelClasses('col-sm-4')
+                        ->setFieldType('input')
+                        ->setFieldInputType('text')
+                        ->setInputValue($data['inainc_commission_pa_renewal'])
+                        ->buildLabel();
+                    ?>
+                    <div class="col-2">
+                        <?php
+                        $formB->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
                         ?>
                     </div>
                 </div>
 
-                <div class="row">
-                    <label for="fld_commission_el"
-                           class="col-sm-5">Employers Liability</label>
-                    <div class="col-sm-4" style="height: 45px;">
-                        <input type="text" id="fld_commission_el" name="fld_commission_el"
-                               class="form-control" value="<?php echo $data['inainc_commission_el']; ?>">
+                <div class="row form-group">
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_commission_el_new')
+                        ->setFieldDescription('E.L. Commission New %')
+                        ->setLabelClasses('col-sm-4')
+                        ->setFieldType('input')
+                        ->setFieldInputType('text')
+                        ->setInputValue($data['inainc_commission_el_new'])
+                        ->buildLabel();
+                    ?>
+                    <div class="col-2">
                         <?php
-                        $formValidator->addField([
-                            "fieldName" => "fld_commission_el",
-                            "fieldDataType" => "number",
-                            "required" => false,
-                        ]);
+                        $formB->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
+                        ?>
+                    </div>
+
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_commission_el_renewal')
+                        ->setFieldDescription('E.L. Comm. Renewal %')
+                        ->setLabelClasses('col-sm-4')
+                        ->setFieldType('input')
+                        ->setFieldInputType('text')
+                        ->setInputValue($data['inainc_commission_el_renewal'])
+                        ->buildLabel();
+                    ?>
+                    <div class="col-2">
+                        <?php
+                        $formB->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
                         ?>
                     </div>
                 </div>
 
-                <div class="row">
-                    <label for="fld_commission_pi"
-                           class="col-sm-5">Professional Indemnity</label>
-                    <div class="col-sm-4" style="height: 45px;">
-                        <input type="text" id="fld_commission_pi" name="fld_commission_pi"
-                               class="form-control" value="<?php echo $data['inainc_commission_pi']; ?>">
+                <div class="row form-group">
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_commission_pi_new')
+                        ->setFieldDescription('Professional Indemnity Comm. New %')
+                        ->setLabelClasses('col-sm-4')
+                        ->setFieldType('input')
+                        ->setFieldInputType('text')
+                        ->setInputValue($data['inainc_commission_pi_new'])
+                        ->buildLabel();
+                    ?>
+                    <div class="col-2">
                         <?php
-                        $formValidator->addField([
-                            "fieldName" => "fld_commission_pi",
-                            "fieldDataType" => "number",
-                            "required" => false,
-                        ]);
+                        $formB->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
+                        ?>
+                    </div>
+
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_commission_pi_renewal')
+                        ->setFieldDescription('Professional Ind. Comm. Renewal %')
+                        ->setLabelClasses('col-sm-4')
+                        ->setFieldType('input')
+                        ->setFieldInputType('text')
+                        ->setInputValue($data['inainc_commission_pi_renewal'])
+                        ->buildLabel();
+                    ?>
+                    <div class="col-2">
+                        <?php
+                        $formB->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
                         ?>
                     </div>
                 </div>
 
-                <div class="row">
-                    <label for="fld_commission_pl"
-                           class="col-sm-5">Public Liability</label>
-                    <div class="col-sm-4" style="height: 45px;">
-                        <input type="text" id="fld_commission_pl" name="fld_commission_pl"
-                               class="form-control" value="<?php echo $data['inainc_commission_pl']; ?>">
+                <div class="row form-group">
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_commission_pl_new')
+                        ->setFieldDescription('Public Liability Comm. New %')
+                        ->setLabelClasses('col-sm-4')
+                        ->setFieldType('input')
+                        ->setFieldInputType('text')
+                        ->setInputValue($data['inainc_commission_pl_new'])
+                        ->buildLabel();
+                    ?>
+                    <div class="col-2">
                         <?php
-                        $formValidator->addField([
-                            "fieldName" => "fld_commission_pl",
-                            "fieldDataType" => "number",
-                            "required" => false,
-                        ]);
+                        $formB->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
+                        ?>
+                    </div>
+
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_commission_pl_renewal')
+                        ->setFieldDescription('Public Liability Comm. Renewal %')
+                        ->setLabelClasses('col-sm-4')
+                        ->setFieldType('input')
+                        ->setFieldInputType('text')
+                        ->setInputValue($data['inainc_commission_pl_renewal'])
+                        ->buildLabel();
+                    ?>
+                    <div class="col-2">
+                        <?php
+                        $formB->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
                         ?>
                     </div>
                 </div>
 
-                <div class="row">
-                    <label for="fld_commission_medical"
-                           class="col-sm-5">Medical</label>
-                    <div class="col-sm-4" style="height: 45px;">
-                        <input type="text" id="fld_commission_medical" name="fld_commission_medical"
-                               class="form-control" value="<?php echo $data['inainc_commission_medical']; ?>">
+                <div class="row form-group">
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_commission_medical_new')
+                        ->setFieldDescription('Medical Commission New %')
+                        ->setLabelClasses('col-sm-4')
+                        ->setFieldType('input')
+                        ->setFieldInputType('text')
+                        ->setInputValue($data['inainc_commission_medical_new'])
+                        ->buildLabel();
+                    ?>
+                    <div class="col-2">
                         <?php
-                        $formValidator->addField([
-                            "fieldName" => "fld_commission_medical",
-                            "fieldDataType" => "number",
-                            "required" => false,
-                        ]);
+                        $formB->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
+                        ?>
+                    </div>
+
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_commission_medical_renewal')
+                        ->setFieldDescription('Medical Commission Renewal %')
+                        ->setLabelClasses('col-sm-4')
+                        ->setFieldType('input')
+                        ->setFieldInputType('text')
+                        ->setInputValue($data['inainc_commission_medical_renewal'])
+                        ->buildLabel();
+                    ?>
+                    <div class="col-2">
+                        <?php
+                        $formB->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
                         ?>
                     </div>
                 </div>
 
-                <div class="row">
-                    <label for="fld_commission_travel"
-                           class="col-sm-5">Travel</label>
-                    <div class="col-sm-4" style="height: 45px;">
-                        <input type="text" id="fld_commission_travel" name="fld_commission_travel"
-                               class="form-control" value="<?php echo $data['inainc_commission_travel']; ?>">
+                <div class="row form-group">
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_commission_travel_new')
+                        ->setFieldDescription('Travel Commission New %')
+                        ->setLabelClasses('col-sm-4')
+                        ->setFieldType('input')
+                        ->setFieldInputType('text')
+                        ->setInputValue($data['inainc_commission_travel_new'])
+                        ->buildLabel();
+                    ?>
+                    <div class="col-2">
                         <?php
-                        $formValidator->addField([
-                            "fieldName" => "fld_commission_travel",
-                            "fieldDataType" => "number",
-                            "required" => false,
-                        ]);
+                        $formB->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
+                        ?>
+                    </div>
+
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_commission_travel_renewal')
+                        ->setFieldDescription('Travel Commission Renewal %')
+                        ->setLabelClasses('col-sm-4')
+                        ->setFieldType('input')
+                        ->setFieldInputType('text')
+                        ->setInputValue($data['inainc_commission_travel_renewal'])
+                        ->buildLabel();
+                    ?>
+                    <div class="col-2">
+                        <?php
+                        $formB->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'number',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
                         ?>
                     </div>
                 </div>
@@ -620,7 +879,7 @@ $formValidator->showErrorList();
 
             </form>
         </div>
-        <div class="col-lg-2 col-md-2 hidden-xs hidden-sm"></div>
+        <div class="col-lg-1 col-md-1 hidden-xs hidden-sm"></div>
     </div>
 </div>
 <?php

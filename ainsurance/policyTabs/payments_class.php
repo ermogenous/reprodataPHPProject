@@ -243,32 +243,44 @@ class PolicyPayment
             'fld_', 'execute','inapp_');
 
         $policy = new Policy($this->policyID);
+        $periodPremiums = $policy->getPeriodTotalPremiums();
         if ($policy->policyData['inainc_enable_commission_release'] == 1){
 
             $transactions = $policy->getAccountTransactionsList();
 
             //find the rate of the payment. Each commission will be multiplied by this amount
-            $paymentRate = $this->paymentData['inapp_allocated_commission'] / $policy->policyData['inapol_commission'];
-
+            //$paymentRate = $this->paymentData['inapp_allocated_commission'] / $policy->policyData['inapol_commission'];
+            $paymentRate = $this->paymentData['inapp_allocated_amount'] / $periodPremiums['gross_premium'];
 
             //check if any subagents exists from ina_policy
             //Agent 1
             if ($policy->policyData['inapol_agent_level1_commission'] > 0){
-                $agents1Commission = $policy->policyData['inapol_agent_level1_commission'] * $paymentRate;
+                //$agents1Commission = $policy->policyData['inapol_agent_level1_commission'] * $paymentRate;
+                $agents1Commission = $periodPremiums['agent_level1_commission'] * $paymentRate;
                 $agents1Commission = $db->floorp($agents1Commission,2);
                 $policyNewData['fld_agent_level1_released'] = $policy->policyData['inapol_agent_level1_released'] + $agents1Commission;
             }
             //Agent 2
             if ($policy->policyData['inapol_agent_level2_commission'] > 0){
-                $agents2Commission = $policy->policyData['inapol_agent_level2_commission'] * $paymentRate;
+                //$agents2Commission = $policy->policyData['inapol_agent_level2_commission'] * $paymentRate;
+                $agents2Commission = $periodPremiums['agent_level2_commission'] * $paymentRate;
                 $agents2Commission = $db->floorp($agents2Commission,2);
                 $policyNewData['fld_agent_level2_released'] = $policy->policyData['inapol_agent_level2_released'] + $agents2Commission;
             }
-            //Agent 2
+            //Agent 3
             if ($policy->policyData['inapol_agent_level3_commission'] > 0){
-                $agents3Commission = $policy->policyData['inapol_agent_level3_commission'] * $paymentRate;
+                //$agents3Commission = $policy->policyData['inapol_agent_level3_commission'] * $paymentRate;
+                $agents3Commission = $periodPremiums['agent_level3_commission'] * $paymentRate;
                 $agents3Commission = $db->floorp($agents3Commission,2);
                 $policyNewData['fld_agent_level3_released'] = $policy->policyData['inapol_agent_level3_released'] + $agents3Commission;
+            }
+            //Overwrite Agent
+            $overwriteCommission = 0;
+            if ($policy->policyData['inapol_overwrite_agent_ID'] > 0){
+                //$overwriteCommission = $policy->policyData['inapol_overwrite_commission'] * $paymentRate;
+                $overwriteCommission = $periodPremiums['overwrite_commission'] * $paymentRate;
+                $overwriteCommission = $db->floorp($overwriteCommission,2);
+                $policyNewData['fld_overwrite_released'] = $policy->policyData['inapol_overwrite_released'] + $overwriteCommission;
             }
             $policyNewData['fld_commission_released'] = $policy->policyData['inapol_commission_released'] + $this->paymentData['inapp_allocated_commission'];
             //update the policy with the new release amounts
@@ -344,6 +356,23 @@ class PolicyPayment
                 $transactionsData[1]['amount'] = $agents3Commission;
                 $transactionsData[2]['amount'] = $agents3Commission;
                 $headerData['entityID'] = $transactions[7]['entityID'];
+                $transaction->makeNewTransaction($headerData, $transactionsData);
+                if ($transaction->error == true){
+                    $this->error = true;
+                    $this->errorDescription = $transaction->errorDescription;
+                    return false;
+                }
+            }
+
+            //set Overwrite agent commissions
+            if ($policy->policyData['inapol_overwrite_agent_ID'] > 0){
+                unset($transactionsData);
+                $transactionsData[1] = $allTransactionsData[9];
+                $transactionsData[2] = $allTransactionsData[10];
+                //fix the amounts
+                $transactionsData[1]['amount'] = $overwriteCommission;
+                $transactionsData[2]['amount'] = $overwriteCommission;
+                $headerData['entityID'] = $transactions[9]['entityID'];
                 $transaction->makeNewTransaction($headerData, $transactionsData);
                 if ($transaction->error == true){
                     $this->error = true;

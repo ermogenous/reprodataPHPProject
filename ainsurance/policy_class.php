@@ -56,6 +56,11 @@ class Policy
         $result = $db->query($sql);
         //echo $sql;exit();
         $this->policyData = $db->fetch_assoc($result);
+
+        $this->installmentID = $this->policyData['inapol_installment_ID'];
+        //get the primary policy data. If endorsement/cancellation then the primary is its new or renewal
+        $this->primaryPolicyData = $db->query_fetch('SELECT * FROM ina_policies WHERE inapol_policy_ID = ' . $this->installmentID);
+
         //if no record then redirect to policies for security
         if ($db->num_rows($result) < 1) {
             header("Location: policies.php?notAllowed");
@@ -67,9 +72,11 @@ class Policy
         //if advanced accounts then get it from companies
         //if not advanced accounts then get it from the underwriter
         $typeCode = strtolower($this->policyData['inapol_type_code']);
+        $newRenewal = strtolower($this->primaryPolicyData['inapol_process_status']);
+
         if ($this->accountsUsed == 'Advanced') {
 
-            $this->companyCommission = $this->policyData['inainc_commission_' . $typeCode];
+            $this->companyCommission = $this->policyData['inainc_commission_' . $typeCode."_".$newRenewal];
 
         } else {
 
@@ -81,15 +88,11 @@ class Policy
                     WHERE inaunc_underwriter_ID = " . $this->policyData['inapol_underwriter_ID'] . "
                     AND inaunc_insurance_company_ID = " . $this->policyData['inapol_insurance_company_ID'];
             $commData = $db->query_fetch($sql);
-            $this->companyCommission = $commData['inaunc_commission_' . $typeCode];
+            $this->companyCommission = $commData['inaunc_commission_' . $typeCode."_".$newRenewal];
 
         }
 
         $this->commissionCalculation = $commData['inaunc_commission_calculation'];
-
-        $this->installmentID = $this->policyData['inapol_installment_ID'];
-        //get the primary policy data
-        $this->primaryPolicyData = $db->query_fetch('SELECT * FROM ina_policies WHERE inapol_policy_ID = ' . $this->installmentID);
 
         $this->totalPremium = round(($this->policyData['inapol_premium'] + /*$this->policyData['inapol_mif'] +*/
             $this->policyData['inapol_fees'] + $this->policyData['inapol_stamps'] + $this->policyData['inapol_special_discount']), 2);
@@ -200,9 +203,19 @@ class Policy
 
     }
 
-    public static function buildSubAgentsIDsFromPOST()
+    /**
+     * @param $policyProcessType -> New/Renewal
+     */
+    public static function buildSubAgentsIDsFromPOST($policyProcessStatus)
     {
         global $db;
+        //fix newRenewal to lowercase
+        $policyProcessStatus = strtolower($policyProcessStatus);
+        if ($policyProcessStatus != 'new' && $policyProcessStatus != 'renewal'){
+            echo 'Policy Type is not defined.';
+            exit();
+        }
+
         //policy agent ID
         $policyAgentID = $_POST['fld_underwriter_ID'];
         $agentData = $db->query_fetch('SELECT * FROM ina_underwriters WHERE inaund_underwriter_ID = ' . $policyAgentID);
@@ -235,39 +248,39 @@ class Policy
             $sql = 'SELECT * FROM ina_underwriter_companies WHERE inaunc_underwriter_ID = ' . $_POST['fld_agent_level1_ID'] .
                 ' AND inaunc_insurance_company_ID = ' . $_POST['fld_insurance_company_ID'];
             $level1Comp = $db->query_fetch($sql);
-            $_POST['fld_agent_level1_percent'] = $level1Comp['inaunc_commission_' . $policyType];
+            $_POST['fld_agent_level1_percent'] = $level1Comp['inaunc_commission_' . $policyType."_".$policyProcessStatus];
 
         } else if ($agentData['inaund_subagent'] == 2) {
             //level 1
             $sql1 = 'SELECT * FROM ina_underwriter_companies WHERE inaunc_underwriter_ID = ' . $_POST['fld_agent_level1_ID'] .
                 ' AND inaunc_insurance_company_ID = ' . $_POST['fld_insurance_company_ID'];
             $level1Comp = $db->query_fetch($sql1);
-            $_POST['fld_agent_level1_percent'] = $level1Comp['inaunc_commission_' . $policyType];
+            $_POST['fld_agent_level1_percent'] = $level1Comp['inaunc_commission_' . $policyType."_".$policyProcessStatus];
 
             //level 2
             $sql2 = 'SELECT * FROM ina_underwriter_companies WHERE inaunc_underwriter_ID = ' . $_POST['fld_agent_level2_ID'] .
                 ' AND inaunc_insurance_company_ID = ' . $_POST['fld_insurance_company_ID'];
             $level2Comp = $db->query_fetch($sql2);
-            $_POST['fld_agent_level2_percent'] = $level2Comp['inaunc_commission_' . $policyType];
+            $_POST['fld_agent_level2_percent'] = $level2Comp['inaunc_commission_' . $policyType."_".$policyProcessStatus];
 
         } else if ($agentData['inaund_subagent'] == 3) {
             //level 1
             $sql1 = 'SELECT * FROM ina_underwriter_companies WHERE inaunc_underwriter_ID = ' . $_POST['fld_agent_level1_ID'] .
                 ' AND inaunc_insurance_company_ID = ' . $_POST['fld_insurance_company_ID'];
             $level1Comp = $db->query_fetch($sql1);
-            $_POST['fld_agent_level1_percent'] = $level1Comp['inaunc_commission_' . $policyType];
+            $_POST['fld_agent_level1_percent'] = $level1Comp['inaunc_commission_' . $policyType."_".$policyProcessStatus];
 
             //level 2
             $sql2 = 'SELECT * FROM ina_underwriter_companies WHERE inaunc_underwriter_ID = ' . $_POST['fld_agent_level2_ID'] .
                 ' AND inaunc_insurance_company_ID = ' . $_POST['fld_insurance_company_ID'];
             $level2Comp = $db->query_fetch($sql2);
-            $_POST['fld_agent_level2_percent'] = $level2Comp['inaunc_commission_' . $policyType];
+            $_POST['fld_agent_level2_percent'] = $level2Comp['inaunc_commission_' . $policyType."_".$policyProcessStatus];
 
             //level 3
             $sql3 = 'SELECT * FROM ina_underwriter_companies WHERE inaunc_underwriter_ID = ' . $_POST['fld_agent_level3_ID'] .
                 ' AND inaunc_insurance_company_ID = ' . $_POST['fld_insurance_company_ID'];
             $level3Comp = $db->query_fetch($sql3);
-            $_POST['fld_agent_level3_percent'] = $level3Comp['inaunc_commission_' . $policyType];
+            $_POST['fld_agent_level3_percent'] = $level3Comp['inaunc_commission_' . $policyType."_".$policyProcessStatus];
         }
     }
 
@@ -301,7 +314,7 @@ class Policy
                   inaunc_underwriter_ID = " . $this->policyData['inapol_underwriter_ID'] . "
                   AND inaunc_insurance_company_ID = " . $this->policyData['inapol_insurance_company_ID'];
         $commData = $db->query_fetch($sql);
-        $data['clo_commission_percent'] = $commData['inaunc_commission_' . $typeCode];
+        $data['clo_commission_percent'] = $commData['inaunc_commission_' . $typeCode."_".strtolower($this->primaryPolicyData['inapol_process_status'])];
         return $data;
     }
 
@@ -478,8 +491,16 @@ class Policy
         $data['premium'] = round($total['clo_total_premium'], 2);
         //$data['mif'] = round($total['clo_total_mif'], 2);
 
-        $db->db_tool_update_row('ina_policies', $data, 'inapol_policy_ID = ' . $this->policyID, $this->policyID, '', 'execute', 'inapol_');
 
+
+        //if premium is changed then need to calculate the commissions
+        if ($this->policyData['inapol_premium'] != $data['premium']){
+            $data['overwrite_commission'] = ($data['premium'] + $this->policyData['inapol_special_discount'])
+                * ($this->policyData['inapol_overwrite_percent'] / 100);
+        }
+
+        $db->db_tool_update_row('ina_policies', $data, 'inapol_policy_ID = ' . $this->policyID, $this->policyID, '', 'execute', 'inapol_');
+        $this->policyData['inapol_premium'] = $data['premium'];
     }
 
     public function deletePolicy()
@@ -1032,6 +1053,32 @@ class Policy
             }
         }
 
+        //set 4
+        if ($transactions[7]['type'] != '') {
+            $transactionsData[1] = $transactions[7];
+            $transactionsData[2] = $transactions[8];
+            $headerData['entityID'] = $transactions[7]['entityID'];
+            $transaction->makeNewTransaction($headerData, $transactionsData);
+            if ($transaction->error == true) {
+                $this->error = true;
+                $this->errorDescription = $transaction->errorDescription;
+                return false;
+            }
+        }
+
+        //set 5
+        if ($transactions[9]['type'] != '') {
+            $transactionsData[1] = $transactions[9];
+            $transactionsData[2] = $transactions[10];
+            $headerData['entityID'] = $transactions[9]['entityID'];
+            $transaction->makeNewTransaction($headerData, $transactionsData);
+            if ($transaction->error == true) {
+                $this->error = true;
+                $this->errorDescription = $transaction->errorDescription;
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -1074,7 +1121,7 @@ class Policy
           SELECT * FROM ina_insurance_companies WHERE inainc_insurance_company_ID = ' . $this->policyData['inapol_insurance_company_ID']);
 
 
-        //1. Debit
+        //1. Debit SET 1
         $companyDrAccountID = $companyData['inainc_debtor_account_ID'];
         $companyDrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code,acacc_entity_ID FROM ac_accounts WHERE acacc_account_ID = ' . $companyDrAccountID);
         //find entity from the debit account
@@ -1093,7 +1140,7 @@ class Policy
         $result[1]['amount'] = $this->policyData['inapol_commission'];
         //echo "Dr Account: ".$companyDrAccountCode." - ".$companyDrAccountName." Amount:".$result[1]['ammount']."<br>";
 
-        //2. Credit
+        //2. Credit SET 1
         $companyCrAccountID = $companyData['inainc_revenue_account_ID'];
         //get the name of the account
         $companyCrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $companyCrAccountID);
@@ -1107,7 +1154,7 @@ class Policy
         $result[2]['amount'] = $this->policyData['inapol_commission'];
         //echo "Cr Account: ".$companyCrAccountCode.' - '.$companyCrAccountName." Amount:".$result[2]['ammount']."<br>";
 
-        //Sub Agent Level 1 Transactions
+        //Sub Agent Level 1 Transactions SET 2
         if ($this->policyData['inapol_agent_level1_ID'] > 0) {
 
             //get agent data
@@ -1145,7 +1192,7 @@ class Policy
             //echo $result[4]['type']." Account: ".$subAgentCrAccountCode.' - '.$subAgentCrAccountName." Amount:".$result[4]['ammount']."<br>";
 
         }
-        //Sub Agent Level 2 Transactions
+        //Sub Agent Level 2 Transactions SET 3
         if ($this->policyData['inapol_agent_level2_ID'] > 0) {
             //get agent data
             $agentData = $db->query_fetch('SELECT * FROM ina_underwriters WHERE inaund_underwriter_ID = ' . $this->policyData['inapol_agent_level2_ID']);
@@ -1180,7 +1227,7 @@ class Policy
             $result[6]['amount'] = $this->policyData['inapol_agent_level2_commission'];
             //echo $result[4]['type']." Account: ".$subAgentCrAccountCode.' - '.$subAgentCrAccountName." Amount:".$result[4]['ammount']."<br>";
         }
-        //Sub Agent Level 3 Transactions
+        //Sub Agent Level 3 Transactions SET 4
         if ($this->policyData['inapol_agent_level3_ID'] > 0) {
             //get agent data
             $agentData = $db->query_fetch('SELECT * FROM ina_underwriters WHERE inaund_underwriter_ID = ' . $this->policyData['inapol_agent_level3_ID']);
@@ -1213,6 +1260,43 @@ class Policy
             $result[8]['accountID'] = $subAgentCrAccountID;
             $result[8]['entityID'] = $entityID;
             $result[8]['amount'] = $this->policyData['inapol_agent_level3_commission'];
+            //echo $result[4]['type']." Account: ".$subAgentCrAccountCode.' - '.$subAgentCrAccountName." Amount:".$result[4]['ammount']."<br>";
+        }
+
+        //Overwrite Transactions SET 5
+        if ($this->policyData['inapol_overwrite_agent_ID'] > 0){
+            //get agent data
+            $agentData = $db->query_fetch('SELECT * FROM ina_overwrites WHERE inaovr_overwrite_ID = '
+                . $this->policyData['inapol_overwrite_ID']);
+            //5.Dr
+            $AgentDrAccountID = $agentData['inaovr_dr_account_ID'];
+            $subAgentDrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code,acacc_entity_ID FROM ac_accounts WHERE acacc_account_ID = ' . $AgentDrAccountID);
+            $entityID = $subAgentDrAccountDetails['acacc_entity_ID'];
+            if ($entityID == 0 || $entityID == '') {
+                $this->error = true;
+                $this->errorDescription = 'Account ' . $subAgentDrAccountDetails['acacc_code'] . " does not have entity";
+            }
+            $subAgentDrAccountName = $subAgentDrAccountDetails['acacc_name'];
+            $subAgentDrAccountCode = $subAgentDrAccountDetails['acacc_code'];
+            $result[9]['type'] = 'Dr';
+            $result[9]['name'] = $subAgentDrAccountName." [Overwrite]";
+            $result[9]['code'] = $subAgentDrAccountCode;
+            $result[9]['accountID'] = $AgentDrAccountID;
+            $result[9]['entityID'] = $entityID;
+            $result[9]['amount'] = $this->policyData['inapol_overwrite_commission'];
+            //echo "<br>Dr Account: ".$subAgentDrAccountCode.' - '.$subAgentDrAccountName." Amount:".$result[3]['ammount']."<br>";
+
+            //6.Cr
+            $subAgentCrAccountID = $agentData['inaovr_cr_account_ID'];
+            $subAgentCrAccountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $subAgentCrAccountID);
+            $subAgentCrAccountName = $subAgentCrAccountDetails['acacc_name'];
+            $subAgentCrAccountCode = $subAgentCrAccountDetails['acacc_code'];
+            $result[10]['type'] = 'Cr';
+            $result[10]['name'] = $subAgentCrAccountName." [Overwrite]";;
+            $result[10]['code'] = $subAgentCrAccountCode;
+            $result[10]['accountID'] = $subAgentCrAccountID;
+            $result[10]['entityID'] = $entityID;
+            $result[10]['amount'] = $this->policyData['inapol_overwrite_commission'];
             //echo $result[4]['type']." Account: ".$subAgentCrAccountCode.' - '.$subAgentCrAccountName." Amount:".$result[4]['ammount']."<br>";
         }
 
@@ -1310,6 +1394,10 @@ class Policy
         //aget 2 adds agent 3
         $newData['agent_level2_percent'] += $newData['agent_level3_percent'];
 
+        $newData['overwrite_commission'] = ($newData['premium'] + $newData['special_discount'])
+            * ($newData['overwrite_percent'] / 100);
+        $newData['overwrite_commission'] = round($newData['overwrite_commission'],2);
+
         unset($newData['created_date_time']);
         unset($newData['created_by']);
         unset($newData['last_update_date_time']);
@@ -1340,6 +1428,7 @@ class Policy
 
         $sql = "SELECT * FROM ina_policies WHERE inapol_installment_ID = " . $this->policyData['inapol_installment_ID'];
         $result = $db->query($sql);
+        //echo $sql."<br>";
         $return = [];
         while ($row = $db->fetch_assoc($result)) {
             $return['premium'] += $row['inapol_premium'];
@@ -1347,7 +1436,16 @@ class Policy
             $return['fees'] += $row['inapol_fees'];
             $return['stamps'] += $row['inapol_stamps'];
             $return['specialDiscount'] += $row['inapol_special_discount'];
+
+
+
+            $return['agent_level1_commission'] += $row['inapol_agent_level1_commission'];
+            $return['agent_level2_commission'] += $row['inapol_agent_level2_commission'];
+            $return['agent_level3_commission'] += $row['inapol_agent_level3_commission'];
+            $return['overwrite_commission'] += $row['inapol_overwrite_commission'];
         }
+        $return['gross_premium'] = $return['premium'] + $return['fees'] + $return['stamps'] + $return['specialDiscount'];
+        //print_r($return);
         return $return;
     }
 
@@ -1436,6 +1534,32 @@ class Policy
         $newData['inapol_special_discount'] = $totalAmounts['clo_special_discount'];
 
         $newData['inapol_replacing_ID'] = $this->policyID;
+
+        //fix if necessary the overwrite
+        //first find the previous primary. if new then use the renewal percent
+        //if renewal the previous then keep as is.
+        //print_r($this->policyData);
+        //print_r($this->primaryPolicyData);
+        if ($this->primaryPolicyData['inapol_process_status'] == 'New'){
+            //take the new percent for renewal
+            $overwriteList = $this->getAllOverwrites('renewal');
+            //check if this agent still exists
+            $foundOverwrite = false;
+            foreach($overwriteList as $overwrite){
+                if ($overwrite['overwriteID'] = $this->policyData['inapol_overwrite_ID'] && $overwrite['ID'] == $this->policyData['inapol_overwrite_agent_ID']){
+                    $newData['inapol_overwrite_percent'] = $overwrite['percent'];
+                    $newData['inapol_overwrite_commission'] = ($newData['inapol_premium'] + $newData['inapol_special_discount']) * ($overwrite['percent'] / 100);
+                    $newData['inapol_overwrite_commission'] = round($newData['inapol_overwrite_commission'],2);
+                    $foundOverwrite = true;
+                }
+            }
+            //if no overwrite is found then use the first one in the list
+            if ($foundOverwrite == false){
+                $newData['inapol_overwrite_percent'] = $overwriteList[1]['percent'];
+                $newData['inapol_overwrite_commission'] = ($newData['inapol_premium'] + $newData['inapol_special_discount']) * ($overwriteList[1]['percent'] / 100);
+                $newData['inapol_overwrite_commission'] = round($newData['inapol_overwrite_commission'],2);
+            }
+        }
 
         unset($newData['inapol_created_date_time']);
         unset($newData['inapol_created_by']);
@@ -1586,6 +1710,11 @@ class Policy
         //aget 2 adds agent 3
         $newData['inapol_agent_level2_percent'] += $newData['inapol_agent_level3_percent'];
 
+        //update the amount for overwrite
+        $newData['inapol_overwrite_commission'] = ($newData['inapol_premium'] + $newData['inapol_special_discount'])
+            * ($newData['inapol_overwrite_percent'] / 100);
+        $newData['inapol_overwrite_commission'] = round($newData['inapol_overwrite_commission'],2);
+
         unset($newData['inapol_created_date_time']);
         unset($newData['inapol_created_by']);
         unset($newData['inapol_last_update_date_time']);
@@ -1732,31 +1861,38 @@ class Policy
     /** finds overwrites for this policy. Returns array of all details
      * @return mixed
      */
-    public function getAllOverwrites()
+    public function getAllOverwrites($newRenewal = '')
     {
         global $db;
         $list = [];
-        if ($this->policyData['inapol_process_status'] == 'New' || $this->policyData['inapol_process_status'] == 'Renewal') {
+        //if ($this->policyData['inapol_process_status'] == 'New' || $this->policyData['inapol_process_status'] == 'Renewal') {
             $sql = "SELECT * FROM 
             ina_overwrites
             JOIN ina_overwrite_agents ON inaovr_overwrite_ID = inaova_overwrite_ID
             JOIN ina_underwriters ON inaund_underwriter_ID = inaovr_underwriter_ID
             JOIN users ON usr_users_ID = inaund_user_ID
             WHERE
-            inaova_underwriter_ID = " . $this->policyData['inapol_underwriter_ID'];
+            inaova_status = 'Active'
+            AND inaovr_status = 'Active'
+            AND inaova_underwriter_ID = " . $this->policyData['inapol_underwriter_ID'];
             $result = $db->query($sql);
             //find the proper type commission
-            $comm = 'inaova_comm_'.strtolower($this->policyData['inapol_type_code'])
-                ."_".strtolower($this->policyData['inapol_process_status']);
+            $comm = 'inaova_comm_'.strtolower($this->policyData['inapol_type_code']);
+            if ($newRenewal == ''){
+                $newRenewal = strtolower($this->primaryPolicyData['inapol_process_status']);
+            }
+            else {
+                $newRenewal = strtolower($newRenewal);
+            }
             $i = 0;
             while ($row = $db->fetch_assoc($result)) {
                 $i++;
                 $list[$i]['overwriteID'] = $row['inaovr_overwrite_ID'];
                 $list[$i]['ID'] = $row['inaund_underwriter_ID'];
                 $list[$i]['name'] = $row['usr_name'];
-                $list[$i]['percent'] = $row[$comm];
+                $list[$i]['percent'] = $row[$comm."_".$newRenewal];
             }
-        }
+        //}
 
         return $list;
     }

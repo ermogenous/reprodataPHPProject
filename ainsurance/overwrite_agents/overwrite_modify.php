@@ -26,7 +26,16 @@ if ($_POST['action'] == 'insert') {
     exit();
 
 } else if ($_POST['action'] == 'update') {
+    $db->check_restriction_area('update');
+    $db->working_section = 'Ainsurance Overwrites Updating';
 
+    $db->start_transaction();
+
+    $db->db_tool_update_row('ina_overwrites', $_POST, 'inaovr_overwrite_ID = ' . $_POST["lid"], $_POST['lid']
+        , 'fld_', 'execute', 'inaovr_');
+    $db->commit_transaction();
+    header("Location: overwrites.php");
+    exit();
 }
 
 if ($_GET['lid'] != '') {
@@ -57,15 +66,14 @@ FormBuilder::buildPageLoader();
                 </div>
                 <div class="row form-group">
                     <?php
-                    $formB = new FormBuilder([
-                        "fieldName" => "fld_underwriter_ID",
-                        "fieldDescription" => "Agent/Underwriter",
-                        "labelClasses" => "col-sm-2",
-                        "fieldType" => "select",
-                        "inputValue" => $data['inaovr_underwriter_ID'],
-                        "inputSelectAddEmptyOption" => true
-                    ]);
-                    $formB->buildLabel();
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_underwriter_ID')
+                        ->setFieldDescription('Agent/Underwriter')
+                        ->setLabelClasses('col-sm-2')
+                        ->setFieldType('select')
+                        ->setInputValue($data['inaovr_underwriter_ID'])
+                        ->setInputSelectAddEmptyOption(true)
+                        ->buildLabel();
                     ?>
                     <div class="col-4">
                         <?php
@@ -82,20 +90,47 @@ FormBuilder::buildPageLoader();
                         ?>
                     </div>
 
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_dr_account_ID')
+                        ->setFieldDescription('Dr Account')
+                        ->setLabelClasses('col-sm-2')
+                        ->setFieldType('select')
+                        ->setInputValue($data['inaovr_dr_account_ID'])
+                        ->setInputSelectAddEmptyOption(true)
+                        ->buildLabel();
+                    ?>
+                    <div class="col-4">
+                        <?php
+                        $formB->setInputSelectQuery($db->query('SELECT 
+                                acacc_account_ID as value,
+                                CONCAT(acacc_code," - ",acacc_name)as name
+                                FROM ac_accounts 
+                                WHERE acacc_control = 0 ORDER BY acacc_code ASC'))
+                            ->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'select',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
+                        ?>
+                    </div>
+
 
                 </div>
 
                 <div class="row form-group">
                     <?php
-                    $formB = new FormBuilder([
-                        "fieldName" => "fld_status",
-                        "fieldDescription" => "Status",
-                        "labelClasses" => "col-sm-2",
-                        "fieldType" => "select",
-                        "inputValue" => $data['inaovr_status'],
-                        "inputSelectAddEmptyOption" => false
-                    ]);
-                    $formB->buildLabel();
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_status')
+                        ->setFieldDescription('Status')
+                        ->setLabelClasses('col-sm-2')
+                        ->setFieldType('select')
+                        ->setInputValue($data['inaovr_status'])
+                        ->setInputSelectAddEmptyOption(true)
+                        ->buildLabel();
                     ?>
                     <div class="col-4">
                         <?php
@@ -103,7 +138,35 @@ FormBuilder::buildPageLoader();
                             'Active' => 'Active',
                             'InActive' => 'InActive'
                         ])
-                        ->buildInput();
+                            ->buildInput();
+                        ?>
+                    </div>
+
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_cr_account_ID')
+                        ->setFieldDescription('Cr Account')
+                        ->setLabelClasses('col-sm-2')
+                        ->setFieldType('select')
+                        ->setInputValue($data['inaovr_cr_account_ID'])
+                        ->setInputSelectAddEmptyOption(true)
+                        ->buildLabel();
+                    ?>
+                    <div class="col-4">
+                        <?php
+                        $formB->setInputSelectQuery($db->query('SELECT 
+                                acacc_account_ID as value,
+                                CONCAT(acacc_code," - ",acacc_name)as name
+                                FROM ac_accounts 
+                                WHERE acacc_control = 0 ORDER BY acacc_code ASC'))
+                            ->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'select',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
                         ?>
                     </div>
                 </div>
