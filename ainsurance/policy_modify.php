@@ -359,7 +359,8 @@ $db->show_header();
                                         $('#fld_customer_ID').val(ui.item.value);
 
                                         $('#cus_number').html(ui.item.value);
-                                        $('#cus_id').html(ui.item.identity_card);
+                                        $('#cus_id').html('<a href="../customers/customers_modify.php?lid='+ui.item.value
+                                            + '" target="_blank">' + ui.item.identity_card + '</a>');
                                         $('#cus_work_tel').html(ui.item.work_tel);
                                         $('#cus_mobile').html(ui.item.mobile);
                                         return false;
@@ -451,7 +452,8 @@ $db->show_header();
                     <div class="form-group row">
                         <div class="col-md-6 text-center">
                             <b>#</b><span id="cus_number"><?php echo $data['cst_customer_ID']; ?></span>
-                            <b>ID:</b> <span id="cus_id"><?php echo $data['cst_identity_card']; ?></span>
+                            <b>ID:</b> <span id="cus_id"><?php echo '<a href="../customers/customers_modify.php?lid='.$data['cst_customer_ID']
+                            .'" target="_blank">'.$data['cst_identity_card']."</a>"; ?></span>
                             <b><?php echo $db->showLangText('Tel:', 'Τηλ:'); ?></b> <span
                                     id="cus_work_tel"><?php echo $data['cst_work_tel_1']; ?></span>
                             <b><?php echo $db->showLangText('Mobile:', 'Κινητό:'); ?></b> <span

@@ -12,25 +12,22 @@ $table = new draw_table('customers', 'cst_customer_ID', 'ASC');
 $table->extras = $db->CustomersWhere();
 
 if ($_POST['search'] == 'search') {
+    $table->extras = "1=1".PHP_EOL;
     if ($_POST['search_field-id'] > 0){
         $table->extras .= " AND cst_customer_ID = ".$_POST['search_field-id'];
     }
     else {
-        $table->extras .= " AND (cst_identity_card LIKE '%".$_POST['search_field']."%'
-        OR
-        cst_name LIKE '%".$_POST['search_field']."%'
-        OR
-        cst_surname LIKE '%".$_POST['search_field']."%'
-        OR
-        cst_work_tel_1 LIKE '%".$_POST['search_field']."%'
-        OR
-        cst_work_tel_2 LIKE '%".$_POST['search_field']."%'
-        OR
-        cst_fax LIKE '%".$_POST['search_field']."%'
-        OR
-        cst_mobile_1 LIKE '%".$_POST['search_field']."%'
-        OR
-        cst_mobile_2 LIKE '%".$_POST['search_field']."%')";
+        $table->extras .= " 
+        AND 
+                (
+                
+                CONCAT(cst_identity_card, ' ', cst_name, ' ', cst_surname) 
+                LIKE '%".$_POST['search_field']."%'
+                OR
+                CONCAT(cst_work_tel_1, ' ', cst_work_tel_2, ' ', cst_fax, ' ', cst_mobile_1, ' ', cst_mobile_2 )
+	            LIKE '%".$_POST['search_field']."%'
+	            
+	            )";
     }
 }
 

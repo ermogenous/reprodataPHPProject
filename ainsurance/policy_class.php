@@ -1405,6 +1405,15 @@ class Policy
         unset($newData['replaced_by_ID']);
         unset($newData['policy_ID']);
 
+        //in case the below are empty must be removed because it generates db error is empty
+        foreach ($newData as $fieldName => $fieldValue) {
+            if ($fieldValue == '' && $fieldValue !== 0) {
+                unset($newData[$fieldName]);
+            }
+        }
+        if ($newData['subagent_commission'] == ''){
+            unset($newData['subagent_commission']);
+        }
 
         $newPolicyID = $db->db_tool_insert_row('ina_policies', $newData, '', 1, 'inapol_');
         $this->newCancellationID = $newPolicyID;
@@ -1572,7 +1581,7 @@ class Policy
 
         //in case the below are empty must be removed because it generates db error is empty
         foreach ($newData as $fieldName => $fieldValue) {
-            if ($newData[$fieldName] == '' && $newData[$fieldName] != 0) {
+            if ($newData[$fieldName] == '' && $newData[$fieldName] !== 0) {
                 unset($newData[$fieldName]);
             }
         }
@@ -1726,6 +1735,13 @@ class Policy
         $newDataFixed = [];
         foreach ($newData as $fieldName => $fieldValue) {
             $newDataFixed[substr($fieldName, 7)] = $fieldValue;
+        }
+
+        //in case the below are empty must be removed because it generates db error is empty
+        foreach ($newDataFixed as $fieldName => $fieldValue) {
+            if ($newDataFixed[$fieldName] == '' && $newDataFixed[$fieldName] !== 0) {
+                unset($newDataFixed[$fieldName]);
+            }
         }
 
         //create the record in db

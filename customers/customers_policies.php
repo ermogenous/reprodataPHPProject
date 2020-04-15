@@ -30,6 +30,12 @@ $list->setTable('ina_policies','CustomerPolicies')
     ->setSqlSelect('inapol_process_status','Pr.Status')
     ->setSqlSelect('inapol_status','Status')
     ->setSqlSelect('(inapol_premium + inapol_fees + inapol_stamps)', 'Premium')
+    ->setSqlSelect('(
+        SELECT SUM(inapi_paid_amount) FROM ina_policy_installments WHERE inapi_policy_ID = inapol_installment_ID
+        )','Paid')
+    ->setSqlSelect('(
+        SELECT SUM(inapi_amount - inapi_paid_amount) FROM ina_policy_installments WHERE inapi_policy_ID = inapol_installment_ID
+        )','Unpaid')
     ->setSqlWhere('inapol_customer_ID = '.$_GET['cid'])
     ->setSqlOrder('inapol_policy_ID', 'ASC')
     ->setPerPage(50)
