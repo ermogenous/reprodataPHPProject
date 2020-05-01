@@ -135,6 +135,7 @@ exit();
 
 function export_data_html_table($sql,$database,$table_param = 'border="1"',$show_totals = 1) {
 	global $db;
+
 $rows = export_data_prepare_data($sql,$database,'data');
 $fields_names = export_data_prepare_data($sql,$database,'fields');
 

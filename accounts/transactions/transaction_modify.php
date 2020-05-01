@@ -61,6 +61,15 @@ if ($_GET["lid"] != "") {
               WHERE `actrn_transaction_ID` = " . $_GET["lid"];
     $data = $db->query_fetch($sql);
 
+    //find the previous transaction
+    $previousTransaction = $db->query_fetch('SELECT actrn_transaction_ID FROM ac_transactions 
+        WHERE actrn_transaction_ID < ' . $_GET['lid']
+        . " ORDER BY actrn_transaction_ID DESC");
+    //find the next transaction
+    $nextTransaction = $db->query_fetch('SELECT actrn_transaction_ID FROM ac_transactions 
+        WHERE actrn_transaction_ID > ' . $_GET['lid']
+        . " ORDER BY actrn_transaction_ID ASC");
+
 } else {
     $data['actrn_period'] = $db->dbSettings['ac_open_period']['value'];
     $data['actrn_year'] = $db->dbSettings['ac_open_year']['value'];
@@ -95,7 +104,22 @@ $totalAccountLines = 15;
 
                     <div class="row alert alert-primary text-center">
                         <div class="col-12">
+                            <?php
+                            if ($previousTransaction['actrn_transaction_ID'] > 0) {
+                                ?>
+                                <a href="transaction_modify.php?lid=<?php echo $previousTransaction['actrn_transaction_ID']; ?>"><</a>
+                                <?php
+                            }
+                            ?>
                             <strong>Issue Transaction</strong>
+                            <?php
+                            if ($nextTransaction['actrn_transaction_ID'] > 0) {
+                                ?>
+
+                                <a href="transaction_modify.php?lid=<?php echo $nextTransaction['actrn_transaction_ID']; ?>">></a>
+                                <?php
+                            }
+                            ?>
                         </div>
                     </div>
 
@@ -165,9 +189,9 @@ $totalAccountLines = 15;
                         <div class="col-6">
                             <?php
                             if ($data['actrn_from_module'] != '')
-                            echo "From:".$data['actrn_from_module']." ";
+                                echo "From:" . $data['actrn_from_module'] . " ";
 
-                            echo "Comments:".$data['actrn_comments'];
+                            echo "Comments:" . $data['actrn_comments'];
                             ?>
                         </div>
 
@@ -295,23 +319,24 @@ $totalAccountLines = 15;
                             insertNewLine();
                         });
 
-                        function insertNewLine(){
+                        function insertNewLine() {
                             lastOpenLine++;
                             $('#line_' + lastOpenLine).show();
                             $('#activeLine_' + lastOpenLine).val(1);
                             calculateDebitCreditTotals();
                         }
 
-                        function deleteLine(lineNum){
+                        function deleteLine(lineNum) {
                             $('#line_' + lineNum).hide();
                             $('#activeLine_' + lineNum).val(0);
                             calculateDebitCreditTotals();
 
-                            if (lineNum == lastOpenLine){
+                            if (lineNum == lastOpenLine) {
                                 lastOpenLine--;
                             }
 
                         }
+
                         function calculateDebitCreditTotals() {
                             let totalDebit = 0;
                             let totalCredit = 0;
@@ -321,10 +346,9 @@ $totalAccountLines = 15;
                                     totalCredit += $('#accLine_credit_' + i).val() * 1;
                                 }
 
-                                if ($('#accLine_debit_' + i).val() != ''){
+                                if ($('#accLine_debit_' + i).val() != '') {
                                     $('#accLine_credit_' + i).prop('disabled', true);
-                                }
-                                else if ($('#accLine_credit_' + i).val() != ''){
+                                } else if ($('#accLine_credit_' + i).val() != '') {
                                     $('#accLine_debit_' + i).prop('disabled', true);
                                 }
 
@@ -340,8 +364,7 @@ $totalAccountLines = 15;
 
                                 $('#totalDebit').addClass('alert-success');
                                 $('#totalCredit').addClass('alert-success');
-                            }
-                            else {
+                            } else {
                                 $('#linesValid').val('0');
 
                                 $('#totalDebit').removeClass('alert-success');
@@ -353,7 +376,7 @@ $totalAccountLines = 15;
 
                         }
 
-                        $( document ).ready(function() {
+                        $(document).ready(function () {
                             calculateDebitCreditTotals();
                         });
                     </script>
@@ -373,25 +396,24 @@ $totalAccountLines = 15;
                     for ($i = 1; $i <= 15; $i++) {
                         $debitValue = '';
                         $creditValue = '';
-                        if ($linesData[$i]['actrl_dr_cr'] == 1){
+                        if ($linesData[$i]['actrl_dr_cr'] == 1) {
                             $debitValue = $linesData[$i]['actrl_value'];
-                        }
-                        else {
+                        } else {
                             $creditValue = $linesData[$i]['actrl_value'];
                         }
                         ?>
-                        <div class="row" id="line_<?php echo $i;?>" style="display: none;">
-                            <input type="hidden" id="activeLine_<?php echo $i;?>"
-                                   name="activeLine_<?php echo $i;?>" value="0">
+                        <div class="row" id="line_<?php echo $i; ?>" style="display: none;">
+                            <input type="hidden" id="activeLine_<?php echo $i; ?>"
+                                   name="activeLine_<?php echo $i; ?>" value="0">
                             <div class="col-sm-1 m-0 p-0">
-                                <?php echo $i;?>
+                                <?php echo $i; ?>
                                 <i class="fas fa-minus-circle" style="cursor: pointer"
-                                   onclick="deleteLine(<?php echo $i;?>);"></i>
+                                   onclick="deleteLine(<?php echo $i; ?>);"></i>
                             </div>
                             <div class="col-sm-4 m-0 p-0">
                                 <?php
                                 $formB = new FormBuilder([
-                                    "fieldName" => "accLine_account_ID_".$i,
+                                    "fieldName" => "accLine_account_ID_" . $i,
                                     "fieldType" => "select",
                                     "inputValue" => $linesData[$i]['actrl_account_ID'],
                                     "inputSelectAddEmptyOption" => true
@@ -412,7 +434,7 @@ $totalAccountLines = 15;
                                         'fieldDataType' => 'select',
                                         'required' => true,
                                         'invalidTextAutoGenerate' => true,
-                                        'requiredAddedCustomCode' => ' && $("#activeLine_'.$i.'").val() == 1'
+                                        'requiredAddedCustomCode' => ' && $("#activeLine_' . $i . '").val() == 1'
                                     ]);
                                 ?>
                             </div>
@@ -420,7 +442,7 @@ $totalAccountLines = 15;
                             <div class="col-sm-2 m-0 p-0">
                                 <?php
                                 $formB = new FormBuilder([
-                                    "fieldName" => "accLine_debit_".$i,
+                                    "fieldName" => "accLine_debit_" . $i,
                                     "fieldType" => "input",
                                     "fieldInputType" => 'text',
                                     "inputExtraClasses" => 'text-center',
@@ -434,7 +456,7 @@ $totalAccountLines = 15;
                                         'fieldDataType' => 'number',
                                         'required' => true,
                                         'invalidText' => 'Debit Required',
-                                        'requiredAddedCustomCode' => ' && $("#activeLine_'.$i.'").val() == 1 && $("#accLine_credit_' . $i . '").val() == ""'
+                                        'requiredAddedCustomCode' => ' && $("#activeLine_' . $i . '").val() == 1 && $("#accLine_credit_' . $i . '").val() == ""'
                                     ]);
                                 ?>
                             </div>
@@ -442,7 +464,7 @@ $totalAccountLines = 15;
                             <div class="col-sm-2 m-0 p-0">
                                 <?php
                                 $formB = new FormBuilder([
-                                    "fieldName" => "accLine_credit_".$i,
+                                    "fieldName" => "accLine_credit_" . $i,
                                     "fieldType" => "input",
                                     "fieldInputType" => 'text',
                                     "inputExtraClasses" => 'text-center',
@@ -456,7 +478,7 @@ $totalAccountLines = 15;
                                         'fieldDataType' => 'number',
                                         'required' => true,
                                         'invalidText' => 'Credit Required',
-                                        'requiredAddedCustomCode' => ' && $("#activeLine_'.$i.'").val() == 1 && $("#accLine_debit_' . $i . '").val() == ""'
+                                        'requiredAddedCustomCode' => ' && $("#activeLine_' . $i . '").val() == 1 && $("#accLine_debit_' . $i . '").val() == ""'
                                     ]);
                                 ?>
                             </div>
@@ -464,7 +486,7 @@ $totalAccountLines = 15;
                             <div class="col-sm-3 m-0 p-0">
                                 <?php
                                 $formB = new FormBuilder([
-                                    "fieldName" => "accLine_reference_".$i,
+                                    "fieldName" => "accLine_reference_" . $i,
                                     "fieldType" => "input",
                                     "fieldInputType" => 'text',
                                     "inputExtraClasses" => 'text-center',
@@ -489,13 +511,13 @@ $totalAccountLines = 15;
 
                     <script>
 
-                        function showLines(totalToShow){
-                            for(let i=1; i <= totalToShow; i++){
+                        function showLines(totalToShow) {
+                            for (let i = 1; i <= totalToShow; i++) {
                                 insertNewLine();
                             }
                         }
                         <?php
-                                echo "showLines(".$totalLinesFound.");";
+                        echo "showLines(" . $totalLinesFound . ");";
                         ?>
                     </script>
 

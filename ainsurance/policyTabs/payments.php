@@ -61,7 +61,6 @@ if ($_GET['action'] == 'post' && $_GET['lid'] != '') {
     $_GET['rel'] = 'yes';
 
 }
-
 $db->show_empty_header();
 
 
@@ -74,6 +73,10 @@ if ($_GET['pid'] > 0) {
         $table->extras .= 'inapp_policy_ID = ' . $policy->installmentID;
         $table->extras .= " AND inapp_process_status = 'Policy' AND inapp_status != 'Deleted'";
 
+        //find the active policy so in case of new payment the current_policy_ID to be that
+        $sql = "SELECT * FROM ina_policies
+                WHERE inapol_installment_ID = ".$policy->installmentID." AND inapol_status = 'Active'";
+        $activePolicyData = $db->query_fetch($sql);
 
         $table->generate_data();
         ?>
@@ -98,7 +101,7 @@ if ($_GET['pid'] > 0) {
                                 <th scope="col"><?php $table->display_order_links('All.Commission', 'inapp_allocated_commission'); ?></th>
                                 <th scope="col"><?php $table->display_order_links('Status', 'inapp_status'); ?></th>
                                 <th scope="col">
-                                    <a href="payment_modify.php?pid=<?php echo $policy->installmentID . "&type=" . $_GET['type']; ?>">
+                                    <a href="payment_modify.php?pid=<?php echo $policy->installmentID . "&type=" . $_GET['type']; ?>&curID=<?php echo $activePolicyData['inapol_policy_ID'];?>">
                                         <i class="fas fa-plus-circle"></i>
                                     </a>
                                 </th>

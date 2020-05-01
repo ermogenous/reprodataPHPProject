@@ -23,7 +23,9 @@ if ($_POST["action"] == "insert") {
 
     $_POST['fld_status'] = 'Outstanding';
     $_POST['fld_process_status'] = 'Policy';
+    $_POST['fld_payment_type'] = 'Payment';
     $_POST['fld_policy_ID'] = $_POST['pid'];
+    $_POST['fld_current_policy_ID'] = $_POST['curID'];
     $_POST['fld_customer_ID'] = $policy->policyData['inapol_customer_ID'];
     $_POST['fld_payment_date'] = $db->convert_date_format($_POST['fld_payment_date'], 'dd/mm/yyyy', 'yyyy-mm-dd');
     $newId = $db->db_tool_insert_row('ina_policy_payments', $_POST, 'fld_', 1, 'inapp_');
@@ -36,6 +38,7 @@ if ($_POST["action"] == "insert") {
     } else {
         $_GET['lid'] = $newId;
         $_GET['pid'] = $_POST['pid'];
+        $_GET['currID'] = $_POST['currID'];
     }
 
 } else if ($_POST["action"] == "update") {
@@ -64,6 +67,7 @@ if ($_POST["action"] == "insert") {
     } else {
         $_GET['lid'] = $_POST['lid'];
         $_GET['pid'] = $_POST['pid'];
+        $_GET['currID'] = $_POST['currID'];
     }
 
 
@@ -187,6 +191,7 @@ if ($data['inapp_status'] != 'Outstanding' && $data['inapp_status'] != '') {
                                    value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
                             <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>">
                             <input name="pid" type="hidden" id="pid" value="<?php echo $_GET["pid"]; ?>">
+                            <input name="curID" type="hidden" id="curID" value="<?php echo $_GET["curID"]; ?>">
                             <input type="button" value="Back" class="btn btn-secondary" name="BtnBack" id="BtnBack"
                                    onclick="window.location.assign('payments.php?pid=<?php echo $_GET['pid']; ?>')">
                             <input type="submit" name="Save" id="Save"

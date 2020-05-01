@@ -681,6 +681,12 @@ $db->show_header();
 
                             }
                             ?>
+                            <li class="nav-item">
+                                <a class="nav-link" id="creditCard-tab" data-toggle="tab" href="#creditCard" role="tab"
+                                   aria-controls="creditCard" aria-selected="false">
+                                    <?php echo $db->showLangText('Credit Card', 'Credit Card'); ?>
+                                </a>
+                            </li>
                         </ul>
                         <div class="tab-content" id="myTabContent">
 
@@ -721,6 +727,11 @@ $db->show_header();
                             <?php
                             }
                             ?>
+                            <div class="tab-pane fade" id="creditCard" role="tabpanel" aria-labelledby="creditCard-tab">
+                                <iframe src="policyTabs/credit_cards.php?pid=<?php echo $_GET["lid"]; ?>"
+                                        frameborder="0" id="creditCardTab" name="creditCardTab"
+                                        scrolling="0" width="100%" height="600"></iframe>
+                            </div>
                         </div>
                     <?php } else { ?>
                         <div class="row">

@@ -587,6 +587,9 @@ FormBuilder::buildPageLoader();
             if ($('#fld_commission').val() == '') {
                 calculateCommission(true);
             }
+            if ($('#fld_overwrite_commission').val() == '' || $('#fld_overwrite_percent').val() == '' || $('#fld_overwrite_commission').val() == 0){
+                changeOfOverwrite();
+            }
         });
 
         function checkSpecialDiscountIfNegative() {

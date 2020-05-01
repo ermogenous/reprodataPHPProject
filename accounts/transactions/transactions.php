@@ -26,7 +26,6 @@ $list->setTable('ac_transactions','TransactionsList')
     ->generateData();
 
 //echo $list->getSql();
-
 $list->setMainColumn('col-lg-10')
     ->setTopTitle('Transactions List')
     ->setTopContainerToFluid()

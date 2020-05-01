@@ -15,7 +15,7 @@ $db->admin_title = "AInsurance Unallocated Payments";
 $table = new draw_table('ina_policy_payments', 'inapp_policy_payment_ID', 'ASC');
 $table->extra_from_section .= 'JOIN ina_policies ON inapol_policy_ID = inapp_policy_ID';
 $table->extra_from_section .= ' JOIN customers ON cst_customer_ID = inapp_customer_ID';
-$table->extras = "inapp_status = 'Unallocated'";
+$table->extras = "inapp_process_status = 'Unallocated'";
 
 $table->generate_data();
 

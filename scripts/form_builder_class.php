@@ -417,7 +417,7 @@ class FormBuilder
      * @param $inputValue
      * @return $this
      */
-    public function setInputValue($inputValue)
+    public function setInputValue($inputValue = '')
     {
         $this->inputValue = $inputValue;
         return $this;

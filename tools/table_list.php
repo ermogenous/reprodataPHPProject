@@ -199,6 +199,10 @@ class TableList
         return $this;
     }
 
+    /**
+     * @param $link The link for create new - set to false if dont want the link
+     * @return $this
+     */
     public function setCreateNewLink($link)
     {
         $this->createNewLink = $link;
@@ -352,9 +356,15 @@ class TableList
             //show the create new table column
             $this->tableHtml .= '
                                     <th scope="col">
+                                    ';
+            if ($this->createNewLink != false) {
+                $this->tableHtml .= '
                                         <a href="' . $this->createNewLink . '">
                                         <i class="fas fa-plus-circle"></i>
                                         </a>
+                                        ';
+            }
+            $this->tableHtml .= '
                                     </th>';
         }
 

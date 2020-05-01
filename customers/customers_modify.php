@@ -90,7 +90,7 @@ $db->show_header();
 <div class="container-fluid">
     <div class="row">
         <div class="col-lg-1 col-md-2 hidden-xs hidden-sm"></div>
-        <div class="col-lg-10 col-md-8 col-xs-12 col-sm-12">
+        <div class="col-lg-11 col-md-10 col-xs-12 col-sm-12">
             <form name="myForm" id="myForm" method="post" action="" onsubmit=""
                 <?php $formValidator->echoFormParameters(); ?>>
                 <div class="alert alert-dark text-center">

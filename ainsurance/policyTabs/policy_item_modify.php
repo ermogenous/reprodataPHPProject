@@ -21,6 +21,9 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_policy_ID'] = $_POST['pid'];
     $_POST['fld_type'] = $_POST['type'];
     $_POST['fld_mb_birth_date'] = $db->convertDateToUS($_POST['fld_mb_birth_date']);
+    if ($_POST['fld_mb_birth_date'] == ''){
+        unset($_POST['fld_mb_birth_date']);
+    }
     $newID = $db->db_tool_insert_row('ina_policy_items', $_POST, 'fld_', 1, 'inapit_');
 
     //update the policy

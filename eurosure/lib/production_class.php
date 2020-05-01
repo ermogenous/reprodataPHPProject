@@ -280,7 +280,7 @@ function add_templates() {
 
 function add_phase_premium($type_of_premium = 'GROSS') {
 
-	$this->insert_select("fn_return_period_premium(inpol_policy_serial,'ONLYCURRENT','".$type_of_premium."'");
+	$this->insert_select("fn_return_period_premium(inpol_policy_serial,'ONLYCURRENT','".$type_of_premium."')");
 		
 }
 

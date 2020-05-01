@@ -132,6 +132,10 @@ function template_header()
                                    href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/period_production_new.php"><i
                                             class="fas fa-eye"></i> <?php echo $db->showLangText('Production', 'Παραγωγή'); ?>
                                 </a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/production_full.php"><i
+                                            class="fas fa-eye"></i> <?php echo $db->showLangText('Production Full', 'Παραγωγή Full'); ?>
+                                </a>
                             </div>
                         </li>
                         <?php

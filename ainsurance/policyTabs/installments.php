@@ -165,15 +165,19 @@ if ($_GET['pid'] > 0) {
                                 && $policy->policyData['inapol_status'] == 'Outstanding') {
                                 $endChanges = $policy->getSplitEndorsementAmount();
 
+                                $amountAddMinus = [];
+                                $commAddMinus = [];
                                 foreach ($endChanges as $name => $value) {
-                                    $amountAddMinus['total'] += $value['amount'];
-                                    $commAddMinus['total'] += $value['commission'];
-                                    if ($value['amount'] > 0) {
-                                        $amountAddMinus[$name] .= ' <span style="color: green;">(+' . $value['amount'] . ")</span>";
-                                        $commAddMinus[$name] .= ' <span style="color: green;">(+' . $value['commission'] . ")</span>";
-                                    } else {
-                                        $amountAddMinus[$name] .= ' <span style="color: red;">(' . $value['amount'] . ")</span>";
-                                        $commAddMinus[$name] .= ' <span style="color: red;">(' . $value['commission'] . ")</span>";
+                                    if ($name != 'new') {
+                                        $amountAddMinus['total'] += $value['amount'];
+                                        $commAddMinus['total'] += $value['commission'];
+                                        if ($value['amount'] > 0) {
+                                            $amountAddMinus[$name] .= ' <span style="color: green;">(+' . $value['amount'] . ")</span>";
+                                            $commAddMinus[$name] .= ' <span style="color: green;">(+' . $value['commission'] . ")</span>";
+                                        } else {
+                                            $amountAddMinus[$name] .= ' <span style="color: red;">(' . $value['amount'] . ")</span>";
+                                            $commAddMinus[$name] .= ' <span style="color: red;">(' . $value['commission'] . ")</span>";
+                                        }
                                     }
                                 }
 
@@ -234,7 +238,7 @@ if ($_GET['pid'] > 0) {
                             }
                             ?>
                             <tr>
-                                <td colspan="2" class="text-right"><b>Total:</b></td>
+                                <td  class="text-right"><b>Total:</b></td>
                                 <td><b><?php echo $amountSum.$amountAddMinus['total']; ?></b></td>
                                 <td><b><?php echo $paidSum; ?></b></td>
                                 <td><b><?php echo $commSum . "/" . $commPaidSum.$commAddMinus['total']; ?></b></td>
