@@ -806,22 +806,27 @@ class customFormValidator
     }
 
     /**
-     * @param $settings [
-     * source -> the full source of the api ->automatically the input code is added as 'value'
-     * functionName -> the name of the function for the output. Make sure it does not exists in the same page dont forget the ()
-     * sourceField -> the id of the field that has the source
-     * spinnerIcon -> id of the spinner icon -> if set shows/hides a spinner when necessary
-     * errorIcon -> id of the error icon -> if set shows/hides an error icon when necessary
-     * correctIcon -> id of the correct icon -> if set shows/hides a correct icon when necessary
-     * errorField -> a field (div,span etc) to show the errorText
-     * errorText -> not required. default exists -> the errorText to show in the errorField
-     * errorJSCode -> extra js code to show in the error part of the promise
-     * successJSCode -> extra js code to show in the success part of the promise
-     * ifDataJSCode-> extra js code if data is found
-     * ifNoDataJSCode-> extra js code if data is NOT found
-     * ]
-     * @return Promise JSCODE
-     */
+ * @param $settings [
+ * source -> the full source of the api ->automatically the input code is added as 'value'
+ * functionName -> the name of the function for the output. Make sure it does not exists in the same page dont forget the ()
+ * sourceField -> the id of the field that has the source
+ * spinnerIcon -> id of the spinner icon -> if set shows/hides a spinner when necessary
+ * errorIcon -> id of the error icon -> if set shows/hides an error icon when necessary
+ * correctIcon -> id of the correct icon -> if set shows/hides a correct icon when necessary
+ * errorField -> a field (div,span etc) to show the errorText
+ * errorText -> not required. default exists -> the errorText to show in the errorField
+ * errorJSCode -> extra js code to show in the error part of the promise
+ * successJSCode -> extra js code to show in the success part of the promise
+ * ifDataJSCode-> extra js code if data is found
+ * ifNoDataJSCode-> extra js code if data is NOT found
+ * errorJSCode -> js code if error occurs
+ * ifDataJSCode -> js code on success and if data is retrieved
+ * ifNoDataJSCode-> js code on success and if no data is retrieved
+ * successJSCode -> js code on success
+ *
+ * ]
+ * @return Promise JSCODE
+ */
 
     public static function getPromiseJSCode($settings)
     {
@@ -854,6 +859,91 @@ class customFormValidator
             let inputCode = $(' . $settings['sourceField'] . ').val();
         
             Rx.Observable.fromPromise($.get("' . $settings['source'] . '&value=" + inputCode))
+            .subscribe((response) => {
+                    data = response;
+                },
+                () => {
+                    ' . $errorShow . '
+                    ' . $spinnerHide . '
+                    ' . $errorText . '
+                    ' . $settings['errorJSCode'] . '
+                }
+                ,
+                () => {
+                    ' . $spinnerHide . '
+                    if (data != null) {
+                        ' . $correctShow . '
+                        ' . $settings['ifDataJSCode'] . '
+                    }
+                    else {
+                        ' . $errorShow . '
+                        ' . $errorText . '
+                        ' . $settings['ifNoDataJSCode'] . '
+                    }
+                    ' . $settings['successJSCode'] . '
+
+                }
+                );
+            }
+        ';
+        return $return;
+
+    }
+
+    /**
+     * @param $settings [
+     * source -> the full source of the api ->automatically the input code is added as 'value'
+     * functionName -> the name of the function for the output. Make sure it does not exists in the same page dont forget the ()
+     * sourceField -> the id of the field that has the source
+     * spinnerIcon -> id of the spinner icon -> if set shows/hides a spinner when necessary
+     * errorIcon -> id of the error icon -> if set shows/hides an error icon when necessary
+     * correctIcon -> id of the correct icon -> if set shows/hides a correct icon when necessary
+     * errorField -> a field (div,span etc) to show the errorText
+     * errorText -> not required. default exists -> the errorText to show in the errorField
+     * errorJSCode -> extra js code to show in the error part of the promise
+     * successJSCode -> extra js code to show in the success part of the promise
+     * ifDataJSCode-> extra js code if data is found
+     * ifNoDataJSCode-> extra js code if data is NOT found
+     * errorJSCode -> js code if error occurs
+     * ifDataJSCode -> js code on success and if data is retrieved
+     * ifNoDataJSCode-> js code on success and if no data is retrieved
+     * successJSCode -> js code on success
+     *
+     * ]
+     * @return Promise JSCODE
+     */
+
+    public static function getPromiseJSCodeV2($settings)
+    {
+
+        if ($settings['spinnerIcon'] != '') {
+            $spinnerShow = '$(' . $settings['spinnerIcon'] . ').show();';
+            $spinnerHide = '$(' . $settings['spinnerIcon'] . ').hide();';
+        }
+        if ($settings['correctIcon'] != '') {
+            $correctShow = '$(' . $settings['correctIcon'] . ').show();';
+            $correctHide = '$(' . $settings['correctIcon'] . ').hide();';
+        }
+        if ($settings['errorIcon'] != '') {
+            $errorShow = '$(' . $settings['errorIcon'] . ').show();';
+            $errorHide = '$(' . $settings['errorIcon'] . ').hide();';
+        }
+        if ($settings['errorText'] == '') {
+            //$errorText = '$(' . $settings['errorField'] . ').html("Error finding the account");';
+            //$correctShow .= '$(' . $settings['errorField'] . ').html("");';
+        } else {
+            $errorText = '$(' . $settings['errorField'] . ').html("' . $settings['errorText'] . '");';
+            $correctShow .= '$(' . $settings['errorField'] . ').html("");';
+        }
+
+        $return = '
+            function ' . $settings['functionName'] . ' {
+            ' . $spinnerShow . '
+            ' . $correctHide . '
+            ' . $errorHide . '
+            let inputCode = $(' . $settings['sourceField'] . ').val();
+        
+            Rx.Observable.fromPromise($.get(' . $settings['source'] . '))
             .subscribe((response) => {
                     data = response;
                 },

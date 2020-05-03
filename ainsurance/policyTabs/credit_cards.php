@@ -8,10 +8,9 @@
 
 include("../../include/main.php");
 include("../policy_class.php");
-include("credit_card_class.php");
 include("../../scripts/form_builder_class.php");
 include("../../scripts/form_validator_class.php");
-include("../credit_cards_remote/creditCardRemoteClass.php");
+include("../credit_cards_remote/credit_card_class.php");
 
 $db = new Main(1);
 $db->admin_title = "";
@@ -36,115 +35,94 @@ if ($_GET['pid'] > 0) {
     }
 }
 
-if ($_POST['action'] == 'newCardEntry'){
-    echo "Create new card entry";
-    $card = new MECreditCards();
-    $card->makeNewCreditCardEntry($_POST['fld_credit_card'],
-        $_POST['fld_expiry_year'],
-        $_POST['fld_expiry_month'],
-        $_POST['fld_ccv'],
-        $_POST['pid']
-        );
-    if ($card->error == true){
-        echo $card->errorDescription;
-    }
-
-}
-
-$card = new MECreditCards();
-$connectionTest = $card->testRemoteConnection();
 
 $formValidator = new customFormValidator();
 $formValidator->setFormName('myForm');
 $formValidator->showErrorList();
 
+$db->enable_jquery_ui();
+$db->enable_rxjs_lite();
 $db->show_empty_header();
 FormBuilder::buildPageLoader();
 
 ?>
     <div class="container">
 
-        <?php
-
-        if ($connectionTest != true){
-            ?>
-            <br>
-            <div class="row">
-                <div class="col-12 text-center alert alert-danger">
-                    Credit cards remote system is not found. Contact administrator
-                </div>
+        <div class="row">
+            <div class="col-11 alert alert-primary text-center">
+                Credit Cards
             </div>
-            <?php
-        }
-        else {
+            <div class="col-1 alert alert-primary text-center">
+                <img src="../../images/spinner-transparent.gif" height="25" id="connectionTestSpinner">
+                <img src="../../images/icon_correct_green.gif" height="25" id="connectionTestCorrect"
+                     style="display: none;">
+                <img src="../../images/icon_error_x_red.gif" height="25" id="connectionTestError"
+                     style="display: none;">
+                <input type="hidden" id="conTestValue" name="conTestValue" value="0">
+            </div>
+        </div>
+        <div class="row" id="errorConnectingRow" style="display: none">
+            <div class="col-12 alert alert-danger text-center">
+                There was a problem connecting to the credit card remote system. Contact the administrator
+            </div>
+        </div>
 
-
-            if ($policyFound === false) {
-                ?>
-                <br>
-                <div class="row">
-                    <div class="col-12 text-center alert alert-danger">
-                        No policy has been found
-                    </div>
-                </div>
-                <?php
-            }
-            ?>
-
-            <?php
-            if ($policyStatus != 'Active' && $policyStatus != 'Archived') {
-                ?>
-                <br>
-                <div class="row">
-                    <div class="col-12 text-center alert alert-danger">
-                        Policy must be active to be able to set credit card
-                    </div>
-                </div>
-                <?php
-            } else {
-                //show only if policy exists and active
-                ?>
-                <br>
-                <div class="row">
-                    <div class="col-12 text-center alert alert-primary">
-                        Credit Card
-                    </div>
-                </div>
-                <?php
-                if ($creditCardExists == true) {
-                    ?>
-
-
-                    <?php
-                } //if no credit card
-                else {
-                    if ($_GET['action'] == 'formNewCard') {
-                        createNewCardForm();
-                    } else {
-                        ?>
-                        <div class="row form-group">
-                            <div class="col-12">
-                                <a href="credit_cards.php?action=formNewCard&pid=<?php echo $_GET['pid']; ?>">
-                                    No card exists. Click here to create new entry
-                                </a>
-                            </div>
-                        </div>
-                        <?php
-                    }
-                }
-                ?>
-
-
-                <?php
-            }//if policy is active/archived
-        }
-        ?>
     </div>
+
+    <script>
+        <?php
+        //create the rxjs function to get the connection string
+        $connectionStringSettings = [
+            'functionName' => 'connectionTest()',
+            'source' => '"'.$main['site_url'] . '/ainsurance/credit_cards_remote/credit_cards_api.php?action=getTestConnectionString"',
+            'successJSCode' => " 
+                //console.log(data.conString);
+                connectionMakeTest(data.conString);
+            "
+        ];
+        echo customFormValidator::getPromiseJSCodeV2($connectionStringSettings);
+
+        //create the rxjs function to go at the rcb remote and get the data
+        $connectionTestSettings = [
+            'functionName' => 'connectionMakeTest(connString)',
+            'source' => "connString",
+            'successJSCode' => '
+                //console.log("Remote");
+                //console.log(data.testConnection);
+                if (data.testConnection == "Yes"){
+                    $("#connectionTestSpinner").hide();
+                    $("#connectionTestCorrect").show();
+                    $("#errorConnectingRow").hide();
+                    $("#conTestValue").val(1);
+                    //console.log($("#conTestValue").val());
+                }
+                else {
+                    $("#connectionTestSpinner").hide();
+                    $("#connectionTestError").show();
+                    $("#errorConnectingRow").show();
+                    //console.log("NO");
+                }
+            '
+        ];
+        echo customFormValidator::getPromiseJSCodeV2($connectionTestSettings);
+
+
+
+        ?>
+
+        $(document).ready(function () {
+            //console.log('ready');
+            connectionTest();
+        });
+    </script>
 
 <?php
 $formValidator->output();
 $db->show_empty_footer();
+?>
 
+
+<?php
 function createNewCardForm()
 {
     global $formValidator;

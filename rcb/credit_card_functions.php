@@ -14,12 +14,12 @@ $db = new Main(0);
 $db->apiGetReadHeaders();
 
 //retrieve the data from curl json
-$postData = json_decode(file_get_contents('php://input'), true);
+//$postData = json_decode(file_get_contents('php://input'), true);
 
-$db->update_log_file_custom('Credit Card functions',print_r($postData,true));
+//$db->update_log_file_custom('Credit Card functions',print_r($postData,true));
 
-$_SESSION[$main["environment"] . "_admin_username"] = $db->decrypt($postData['username'],'123456');
-$_SESSION[$main["environment"] . "_admin_password"] = $db->decrypt($postData['password'],'123456');
+$_SESSION[$main["environment"] . "_admin_username"] = $db->decrypt($_GET['username'],'123456');
+$_SESSION[$main["environment"] . "_admin_password"] = $db->decrypt($_GET['password'],'123456');
 $db->check_login();
 if ($db->user_data['usr_users_ID'] > 0) {
     //the credentials look ok
@@ -30,8 +30,7 @@ else {
     exit();
 }
 
-if ($postData['action'] == 'testConnection'){
-
+if ($_GET['action'] == 'testConnection'){
 
     if ($db->user_data['usr_users_ID'] > 0){
         $data['testConnection'] = 'Yes';
