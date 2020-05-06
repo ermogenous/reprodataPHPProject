@@ -41,30 +41,29 @@ if ($_GET['action'] == 'testConnection'){
 
 }
 
-if ($postData['action'] == 'createNewCard'){
-    $error = false;
+if ($_GET['action'] == 'createNewCard'){
+    $error = '0';
     $errorDescription = '';
-    $db->update_log_file_custom('Credit Card create new card init',print_r($postData,true));
-    if ($postData['creditCardNumber'] == ''){
+    $db->update_log_file_custom('Credit Card create new card init',print_r($_GET,true));
+    if ($_GET['number'] == ''){
         $error = true;
         $errorDescription = 'Must provide credit card number';
     }
-    if ($postData['creditCardExpiryYear'] == ''){
+    else if ($_GET['expYear'] == ''){
         $error = true;
         $errorDescription = 'Must provide credit card expiry year';
     }
-    if ($postData['creditCardExpiryMonth'] == ''){
+    else if ($_GET['expMonth'] == ''){
         $error = true;
         $errorDescription = 'Must provide credit card expiry month';
     }
-    if ($postData['creditCardCCV'] == ''){
+    else if ($_GET['ccv'] == ''){
         $error = true;
         $errorDescription = 'Must provide credit card ccv';
     }
 
     if ($error == true){
-        $data['error'] = true;
-        $data['errorDescription'] = $errorDescription;
+        $data['error'] = $errorDescription;
         //$db->update_log_file_custom('Credit Card create new card error found in checks',$errorDescription);
         echo json_encode($data);
         exit();
@@ -73,20 +72,20 @@ if ($postData['action'] == 'createNewCard'){
     //all ok proceed to create the credit card
     $cc = new creditCardPaymentsClass();
 
-    $cc->setCreditCardNumber($db->encrypt($postData['creditCardNumber'],'123456'))
-        ->setCreditCardExpiryYear($postData['creditCardExpiryYear'])
-        ->setCreditCardExpiryMonth($postData['creditCardExpiryMonth'])
-        ->setCreditCardCCV($postData['creditCardCCV'])
+    $cc->setCreditCardNumber($db->encrypt($_GET['number'],'123456'))
+        ->setCreditCardExpiryYear($_GET['expYear'])
+        ->setCreditCardExpiryMonth($_GET['expMonth'])
+        ->setCreditCardCCV($_GET['ccv'])
         ->createNewCard();
     if ($cc->error == true){
-        $data['error'] = true;
-        $data['errorDescription'] = $cc->errorDescription;
+        $data['error'] = $cc->errorDescription;
         //$db->update_log_file_custom('Credit Card create new card error found in creation',$cc->errorDescription);
         echo json_encode($data);
         exit();
     }
 
     $data['newCardRemoteID'] = $cc->getCardID();
+    $data['error'] = "0";
 
 }
 

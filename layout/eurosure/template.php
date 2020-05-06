@@ -136,6 +136,11 @@ function template_header()
                                    href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/production_full.php"><i
                                             class="fas fa-eye"></i> <?php echo $db->showLangText('Production Full', 'Παραγωγή Full'); ?>
                                 </a>
+
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/eurosure/reports/actuary/index.php"><i
+                                            class="fas fa-eye"></i> <?php echo $db->showLangText('Actuary Reports', 'Actuary Reports'); ?>
+                                </a>
                             </div>
                         </li>
                         <?php
@@ -471,7 +476,7 @@ if ($sybaseConnection != '') {
                     </div>
                     <div class="row">
                         <div class="col-12 text-center">
-                            Copyright AgentsCy 2019. All rights reserved. Developed & Hosted by Ermogenous.M
+                            Copyright Eurosure 2020. All rights reserved. Developed by Ermogenous.M
                         </div>
                     </div>
                     <div class="row" style="height: 5px;"></div>

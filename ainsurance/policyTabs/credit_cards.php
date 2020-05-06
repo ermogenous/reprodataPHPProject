@@ -33,6 +33,9 @@ if ($_GET['pid'] > 0) {
     } else {
         $policyFound = false;
     }
+} else {
+    //pid is required
+    exit();
 }
 
 
@@ -46,7 +49,7 @@ $db->show_empty_header();
 FormBuilder::buildPageLoader();
 
 ?>
-    <div class="container">
+    <div class="container-fluid">
 
         <div class="row">
             <div class="col-11 alert alert-primary text-center">
@@ -63,10 +66,28 @@ FormBuilder::buildPageLoader();
         </div>
         <div class="row" id="errorConnectingRow" style="display: none">
             <div class="col-12 alert alert-danger text-center">
-                There was a problem connecting to the credit card remote system. Contact the administrator
+                There was a problem connecting to the credit card remote system. Contact the administrator.
             </div>
         </div>
 
+
+    </div>
+
+    <div class="container-fluid" id="mainContainer" style="display: none">
+        <?php
+        createNewCardForm();
+        ?>
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                Console
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12" id="console"></div>
+        </div>
     </div>
 
     <script>
@@ -74,7 +95,7 @@ FormBuilder::buildPageLoader();
         //create the rxjs function to get the connection string
         $connectionStringSettings = [
             'functionName' => 'connectionTest()',
-            'source' => '"'.$main['site_url'] . '/ainsurance/credit_cards_remote/credit_cards_api.php?action=getTestConnectionString"',
+            'source' => '"' . $main['site_url'] . '/ainsurance/credit_cards_remote/credit_cards_api.php?action=getTestConnectionString"',
             'successJSCode' => " 
                 //console.log(data.conString);
                 connectionMakeTest(data.conString);
@@ -94,19 +115,19 @@ FormBuilder::buildPageLoader();
                     $("#connectionTestCorrect").show();
                     $("#errorConnectingRow").hide();
                     $("#conTestValue").val(1);
+                    $("#mainContainer").show();
                     //console.log($("#conTestValue").val());
                 }
                 else {
                     $("#connectionTestSpinner").hide();
                     $("#connectionTestError").show();
                     $("#errorConnectingRow").show();
+                    $("#mainContainer").hide();
                     //console.log("NO");
                 }
             '
         ];
         echo customFormValidator::getPromiseJSCodeV2($connectionTestSettings);
-
-
 
         ?>
 
@@ -114,6 +135,11 @@ FormBuilder::buildPageLoader();
             //console.log('ready');
             connectionTest();
         });
+
+        function updateConsole(text) {
+            let currentText = $('#console').html();
+            $('#console').html(currentText + '<br>' + text);
+        }
     </script>
 
 <?php
@@ -125,19 +151,128 @@ $db->show_empty_footer();
 <?php
 function createNewCardForm()
 {
-    global $formValidator;
+    global $formValidator, $main;
+
+    //disable form from submitting
+    //and disable the input fields
+    $formValidator->addCustomCode('
+        if (FormErrorFound == false) {
+            FormErrorFound = true;
+            $("#fld_credit_card").prop("disabled",true);
+            $("#fld_expiry_month").prop("disabled",true);
+            $("#fld_expiry_year").prop("disabled",true);
+            $("#fld_ccv").prop("disabled",true);
+            $("#newCardSubmit").prop("disabled",true);
+            newCardConString();
+        }
+    ');
+
     ?>
-    <form name="myForm" id="myForm" method="post" action="" onsubmit=""
+    <script>
+        <?php
+        //create the rxjs function to get the connection string
+        $url = '"' . $main['site_url'] . '/ainsurance/credit_cards_remote/credit_cards_api.php?action=newCardConnectionString';
+        $url .= '&card=" + $("#fld_credit_card").val()';
+        $url .= '+ "&expYear=" + $("#fld_expiry_year").val()';
+        $url .= '+ "&expMonth=" + $("#fld_expiry_month").val()';
+        $url .= '+ "&ccv=" + $("#fld_ccv").val()';
+
+        $connectionStringSettings = [
+            'functionName' => 'newCardConString()',
+            'source' => $url,
+            'errorJSCode' => '
+                newCardMakeError("An error occurred reaching the api");
+            ',
+            'successJSCode' => " 
+                console.log(data);
+                if (data.error != '0'){
+                    newCardMakeError(data.error,true);
+                }
+                else {
+                    updateConsole('Connection string generated successfully.');
+                    //proceed to make card
+                    newCardMakeCardRemote(data.conString);
+                }
+            "
+        ];
+        echo customFormValidator::getPromiseJSCodeV2($connectionStringSettings);
+
+        //create the rxjs function to go at the rcb remote and create the card in the remote db
+        $remoteNewCardSettings = [
+            'functionName' => 'newCardMakeCardRemote(connString)',
+            'source' => "connString",
+            'successJSCode' => '
+                console.log(data);
+                if (data.error != "0"){
+                    newCardMakeError("Remote Server Says: " + data.error,true);
+                }
+                else {
+                    if (data.newCardRemoteID > 0){
+                        updateConsole("Remote Server created the card");
+                        insertCreditCard(data.newCardRemoteID);
+                    }
+                    else {
+                        updateConsole("Remote card ID is empty from server");
+                    }
+                }
+            '
+        ];
+        echo customFormValidator::getPromiseJSCodeV2($remoteNewCardSettings);
+
+        //create the card in credit_cards
+        $insertCardUrl = '"' . $main['site_url'] . '/ainsurance/credit_cards_remote/credit_cards_api.php?action=insertCardToDB';
+        $insertCardUrl .= '&card=" + $("#fld_credit_card").val()';
+
+        $insertCardSettings = [
+            'functionName' => 'insertCreditCard(remoteID)',
+            'source' => $insertCardUrl,
+            'successJSCode' => '
+                console.log("Inserting card");
+                console.log(data);
+                if (data.error != "0"){
+                    console.log('.$insertCardUrl.');
+                    newCardMakeError("Inserting Card: " + data.error,true);
+                }
+                else {
+                    updateConsole("Card inserted successfully");
+                }
+            '
+        ];
+        echo customFormValidator::getPromiseJSCodeV2($insertCardSettings);
+
+        ?>
+        function newCardMakeError(error, enableForm = false) {
+            $('#newCardErrorDiv').show();
+            $('#newCardErrorDiv').html(error);
+            if (enableForm == true) {
+                $("#fld_credit_card").prop("disabled", false);
+                $("#fld_credit_card").removeClass('is-valid');
+                $("#fld_expiry_month").prop("disabled", false);
+                $("#fld_expiry_month").removeClass('is-valid');
+                $("#fld_expiry_year").prop("disabled", false);
+                $("#fld_expiry_year").removeClass('is-valid');
+                $("#fld_ccv").prop("disabled", false);
+                $("#fld_ccv").removeClass('is-valid');
+                $("#newCardSubmit").prop("disabled", false);
+
+            }
+            updateConsole(error);
+        }
+    </script>
+    <form name="myForm" id="myForm" method="post" action="#" onsubmit=""
         <?php $formValidator->echoFormParameters(); ?>>
-        <div class="row form-group form-inline">
+        <div class="form-group row">
+            <div class="col-12 alert alert-danger text-center" style="display: none" id="newCardErrorDiv"></div>
+        </div>
+        <div class="row form-group">
             <?php
             $formB = new FormBuilder();
             $formB->setFieldName('fld_credit_card')
-                ->setFieldDescription('Credit Card Number')
+                ->setFieldDescription('Card Number')
                 ->setLabelClasses('col-sm-2')
                 ->setFieldType('input')
                 ->setFieldInputType('text')
-                ->setInputValue('')
+                ->setInputValue('11')
                 ->buildLabel();
             $formValidator->addField(
                 [
@@ -147,7 +282,7 @@ function createNewCardForm()
                     'invalidTextAutoGenerate' => true
                 ]);
             ?>
-            <div class="col-3">
+            <div class="col-2">
                 <?php
                 $formB->buildInput();
                 ?>
@@ -164,7 +299,7 @@ function createNewCardForm()
                 ->setFieldType('select')
                 ->setInputSelectAddEmptyOption(true)
                 ->setInputSelectArrayOptions($month)
-                ->setInputValue('')
+                ->setInputValue('1')
                 ->buildLabel();
             ?>
             <div class="col-2">
@@ -177,6 +312,10 @@ function createNewCardForm()
                         'required' => true,
                         'invalidText' => 'Required'
                     ]);
+                ?>
+            </div>
+            <div class="col-2">
+                <?php
                 $year = [];
                 $d = date("Y");
                 for ($i = $d; $i <= $d + 5; $i++) {
@@ -186,7 +325,7 @@ function createNewCardForm()
                     ->setFieldType('select')
                     ->setInputSelectArrayOptions($year)
                     ->setInputSelectAddEmptyOption(true)
-                    ->setInputValue('')
+                    ->setInputValue('2020')
                     ->buildInput();
                 $formValidator->addField(
                     [
@@ -197,16 +336,18 @@ function createNewCardForm()
                     ]);
                 ?>
             </div>
+        </div>
+        <div class="form-group row">
             <?php
             $formB->setFieldName('fld_ccv')
                 ->setFieldDescription('CCV')
-                ->setLabelClasses('col-sm-1')
+                ->setLabelClasses('col-sm-2')
                 ->setFieldType('input')
                 ->setFieldInputType('text')
-                ->setInputValue('')
+                ->setInputValue('123')
                 ->buildLabel();
             ?>
-            <div class="col-1">
+            <div class="col-2">
                 <?php
                 $formB->buildInput();
                 $formValidator->addField(
@@ -223,7 +364,7 @@ function createNewCardForm()
             <div class="col-12 center-block text-center">
                 <input type="hidden" name="action" id="action" value="newCardEntry">
                 <input type="hidden" name="pid" id="pid" value="<?php echo $_GET['pid']; ?>>">
-                <input type="submit" value="Create New Card" class="btn btn-primary">
+                <input type="submit" id="newCardSubmit" value="Create New Card" class="btn btn-primary">
             </div>
         </div>
     </form>

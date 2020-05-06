@@ -44,40 +44,6 @@ class MECreditCards
 
     }
 
-    public function testRemoteConnection(){
-
-        $data = [
-            'username' => $this->remoteUrlPassword,
-            'password' => $this->remoteUrlPassword,
-            'action' => 'testConnection'
-        ];
-
-        $curl = curl_init($this->remoteUrlConnectionTest);
-        curl_setopt($curl, CURLOPT_HEADER, false);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER,
-            array("Content-type: application/json"));
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
-
-        $json_response = curl_exec($curl);
-
-        $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-        if (curl_errno($curl)) {
-            return false;
-        }
-
-        curl_close($curl);
-
-        $response = json_decode($json_response, true);
-
-        if ($response['testConnection'] == 'Yes'){
-            return true;
-        }
-        return false;
-    }
-
     public function getCardInfoFromPolicy($policyID)
     {
         global $db;
@@ -86,65 +52,26 @@ class MECreditCards
         $this->__construct($result['inapol_credit_card_ID']);
     }
 
-    public function makeNewCreditCardEntry($creditCardNumber,$expiryYear, $expiryMonth, $ccv, $policyID=0, $customerID=0)
+    public function makeNewCreditCardEntry($creditCardNumber, $remoteID, $policyID=0, $customerID=0)
     {
         global $db;
-
-        //create the card in the remote system
-        $data = [
-            'username' => $this->remoteUrlPassword,
-            'password' => $this->remoteUrlPassword,
-            'action' => 'createNewCard',
-            'creditCardNumber' => $creditCardNumber,
-            'creditCardExpiryYear' => $expiryYear,
-            'creditCardExpiryMonth' => $expiryMonth,
-            'creditCardCCV' => $ccv
-        ];
-        $curl = curl_init($this->remoteUrlCreateNewCard);
-        curl_setopt($curl, CURLOPT_HEADER, false);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($curl, CURLOPT_HTTPHEADER,
-            array("Content-type: application/json"));
-        curl_setopt($curl, CURLOPT_POST, true);
-        curl_setopt($curl, CURLOPT_POSTFIELDS, json_encode($data));
-
-        $json_response = curl_exec($curl);
-
-        $status = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-        if (curl_errno($curl)) {
-
-            $this->error = true;
-            $this->errorDescription = 'Error curl creating new card on remote';
-            return false;
-        }
-
-        curl_close($curl);
-
-        $response = json_decode($json_response, true);
-
-        if ($response['error'] == true || $response['newCardRemoteID'] == ''){
-            $this->error = true;
-            $this->errorDescription = 'Error Found in response - '.$response['errorDescription'];
-            return false;
-        }
 
         //insert card in ina_credit_cards
         $newData['credit_card'] = substr($creditCardNumber,0,4)."********".substr($creditCardNumber,12);
         $newData['status'] = 'Active';
-        $newData['credit_card_remote_ID'] = $response['newCardRemoteID'];
-        $newData['remote_string'] = $json_response;
+        $newData['credit_card_remote_ID'] = $remoteID;
+        //$newData['remote_string'] = $json_response;
 
         $newID = $db->db_tool_insert_row('ina_credit_cards', $newData, '', 1, 'inacrc_');
         //update policy with the new id
-        if ($this->policyID != 0){
+        if ($policyID != 0){
             $policyNewData['credit_card_ID'] = $newID;
             $db->db_tool_update_row('ina_policies',$policyNewData,'inapol_policy_ID = '.$this->policyID,
                 $this->policyID,'','execute','inapol_');
         }
 
         //update customer with new id
-        if ($this->customerID != 0){
+        if ($customerID != 0){
             $customerNewData['credit_card_ID'] = $newID;
             $db->db_tool_update_row('customers',$customerNewData,'cst_customer_ID = '.$this->customerID,
                 $this->customerID,'','execute','cst_');
