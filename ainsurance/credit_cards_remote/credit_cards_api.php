@@ -26,7 +26,7 @@ if ($_GET['action'] == 'getTestConnectionString') {
     $data['conString'] = $remoteUrl . "?action=testConnection&username=" . $remoteUrlUsername . "&password=" . $remoteUrlPassword;
 }
 
-if ($_GET['action'] = 'newCardConnectionString') {
+if ($_GET['action'] == 'newCardConnectionString') {
     $data['error'] = '0';
     if ($_GET['card'] == '') {
         $data['error'] = 'Credit card number is missing';
@@ -47,6 +47,7 @@ if ($_GET['action'] = 'newCardConnectionString') {
 
 }
 if ($_GET['action'] == 'insertCardToDB') {
+
     $db->update_log_file_custom('insertCardToDB',print_r($_GET,true));
     $data['error'] = '0';
     if ($_GET['card'] == '') {
@@ -56,8 +57,14 @@ if ($_GET['action'] == 'insertCardToDB') {
         $data['error'] = 'Inserting Card: Remote ID is missing';
     }
     else {
-        //$card = new MECreditCards();
-        //$card->makeNewCreditCardEntry();
+        $card = new MECreditCards();
+        $card->makeNewCreditCardEntry();
+        if ($card->error == true){
+            $data['error'] = $card->errorDescription;
+        }
+        else {
+
+        }
     }
 }
 

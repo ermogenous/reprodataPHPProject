@@ -36,7 +36,7 @@ if ($_GET['action'] == 'activate' && $_GET['lid'] > 0) {
         $db->generateSessionAlertSuccess($quote->getQuotationType() . " activated successfully");
 
         //check if the email was sent
-        if ($quote->error == true){
+        if ($quote->error == true) {
             $db->generateSessionAlertError('Activated! Error sending the email. Please check in AutoEmails.');
         }
 
@@ -76,10 +76,10 @@ $db->show_header();
                         <div class="col-5 text-right"><strong>Total Price </strong></div>
                         <div class="col-7">
                             €<?php echo $data["clo_total_price"]
-                            ." (Premium:€".$data['oqq_premium']." Fees:€".$data['oqq_fees']." Stamps:€".$data['oqq_stamps'].")"; ?>
-                            <?php if ($db->user_data['usr_user_rights'] <= 2){ ?>
-                            <a href="quotation_premium_modify.php?lid=<?php echo $_GET['lid'];?>">Modify Premium
-                                (<?php echo $data['oqq_calculation_type'];?>)</a>
+                                . " (Premium:€" . $data['oqq_premium'] . " Fees:€" . $data['oqq_fees'] . " Stamps:€" . $data['oqq_stamps'] . ")"; ?>
+                            <?php if ($db->user_data['usr_user_rights'] <= 2) { ?>
+                                <a href="quotation_premium_modify.php?lid=<?php echo $_GET['lid']; ?>">Modify Premium
+                                    (<?php echo $data['oqq_calculation_type']; ?>)</a>
                             <?php } ?>
                         </div>
                     </div>
@@ -97,7 +97,16 @@ $db->show_header();
                 </div>
 
                 <div class="row">
-                    <div class="col-2"></div>
+                    <?php
+                    if ($quote->quotationData()['oqqt_info_page_extra_button'] == '') {
+                        ?>
+                        <div class="col-2"></div>
+                        <?php
+                    } else {
+                        ?>
+                        <div class="col-1"></div>
+                    <?php } ?>
+
                     <div class="col-2 text-center">
                         <a href="#">
                             <i class="fas fa-edit fa-5x"
@@ -118,7 +127,7 @@ $db->show_header();
                             <i class="far fa-file-pdf fa-5x"
                                 <?php
                                 if ($quote->quotationData()['oqq_status'] == 'Active' ||
-                                    ( ($quote->quotationData()['oqq_status'] == 'Outstanding' || $quote->quotationData()['oqq_status'] == 'Pending')
+                                    (($quote->quotationData()['oqq_status'] == 'Outstanding' || $quote->quotationData()['oqq_status'] == 'Pending')
                                         && $quote->quotationData()['oqqt_allow_print_outstanding'] == 1)) { ?>
                                     onclick="window.open('quotation_print.php?quotation=<?php echo $data["oqq_quotations_ID"]; ?>&pdf=1','_blank')"
                                 <?php } ?>
@@ -139,11 +148,11 @@ $db->show_header();
                             <i class="fas fa-lock fa-5x"
                                 <?php if ($quote->quotationData()['oqq_status'] == 'Outstanding' || $quote->quotationData()['oqq_status'] == 'Approved') { ?>
                                     onclick="
-                                            if (confirm('Are you sure you want to activate this <?php echo $quote->getQuotationType();?>?')){
-                                                window.location.assign('quotations_show.php?action=activate&lid=<?php echo $data["oqq_quotations_ID"]; ?>')
+                                            if (confirm('Are you sure you want to activate this <?php echo $quote->getQuotationType(); ?>?')){
+                                            window.location.assign('quotations_show.php?action=activate&lid=<?php echo $data["oqq_quotations_ID"]; ?>')
                                             }
                                             else {
-                                                return false;
+                                            return false;
                                             }
 
                                             "
@@ -153,8 +162,21 @@ $db->show_header();
                         </a><br>
                         Activate
                     </div>
-                    <div class="col-2"></div>
+
+                    <?php
+                    if ($quote->quotationData()['oqqt_info_page_extra_button'] != '') {
+                        ?>
+                        <div class="col-2 text-center">
+                            <?php
+                            echo $quote->quotationData()['oqqt_info_page_extra_button'];
+                            ?>
+                        </div>
+                        <?php
+                    }
+                    ?>
+
                 </div>
+
                 <div class="row">
                     <div class="col-12">
                         <hr style="color: grey;">

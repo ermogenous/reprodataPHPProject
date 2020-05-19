@@ -9,8 +9,8 @@ function template_header()
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Synthesis Web</title>
-        <LINK REL="SHORTCUT ICON" HREF="<?php echo $db->admin_layout_url; ?>/images/favicon.png">
+        <title>Synthesis Web <?php echo $db->admin_title;?></title>
+        <LINK REL="SHORTCUT ICON" HREF="<?php echo $db->admin_layout_url; ?>/images/synthesis_logo.png">
         <link rel="stylesheet" href="<?php echo $db->admin_layout_url; ?>style.css" rel="stylesheet">
 
         <link rel="stylesheet" href="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/css/bootstrap.min.css">
@@ -118,16 +118,20 @@ function template_header()
                     </li>
 
 
-                    <li class="nav-item">
-                        <a class="nav-link" href="<?php echo $main["site_url"]; ?>/synthesis/web_service_test.php">
-                            SynTest</a>
+                    <!-- ACCOUNTS -->
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-file-invoice-dollar"></i> Accounts <i class="fas fa-caret-down"></i>
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <a class="dropdown-item" href="<?php echo $main["site_url"]; ?>/synthesis/accounts/accounts.php"><i
+                                        class="fas fa-eye"></i> View Accounts</a>
+                        </div>
                     </li>
 
-
-
-
                     <!-- USERS -->
-                    <?php if ($db->user_data["usr_user_rights"] == 0) { ?>
+                    <?php if ($db->user_data["usr_user_rights"] <= 1) { ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -164,7 +168,7 @@ function template_header()
                     <?php } ?>
 
                     <?php
-                    if ($db->user_data["usr_user_rights"] == 0 && $db->dbSettings['ina_enable_agent_insurance']['value'] == 1) {
+                    if ($db->user_data["usr_user_rights"] == 0) {
                         ?>
                         <!-- Settings -->
                         <li class="nav-item dropdown">
@@ -191,11 +195,6 @@ function template_header()
                                    href="<?php echo $main["site_url"]; ?>/tools/log_file_view.php">
                                     <i class="fas fa-exclamation-triangle"></i> View Log File</a>
 
-                                <?php if ($db->user_data['usr_users_ID'] == 1) { ?>
-                                    <a class="dropdown-item"
-                                       href="<?php echo $main["site_url"]; ?>/vitamins/vitamins.php">
-                                        <i class="fas fa-exclamation-triangle"></i> Vitamins</a>
-                                <?php } ?>
                             </div>
 
                         </li>
@@ -209,7 +208,7 @@ function template_header()
                             </li>
                  -->
             </ul>
-            <img src="<?php echo $db->admin_layout_url; ?>/images/demetriou-insurance.jpg" height="50">
+            <img src="<?php echo $db->admin_layout_url; ?>images/synthesis_logo.png" height="50">
         </div>
     </nav>
 

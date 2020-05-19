@@ -20,6 +20,7 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_allow_quotations'] .= '#3-' . $db->get_check_value($_POST['allow_tr']) . "#";
     $_POST['fld_allow_quotations'] .= '#4-' . $db->get_check_value($_POST['allow_hc']) . "#";
     $_POST['fld_allow_quotations'] .= '#5-' . $db->get_check_value($_POST['allow_crm']) . "#";
+    $_POST['fld_allow_quotations'] .= '#6-' . $db->get_check_value($_POST['allow_fpa']) . "#";
 
 
     $db->db_tool_insert_row('oqt_quotations_underwriters', $_POST, 'fld_', 0, 'oqun_');
@@ -38,6 +39,7 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_allow_quotations'] .= '#3-' . $db->get_check_value($_POST['allow_tr']) . "#";
     $_POST['fld_allow_quotations'] .= '#4-' . $db->get_check_value($_POST['allow_hc']) . "#";
     $_POST['fld_allow_quotations'] .= '#5-' . $db->get_check_value($_POST['allow_crm']) . "#";
+    $_POST['fld_allow_quotations'] .= '#6-' . $db->get_check_value($_POST['allow_fpa']) . "#";
 
     $_POST['fld_tr_package_selection'] = '';
     if ($_POST['packageBasic'] == 1) {
@@ -232,6 +234,12 @@ $formValidator = new customFormValidator();
                             <a class="nav-link" id="pills-crm-tab" data-toggle="pill" href="#pills-crm"
                                role="tab"
                                aria-controls="pills-crm" aria-selected="true">CMR</a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" id="pills-fpa-tab" data-toggle="pill" href="#pills-fpa"
+                               role="tab"
+                               aria-controls="pills-fpa" aria-selected="true">FPA</a>
                         </li>
 
                     </ul>
@@ -1311,6 +1319,46 @@ $formValidator = new customFormValidator();
                                 </div>
                             </div>
 
+                        </div>
+
+                        <div class="tab-pane fade show" id="pills-fpa" role="tabpanel"
+                             aria-labelledby="pills-fpa-tab">
+                            <!-- MEDICAL FOR FOREIGNERS -->
+
+                            <div class="row alert alert-success text-center">
+                                <div class="col-12">
+                                    <b>Foreigners Personal Accident</b>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <label for="allow_fpa" class="col-sm-4 col-form-label">
+                                    Allow Foreigners Personal Accident
+                                </label>
+                                <div class="col-sm-1">
+                                    <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                           id="allow_fpa" name="allow_fpa"
+                                        <?php if (strpos($data['oqun_allow_quotations'], '#6-1#') !== false) echo 'checked'; ?>>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="fld_fpa_age_restriction" class="col-sm-4 col-form-label">Age limit
+                                    Inclusive</label>
+                                <div class="col-sm-4">
+                                    <input name="fld_fpa_age_restriction" type="text" id="fld_fpa_age_restriction"
+                                           class="form-control"
+                                           value="<?php echo $data["oqun_fpa_age_restriction"]; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_fpa_age_restriction",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Must provide a valid age limit",
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
                         </div>
                         <!-- CONTENTS TAB END-->
                     </div>

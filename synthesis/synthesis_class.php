@@ -38,7 +38,12 @@ class Synthesis
             ),
         );
 
-        $response = file_get_contents($url, false, stream_context_create($arrContextOptions));
+        @$response = file_get_contents($url, false, stream_context_create($arrContextOptions));
+        if ($response == false){
+            $this->errorDescription = 'Cannot reach the database.';
+            $this->error = true;
+            return false;
+        }
         $data = json_decode($response);
 
         if ($data[0]->status != 'error') {
@@ -55,6 +60,9 @@ class Synthesis
     public function getAccountList()
     {
         $this->getToken();
+        if ($this->error == true){
+            return false;
+        }
         $url = self::$url."/ws_accountlist?arg_username=".self::$username."&arg_token=".$this->currentToken;
         $arrContextOptions=array(
             "ssl"=>array(
@@ -62,7 +70,12 @@ class Synthesis
                 "verify_peer_name"=>false,
             ),
         );
-        $response = file_get_contents($url, false, stream_context_create($arrContextOptions));
+        @$response = file_get_contents($url, false, stream_context_create($arrContextOptions));
+        if ($response == false){
+            $this->error = true;
+            $this->errorDescription = 'Cannot reach the database.';
+            return false;
+        }
         $data = json_decode($response);
         $data['totalRows'] = count($data);
 
@@ -84,6 +97,7 @@ class Synthesis
     }
 
     public function updateAccountDetails($newData){
+        global $db;
         $this->getToken();
         $url = self::$url."/ws_accountimport?arg_username=".self::$username."&arg_token=".$this->currentToken;
 
@@ -119,11 +133,30 @@ class Synthesis
         );
         $response = file_get_contents($url, false, stream_context_create($arrContextOptions));
         $data = json_decode($response);
+
+        //create a record in sy_import_status
+        //first delete any existing
+        $deleteSql = "Delete FROM sy_import_status WHERE syist_record_type = 'Account' AND syist_record_ID = '".$newData['account_code']."'";
+        $db->query($deleteSql);
+        $insertData['fld_record_ID'] = $newData['account_code'];
+        $insertData['fld_import_ID'] = $data[0]->rs_auto_serial;
+        $insertData['fld_record_type'] = 'Account';
+        $db->db_tool_insert_row('sy_import_status',$insertData,'fld_',0,'syist_');
+
         return $data[0];
 
     }
 
-    public function checkImportStatus($id){
+    public function checkImportStatus($recordType, $recordID){
+        global $db;
+
+        $sql = "SELECT * FROM sy_import_status WHERE syist_record_type = '".$recordType."' AND syist_record_ID = '".$recordID."'";
+        $result = $db->query_fetch($sql);
+
+        return $this->checkSynthesisImportStatus($result['syist_import_ID']);
+    }
+
+    private function checkSynthesisImportStatus($id){
         $this->getToken();
         $url = self::$url."/ws_checkacimport?arg_username=".self::$username."&arg_token=".$this->currentToken."&arg_auto_serial=".$id;
         $arrContextOptions=array(
@@ -137,6 +170,25 @@ class Synthesis
         return $data[0];
     }
 
+    public function getAccountTransactionList($accountCode, $fromDate = '', $toDate = ''){
+        $this->getToken();
+        $url = self::$url."/ws_accounttransactions?arg_username=".self::$username."&arg_token=".$this->currentToken."&arg_account_code=".$accountCode;
+        if ($fromDate != ''){
+            $url .= '&arg_from_date='.$fromDate;
+        }
+        if ($toDate != ''){
+            $url .= '&arg_upto_date='.$toDate;
+        }
+        $arrContextOptions=array(
+            "ssl"=>array(
+                "verify_peer"=>false,
+                "verify_peer_name"=>false,
+            ),
+        );
+        $response = file_get_contents($url, false, stream_context_create($arrContextOptions));
+        $data = json_decode($response);
+        return $data[0];
+    }
     public function logout()
     {
         /*

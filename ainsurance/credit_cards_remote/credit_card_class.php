@@ -56,6 +56,18 @@ class MECreditCards
     {
         global $db;
 
+        if ($creditCardNumber == ''){
+            $this->error = true;
+            $this->errorDescription = 'Credit card number cannot be empty';
+            return false;
+        }
+
+        if ($remoteID == ''){
+            $this->error = true;
+            $this->errorDescription = 'Credit card remote ID cannot be empty';
+            return false;
+        }
+
         //insert card in ina_credit_cards
         $newData['credit_card'] = substr($creditCardNumber,0,4)."********".substr($creditCardNumber,12);
         $newData['status'] = 'Active';

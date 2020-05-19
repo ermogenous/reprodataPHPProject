@@ -97,6 +97,30 @@ function template_header()
                                     <i class="fas fa-plane-departure"></i> New Travel</a>
                             <?php } ?>
 
+                            <?php
+                            if (strpos($underwriter['oqun_allow_quotations'], '#4-1#') !== false) {
+                                ?>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations_modify.php?quotation_type=4">
+                                    <i class="fas fa-home"></i> New HouseHold</a>
+                            <?php } ?>
+
+                            <?php
+                            if (strpos($underwriter['oqun_allow_quotations'], '#5-1#') !== false) {
+                                ?>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations_modify.php?quotation_type=5">
+                                    <i class="fas fa-truck-moving"></i> New CMR</a>
+                            <?php } ?>
+
+                            <?php
+                            if (strpos($underwriter['oqun_allow_quotations'], '#6-1#') !== false) {
+                                ?>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/dynamic_quotations/quotations_modify.php?quotation_type=6">
+                                    <i class="fas fa-bolt"></i> New Foreigners P.A.</a>
+                            <?php } ?>
+
                             <?php if ($db->user_data["usr_user_rights"] <= 2) { ?>
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/dynamic_quotations/approvals.php">

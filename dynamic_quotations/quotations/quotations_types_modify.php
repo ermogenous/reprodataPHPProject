@@ -965,6 +965,16 @@ FormBuilder::buildPageLoader();
                                 </div>
                             </div>
 
+                            <div class="row form-group">
+                                <label for="" class="col-sm-4 col-form-label">
+                                    Info Page Extra Button HTML
+                                </label>
+                                <div class="col-sm-8">
+                                    <textarea class="form-control" id="fld_info_page_extra_button"
+                                              name="fld_info_page_extra_button"><?php echo $data['oqqt_info_page_extra_button'];?></textarea>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
 

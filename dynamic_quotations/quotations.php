@@ -261,7 +261,7 @@ if ($_GET["price_id"] != "") {
                         <div class="col-8">
                             <select name="quotation_ID" id="quotation_ID" class="form-control">
                                 <?php
-                                $sql = "SELECT * FROM oqt_quotations_types WHERE oqqt_status = 'A' ORDER BY oqqt_name ASC";
+                                $sql = "SELECT * FROM oqt_quotations_types WHERE oqqt_status = 'A' ORDER BY oqqt_quotations_types_ID ASC";
                                 $result = $db->query($sql);
                                 while ($row_qt = $db->fetch_assoc($result)) {
                                     if ($row_qt["oqqt_allowed_user_groups"] == "" || strpos($row_qt["oqqt_allowed_user_groups"], $db->user_data["usg_group_name"] . ",") !== false) {

@@ -908,6 +908,7 @@ class customFormValidator
      * ifDataJSCode -> js code on success and if data is retrieved
      * ifNoDataJSCode-> js code on success and if no data is retrieved
      * successJSCode -> js code on success
+     * prefixJSCode -> js code right after the declaration of the function
      *
      * ]
      * @return Promise JSCODE
@@ -938,6 +939,7 @@ class customFormValidator
 
         $return = '
             function ' . $settings['functionName'] . ' {
+            ' .$settings['prefixJSCode']. '
             ' . $spinnerShow . '
             ' . $correctHide . '
             ' . $errorHide . '

@@ -119,7 +119,7 @@ function template_header()
 
                     <!-- Reports -->
                     <?php
-                    if ($db->user_data['usr_user_rights'] < 3) {
+                    if ($db->user_data['usr_user_rights'] < 3 || $db->user_data['usr_users_groups_ID'] == 6) {
                         ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -171,6 +171,11 @@ function template_header()
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/eurosure/functions/update_access_clients.php"><i
                                             class="fas fa-eye"></i> <?php echo $db->showLangText('Clients List for Access Fire', 'Clients List for Access Fire'); ?>
+                                </a>
+
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/import_file.php"><i
+                                            class="fas fa-eye"></i> <?php echo $db->showLangText('Agent SoEasy Import Process', 'Agent SoEasy Import Process'); ?>
                                 </a>
                             </div>
                         </li>

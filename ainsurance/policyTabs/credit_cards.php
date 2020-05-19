@@ -170,6 +170,7 @@ function createNewCardForm()
     ?>
     <script>
         <?php
+        //step 1 get the connection string
         //create the rxjs function to get the connection string
         $url = '"' . $main['site_url'] . '/ainsurance/credit_cards_remote/credit_cards_api.php?action=newCardConnectionString';
         $url .= '&card=" + $("#fld_credit_card").val()';
@@ -184,11 +185,13 @@ function createNewCardForm()
                 newCardMakeError("An error occurred reaching the api");
             ',
             'successJSCode' => " 
-                console.log(data);
+                console.log('Create string result ' + data.error);
                 if (data.error != '0'){
+                    console.log('Error creating string');
                     newCardMakeError(data.error,true);
                 }
                 else {
+                    console.log('String success');
                     updateConsole('Connection string generated successfully.');
                     //proceed to make card
                     newCardMakeCardRemote(data.conString);
@@ -196,19 +199,20 @@ function createNewCardForm()
             "
         ];
         echo customFormValidator::getPromiseJSCodeV2($connectionStringSettings);
-
+        //step 2 send the connection string to create the remote card
         //create the rxjs function to go at the rcb remote and create the card in the remote db
         $remoteNewCardSettings = [
             'functionName' => 'newCardMakeCardRemote(connString)',
             'source' => "connString",
             'successJSCode' => '
-                console.log(data);
+                console.log("Create remote card result [" + data.error + "]");
                 if (data.error != "0"){
                     newCardMakeError("Remote Server Says: " + data.error,true);
                 }
                 else {
                     if (data.newCardRemoteID > 0){
-                        updateConsole("Remote Server created the card");
+                        updateConsole("Remote Server created the card [" + data.newCardRemoteID + "]");
+                        console.log("Inserting the card with remote ID " + data.newCardRemoteID);
                         insertCreditCard(data.newCardRemoteID);
                     }
                     else {
@@ -219,17 +223,23 @@ function createNewCardForm()
         ];
         echo customFormValidator::getPromiseJSCodeV2($remoteNewCardSettings);
 
+
+        //step 3 create the card locally
         //create the card in credit_cards
         $insertCardUrl = '"' . $main['site_url'] . '/ainsurance/credit_cards_remote/credit_cards_api.php?action=insertCardToDB';
         $insertCardUrl .= '&card=" + $("#fld_credit_card").val()';
+        $insertCardUrl .= ' + "&remoteID=" + remoteID';
 
         $insertCardSettings = [
-            'functionName' => 'insertCreditCard(remoteID)',
+            'functionName' => ' (remoteID)',
             'source' => $insertCardUrl,
+            'prefixJSCode' => '
+            console.log("Starting step 3 inserting card in local db");
+            ',
             'successJSCode' => '
-                console.log("Inserting card");
-                console.log(data);
+                console.log("Api insert card local executed");
                 if (data.error != "0"){
+                    console.log("Inserting card local with string");
                     console.log('.$insertCardUrl.');
                     newCardMakeError("Inserting Card: " + data.error,true);
                 }

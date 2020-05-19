@@ -19,6 +19,10 @@ $db->show_header();
             <a href="policy_transactions.php" class="list-group-item list-group-item-action">
                 Policy Transactions
             </a>
+
+            <a href="claims_development.php" class="list-group-item list-group-item-action">
+                Claims Development
+            </a>
         </div>
 
     </div>

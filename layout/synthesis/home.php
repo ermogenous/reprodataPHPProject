@@ -6,6 +6,12 @@
  * Time: 5:19 ΜΜ
  */
 
-include("../../include/main.php");
+header("Location:synthesis/accounts/accounts.php");
+exit();
+
+include_once("include/main.php");
 $db = new Main(1);
 
+$db->show_header();
+
+$db->show_footer();
