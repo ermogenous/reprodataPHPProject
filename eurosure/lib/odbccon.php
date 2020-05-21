@@ -14,9 +14,16 @@ class ODBCCON
 
     function __construct($database = 'EUROSURE', $charset = 'UTF-8')
     {
+        global $db;
         $this->database = $database;
-        $this->databaseHandler = odbc_connect('dsn=' . $database . ';charset=' . $charset . ';', 'PHPINTRANET', 'Php$Intranet');
-        odbc_autocommit($this->databaseHandler,false);
+        $this->databaseHandler = @odbc_connect('dsn=' . $database . ';charset=' . $charset . ';', 'PHPINTRANET', 'Php$Intranet');
+        if ($this->databaseHandler == false){
+            echo "Could not connect to odbc";
+            exit();
+        }
+        else {
+            odbc_autocommit($this->databaseHandler, false);
+        }
     }
 
     public function query($sql)

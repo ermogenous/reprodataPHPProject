@@ -1603,6 +1603,26 @@ class Main
         return $return;
     }
 
+    //converts the date format. it finds the from format
+    function convertDateFormat($date,$toFormat = 'dd/mm/yyyy', $date_time = 0, $return_time = 0){
+
+        if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$date)) {
+            return $this->convert_date_format($date,'yyyy-mm-dd',$toFormat,$date_time,$return_time);
+        }
+        else if (preg_match("/^[0-9]{1,2}-[0-9]{1,2}-[0-9]{4}$/",$date)) {
+            return $this->convert_date_format($date,'dd-mm-yyyy',$toFormat,$date_time,$return_time);
+        }
+        else if (preg_match("/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}$/",$date)) {
+            return $this->convert_date_format($date,'dd/mm/yyyy',$toFormat,$date_time,$return_time);
+        }
+        else if (preg_match("/^[0-9]{4}\/(0[1-9]|1[0-2])\/(0[1-9]|[1-2][0-9]|3[0-1])$/",$date)) {
+            return $this->convert_date_format($date,'yyyy/mm/dd',$toFormat,$date_time,$return_time);
+        }
+        else {
+            return false;
+        }
+    }
+
     function convertDateToNumber($date, $format)
     {
 

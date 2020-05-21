@@ -324,7 +324,9 @@ class TableList
         //pages links top
         if ($this->showPagesLinksTop == true) {
             $this->tableHtml .= '
-                    <div class="text-center">' . $this->showPagesLinks() . '</div>
+                <div class="row">
+                    <div class="col-12 text-center">' . $this->showPagesLinks() . '</div>
+                </div>
             ';
         }
 
@@ -355,7 +357,7 @@ class TableList
         if ($this->disableIconColumn == false) {
             //show the create new table column
             $this->tableHtml .= '
-                                    <th scope="col">
+                                    <td scope="col">
                                     ';
             if ($this->createNewLink != false) {
                 $this->tableHtml .= '
@@ -365,7 +367,7 @@ class TableList
                                         ';
             }
             $this->tableHtml .= '
-                                    </th>';
+                                    </td>';
         }
 
         $this->tableHtml .= '

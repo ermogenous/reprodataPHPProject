@@ -116,5 +116,14 @@ if ($_POST['action'] == 'upload'){
     </div>
 <?php
 }
+?>
+<div class="container">
+    <div class="row">
+        <div class="col-2">
+            <a href="validate_records.php">Validate Records</a>
+        </div>
+    </div>
+</div>
+<?php
 $db->show_footer();
 ?>
