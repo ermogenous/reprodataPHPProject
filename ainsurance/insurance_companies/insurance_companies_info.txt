@@ -1,0 +1,9 @@
+Brokerage/Agent
+    Brokerage (internal agent) - Transactions will be sent to the customer account on activation of the policy/payment
+    depending on the option commission release on activation of the policy or payment if customer is not connected to
+    an account it will be created automatically
+
+
+    Agent (external agent) - No transactions will be created for the customer
+
+

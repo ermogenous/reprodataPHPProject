@@ -174,7 +174,7 @@ function template_header()
                                 </a>
 
                                 <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/import_file.php"><i
+                                   href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/index.php"><i
                                             class="fas fa-eye"></i> <?php echo $db->showLangText('Agent SoEasy Import Process', 'Agent SoEasy Import Process'); ?>
                                 </a>
                             </div>

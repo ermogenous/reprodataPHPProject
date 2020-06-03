@@ -460,11 +460,11 @@ function template_header()
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/ainsurance/codes/insurance_companies.php">
+                                   href="<?php echo $main["site_url"]; ?>/ainsurance/insurance_companies/insurance_companies.php">
                                     <i class="fab fa-linode"></i> Insurance Companies</a>
 
                                 <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/ainsurance/codes/insurance_company_packages.php">
+                                   href="<?php echo $main["site_url"]; ?>/ainsurance/insurance_companies/insurance_company_packages.php">
                                     <i class="fas fa-cubes"></i> Insurance Company Packages</a>
 
                                 <a class="dropdown-item"

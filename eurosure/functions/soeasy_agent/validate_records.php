@@ -6,27 +6,28 @@
  * Time: 10:18
  */
 
-ini_set('max_execution_time', 600);
+ini_set('max_execution_time', 1800);
 ini_set('memory_limit','1024M');
 
 include("../../../include/main.php");
 include("soeasy_functions.php");
 include("../../lib/odbccon.php");
+include("soeasy_class.php");
 
 $db = new Main(1);
 $db->admin_title = "";
 
 $sql = 'SELECT COUNT(*)as clo_total_found FROM es_soeasy_import_data
-            WHERE essesid_status = "IMPORT" AND essesid_process_status = "NEED_VALIDATION"';
+            WHERE essesid_status = "IMPORT" ';
 $totalImport = $db->query_fetch($sql);
 
 $db->show_header();
 ?>
 
-    <div class="container">
+    <div class="container-fluid">
         <?php
         if ($_POST['action'] == 'validate') {
-            $syn = new ODBCCON();
+            $syn = new ODBCCON('EUROTEST');
             ?>
             <div class="row">
                 <div class="col-12 alert alert-info text-center">
@@ -35,7 +36,10 @@ $db->show_header();
             </div>
             <div class="row">
                 <div class="col-12">
-                    <?php validateRecords(); ?>
+                    <?php
+                    $soeasy = new soeasyClass();
+                    $soeasy->validateAllRecords();
+                    ?>
                 </div>
             </div>
             <div class="row" style="height: 25px;"></div>
@@ -50,10 +54,10 @@ $db->show_header();
                 </div>
             </div>
             <div class="row">
-                <div class="col-12">
+                <div class="col-12 text-center">
                     <form action="" method="post">
                         <input type="hidden" value="validate" id="action" name="action">
-                        <input type="submit" class="form-control btn btn-primary" value="Validate all records">
+                        <input type="submit" class="form-control btn btn-primary" value="Validate all records" style="width: 300px;">
                     </form>
                 </div>
             </div>
@@ -70,7 +74,7 @@ $db->show_header();
         }
         ?>
     </div>
-
+<a href="export_file.php">Export File</a>
 
 <?php
 $db->show_footer();

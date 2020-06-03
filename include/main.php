@@ -1372,7 +1372,6 @@ class Main
         $log_old_values = '';
 //get the previous values
         $previous = $this->query_fetch("SELECT * FROM `" . $table . "` WHERE " . $where_clause);
-
 //start the SQL
         $sql = "UPDATE `" . $table . "` SET \n";
         $log_entry = 'UPDATE Row At Table `' . $table . "`\n";

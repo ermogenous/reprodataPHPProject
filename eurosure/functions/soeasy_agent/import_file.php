@@ -13,6 +13,16 @@ $db = new Main(1);
 $db->admin_title = "Eurosure Function soeasy agent import file";
 
 if ($_POST['action'] == 'upload'){
+$db->start_transaction();
+    //find the last import batch
+    $sql = 'select essesid_import_batch from es_soeasy_import_data ORDER BY essesid_import_batch desc LIMIT 1';
+    $res = $db->query_fetch($sql);
+    $batchNumber = $res['essesid_import_batch'];
+    if ($batchNumber == ''){
+        $batchNumber = 0;
+    }
+    $batchNumber++;
+
     @$handle = fopen($_FILES['importFile']['tmp_name'],"r");
     if ($handle) {
         $lineNum = 0;
@@ -35,7 +45,8 @@ if ($_POST['action'] == 'upload'){
             else {
                 $sql = "INSERT INTO es_soeasy_import_data SET 
                         essesid_status = 'IMPORT',
-                        essesid_process_status = 'NEED_VALIDATION', ".PHP_EOL;
+                        essesid_validation_status = '',
+                        essesid_import_batch = ".$batchNumber.", ".PHP_EOL;
                 foreach($fields as $field){
                     $fieldNum++;
                     if (strlen($fieldNames[$fieldNum]) > 2){
@@ -45,13 +56,30 @@ if ($_POST['action'] == 'upload'){
                 }
                 $htmlOutput .= "<div class='row'><div class='col-10 alert alert-primary'>Line:".$lineNum." Pol:".$fields[22]." Start Date:".$fields[23]." Expiry:".$fields[25]."</div>";
                 $sql = $db->remove_last_char($sql);
+                //check if the line has the proper fields. check policy number/starting/expiry
+                if ($fields[22] == '' || $fields[23] == '' || $fields[25] == ''){
+                    //check if not the last line which is completely empty
+                    echo "Length".count($fields)."<br>";
+                    echo "Line:".$lineNum."<br>";
+                    echo "Policy:".$fields[22]."<br>";
+                    echo "Starting:".$fields[23]."<br>";
+                    echo "Expiry:".$fields[25]."<br>";
+                    echo "Found one or more lines that are incorrect. The whole process has been rollback. Fix the file and try again";
+                    $db->rollback_transaction();
+                    exit();
+                }
+
+
+
                 //check if the policy already exists in db
                 $sqlCheck = 'SELECT COUNT(*)as clo_total FROM es_soeasy_import_data WHERE
                         Policy_Number = "'.$fields[22].'"
                         AND Policy_Start_Date = "'.$fields[23].'"
                         AND Policy_Expiry_Date = "'.$fields[25].'"
                         AND Client_ID_Company_Registration = "'.$fields[1].'"
-                        AND MOT_Registration_Number = "'.$fields[58].'"';
+                        AND MOT_Registration_Number = "'.$fields[58].'"
+                        AND Policy_Refund = "'.$fields[19].'"';
+                //echo $sqlCheck.PHP_EOL.PHP_EOL;
                 $checkResult = $db->query_fetch($sqlCheck);
                 if ($checkResult['clo_total'] > 0){
                     $htmlOutput .= "<div class='col-2 alert alert-danger'>EXISTS</div></div>";
@@ -70,6 +98,7 @@ if ($_POST['action'] == 'upload'){
         }
         $htmlOutput .= "</div>";
         fclose($handle);
+        $db->commit_transaction();
     } else {
         $db->generateAlertError('Error reading the file');
     }
