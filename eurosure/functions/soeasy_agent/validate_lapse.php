@@ -31,7 +31,7 @@ $db->show_header();
             $sql = "SELECT COUNT(*)as clo_total_found FROM es_soeasy_import_data 
                 WHERE essesid_status = 'VALIDATED' 
                 AND essesid_validation_status = 'LAPSE'
-                AND essesid_lapse = 'LAPSE_SEND'";
+                AND essesid_lapse IN ('LAPSE_SEND','LAPSE_ERROR') ";
             $data = $db->query_fetch($sql);
             ?>
             <div class="row form-group">
@@ -54,12 +54,41 @@ $db->show_header();
         }//if post-action empty
 
         if ($_POST['action'] == 'validate_lapse') {
+            $sql = "SELECT COUNT(*)as clo_total_found FROM es_soeasy_import_data 
+                WHERE essesid_status = 'VALIDATED' 
+                AND essesid_validation_status = 'LAPSE'
+                AND essesid_lapse IN ('LAPSE_SEND','LAPSE_ERROR') ";
+            $data = $db->query_fetch($sql);
+            ?>
+            <div class="row form-group">
+                <div class="col-12 text-center">
+                    <form action="" method="post">
+                        <input type="hidden" value="validate_lapse" id="action" name="action">
+                        <input type="submit" class="form-control btn btn-primary"
+                               value="Validate all <?php echo $data['clo_total_found']; ?> lapse policies"
+                               style="width: 300px;">
+                    </form>
+                </div>
+            </div>
+            <?php
             $sySyn = new ODBCCON('SySystem');
-            $syn = new ODBCCON('EUROTEST');
+            $syn = new ODBCCON();
             $soeasy = new soeasyClass();
             $db->start_transaction();
             $soeasy->validateLapsed();
             $db->commit_transaction();
+            ?>
+            <div class="row form-group">
+                <div class="col-12 text-center">
+                    <form action="" method="post">
+                        <input type="hidden" value="validate_lapse" id="action" name="action">
+                        <input type="submit" class="form-control btn btn-primary"
+                               value="Validate all <?php echo $data['clo_total_found']; ?> policies"
+                               style="width: 300px;">
+                    </form>
+                </div>
+            </div>
+            <?php
         }
         ?>
 

@@ -285,7 +285,7 @@ FormBuilder::buildPageLoader();
                                 Agent - No transactions for the customer
                             </option>
                             <option value="brokerage" <?php if ($data['inainc_brokerage_agent'] == 'brokerage') echo 'selected';?>>
-                                Brokerage - Customer transactions will be created
+                                Brokerage - Customer transactions will be created - NOT WORKING YET
                             </option>
                         </select>
                         <?php

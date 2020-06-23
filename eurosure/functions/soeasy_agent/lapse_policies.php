@@ -106,7 +106,7 @@ $db->show_header();
         }
 
         if ($_POST['action'] == 'lapse'){
-            $syn = new ODBCCON('EUROTEST');
+            $syn = new ODBCCON();
             $sySyn = new ODBCCON('SySystem');
             $soeasy = new soeasyClass();
             $soeasy->lapseAllPolicies();

@@ -27,7 +27,7 @@ $db->show_header();
     <div class="container-fluid">
         <?php
         if ($_POST['action'] == 'validate') {
-            $syn = new ODBCCON('EUROTEST');
+            $syn = new ODBCCON();
             ?>
             <div class="row">
                 <div class="col-12 alert alert-info text-center">

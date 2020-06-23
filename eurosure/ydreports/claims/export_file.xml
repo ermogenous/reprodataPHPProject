@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
+  <Author>test</Author>
+  <LastAuthor></LastAuthor>
+  <Created>2008-05-05T13:00:00Z</Created>
+  <Company>test</Company>
+  <Version>11.9999</Version>
+ </DocumentProperties>
+ <ExcelWorkbook xmlns="urn:schemas-microsoft-com:office:excel">
+  <WindowHeight>13290</WindowHeight>
+  <WindowWidth>24795</WindowWidth>
+  <WindowTopX>120</WindowTopX>
+  <WindowTopY>105</WindowTopY>
+  <ActiveSheet>0</ActiveSheet>
+  <ProtectStructure>False</ProtectStructure>
+  <ProtectWindows>False</ProtectWindows>
+ </ExcelWorkbook>
+ <Styles>
+
+  <Style ss:ID="Default">
+   <Alignment ss:Vertical="Bottom"/>
+   <Borders/>
+   <Font/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+<Style ss:ID="bold">
+   	<Alignment ss:Vertical="Bottom" ss:Horizontal="Center"/>
+   <Borders/>
+   <Font ss:FontName="Arial" x:CharSet="161" x:Family="Swiss" ss:Bold="1"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+<Style ss:ID="centered">
+   	<Alignment ss:Vertical="Bottom" ss:Horizontal="Center"/>
+   <Borders/>
+   <Font ss:FontName="Arial" x:CharSet="161" x:Family="Swiss"/>
+   <Interior/>
+   <NumberFormat/>
+   <Protection/>
+  </Style>
+<Style ss:ID="percentage">
+   	<Alignment ss:Vertical="Bottom" ss:Horizontal="Center"/>
+   <Borders/>
+   <Font ss:FontName="Arial" x:CharSet="161" x:Family="Swiss"/>
+   <Interior/>
+   <NumberFormat ss:Format="Percent"/>
+   <Protection/>
+  </Style>
+</Styles>
+ <Worksheet ss:Name="Central">
+<Table ss:ExpandedColumnCount="11" ss:ExpandedRowCount="26" x:FullColumns="1" x:FullRows="1">
+<Column ss:Width="48"/>
+<Column ss:Width="200"/>
+<Column ss:Width="60"/>
+<Column ss:Width="60"/>
+<Column ss:Width="60"/>
+<Column ss:Width="80"/>
+<Column ss:Width="40"/>
+<Column ss:Width="80"/>
+<Column ss:Width="60"/>
+<Column ss:Width="40"/>
+<Column ss:Width="65"/>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Central</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="bold" ><Data ss:Type="String">CODE</Data></Cell>
+<Cell ss:StyleID="bold" ><Data ss:Type="String">NAME</Data></Cell>
+<Cell ss:StyleID="bold" ><Data ss:Type="String">SECTION</Data></Cell>
+<Cell ss:StyleID="bold" ><Data ss:Type="String">PREMIUM</Data></Cell>
+<Cell ss:StyleID="bold" ><Data ss:Type="String">PAYMENTS</Data></Cell>
+<Cell ss:StyleID="bold" ><Data ss:Type="String">OUTSTANDING</Data></Cell>
+<Cell ss:StyleID="bold" ><Data ss:Type="String">CLAIMS</Data></Cell>
+<Cell ss:StyleID="bold" ><Data ss:Type="String">TOTAL CLAIMS</Data></Cell>
+<Cell ss:StyleID="bold" ><Data ss:Type="String">AVERAGE</Data></Cell>
+<Cell ss:StyleID="bold" ><Data ss:Type="String">PREMIUM PER CLAIM</Data></Cell>
+<Cell ss:StyleID="bold" ><Data ss:Type="String">LOSS %</Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0100</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Direct L/CA</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">19</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">215567.31</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">93803</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">32531</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">96</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">126334</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-1]/RC[-2],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6]/RC[-3],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="percentage" ss:Formula="=ROUND(RC[-3]/RC[-7],2)" ><Data ss:Type="Number">0</Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0100</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Direct L/CA</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">NON</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">498477.33</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">28772</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">60400</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">29</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">89172</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-1]/RC[-2],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6]/RC[-3],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="percentage" ss:Formula="=ROUND(RC[-3]/RC[-7],2)" ><Data ss:Type="Number">0</Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0100</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Direct L/CA</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">ALL</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">714044.64</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">122575</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">92931</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">125</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">215506</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-1]/RC[-2],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6]/RC[-3],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="percentage" ss:Formula="=ROUND(RC[-3]/RC[-7],2)" ><Data ss:Type="Number">0</Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0101</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Βασούλα Παρίδου Διομήδου</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">19</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">5951.1</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">900</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">2</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">900</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-1]/RC[-2],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6]/RC[-3],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="percentage" ss:Formula="=ROUND(RC[-3]/RC[-7],2)" ><Data ss:Type="Number">0</Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0101</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Βασούλα Παρίδου Διομήδου</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">NON</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">318.16</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0101</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Βασούλα Παρίδου Διομήδου</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">ALL</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">6269.26</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">900</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">2</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">900</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-1]/RC[-2],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6]/RC[-3],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="percentage" ss:Formula="=ROUND(RC[-3]/RC[-7],2)" ><Data ss:Type="Number">0</Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0102</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Μίλτος Μάου</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">19</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0102</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Μίλτος Μάου</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">NON</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0102</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Μίλτος Μάου</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">ALL</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0103</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Καίτη Φωτιάδου</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">19</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">7239.66</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">2601</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">700</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">4</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">3301</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-1]/RC[-2],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6]/RC[-3],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="percentage" ss:Formula="=ROUND(RC[-3]/RC[-7],2)" ><Data ss:Type="Number">0</Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0103</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Καίτη Φωτιάδου</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">NON</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">2745.02</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0103</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Καίτη Φωτιάδου</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">ALL</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">9984.68</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">2601</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">700</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">4</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">3301</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-1]/RC[-2],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6]/RC[-3],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="percentage" ss:Formula="=ROUND(RC[-3]/RC[-7],2)" ><Data ss:Type="Number">0</Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0104</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Αλεξία Βάσου</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">19</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">1875</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">2030</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">1</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">2030</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-1]/RC[-2],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6]/RC[-3],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="percentage" ss:Formula="=ROUND(RC[-3]/RC[-7],2)" ><Data ss:Type="Number">0</Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0104</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Αλεξία Βάσου</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">NON</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">809.48</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0104</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Αλεξία Βάσου</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">ALL</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">2684.48</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">2030</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">1</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">2030</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-1]/RC[-2],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6]/RC[-3],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="percentage" ss:Formula="=ROUND(RC[-3]/RC[-7],2)" ><Data ss:Type="Number">0</Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0105</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Joanna Davies</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">19</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">19383.32</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">290</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">700</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">2</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">990</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-1]/RC[-2],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6]/RC[-3],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="percentage" ss:Formula="=ROUND(RC[-3]/RC[-7],2)" ><Data ss:Type="Number">0</Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0105</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Joanna Davies</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">NON</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0105</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Joanna Davies</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">ALL</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">19383.32</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">290</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">700</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">2</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">990</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-1]/RC[-2],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6]/RC[-3],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="percentage" ss:Formula="=ROUND(RC[-3]/RC[-7],2)" ><Data ss:Type="Number">0</Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0106</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Μαρία Καλοχωρίτη</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">19</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">2469.28</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">980</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">1</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">980</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-1]/RC[-2],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6]/RC[-3],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="percentage" ss:Formula="=ROUND(RC[-3]/RC[-7],2)" ><Data ss:Type="Number">0</Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0106</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Μαρία Καλοχωρίτη</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">NON</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">639.75</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">60</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">1</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">60</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-1]/RC[-2],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6]/RC[-3],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="percentage" ss:Formula="=ROUND(RC[-3]/RC[-7],2)" ><Data ss:Type="Number">0</Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0106</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Μαρία Καλοχωρίτη</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">ALL</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">3109.03</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">1040</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">2</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">1040</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-1]/RC[-2],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6]/RC[-3],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="percentage" ss:Formula="=ROUND(RC[-3]/RC[-7],2)" ><Data ss:Type="Number">0</Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0107</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Τασούλλα Δημητρίου</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">19</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">6802.54</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">1845</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">3</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">1845</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-1]/RC[-2],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6]/RC[-3],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="percentage" ss:Formula="=ROUND(RC[-3]/RC[-7],2)" ><Data ss:Type="Number">0</Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0107</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Τασούλλα Δημητρίου</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">NON</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+</Row>
+<Row>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">100.0107</Data></Cell>
+<Cell ss:StyleID="Default" ><Data ss:Type="String">Τασούλλα Δημητρίου</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="String">ALL</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">6802.54</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">1845</Data></Cell>
+<Cell  ss:StyleID="Default" ><Data ss:Type="String"></Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">3</Data></Cell>
+<Cell ss:StyleID="centered" ><Data ss:Type="Number">1845</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-1]/RC[-2],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="centered" ss:Formula="=ROUND(RC[-6]/RC[-3],0)" ><Data ss:Type="Number">0</Data></Cell>
+<Cell ss:StyleID="percentage" ss:Formula="=ROUND(RC[-3]/RC[-7],2)" ><Data ss:Type="Number">0</Data></Cell>
+</Row>
+</Table>
+  <WorksheetOptions xmlns="urn:schemas-microsoft-com:office:excel">
+
+<ProtectObjects>False</ProtectObjects>
+   <ProtectScenarios>False</ProtectScenarios>
+  </WorksheetOptions>
+ </Worksheet>
+</Workbook>

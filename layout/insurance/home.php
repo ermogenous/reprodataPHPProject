@@ -15,11 +15,11 @@ $sql = "SELECT * FROM ina_underwriters WHERE inaund_user_ID = ".$db->user_data['
 $undCheck = $db->query_fetch($sql);
 if ($undCheck['inaund_underwriter_ID'] == ''){
     $db->generateSessionAlertError('No underwriter found for this user.');
-    header("Location: ".$main["site_url"]."/login.php?action=logout");
+    header("Location: ".$main["site_url"]."/login.php?action=logout&error=noUnderwriter");
     exit();
 }
 
 
 
-header("Location: ainsurance/policies.php");
+header("Location: customers/customers.php");
 exit();

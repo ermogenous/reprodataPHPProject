@@ -369,6 +369,11 @@ function template_header()
                                                href="<?php echo $main["site_url"]; ?>/accounts/reports/profit_loss/profit_loss_default.php"
                                                class="dropdown-item">Profit & Loss Default</a>
                                         </li>
+                                        <li>
+                                            <a tabindex="-1"
+                                               href="<?php echo $main["site_url"]; ?>/accounts/reports/transactions/transaction_list.php"
+                                               class="dropdown-item">Transaction List</a>
+                                        </li>
 
                                         <!-- Level three dropdown-->
                                         <li class="dropdown-submenu">

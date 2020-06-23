@@ -58,6 +58,7 @@ function tr_travel_information()
         }
         
         //members - destination = nationality generate error
+        //membersList for nationality
         let memebrsList = [
             "6_oqqit_rate_4",
             "6_oqqit_rate_9",
@@ -69,10 +70,29 @@ function tr_travel_information()
             "8_oqqit_rate_9",
             "8_oqqit_rate_14",
         ];
+        //the list to check if the member is open or not
+        var membersSelectionList =
+        ["6_oqqit_rate_1",
+            "6_oqqit_rate_6",
+            "6_oqqit_rate_11",
+            "7_oqqit_rate_1",
+            "7_oqqit_rate_6",
+            "7_oqqit_rate_11",
+            "8_oqqit_rate_1",
+            "8_oqqit_rate_6",
+            "8_oqqit_rate_11"];
+            
         destinationError = "'.show_quotation_text('Ο προορισμός και η ιθαγένεια μέλους δεν μπορούν να είναι οι ίδιοι', 'Destination & Member Nationality cannot be the same','return').'";
         let destMemberError = false;
         var i;
+        let totalMembersActive = 0;
         for (i=0; i<=8; i++){
+        
+            //count the members
+            //console.log(membersSelectionList[i] + "#" + $("#" + membersSelectionList[i]).val());
+            if ($("#" + membersSelectionList[i]).val() == 1) {
+                totalMembersActive++;
+            }
         
             if ( $("#" + memebrsList[i]).val() == $("#5_oqqit_rate_1").val()){
                 //console.log(memebrsList[i] + " => " + $("#" + memebrsList[i]).val() + " == " + $("#6_oqqit_rate_4").val());
@@ -91,6 +111,18 @@ function tr_travel_information()
             $("#destination-invalid-text").html(destinationError);
             $("#destination").addClass("is-valid");
             $("#destination").removeClass("is-invalid");
+        }
+        
+        //if company at least one member must exists
+        if ($("#person_company").val() == "Company" && totalMembersActive == 0){
+            console.log("Company must have at least one member");
+            $("#alertDivSection").html("'.show_quotation_text("Εταιρεία πρέπει να έχει τουλάχιστον ένα μέλος","Company must have at least one member","return").'");
+            $("#alertDivSection").show();
+            FormErrorFound = true;
+        }
+        else {
+            $("#alertDivSection").html("");
+            $("#alertDivSection").hide();
         }
         
     ');
@@ -233,7 +265,7 @@ function tr_travel_information()
                     'enableDatePicker' => true,
                     'datePickerValue' => $db->convertDateToEU($qitem_data['oqqit_date_1']),
                     'required' => true,
-                    'invalidTextAutoGenerate' => show_quotation_text('Καταχώρησε Ημ. Αναχώρησης', 'Must enter Departure Date'),
+                    'invalidTextAutoGenerate' => show_quotation_text('Καταχώρησε Ημ. Αναχώρησης', 'Must enter Departure Date','return'),
                     'dateMinDate' => $minDate,
                     'dateMaxDate' => $maxDate,
                 ]);
@@ -253,14 +285,20 @@ function tr_travel_information()
             <input name="5_oqqit_rate_5" type="text" id="5_oqqit_rate_5" title="<?php show_quotation_text("Περίοδος Ασφάλισης (μέρες)", "Period of Insurance (days)"); ?>"
                    class="form-control text-center" value="<?php echo $qitem_data['oqqit_rate_5']; ?>">
             <?php
-
+            if ($db->user_data['usr_user_rights'] <= 2){
+                $maxDays = 365;
+            }
+            else {
+                $maxDays = 90;
+            }
             $formValidator->addField(
                 [
                     'fieldName' => '5_oqqit_rate_5',
                     'fieldDataType' => 'number',
                     'minNumber' => 1,
+                    'maxNumber' => $maxDays,
                     'required' => true,
-                    'invalidTextAutoGenerate' => true
+                    'invalidText' => show_quotation_text("Λιγότερο 1 μέρα, Μέγιστο ".$maxDays." μέρες","Min 1 day, Max ".$maxDays." Days","return")
                 ]);
             ?>
         </div>

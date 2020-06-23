@@ -42,7 +42,8 @@ class soeasyClass
             WHERE essesid_status = 'IMPORT' 
             #AND essesid_soeasy_import_data_ID > 1290
             #AND essesid_soeasy_import_data_ID < 1295
-            #AND essesid_soeasy_import_data_ID < 11
+            #AND essesid_soeasy_import_data_ID < 11         
+            #AND Policy_Number = 'MOEU-10009'
             ORDER BY essesid_soeasy_import_data_ID ASC";
         $allRecordsResult = $db->query($sql);
 
@@ -91,6 +92,14 @@ class soeasyClass
             if ($result['validation_status'] == 'ERROR') {
                 $valNewData['fld_status'] = 'IMPORT';
             }
+            //if record already has a validation batch then keep that
+            if ($row['essesid_validate_batch'] > 0){
+                //already exists then do replace
+                $valNewData['fld_validate_batch'] = $row['essesid_validate_batch'];
+            }
+            else {
+                $valNewData['fld_validate_batch'] = $batchNumber;
+            }
 
             //$valNewData['fld_status'] = 'IMPORT'; //DELETE THIS LINE
             $db->db_tool_update_row('es_soeasy_import_data', $valNewData
@@ -111,24 +120,40 @@ class soeasyClass
         $policyNumberSplit = explode("/", $row['Policy_Number']);
         $return = [];
         //1. check if the policy already exists in synthesis ====================================================================================================================1
+        $res2 = [];
         $res2 = $syn->query_fetch("
-                SELECT inpol_policy_serial,inpol_status FROM inpolicies 
+                SELECT inpol_policy_serial,inpol_status,inped_phase_status,inped_process_status
+                FROM inpolicies
+                LEFT OUTER JOIN inpolicyendorsement ON inpol_policy_serial = inped_financial_policy_abs
                 WHERE inpol_policy_number = '" . $policyNumberSplit[0] . "'
-                AND inpol_starting_date = '" . $this->convertDate($row['Policy_Start_Date']) . "'
-                AND inpol_expiry_date = '" . $this->convertDate($row['Policy_Expiry_Date']) . "'
-                AND inpol_agent_serial = " . $this->agentSerial);
-        if ($res2['inpol_policy_serial'] > 0) {
+                //AND inpol_starting_date = '" . $this->convertDate($row['Policy_Start_Date']) . "'
+                //AND inpol_expiry_date = '" . $this->convertDate($row['Policy_Expiry_Date']) . "'
+                AND inpol_agent_serial = " . $this->agentSerial."
+                ORDER BY
+                inped_endorsement_serial DESC");
+        if (@$res2['inpol_policy_serial'] > 0) {
             //1.a check if the policy is normal
-            if ($res2['inpol_status'] == 'N') {
+            if ($res2['inped_phase_status'] == 'N') {
                 $return['message'] = '';
                 $return['validation_status'] = 'OK';
             } else {
-                $return['message'] = '[1.a] Policy is not normal [' . $res2['inpol_status'] . '] to cancel';
-                $return['validation_status'] = 'ERROR';
+                if ($res2['inped_process_status'] == 'C' && $res2['inped_phase_status'] == 'A'){
+                    $return['message'] = " " . $row['MOT_Registration_Number'] . '[1.a] Policy [' . $res2['inpol_policy_serial'] . '] is already cancelled and posted [' . $res2['inped_phase_status'] . ']';
+                    $return['validation_status'] = 'SKIP';
+                }
+                else if ($res2['inped_process_status'] == 'L' && $res2['inped_phase_status'] == 'A') {
+                    $return['message'] = " " . $row['MOT_Registration_Number'] . '[1.a] Policy [' . $res2['inpol_policy_serial'] . '] Is lapsed and cannot be cancelled';
+                    $return['validation_status'] = 'ERROR';
+                }
+                else {
+                    $return['message'] = " " . $row['MOT_Registration_Number'] . '[1.a] Policy [' . $res2['inpol_policy_serial'] . '] is not normal [' . $res2['inped_phase_status'] . '] to cancel';
+                    $return['validation_status'] = 'ERROR';
+                }
+
             }
 
         } else {
-            $return['message'] = '[1] Cannot find the policy to cancel';
+            $return['message'] = " " . $row['MOT_Registration_Number'] . ' [1] Cannot find the policy to cancel';
             $return['validation_status'] = 'SKIP';
         }
 
@@ -136,7 +161,7 @@ class soeasyClass
 
     }
 
-    private function validateNew($row, $brokerPlanImport = [])
+    private function validateNew($row)
     {
         global $db, $syn;
         $policyNumberSplit = explode("/", $row['Policy_Number']);
@@ -164,7 +189,7 @@ class soeasyClass
             return $return;
         }
 
-        //4.a.1 if another policy exists that also covers that starting date then needs cancellation
+        //4.a.1 if another policy with same policy number exists that also covers that starting date then needs cancellation
         $res3 = $syn->query_fetch("
                         SELECT inpol_policy_serial FROM inpolicies 
                         WHERE inpol_policy_number = '" . $policyNumberSplit[0] . "'
@@ -232,11 +257,33 @@ class soeasyClass
 
             }
         }
+        //4.a.4 check if motor and if the starting date of this policy is already covered with the same registration
+        if ($row['MOT_Registration_Number'] != '' && strlen($row['MOT_Registration_Number']) > 4) {
+            $sql = "SELECT
+                    *
+                    FROM
+                    inpolicies
+                    JOIN inpolicyitems ON inpit_policy_serial = inpol_policy_serial
+                    JOIN initems ON initm_item_serial = inpit_item_serial
+                    WHERE
+                    inpol_status IN ('N','A')
+                    AND initm_item_code = '" . strtoupper($row['MOT_Registration_Number']) . "'
+                    AND '" . $this->convertDate($row['Policy_Start_Date']) . "' BETWEEN inpol_starting_date AND inpol_expiry_date";
+            $resultData = $syn->query_fetch($sql);
+            if ($resultData['inpol_policy_serial'] > 0) {
+                /*$return['message'] = 'Found policy '.$resultData['inpol_policy_number']." [".$resultData['inpol_policy_serial']."]"
+                        ."D:".$db->convertDateToEU($resultData['inpol_starting_date'])." E:".$db->convertDateToEU($resultData['inpol_expiry_date'])
+                        ." That has cover on the same dates. Either cancel that policy or change the starting of the import policy";
+                $return['validation_status'] = 'ERROR';
+                return $return;
+                */
+            }
+        }
 
         return $return;
     }
 
-    private function validateRenewal($row, $brokerPlanImport)
+    private function validateRenewal($row)
     {
         global $db, $syn;
         $policyNumberSplit = explode("/", $row['Policy_Number']);
@@ -306,7 +353,7 @@ class soeasyClass
     private function validatePolicyNumber($policy)
     {
         $policyNumberSplit = explode("/", $policy);
-        $validList = ['MED', 'EUMO', 'EUEL', 'MOEU', 'EL'];
+        $validList = ['MED', 'EUMO', 'EUEL', 'MOEU', 'EL', 'EUIM'];
         $policyInsType = explode("-", $policyNumberSplit[0]);
         $isInsTypeValid = false;
         foreach ($validList as $val) {
@@ -409,12 +456,12 @@ class soeasyClass
         SELECT * FROM es_soeasy_import_data 
                 WHERE essesid_status = 'VALIDATED' 
                 AND essesid_validation_status = 'LAPSE'
-                AND essesid_lapse = 'LAPSE_SEND'
+                AND essesid_lapse IN ('LAPSE_SEND','LAPSE_ERROR')  
         ";
         $result = $db->query($sql);
         while ($row = $db->fetch_assoc($result)) {
             //validate from the scheduler
-            $schData = $sySyn->query_fetch("SELECT * FROM syscheduletask WHERE syst_auto_serial = ".$row['essesid_lapse_syscheduler_ID']);
+            $schData = $sySyn->query_fetch("SELECT * FROM syscheduletask WHERE syst_auto_serial = " . $row['essesid_lapse_syscheduler_ID']);
             //find the actual policy and check if its lapsed.
             $polData = $syn->query_fetch('
                 SELECT TOP 1
@@ -424,7 +471,7 @@ class soeasyClass
                 inpolicies
                 JOIN inpolicyendorsement ON inped_financial_policy_abs = inpol_policy_serial
                 WHERE
-                inpol_policy_serial = '.$row['essesid_lapse_policy_ID'].'
+                inpol_policy_serial = ' . $row['essesid_lapse_policy_ID'] . '
                 ORDER BY inped_endorsement_serial DESC
                 '
             );
@@ -432,21 +479,24 @@ class soeasyClass
             <div class="row form-group">
                 <div class="col-12">
                     <?php
-                    echo $row['Policy_Number']." - Scheduler ID:".$row['essesid_lapse_syscheduler_ID'];
-                    echo " - Scheduler Result: ".$schData['syst_status_flag'];
-                    echo " Policy Serial: ".$row['essesid_lapse_policy_ID'];
-                    echo " - Policy Process Status: ".$polData['inped_process_status'];
-                    if ($schData['syst_status_flag'] != 'C' || $polData['inped_process_status'] != 'L'){
+                    echo $row['Policy_Number'] . " - Scheduler ID:" . $row['essesid_lapse_syscheduler_ID'];
+                    echo " - Scheduler Result: " . $schData['syst_status_flag'];
+                    echo " Policy Serial: " . $row['essesid_lapse_policy_ID'];
+                    echo " - Policy Process Status: " . $polData['inped_process_status'];
+                    //init fields
+                    $newData = [];
+                    if ($schData['syst_status_flag'] != 'C' || $polData['inped_process_status'] != 'L') {
                         echo ' <span class="alert-danger">Something went wrong on the lapsation</span>';
                         $newData['fld_lapse'] = 'LAPSE_ERROR';
-                    }
-                    else {
+                        $db->db_tool_update_row('es_soeasy_import_data', $newData, 'essesid_soeasy_import_data_ID = ' . $row['essesid_soeasy_import_data_ID'],
+                            $row['essesid_soeasy_import_data_ID'], 'fld_', 'execute', 'essesid_');
+                    } else {
                         echo ' <span class="alert-success">Policy Lapsed succesfully</span>';
                         $newData['fld_lapse'] = 'LAPSE_DONE';
                         $newData['fld_validation_status'] = 'OK';
+                        $db->db_tool_update_row('es_soeasy_import_data', $newData, 'essesid_soeasy_import_data_ID = ' . $row['essesid_soeasy_import_data_ID'],
+                            $row['essesid_soeasy_import_data_ID'], 'fld_', 'execute', 'essesid_');
                     }
-                    $db->db_tool_update_row('es_soeasy_import_data', $newData, 'essesid_soeasy_import_data_ID = ' . $row['essesid_soeasy_import_data_ID'],
-                        $row['essesid_soeasy_import_data_ID'], 'fld_', 'execute', 'essesid_');
                     ?>
                 </div>
             </div>
@@ -454,6 +504,84 @@ class soeasyClass
         }
 
 
+    }
+
+    public function validatePolicies($exportBatchID)
+    {
+        global $db, $syn;
+
+        $sql = 'SELECT * FROM es_soeasy_import_data 
+                WHERE essesid_export_batch = ' . $exportBatchID . "
+                #AND essesid_soeasy_import_data_ID < 10";
+        $result = $db->query($sql);
+        $successPolicies = 0;
+        $errorPolicies = 0;
+        $html = '';
+        while ($row = $db->fetch_assoc($result)) {
+            $policyNumberSplit = explode("/", $row['Policy_Number']);
+
+            $synimportSQL = "SELECT * FROM inimportpolicies
+                                WHERE inipol_policy_number = '" . $policyNumberSplit[0] . "'";
+            $synImpData = $syn->query_fetch($synimportSQL);
+
+            $synSql = "SELECT * FROM inpolicies 
+                        WHERE inpol_policy_number = '" . $policyNumberSplit[0] . "'";
+            $synData = $syn->query_fetch($synSql);
+
+            if ($synImpData['inipol_auto_serial'] > 0) {
+                $html .= ' Found import ' . $synImpData['inipol_auto_serial'];
+                if ($synImpData['inipol_row_status'] == 'E') {
+                    $errorMessage = $synImpData['inipol_error_messages'];
+                    $errorMessage = str_replace(PHP_EOL," ",$errorMessage);
+                    $errorMessage = $db->prepare_text_as_html($errorMessage);
+                    $html = '<span class="alert-danger">';
+                    $html .= '<u><b>Validating policy: [' . $row['essesid_soeasy_import_data_ID'] . '] ' . $row['Policy_Number'] . "</b></u>";
+                    $html .= ' Start:' . $row['Policy_Start_Date'] . " Expiry:" . $row['Policy_Expiry_Date'];
+                    $html .= ' Row Status ERROR! [' . $synImpData['inipol_row_status'] . ']</span>';
+                    $html .= '<br>Error - ' . $errorMessage;
+                    $errorPolicies++;
+                } else {
+                    //find the policy and see its status
+                    $sqlVal = "SELECT inpol_status,inpol_policy_number,inpol_policy_serial
+                                FROM inpolicies WHERE inpol_policy_serial = ".$synImpData['inipol_policy_serial'];
+                    $valData = $syn->query_fetch($sqlVal);
+                    $html = '<u><b>Validating policy: [' . $row['essesid_soeasy_import_data_ID'] . '] ' . $row['Policy_Number'] . "</b></u>";
+                    $html .= ' Row Status [' . $synImpData['inipol_row_status'] . ']';
+                    $html .= ' SynPolicy['.$valData['inpol_policy_serial']."] Status[".$valData['inpol_status']."]";
+                    $html .= " Number[".$valData['inpol_policy_number']."]";
+                    $successPolicies++;
+                }
+
+
+            } else {
+                $html .= '<span class="alert-danger">Cannot find any import policy record</span>';
+            }
+
+            /*
+            if ($synData['inpol_policy_serial'] > 0 ){
+                $html .= 'Found policy with serial '.$synData['inpol_policy_serial'];
+            }
+            else {
+                $html .= '<span class="alert-danger">Cannot find any policy</span>';
+            }
+            */
+
+            ?>
+            <div class="row form-group">
+                <div class="col-12">
+                    <?php echo $html; ?>
+                </div>
+            </div>
+            <?php
+        }
+        ?>
+            <div class="row form-group">
+                <div class="col-12">
+                    Total Successful: <?php echo $successPolicies;?><br>
+                    Total Errors: <?php echo $errorPolicies;?>
+                </div>
+            </div>
+        <?php
     }
 
     private function convertDate($date)

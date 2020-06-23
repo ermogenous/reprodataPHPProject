@@ -31,6 +31,8 @@ $db->start_transaction();
         $htmlOutput = "<div class='container'>";
         while (($line = fgets($handle)) !== false) {
             $lineNum++;
+            //remove any " that exists
+            $line = str_replace('"','',$line);
             $fields = explode("|",$line);
             $fieldNum=0;
             //if first row then column names
@@ -50,10 +52,32 @@ $db->start_transaction();
                 foreach($fields as $field){
                     $fieldNum++;
                     if (strlen($fieldNames[$fieldNum]) > 2){
+
+                        //the below fields should always be capitals
+                        if ($fieldNames[$fieldNum] == 'MOT_Registration_Number'
+                            || $fieldNames[$fieldNum] == 'Client_ID_Company_Registration'
+                            || $fieldNames[$fieldNum] == 'Policy_Number'
+                            || $fieldNames[$fieldNum] == 'Policy_Plan_Code'
+                            || $fieldNames[$fieldNum] == 'Policy_Cover_Note_Number'
+                            || $fieldNames[$fieldNum] == 'Policy_Certificate_Number'){
+                            /*if (preg_match('/[^ a-zA-Z0-9.\-&]+/', $field))
+                            {
+                                echo "Iligal character found in ".$fieldNames[$fieldNum]." = ".$field;
+                                exit();
+                            }*/
+                            $field = strtoupper($field);
+                        }
+
+                        //no spaces in client ID
+                        if ($fieldNames[$fieldNum] == 'Client_ID_Company_Registration'){
+                            $field = str_replace(' ','',$field);
+                        }
+
                         $sql .= $fieldNames[$fieldNum] .' = "'.$field.'"'.PHP_EOL.',';
                     }
 
                 }
+                //echo $sql."\n\n\n\n<br><br><br>";
                 $htmlOutput .= "<div class='row'><div class='col-10 alert alert-primary'>Line:".$lineNum." Pol:".$fields[22]." Start Date:".$fields[23]." Expiry:".$fields[25]."</div>";
                 $sql = $db->remove_last_char($sql);
                 //check if the line has the proper fields. check policy number/starting/expiry
