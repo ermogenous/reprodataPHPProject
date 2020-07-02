@@ -293,6 +293,7 @@ function getQuotationHTML($quotationID)
                 Period of Insurance / Περίοδος Ασφάλισης<br>
                 Maximum Period 90 days/ Μέγιστη Περίοδος 90 Μέρες &nbsp;&nbsp;
                 </strong>
+                '. ($sect1['oqqit_rate_8'] == '' ? "" : '<br>'.$sect1['oqqit_rate_8']) .'
             </td>
             <td width="250" valign="top">
                 ' . $sect1['oqqit_rate_5'] . ' Days / Μέρες

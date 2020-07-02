@@ -18,11 +18,29 @@ $formValidator = new customFormValidator();
 $formValidator->setFormName('myForm');
 $formValidator->showErrorList();
 
-$db->enable_jquery_ui();
-$db->enable_rxjs_lite();
-$db->show_header();
-FormBuilder::buildPageLoader();
-?>
+//reload the post from the session kept by TableList
+if ($_SESSION['ac_report_trans_list']['sch_period_from'] != '') {
+    $_POST['sch_period_from'] = $_SESSION['ac_report_trans_list']['sch_period_from'];
+}
+if ($_SESSION['ac_report_trans_list']['sch_period_to'] != '') {
+    $_POST['sch_period_to'] = $_SESSION['ac_report_trans_list']['sch_period_to'];
+}
+if ($_SESSION['ac_report_trans_list']['sch_outstanding'] != '') {
+    $_POST['sch_outstanding'] = $_SESSION['ac_report_trans_list']['sch_outstanding'];
+}
+if ($_SESSION['ac_report_trans_list']['sch_locked'] != '') {
+    $_POST['sch_locked'] = $_SESSION['ac_report_trans_list']['sch_locked'];
+}
+if ($_SESSION['ac_report_trans_list']['sch_posted'] != '') {
+    $_POST['sch_posted'] = $_SESSION['ac_report_trans_list']['sch_posted'];
+}
+
+if ($_POST['sch_print'] != 'Print') {
+    $db->enable_jquery_ui();
+    $db->enable_rxjs_lite();
+    $db->show_header();
+    FormBuilder::buildPageLoader();
+    ?>
 
     <div class="container-fluid">
         <div class="row">
@@ -36,7 +54,7 @@ FormBuilder::buildPageLoader();
                 </div>
                 <form name="myForm" id="myForm" method="post" action="" onsubmit=""
                     <?php $formValidator->echoFormParameters(); ?>>
-                    <div class="row">
+                    <div class="row form-group">
                         <?php
                         $formB = new FormBuilder();
                         $formB->setFieldName('sch_period_from')
@@ -88,7 +106,7 @@ FormBuilder::buildPageLoader();
                         </div>
                     </div>
 
-                    <div class="row input-group">
+                    <div class="row input-group form-group">
                         <div class="col-12 form-inline">
                             <?php
                             $formB = new FormBuilder();
@@ -116,6 +134,18 @@ FormBuilder::buildPageLoader();
                                 ->setInputValue($_POST['sch_posted'])
                                 ->setInputCheckBoxValue(1)
                                 ->buildLabel()->buildInput();
+
+                            $printOptions = [
+                                'Show' => 'Show',
+                                'Print' => 'Print'
+                            ];
+                            $formB->setFieldName('sch_print')
+                                ->setFieldDescription('Print Report')
+                                ->setLabelClasses('col-xs-12 col-sm-3 com-md-2 col-lg-2')
+                                ->setFieldType('select')
+                                ->setInputValue($_POST['sch_print'])
+                                ->setInputSelectArrayOptions($printOptions)
+                                ->buildLabel()->buildInput();
                             ?>
                         </div>
 
@@ -134,38 +164,39 @@ FormBuilder::buildPageLoader();
         <div class="col-1 d-none d-md-block"></div>
     </div>
     </div>
-<?php
+    <?php
+}
 //show the report
 if ($_POST['action'] == 'show') {
     //load the data into a session
     $_SESSION['ac_report_trans_list'] = $_POST;
 }
 
-    if ($_SESSION['ac_report_trans_list']['action'] == 'show'){
+if ($_SESSION['ac_report_trans_list']['action'] == 'show') {
     ?>
     <div class="row" style="height: 25px"></div>
     <?php
     $where_status = '';
     $where = '1=1 ';
-    if ($_POST['sch_outstanding'] == 1){
+    if ($_POST['sch_outstanding'] == 1) {
         $where_status .= '"Outstanding",';
     }
-    if ($_POST['sch_locked'] == 1){
+    if ($_POST['sch_locked'] == 1) {
         $where_status .= '"Locked",';
     }
-    if ($_POST['sch_posted'] == 1){
+    if ($_POST['sch_posted'] == 1) {
         $where_status .= '"Active",';
     }
-    if ($where_status != ''){
+    if ($where_status != '') {
         $where_status = $db->remove_last_char($where_status);
-        $where .= ' AND actrn_status IN ('.$where_status.')';
+        $where .= ' AND actrn_status IN (' . $where_status . ')';
     }
 
-    if ($_POST['sch_period_from'] != ''){
-        $where .= ' AND actrn_transaction_date >= "'.$db->convertDateToUS($_POST['sch_period_from']).'"';
+    if ($_POST['sch_period_from'] != '') {
+        $where .= ' AND actrn_transaction_date >= "' . $db->convertDateToUS($_POST['sch_period_from']) . '"';
     }
-    if ($_POST['sch_period_to'] != ''){
-        $where .= ' AND actrn_transaction_date <= "'.$db->convertDateToUS($_POST['sch_period_to']).'"';
+    if ($_POST['sch_period_to'] != '') {
+        $where .= ' AND actrn_transaction_date <= "' . $db->convertDateToUS($_POST['sch_period_to']) . '"';
     }
 
     $list = new TableList();
@@ -174,13 +205,13 @@ if ($_POST['action'] == 'show') {
         ->setSqlFrom('JOIN ac_accounts ON acacc_account_ID = actrl_account_ID')
         ->setSqlSelect('actrn_transaction_ID', 'TransID')
         ->setSqlSelect('actrn_status', 'Status')
-        ->setSqlSelect('actrn_transaction_date', 'TransDate',['functionName' => 'convertDate'])
+        ->setSqlSelect('actrn_transaction_date', 'TransDate', ['functionName' => 'convertDate'])
         ->setSqlSelect('acacc_code', 'Account')
         ->setSqlSelect('IF (actrl_dr_cr = 1 , actrl_value , 0)', 'Debit')
         ->setSqlSelect('IF (actrl_dr_cr = -1 , actrl_value , 0)', 'Credit')
         ->setSqlWhere($where)
         //->setSqlFrom('JOIN ac_documents ON acdoc_document_ID = actrn_document_ID')
-        ->setSqlOrder('actrn_transaction_date ASC, actrn_transaction_ID ASC, actrl_line_number', 'ASC')
+        ->setSqlOrder('actrn_transaction_date DESC, actrn_transaction_ID ASC, actrl_line_number', 'ASC')
         ->setPerPage(100)
         ->generateData();
 
@@ -195,20 +226,27 @@ if ($_POST['action'] == 'show') {
         ->showPagesLinksBottom()
         ->setDisableDeleteICon()
         ->setMainFieldID('TransID')
-        ->setModifyLink('../../transactions/transaction_modify.php?lid=','_blank')
-        //->setFunctionIconArea('IconsFunction')
-        ->tableFullBuilder();
+        ->setModifyLink('../../transactions/transaction_modify.php?lid=', '_blank');
 
+    if ($_POST['sch_print'] == 'Print') {
+        $list->setOutputAsPDF();
+    }
+    //->setFunctionIconArea('IconsFunction')
+    $list->tableFullBuilder();
 
 
 }//if to show report
-function convertDate($date){
+function convertDate($date)
+{
     global $db;
-    return $db->convertDateFormat($date,'dd/mm/yyyy');
+    return $db->convertDateFormat($date, 'dd/mm/yyyy');
 }
+
 ?>
 
 <?php
-$formValidator->output();
-$db->show_footer();
+if ($_POST['sch_print'] != 'Print') {
+    $formValidator->output();
+    $db->show_footer();
+}
 ?>

@@ -232,30 +232,53 @@ if ($_POST['action'] == 'show') {
                     if ($row['inag_agent_code'] != $previousRow['inag_agent_code']) {
                         //show the header only on agent change
                         ?>
-                        <tr class="alert alert-primary">
-                            <td colspan="10"
-                                align="center"><?php echo $row['inag_agent_code'] . " - " . $row['inag_long_description']; ?></td>
+                        <tr class="alert alert-success">
+                            <td colspan="12"
+                                align="center">
+                                <b><u><?php echo $row['inag_agent_code'] . " - " . $row['inag_long_description']; ?></u></b>
+                            </td>
                         </tr>
                         <?php
                     }
                     ?>
-                        <tr>
-                            <td class="alert alert-warning">Insurance Type</td>
-                            <td colspan="3"><?php echo $row['inity_insurance_type']." - ".$row['inity_long_description'];?></td>
-                            <td colspan="6">Year: <?php echo $row['inait_insurance_year'];?></td>
-                        </tr>
-                        <tr>
-                            <td><?php echo $row['inisf_commission_label_alt1'];?></td>
-                            <td><?php echo $row['inait_commission_percentage1'];?> %</td>
-                            <td><?php echo $row['inisf_commission_label_alt2'];?></td>
-                            <td><?php echo $row['inait_commission_percentage2'];?> %</td>
-                            <td><?php echo $row['inisf_commission_label_alt3'];?></td>
-                            <td><?php echo $row['inait_commission_percentage3'];?> %</td>
-                            <td><?php echo $row['inisf_commission_label_alt4'];?></td>
-                            <td><?php echo $row['inait_commission_percentage4'];?> %</td>
-                            <td><?php echo $row['inisf_commission_label_alt5'];?></td>
-                            <td><?php echo $row['inait_commission_percentage5'];?> %</td>
-                        </tr>
+                    <tr>
+                        <td colspan="12"
+                            class="alert alert-info">
+                            <b><u><?php echo $row['inait_insurance_year'] . " " . $row['inity_insurance_type'] . " - " . $row['inity_long_description']; ?></u></b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>Cover: <?php echo $db->fix_int_to_double($row['inait_cover_accepted']); ?></td>
+                        <td><?php echo $row['inisf_commission_label_def'] . " " . $row['inait_commission_percentage'] . "%"; ?></td>
+                        <td><?php echo $row['inisf_commission_label_alt1'] . " " . $row['inait_commission_percentage1'] . "%"; ?></td>
+                        <td><?php echo $row['inisf_commission_label_alt2'] . " " . $row['inait_commission_percentage2'] . "%"; ?></td>
+                        <td><?php echo $row['inisf_commission_label_alt3'] . " " . $row['inait_commission_percentage3'] . "%"; ?></td>
+                        <td><?php echo $row['inisf_commission_label_alt4'] . " " . $row['inait_commission_percentage4'] . "%"; ?></td>
+                        <td><?php echo $row['inisf_commission_label_alt5'] . " " . $row['inait_commission_percentage5'] . "%"; ?></td>
+
+                    </tr>
+                    <tr>
+                        <td><?php echo $row['inisf_commission_label_alt6'] . " " . $row['inait_commission_percentage6'] . "%"; ?></td>
+                        <td><?php echo $row['inisf_commission_label_alt7'] . " " . $row['inait_commission_percentage7'] . "%"; ?></td>
+                        <td><?php echo $row['inisf_commission_label_alt8'] . " " . $row['inait_commission_percentage8'] . "%"; ?></td>
+                        <td><?php echo $row['inisf_commission_label_alt9'] . " " . $row['inait_commission_percentage9'] . "%"; ?></td>
+                        <td colspan="3"><?php echo $row['inisf_commission_label_alt10'] . " " . $row['inait_commission_percentage10'] . "%"; ?></td>
+                    </tr>
+
+                    <tr>
+                        <td>Paid A/C: <?php echo $row['inait_commission_expense_account']; ?></td>
+                        <td>Due A/C: <?php echo $row['inait_commission_due_account']; ?></td>
+                        <td>A/C Sales Person: <?php echo $row['ccde_reco_code']; ?></td>
+                        <td colspan="4">Fee A/C: <?php echo $row['inait_commission_fees_account']; ?></td>
+                    </tr>
+                    <tr>
+                        <td>Comm Fee New:<?php echo $row['inait_commission_percentage_fee_new'] . "%"; ?></td>
+                        <td>Comm Fee Renew:<?php echo $row['inait_commission_percentage_fee_renew'] . "%"; ?></td>
+                        <td>Comm Fee Endorse:<?php echo $row['inait_commission_percentage_fee_endorse'] . "%"; ?></td>
+                        <td>Comm Fee Cancel:<?php echo $row['inait_commission_percentage_fee_cancel'] . "%"; ?></td>
+                        <td>Comm Fee Max:<?php echo $row['inait_commission_fees_maximum_amount']; ?></td>
+                    </tr>
+
                     <?php
                     $previousRow = $row;
                 }

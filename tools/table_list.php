@@ -50,6 +50,9 @@ class TableList
     private $functionIconArea; //Set a function name here and will be called passed the row data
     private $extraColumns = [];
 
+    //output
+    private $outputAsPDF = false;
+
     //pages links
     private $perPage = 50; //to set this must be before generateSql
     private $pagesLinksGenerated = false;
@@ -80,7 +83,7 @@ class TableList
      * @param array $settings
      * @return $this
      */
-    public function setSqlSelect($fieldName, $asName, $settings=[])
+    public function setSqlSelect($fieldName, $asName, $settings = [])
     {
         /**
          * Settings: ex: [
@@ -99,7 +102,7 @@ class TableList
         $this->allFieldsArray[$this->sqlTotalFields]['ignoreField'] = $settings['ignoreField'];
         $this->allFieldsArray[$this->sqlTotalFields]['thAlign'] = $settings['thAlign'];
         $this->allFieldsArray[$this->sqlTotalFields]['tdAlign'] = $settings['tdAlign'];
-        if ($settings['functionName'] != ''){
+        if ($settings['functionName'] != '') {
             $this->allFieldsArray[$this->sqlTotalFields]['function'] = $settings['functionName'];
         }
         return $this;
@@ -275,6 +278,11 @@ class TableList
         return $this;
     }
 
+    public function setOutputAsPDF()
+    {
+        $this->outputAsPDF = true;
+    }
+
     /** Adds extra column after the fields. Executes the defined function to get the data to show
      * @param $title
      * @param $functionName the name of the function to execute
@@ -341,7 +349,7 @@ class TableList
         for ($i = 1; $i <= $this->sqlTotalFields; $i++) {
             if ($this->allFieldsArray[$i]['ignoreField'] != true) {
                 $this->tableHtml .= '
-                                    <td scope="col" align="'.$this->allFieldsArray[$i]['thAlign'].'"><strong>';
+                                    <td scope="col" align="' . $this->allFieldsArray[$i]['thAlign'] . '"><strong>';
                 $this->tableHtml .= '<a href="?TlSetOrder=' . $this->allFieldsArray[$i]['name'] . '">' . $this->allFieldsArray[$i]['name'] . '</a></strong></td>
             ';
             }
@@ -381,13 +389,13 @@ class TableList
             $this->tableHtml .= '<tr onclick="editLine(' . $row[$this->mainIDField] . ');">' . PHP_EOL;
             for ($i = 1; $i <= $this->sqlTotalFields; $i++) {
                 $fieldData = $row[$this->allFieldsArray[$i]['name']];
-                if ($this->allFieldsArray[$i]['function'] != ''){
+                if ($this->allFieldsArray[$i]['function'] != '') {
                     $fieldDataFunction = $this->allFieldsArray[$i]['function'];
                     $fieldData = $fieldDataFunction($fieldData);
                 }
                 if ($this->allFieldsArray[$i]['ignoreField'] != true) {
                     $this->tableHtml .= '
-                                        <td scope="row" align="'.$this->allFieldsArray[$i]['tdAlign'].'">' . $fieldData . '</td>
+                                        <td scope="row" align="' . $this->allFieldsArray[$i]['tdAlign'] . '">' . $fieldData . '</td>
                     ';
                 }
 
@@ -467,11 +475,11 @@ class TableList
             $this->tableHtml .= '
                 window.location.assign("' . $this->modifyLink . '" + id);
                 ';
-        } else if ($this->modifyLinkTarget == '_parent'){
+        } else if ($this->modifyLinkTarget == '_parent') {
             $this->tableHtml .= '
                 parent.document.location.href = "' . $this->modifyLink . '" + id;
                 ';
-        } else if ($this->modifyLinkTarget == '_blank'){
+        } else if ($this->modifyLinkTarget == '_blank') {
             $this->tableHtml .= '
                 window.open("' . $this->modifyLink . '" + id);
                 ';
@@ -482,7 +490,28 @@ class TableList
 
 </script >
 ';
-        echo $this->tableHtml;
+        if ($this->outputAsPDF == true) {
+            $this->createPDF($this->tableHtml);
+        } else {
+            echo $this->tableHtml;
+        }
+    }
+
+    private function buildFullTableDiv()
+    {
+
+    }
+
+    private function buildFullTableTable()
+    {
+
+    }
+
+    private function createPDF($html)
+    {
+        $mpdf = new \Mpdf\Mpdf();
+        $mpdf->WriteHTML($html);
+        $mpdf->Output();
     }
 
     public function generateData()

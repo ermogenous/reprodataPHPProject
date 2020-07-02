@@ -16,7 +16,7 @@ function tr_travel_information()
             (todayDate.getDate() + "/" + todayDate.getMonth() + "/" + todayDate.getFullYear())
         );
         
-        '.($db->user_data['usr_user_rights'] <= 2? '/*Advanced user - Allow any age*/clientAge = 20;':'').'
+        ' . ($db->user_data['usr_user_rights'] <= 2 ? '/*Advanced user - Allow any age*/clientAge = 20;' : '') . '
         
         if (clientAge < 18){
             $("#birthdate-invalid-text").html("Age must be over 18");
@@ -45,8 +45,8 @@ function tr_travel_information()
         
         //if destination = client/member nationality generate error
         //admin allow
-        '.($db->user_data['usr_user_rights'] <= 2? 'let advancedUser = true;':'let advancedUser = false;').'
-        let destinationError = "'.show_quotation_text('Ο προορισμός και η ιθαγένεια συμβαλλομένου δεν μπορούν να είναι οι ίδιοι', 'Destination & Policyholder Nationality cannot be the same','return').'";
+        ' . ($db->user_data['usr_user_rights'] <= 2 ? 'let advancedUser = true;' : 'let advancedUser = false;') . '
+        let destinationError = "' . show_quotation_text('Ο προορισμός και η ιθαγένεια συμβαλλομένου δεν μπορούν να είναι οι ίδιοι', 'Destination & Policyholder Nationality cannot be the same', 'return') . '";
         if ($("#5_oqqit_rate_1").val() == $("#nationality_ID").val() && advancedUser == false){
             //console.log("Client error");
             $("#destination-invalid-text").html(destinationError);
@@ -82,7 +82,7 @@ function tr_travel_information()
             "8_oqqit_rate_6",
             "8_oqqit_rate_11"];
             
-        destinationError = "'.show_quotation_text('Ο προορισμός και η ιθαγένεια μέλους δεν μπορούν να είναι οι ίδιοι', 'Destination & Member Nationality cannot be the same','return').'";
+        destinationError = "' . show_quotation_text('Ο προορισμός και η ιθαγένεια μέλους δεν μπορούν να είναι οι ίδιοι', 'Destination & Member Nationality cannot be the same', 'return') . '";
         let destMemberError = false;
         var i;
         let totalMembersActive = 0;
@@ -116,7 +116,7 @@ function tr_travel_information()
         //if company at least one member must exists
         if ($("#person_company").val() == "Company" && totalMembersActive == 0){
             console.log("Company must have at least one member");
-            $("#alertDivSection").html("'.show_quotation_text("Εταιρεία πρέπει να έχει τουλάχιστον ένα μέλος","Company must have at least one member","return").'");
+            $("#alertDivSection").html("' . show_quotation_text("Εταιρεία πρέπει να έχει τουλάχιστον ένα μέλος", "Company must have at least one member", "return") . '");
             $("#alertDivSection").show();
             FormErrorFound = true;
         }
@@ -206,19 +206,16 @@ function tr_travel_information()
                 //limit winter sports
                 $('#winterSports').val('No');
                 $('#winterSports').attr('disabled', true);
-            }
-            else if (selectedPackage == 'Special') {
+            } else if (selectedPackage == 'Special') {
                 $('#winterSports').val('No');
                 $('#winterSports').attr('disabled', true);
-            }
-            else if (selectedPackage == 'Schengen') {
+            } else if (selectedPackage == 'Schengen') {
                 $('#winterSports').val('No');
                 $('#winterSports').attr('disabled', true);
 
                 $('#destination').attr('disabled', false);
                 $('#geographicalArea').attr('disabled', false);
-            }
-            else {
+            } else {
                 $('#destination').attr('disabled', false);
                 $('#geographicalArea').attr('disabled', false);
                 $('#winterSports').attr('disabled', false);
@@ -237,24 +234,23 @@ function tr_travel_information()
         </label>
         <div class="col-sm-3">
             <input name="5_oqqit_date_1" type="text" id="5_oqqit_date_1"
-                   class="form-control text-center" title="<?php show_quotation_text("Ημ. Αναχώρησης", "Departure Date"); ?>">
+                   class="form-control text-center"
+                   title="<?php show_quotation_text("Ημ. Αναχώρησης", "Departure Date"); ?>">
             <?php
 
             //admins can go backdated
             $minDate = '';
-            if ($db->user_data['usr_user_rights'] <= 2){
+            if ($db->user_data['usr_user_rights'] <= 2) {
                 $minDate = '01/01/1900';
-            }
-            else {
+            } else {
                 $minDate = date('d/m/Y');
             }
 
             //admins can go further future dates
             $maxDate = '';
-            if ($db->user_data['usr_user_rights'] <= 2){
+            if ($db->user_data['usr_user_rights'] <= 2) {
                 $maxDate = '01/01/2100';
-            }
-            else {
+            } else {
                 $maxDate = date('d/m/Y', mktime(0, 0, 0, date('m'), (date('d') + 45), date('Y')));
             }
 
@@ -265,14 +261,14 @@ function tr_travel_information()
                     'enableDatePicker' => true,
                     'datePickerValue' => $db->convertDateToEU($qitem_data['oqqit_date_1']),
                     'required' => true,
-                    'invalidTextAutoGenerate' => show_quotation_text('Καταχώρησε Ημ. Αναχώρησης', 'Must enter Departure Date','return'),
+                    'invalidTextAutoGenerate' => show_quotation_text('Καταχώρησε Ημ. Αναχώρησης', 'Must enter Departure Date', 'return'),
                     'dateMinDate' => $minDate,
                     'dateMaxDate' => $maxDate,
                 ]);
             ?>
         </div>
         <div class="col-sm-5 text-danger">
-            <?php echo show_quotation_text("Όχι προγενέστερη απο Σήμερα. <br>Όχι μεταγενέστερη 45 μέρες απο σήμερα.","Not before today. Not after 45 days from today.");?>
+            <?php echo show_quotation_text("Όχι προγενέστερη απο Σήμερα. <br>Όχι μεταγενέστερη 45 μέρες απο σήμερα.", "Not before today. Not after 45 days from today."); ?>
         </div>
     </div>
 
@@ -282,13 +278,13 @@ function tr_travel_information()
             <?php show_quotation_text("Περίοδος Ασφάλισης (μέρες)", "Period of Insurance (days)"); ?>
         </label>
         <div class="col-sm-3">
-            <input name="5_oqqit_rate_5" type="text" id="5_oqqit_rate_5" title="<?php show_quotation_text("Περίοδος Ασφάλισης (μέρες)", "Period of Insurance (days)"); ?>"
+            <input name="5_oqqit_rate_5" type="text" id="5_oqqit_rate_5"
+                   title="<?php show_quotation_text("Περίοδος Ασφάλισης (μέρες)", "Period of Insurance (days)"); ?>"
                    class="form-control text-center" value="<?php echo $qitem_data['oqqit_rate_5']; ?>">
             <?php
-            if ($db->user_data['usr_user_rights'] <= 2){
+            if ($db->user_data['usr_user_rights'] <= 2) {
                 $maxDays = 365;
-            }
-            else {
+            } else {
                 $maxDays = 90;
             }
             $formValidator->addField(
@@ -298,18 +294,45 @@ function tr_travel_information()
                     'minNumber' => 1,
                     'maxNumber' => $maxDays,
                     'required' => true,
-                    'invalidText' => show_quotation_text("Λιγότερο 1 μέρα, Μέγιστο ".$maxDays." μέρες","Min 1 day, Max ".$maxDays." Days","return")
+                    'invalidText' => show_quotation_text("Λιγότερο 1 μέρα, Μέγιστο " . $maxDays . " μέρες", "Min 1 day, Max " . $maxDays . " Days", "return")
                 ]);
             ?>
         </div>
     </div>
+
+    <?php
+    if ($db->user_data['usr_user_rights'] <= 2) {
+        ?>
+        <div class="row form-group">
+
+            <label for="5_oqqit_rate_8" class="col-sm-4 col-form-label">
+                <?php show_quotation_text("Κείμενο πολλαπλών ταξιδιών", "Travel MultiTrip Text"); ?>
+            </label>
+            <div class="col-sm-8">
+                <input name="5_oqqit_rate_8" type="text" id="5_oqqit_rate_8"
+                       title="<?php show_quotation_text("Κείμενο πολλαπλών ταξιδιών", "Travel MultiTrip Text"); ?>"
+                       class="form-control" value="<?php echo $qitem_data['oqqit_rate_8']; ?>">
+                <?php
+                $formValidator->addField(
+                    [
+                        'fieldName' => '5_oqqit_rate_8',
+                        'fieldDataType' => 'text',
+                        'required' => false
+                    ]);
+                ?>
+            </div>
+        </div>
+        <?php
+    }
+    ?>
 
     <div class="form-group row">
         <label for="5_oqqit_rate_1" class="col-sm-4 col-form-label">
             <?php show_quotation_text("Προορισμός", "Destination"); ?>
         </label>
         <div class="col-sm-8">
-            <input type="hidden" id="5_oqqit_rate_1" name="5_oqqit_rate_1" title="<?php show_quotation_text("Προορισμός", "Destination"); ?>"
+            <input type="hidden" id="5_oqqit_rate_1" name="5_oqqit_rate_1"
+                   title="<?php show_quotation_text("Προορισμός", "Destination"); ?>"
                    value="<?php echo $qitem_data['oqqit_rate_1']; ?>">
             <select name="destination" id="destination" onchange="destinationOnChange();"
                     class="form-control">
@@ -352,7 +375,8 @@ function tr_travel_information()
 
             <input type="hidden" name="5_oqqit_rate_2" id="5_oqqit_rate_2"
                    value="<?php echo $qitem_data['oqqit_rate_2']; ?>">
-            <select name="geographicalArea" id="geographicalArea" title="<?php show_quotation_text("Γεωγραφική Περιοχή", "Geographical Area"); ?>"
+            <select name="geographicalArea" id="geographicalArea"
+                    title="<?php show_quotation_text("Γεωγραφική Περιοχή", "Geographical Area"); ?>"
                     class="form-control" onchange="geographicalAreaOnChange();">
                 <option value=""></option>
                 <option value="WorldExcl" <?php if ($qitem_data['oqqit_rate_2'] == 'WorldExcl') echo 'selected'; ?>>
@@ -386,7 +410,8 @@ function tr_travel_information()
         </label>
         <div class="col-sm-8">
 
-            <input type="hidden" id="5_oqqit_rate_3" name="5_oqqit_rate_3" title="<?php show_quotation_text("Χειμερινά Σπόρ", "Winter Sports"); ?>"
+            <input type="hidden" id="5_oqqit_rate_3" name="5_oqqit_rate_3"
+                   title="<?php show_quotation_text("Χειμερινά Σπόρ", "Winter Sports"); ?>"
                    value="<?php echo $qitem_data['oqqit_rate_3']; ?>">
             <select name="winterSports" id="winterSports"
                     class="form-control" onchange="winterSportsOnChange();">
@@ -415,7 +440,8 @@ function tr_travel_information()
         }
 
         let membersError = [];
-        function validateMemberAge(dobName){
+
+        function validateMemberAge(dobName) {
 
             let dob = $('#' + dobName).val();
             //validate if prober date
@@ -423,40 +449,38 @@ function tr_travel_information()
             let day = false;
             let month = false;
             let year = false;
-            if (dobSplit[0] > 0 && dobSplit[0] <= 31){
+            if (dobSplit[0] > 0 && dobSplit[0] <= 31) {
                 day = true;
             }
-            if (dobSplit[1] > 0 && dobSplit[1] <= 12){
+            if (dobSplit[1] > 0 && dobSplit[1] <= 12) {
                 month = true;
             }
-            if (dobSplit[2] > 1900 && dobSplit[2] <= 2100){
+            if (dobSplit[2] > 1900 && dobSplit[2] <= 2100) {
                 year = true;
             }
 
-            if (day && month && year){
+            if (day && month && year) {
 
                 let todayDate = new Date();
                 let todayDateEU = (todayDate.getDate() + "/" + todayDate.getMonth() + "/" + todayDate.getFullYear());
-                let totalDays = getYearsFromDates($("#" + dobName).val(),todayDateEU,"totalDays");
-                let years = getYearsFromDates($("#" + dobName).val(),todayDateEU);
+                let totalDays = getYearsFromDates($("#" + dobName).val(), todayDateEU, "totalDays");
+                let years = getYearsFromDates($("#" + dobName).val(), todayDateEU);
 
                 //check if less than 14 days
-                if (totalDays <= 14){
+                if (totalDays <= 14) {
                     $('#' + dobName + '-invalid-text').html("Age must be more than 14 days");
                     $('#' + dobName).addClass('is-invalid');
                     $('#' + dobName).removeClass('is-valid');
 
                     membersError[dobName] = true;
 
-                }
-                else if (years >= 75){
+                } else if (years >= 75) {
                     $('#' + dobName + '-invalid-text').html("Age must be less than 75");
                     $('#' + dobName).addClass('is-invalid');
                     $('#' + dobName).removeClass('is-valid');
 
                     membersError[dobName] = true;
-                }
-                else {
+                } else {
                     $('#' + dobName).addClass('is-valid');
                     $('#' + dobName).removeClass('is-invalid');
                     membersError[dobName] = false;
@@ -599,7 +623,8 @@ function showMemberHTML($id, $selectionField, $fieldNames)
             </label>
             <div class="col-sm-8">
                 <input name="<?php echo $fieldNames['name']; ?>" type="text" id="<?php echo $fieldNames['name']; ?>"
-                       class="form-control" title="<?php show_quotation_text("Μέλος ".$id." Όνομα", "Member ".$id." Name"); ?>"
+                       class="form-control"
+                       title="<?php show_quotation_text("Μέλος " . $id . " Όνομα", "Member " . $id . " Name"); ?>"
                        value="<?php echo $qitem_data[substr($fieldNames['name'], 2)]; ?>">
                 <?php
                 $formValidator->addField(
@@ -622,7 +647,8 @@ function showMemberHTML($id, $selectionField, $fieldNames)
             </label>
             <div class="col-sm-8">
                 <input name="<?php echo $fieldNames['id']; ?>" type="text" id="<?php echo $fieldNames['id']; ?>"
-                       class="form-control" title="<?php show_quotation_text("Μέλος ".$id." Αρ. Διαβατηρίου η Ταυτότητα", "Member ".$id." Passport No. or I.D."); ?>"
+                       class="form-control"
+                       title="<?php show_quotation_text("Μέλος " . $id . " Αρ. Διαβατηρίου η Ταυτότητα", "Member " . $id . " Passport No. or I.D."); ?>"
                        value="<?php echo $qitem_data[substr($fieldNames['id'], 2)]; ?>">
                 <?php
                 $formValidator->addField(
@@ -643,7 +669,8 @@ function showMemberHTML($id, $selectionField, $fieldNames)
                 <?php show_quotation_text("Ιθαγένεια", "Nationality"); ?>
             </label>
             <div class="col-sm-8">
-                <select class="form-control" title="<?php show_quotation_text("Μέλος ".$id." Ιθαγένεια", "Member ".$id." Nationality"); ?>"
+                <select class="form-control"
+                        title="<?php show_quotation_text("Μέλος " . $id . " Ιθαγένεια", "Member " . $id . " Nationality"); ?>"
                         id="<?php echo $fieldNames['nationality']; ?>" name="<?php echo $fieldNames['nationality']; ?>">
                     <option value=""></option>
                     <?php
@@ -676,8 +703,8 @@ function showMemberHTML($id, $selectionField, $fieldNames)
             </label>
             <div class="col-sm-8">
                 <input name="<?php echo $fieldNames['dob']; ?>" type="text" id="<?php echo $fieldNames['dob']; ?>"
-                       title="<?php show_quotation_text("Μέλος ".$id." Ημ. Γέννησης", "Member ".$id." Date of Birth"); ?>"
-                       class="form-control" onkeyup="validateMemberAge('<?php echo $fieldNames['dob'];?>');">
+                       title="<?php show_quotation_text("Μέλος " . $id . " Ημ. Γέννησης", "Member " . $id . " Date of Birth"); ?>"
+                       class="form-control" onkeyup="validateMemberAge('<?php echo $fieldNames['dob']; ?>');">
                 <?php
                 $formValidator->addField(
                     [
@@ -687,7 +714,7 @@ function showMemberHTML($id, $selectionField, $fieldNames)
                         'datePickerValue' => $db->convertDateToEU($qitem_data[substr($fieldNames['dob'], 2)]),
                         'required' => true,
                         'invalidTextAutoGenerate' => true,
-                        'requiredAddedCustomCode' => '&& $("#' . $selectionField . '").val() == "1" || membersError["'.$fieldNames['dob'].'"] == true'
+                        'requiredAddedCustomCode' => '&& $("#' . $selectionField . '").val() == "1" || membersError["' . $fieldNames['dob'] . '"] == true'
                     ]);
                 ?>
             </div>
@@ -699,7 +726,7 @@ function showMemberHTML($id, $selectionField, $fieldNames)
 
 function insured_amount_custom_rates($array, $values, $quotation_id)
 {
-    global $db, $quotationUnderwriter,$q_data;
+    global $db, $quotationUnderwriter, $q_data;
     //print_r($quotationUnderwriter);
     //exit();
 
@@ -750,7 +777,7 @@ function insured_amount_custom_rates($array, $values, $quotation_id)
     //find premium per client/member
     //1.Client
     $array[5][6] = ($totalDays * $packageRate);
-    if ($_POST['person_company'] == 'Company'){
+    if ($_POST['person_company'] == 'Company') {
         $array[5][6] = 0;
     }
 
@@ -820,7 +847,7 @@ function insured_amount_custom_rates($array, $values, $quotation_id)
 
     //3. Check policy min premium. Applies when package is not limited
     if ($values[5][4]['rate'] != 'Limited') {
-        if ($minPremium > $totalPremium){
+        if ($minPremium > $totalPremium) {
             $array[5][7] = $minPremium - $totalPremium;
         }
     }
@@ -831,11 +858,11 @@ function insured_amount_custom_rates($array, $values, $quotation_id)
 function get_custom_fees_amount($data)
 {
 
-    global $quotationUnderwriter,$result_amount_values;
+    global $quotationUnderwriter, $result_amount_values;
 
     $package = strtolower($result_amount_values[5][4]['rate']);
-    $dbFeesFieldName = 'oqun_tr_'.$package.'_fees';
-    $dbStampsFieldName = 'oqun_tr_'.$package.'_stamps';
+    $dbFeesFieldName = 'oqun_tr_' . $package . '_fees';
+    $dbStampsFieldName = 'oqun_tr_' . $package . '_stamps';
 
     $data['stamps'] = $quotationUnderwriter[$dbStampsFieldName];
     $data['fees'] = $quotationUnderwriter[$dbFeesFieldName];

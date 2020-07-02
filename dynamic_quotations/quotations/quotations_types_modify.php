@@ -8,6 +8,9 @@ if ($_POST["action"] == "insert") {
     $db->working_section = 'Insert new quotations type';
     $db->start_transaction();
 
+    $_POST['fld_enable_renewal'] = $db->get_check_value($_POST['fld_enable_renewal']);
+    $_POST['fld_renewal_issue_new_number'] = $db->get_check_value($_POST['fld_renewal_issue_new_number']);
+
     $_POST['fld_added_field_person_company'] = $db->get_check_value($_POST['fld_added_field_person_company']);
 
     $_POST['fld_added_field_identity'] = $db->get_check_value($_POST['fld_added_field_identity']);
@@ -45,6 +48,10 @@ if ($_POST["action"] == "insert") {
     $db->check_restriction_area('update');
     $db->working_section = 'Modify quotations type';
     $db->start_transaction();
+
+
+    $_POST['fld_enable_renewal'] = $db->get_check_value($_POST['fld_enable_renewal']);
+    $_POST['fld_renewal_issue_new_number'] = $db->get_check_value($_POST['fld_renewal_issue_new_number']);
 
     $_POST['fld_added_field_person_company'] = $db->get_check_value($_POST['fld_added_field_person_company']);
 

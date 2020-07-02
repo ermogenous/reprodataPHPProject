@@ -374,6 +374,11 @@ function template_header()
                                                href="<?php echo $main["site_url"]; ?>/accounts/reports/transactions/transaction_list.php"
                                                class="dropdown-item">Transaction List</a>
                                         </li>
+                                        <li>
+                                            <a tabindex="-1"
+                                               href="<?php echo $main["site_url"]; ?>/accounts/reports/transactions/general_journal.php"
+                                               class="dropdown-item">General Journal</a>
+                                        </li>
 
                                         <!-- Level three dropdown-->
                                         <li class="dropdown-submenu">

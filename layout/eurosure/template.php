@@ -119,7 +119,9 @@ function template_header()
 
                     <!-- Reports -->
                     <?php
-                    if ($db->user_data['usr_user_rights'] < 3 || $db->user_data['usr_users_groups_ID'] == 6) {
+                    if ($db->user_data['usr_user_rights'] < 3
+                        || $db->user_data['usr_users_groups_ID'] == 6
+                        || $db->user_data['usr_users_groups_ID'] == 7) {
                         ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -128,24 +130,84 @@ function template_header()
                                 <i class="fas fa-caret-down"></i>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/period_production_new.php"><i
-                                            class="fas fa-eye"></i> <?php echo $db->showLangText('Production', 'Παραγωγή'); ?>
-                                </a>
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/production_full.php"><i
-                                            class="fas fa-eye"></i> <?php echo $db->showLangText('Production Full', 'Παραγωγή Full'); ?>
-                                </a>
+                                <?php
+                                if ($db->user_data['usr_user_rights'] < 3
+                                    || $db->user_data['usr_users_groups_ID'] == 6) {
+                                    ?>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/period_production_new.php"><i
+                                                class="fas fa-eye"></i> <?php echo $db->showLangText('Production', 'Παραγωγή'); ?>
+                                    </a>
+                                    <?php
+                                }
+                                ?>
 
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/eurosure/reports/actuary/index.php"><i
-                                            class="fas fa-eye"></i> <?php echo $db->showLangText('Actuary Reports', 'Actuary Reports'); ?>
-                                </a>
+                                <?php
+                                if ($db->user_data['usr_user_rights'] < 3
+                                    || $db->user_data['usr_users_groups_ID'] == 6) {
+                                    ?>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/production_full.php"><i
+                                                class="fas fa-eye"></i> <?php echo $db->showLangText('Production Full', 'Παραγωγή Full'); ?>
+                                    </a>
+                                    <?php
+                                }
+                                ?>
 
-                                <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/eurosure/reports/users/users_permissions_list.php"><i
-                                            class="fas fa-eye"></i> <?php echo $db->showLangText('Users Permission List', 'Users Permission List'); ?>
-                                </a>
+                                <?php
+                                if ($db->user_data['usr_user_rights'] < 3
+                                    || $db->user_data['usr_users_groups_ID'] == 6) {
+                                    ?>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/eurosure/reports/actuary/index.php"><i
+                                                class="fas fa-eye"></i> <?php echo $db->showLangText('Actuary Reports', 'Actuary Reports'); ?>
+                                    </a>
+                                    <?php
+                                }
+                                ?>
+                                <?php
+                                if ($db->user_data['usr_user_rights'] < 3
+                                    || $db->user_data['usr_users_groups_ID'] == 6) {
+                                    ?>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/eurosure/reports/users/users_permissions_list.php"><i
+                                                class="fas fa-eye"></i> <?php echo $db->showLangText('Users Permission List', 'Users Permission List'); ?>
+                                    </a>
+                                    <?php
+                                }
+                                ?>
+                                <?php
+                                if ($db->user_data['usr_user_rights'] < 3 || $db->user_data['usr_users_groups_ID'] == 7) {
+                                    ?>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/eurosure/reports/users/user_connections.php"><i
+                                                class="fas fa-eye"></i> <?php echo $db->showLangText('User Connections', 'User Connections'); ?>
+                                    </a>
+                                    <?php
+                                }
+                                ?>
+
+                                <?php
+                                if ($db->user_data['usr_user_rights'] < 3 || $db->user_data['usr_users_groups_ID'] == 7) {
+                                    ?>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/eurosure/reports/agents/agents_commissions_list.php"><i
+                                                class="fas fa-eye"></i> <?php echo $db->showLangText('Agents Commissions List', 'Agents Commissions List'); ?>
+                                    </a>
+                                    <?php
+                                }
+                                ?>
+
+                                <?php
+                                if ($db->user_data['usr_user_rights'] == 0 ) {
+                                    ?>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/eurosure/reports/system/ins_type_reports.php"><i
+                                                class="fas fa-eye"></i> <?php echo $db->showLangText('Insurance Types Info', 'Insurance Types Info'); ?>
+                                    </a>
+                                    <?php
+                                }
+                                ?>
                             </div>
                         </li>
                         <?php
@@ -191,7 +253,8 @@ function template_header()
                                     <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown"
                                        aria-haspopup="true"
                                        aria-expanded="false" class="dropdown-item dropdown-toggle">
-                                        <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Agent SoEasy Import Process', 'Agent SoEasy Import Process'); ?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Agent SoEasy Import Process', 'Agent SoEasy Import Process'); ?>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                         <i class="fas fa-chevron-right"></i>
@@ -241,12 +304,12 @@ function template_header()
                                         </li>
 
 
-
                                         <li class="dropdown-submenu">
                                             <a id="dropdownMenu3" href="#" role="button" data-toggle="dropdown"
                                                aria-haspopup="true"
                                                aria-expanded="false" class="dropdown-item dropdown-toggle">
-                                                <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Reports', 'Reports'); ?> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Reports', 'Reports'); ?>
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                                 <i class="fas fa-chevron-right"></i>
@@ -261,8 +324,6 @@ function template_header()
                                                 </li>
                                             </ul>
                                         </li>
-
-
 
 
                                     </ul>
@@ -526,8 +587,7 @@ if ($db->admin_layout_printer != 'yes')
     <?php
     if (!empty($sybase)) {
         $sybaseConnection = $sybase->getDatabaseName();
-    }
-    else {
+    } else {
         $sybaseConnection = '';
     }
 if ($sybaseConnection != '') {
@@ -540,9 +600,9 @@ if ($sybaseConnection != '') {
     <div class="row ">
         <div class="col-12 alert <?php echo $sybaseClass; ?> text-center">
             <b>Connected to
-            <?php
-            echo $sybaseConnection;
-            ?></b>
+                <?php
+                echo $sybaseConnection;
+                ?></b>
         </div>
     </div>
     <?php
