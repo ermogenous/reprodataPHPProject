@@ -21,8 +21,8 @@ if ($_POST['action'] == 'update') {
         $_POST['fld_special_discount'] = $_POST['fld_special_discount'] * -1;
     }
 
-    if ($_POST['fld_overwrite_ID'] != ''){
-        $overwriteSplit = explode('-',$_POST['fld_overwrite_ID']);
+    if ($_POST['fld_overwrite_ID'] != '') {
+        $overwriteSplit = explode('-', $_POST['fld_overwrite_ID']);
         $_POST['fld_overwrite_ID'] = $overwriteSplit[0];
         $_POST['fld_overwrite_agent_ID'] = $overwriteSplit[1];
     }
@@ -53,6 +53,7 @@ include('../../scripts/form_builder_class.php');
 FormBuilder::buildPageLoader();
 
 //echo $db->prepare_text_as_html(print_r($data, true));
+
 ?>
 
     <div class="container-fluid">
@@ -148,30 +149,39 @@ FormBuilder::buildPageLoader();
                             ?>
                         </div>
 
+                    </div>
+                    <?php if ($policy->policyData['inapol_type_code'] == 'Motor') {
+                        ?>
+                    <div class="form-group row">
+                        <label for="fld_mif" class="col-sm-3 col-form-label">
+                            <?php echo $db->showLangText('Policy MIF', 'Τ.Α.Μ.Ο'); ?>
+                        </label>
+                        <div class="col-sm-3">
+                            <input type="text" id="fld_mif" name="fld_mif"
+                                   class="form-control"
+                                   required onchange="updateGrossPremium();"
+                                   value="<?php echo $policy->policyData["inapol_mif"]; ?>">
+                            <?php
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => 'fld_mif',
+                                    'fieldDataType' => 'number',
+                                    'required' => true,
+                                    'invalidText' => 'MIF is Required'
+                                ]);
+                            ?>
+                        </div>
 
-                        <?php if (1 == 2) { ?>
-                            <label for="fld_mif" class="col-sm-3 col-form-label">
-                                <?php echo $db->showLangText('Policy MIF', 'Τ.Α.Μ.Ο'); ?>
-                            </label>
-                            <div class="col-sm-3">
-                                <input type="text" id="fld_mif" name="fld_mif"
-                                       class="form-control"
-                                       required onchange="updateGrossPremium();"
-                                       value="<?php echo $policy->policyData["inapol_mif"]; ?>">
-                                <?php
-                                $formValidator->addField(
-                                    [
-                                        'fieldName' => 'fld_mif',
-                                        'fieldDataType' => 'number',
-                                        'required' => true,
-                                        'invalidText' => 'MIF is Required'
-                                    ]);
-                                ?>
-                            </div>
-                        <?php } ?>
 
                     </div>
-
+                    <?php
+                    }
+                    else {
+                        ?>
+                        <input type="hidden" name="fld_mif" id="fld_mif" value="0">
+                        <?php
+                    }
+                    ?>
 
                     <div class="form-group row">
                         <label for="fld_special_discount" class="col-sm-3 col-form-label">
@@ -258,9 +268,9 @@ FormBuilder::buildPageLoader();
 
                     <?php
                     if ($policy->policyData['inapol_agent_level3_ID'] > 0) {
-                    $subLevel3 = $db->query_fetch('SELECT * FROM ina_underwriters JOIN users ON usr_users_ID = inaund_user_ID WHERE inaund_underwriter_ID = ' . $policy->policyData['inapol_agent_level3_ID'])
-                    ?>
-                    <div class="form-group row">
+                        $subLevel3 = $db->query_fetch('SELECT * FROM ina_underwriters JOIN users ON usr_users_ID = inaund_user_ID WHERE inaund_underwriter_ID = ' . $policy->policyData['inapol_agent_level3_ID'])
+                        ?>
+                        <div class="form-group row">
                             <label for="fld_agent_level3_commission" class="col-sm-9 text-right col-form-label">
                                 Sub Level 3
                                 Commission: <?php echo $subLevel3['usr_name'] . " <b>" . $policy->policyData['inapol_agent_level3_percent'] . "%"; ?></b>
@@ -280,7 +290,7 @@ FormBuilder::buildPageLoader();
                                     ]);
                                 ?>
                             </div>
-                    </div>
+                        </div>
                     <?php }
 
                     $overwriteListDetails = $policy->getAllOverwrites();
@@ -368,20 +378,20 @@ FormBuilder::buildPageLoader();
                     <script>
                         let overwriteList = [];
                         overwriteList['0-0'] = 0;
-                    <?php
-                    //build the array for javascript overwrites
-                    foreach($overwriteListDetails as $over){
-                        echo "overwriteList['".$over['overwriteID']."-".$over['ID']."'] = ".$over['percent'].";".PHP_EOL;
-                    }
-                    ?>
-                        function changeOfOverwrite(){
+                        <?php
+                        //build the array for javascript overwrites
+                        foreach ($overwriteListDetails as $over) {
+                            echo "overwriteList['" . $over['overwriteID'] . "-" . $over['ID'] . "'] = " . $over['percent'] . ";" . PHP_EOL;
+                        }
+                        ?>
+                        function changeOfOverwrite() {
                             let selected = $('#fld_overwrite_ID').val();
                             //set the percentage
                             $('#fld_overwrite_percent').val(overwriteList[selected]);
                             calculateOverwrite();
                         }
 
-                        function calculateOverwrite(){
+                        function calculateOverwrite() {
                             let premium = $('#fld_premium').val() * 1;
                             let specialDiscount = $('#fld_special_discount').val() * 1;
                             let commissionPercent = $('#fld_overwrite_percent').val() * 1;
@@ -391,7 +401,7 @@ FormBuilder::buildPageLoader();
                             $('#fld_overwrite_commission').val(commissionAmount);
                         }
 
-                        function calculateOverwritePercent(){
+                        function calculateOverwritePercent() {
                             let premium = $('#fld_premium').val() * 1;
                             let specialDiscount = $('#fld_special_discount').val() * 1;
                             let overwriteAmount = $('#fld_overwrite_commission').val() * 1;
@@ -480,12 +490,12 @@ FormBuilder::buildPageLoader();
             let premium = $('#fld_premium').val() * 1;
             let commission = $('#fld_commission').val() * 1;
             let fees = $('#fld_fees').val() * 1;
-            //let mif = $('#fld_mif').val() * 1;
+            let mif = $('#fld_mif').val() * 1;
             let stamps = $('#fld_stamps').val() * 1;
             checkSpecialDiscountIfNegative();
             let specialDiscount = $('#fld_special_discount').val() * 1;
 
-            grossPremium = premium + fees + stamps + specialDiscount;
+            grossPremium = premium + fees + stamps + mif + specialDiscount;
 
             $('#grossPremium').html(
                 grossPremium.toFixed(2)
@@ -587,7 +597,7 @@ FormBuilder::buildPageLoader();
             if ($('#fld_commission').val() == '') {
                 calculateCommission(true);
             }
-            if ($('#fld_overwrite_commission').val() == '' || $('#fld_overwrite_percent').val() == '' || $('#fld_overwrite_commission').val() == 0){
+            if ($('#fld_overwrite_commission').val() == '' || $('#fld_overwrite_percent').val() == '' || $('#fld_overwrite_commission').val() == 0) {
                 changeOfOverwrite();
             }
         });

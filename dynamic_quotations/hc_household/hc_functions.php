@@ -158,6 +158,7 @@ function insured_amount_custom_rates($array, $values, $quotation_id)
 
 function modify_post_values($post)
 {
+    $post['10_oqqit_rate_5'] = $post['building_use'] . "##" . $post['building_type'] . "##" . $post['building_roof_type'];
 
     $post['12_oqqit_rate_4'] = $post['valuables_1_a'] . "##" . $post['valuables_1_b'];
     $post['12_oqqit_rate_5'] = $post['valuables_2_a'] . "##" . $post['valuables_2_b'];
@@ -489,6 +490,10 @@ function hc_household_item2_other()
                 ->setRadioValue('Luxury')
                 ->buildInput();
 
+            $formB->setRadioLabelDescription(show_quotation_text('Προσφορά', 'Quotation', 'return'))
+                ->setRadioValue('Quotation')
+                ->buildInput();
+
             $formValidator->addField(
                 [
                     'fieldName' => $formB->fieldName,
@@ -535,10 +540,12 @@ function hc_household_item2_other()
 
     <div class="form-group row">
         <?php
-        $formB->setFieldName('10_oqqit_rate_5')
+        $buildingData = explode("##",$qitem_data['oqqit_rate_5']);
+
+        $formB->setFieldName('building_use')
             ->setFieldDescription(show_quotation_text('Χρήση', 'Use', 'return'))
             ->setFieldType('radio')
-            ->setInputValue($qitem_data['oqqit_rate_5'])
+            ->setInputValue($buildingData[0])
             ->buildLabel();
         ?>
         <div class="col-sm-8">
@@ -553,6 +560,78 @@ function hc_household_item2_other()
 
             $formB->setRadioLabelDescription(show_quotation_text('Σκοπούς Εκμετάλλευσης', 'Commercial Use', 'return'))
                 ->setRadioValue('Commercial')
+                ->buildInput();
+
+            $formValidator->addField(
+                [
+                    'fieldName' => $formB->fieldName,
+                    'fieldDataType' => 'radio',
+                    'required' => true,
+                    'invalidTextAutoGenerate' => true
+                ]);
+            ?>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <?php
+
+        $formB->setFieldName('building_type')
+            ->setFieldDescription(show_quotation_text('Είδος Κατασκευής', 'Construction Type', 'return'))
+            ->setFieldType('radio')
+            ->setInputValue($buildingData[1])
+            ->buildLabel();
+        ?>
+        <div class="col-sm-8">
+            <?php
+            $formB->setRadioLabelDescription(show_quotation_text('Τούβλο / Σκυρόδεμα', 'Brick / Reinforced Concrete', 'return'))
+                ->setRadioValue('Brick')
+                ->buildInput();
+
+            $formB->setRadioLabelDescription(show_quotation_text('Ξύλινη Κατασκευή', 'Wooden Construction', 'return'))
+                ->setRadioValue('Wooden')
+                ->buildInput();
+
+            $formB->setRadioLabelDescription(show_quotation_text('Μεταλλική', 'Metal Construction', 'return'))
+                ->setRadioValue('Metal')
+                ->buildInput();
+
+            $formB->setRadioLabelDescription(show_quotation_text('Άλλο', 'Other', 'return'))
+                ->setRadioValue('Other')
+                ->buildInput();
+
+            $formValidator->addField(
+                [
+                    'fieldName' => $formB->fieldName,
+                    'fieldDataType' => 'radio',
+                    'required' => true,
+                    'invalidTextAutoGenerate' => true
+                ]);
+            ?>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <?php
+
+        $formB->setFieldName('building_roof_type')
+            ->setFieldDescription(show_quotation_text('Είδος Οροφής', 'Roof Type', 'return'))
+            ->setFieldType('radio')
+            ->setInputValue($buildingData[2])
+            ->buildLabel();
+        ?>
+        <div class="col-sm-8">
+            <?php
+            $formB->setRadioLabelDescription(show_quotation_text('Επίπεδη / Σκυρόδεμα', 'Flat / Reinforced Concrete', 'return'))
+                ->setRadioValue('Flat')
+                ->buildInput();
+
+            $formB->setRadioLabelDescription(show_quotation_text('Κεραμίδη', 'Tiles', 'return'))
+                ->setRadioValue('Tiles')
+                ->buildInput();
+
+            $formB->setRadioLabelDescription(show_quotation_text('Άλλο', 'Other', 'return'))
+                ->setRadioValue('Other')
                 ->buildInput();
 
             $formValidator->addField(
@@ -1356,6 +1435,28 @@ function hc_household_item4_contents()
         </div>
     </div>
 
+    <script>
+        function checkValuablesField(){
+            if ($('#12_oqqit_rate_3').val() > 0){
+
+                $('input[name="12_oqqit_rate_15"]').attr('disabled', false);
+                for(i=1; i<=8; i++) {
+                    $('#valuables_' + i + '_a').attr('disabled', false);
+                    $('#valuables_' + i + '_b').attr('disabled', false);
+                }
+            }
+            else {
+                $('input[name="12_oqqit_rate_15"]').attr('disabled', true);
+                for(i=1; i<=8; i++) {
+                    $('#valuables_' + i + '_a').attr('disabled', true);
+                    $('#valuables_' + i + '_a').val('');
+                    $('#valuables_' + i + '_b').attr('disabled', true);
+                    $('#valuables_' + i + '_b').val('');
+                }
+            }
+        }
+    </script>
+
     <div class="form-group row">
         <?php
 
@@ -1363,6 +1464,7 @@ function hc_household_item4_contents()
             ->setFieldDescription(show_quotation_text('Τιμαλφή', 'Valuables', 'return'))
             ->setFieldType('input')
             ->setInputValue($qitem_data['oqqit_rate_3'])
+            ->setFieldOnChange('checkValuablesField()')
             ->buildLabel();
         ?>
         <div class="col-sm-3">
@@ -1378,6 +1480,43 @@ function hc_household_item4_contents()
             ?>
         </div>
     </div>
+
+    <div class="form-group row">
+        <div class="col-sm-9">
+            <?php
+            show_quotation_text('60 μέρες Παγκόσμια Κάλυψη',
+                'World Wide 60 Days Cover');
+            ?>
+        </div>
+        <div class="col-sm-3">
+            <?php
+            $formB->setFieldName('12_oqqit_rate_15')
+                ->setFieldType('radio')
+                ->setRadioInline()
+                ->setInputValue($qitem_data['oqqit_rate_15']);
+
+            $formB->setRadioLabelDescription(show_quotation_text('Ναι', 'Yes', 'return'))
+                ->setRadioValue('Yes')
+                ->buildInput();
+
+            $formB->setRadioLabelDescription(show_quotation_text('Όχι', 'No', 'return'))
+                ->setRadioValue('No')
+                ->buildInput();
+
+            $formValidator->addField(
+                [
+                    'fieldName' => $formB->fieldName,
+                    'fieldDataType' => 'radio',
+                    'required' => true,
+                    'invalidText' => show_quotation_text("Επιλέξτε", 'Must Select','return')
+                ]);
+            ?>
+        </div>
+    </div>
+
+
+
+
 
     <div class="row">
         <div class="col-12">

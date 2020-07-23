@@ -614,6 +614,7 @@ class Main
 
     }
 
+
     public function start_transaction()
     {
         $this->started_transaction = 1;
@@ -1301,18 +1302,22 @@ class Main
 
             //first check if the name of the field matches with the prefix
             if (substr($name, 0, strlen($data_prefix)) == $data_prefix) {
-                $i++;
-                if ($i != 1)
-                    $sql .= " , ";
-                $fixed_name = substr($name, strlen($data_prefix));
+                if ($value != '') {
+                    $i++;
+                    if ($i != 1)
+                        $sql .= " , ";
+                    $fixed_name = substr($name, strlen($data_prefix));
 
-                if ($fields_prefix != '') {
-                    $fixed_name = $fields_prefix . $fixed_name;
-                }
+                    if ($fields_prefix != '') {
+                        $fixed_name = $fields_prefix . $fixed_name;
+                    }
 
-                $sql .= "`" . $fixed_name . "` = '" . addslashes($value) . "' \n";
-                $log_new_values .= $fixed_name . " = " . addslashes($value) . " 
+
+                    $sql .= "`" . $fixed_name . "` = '" . addslashes($value) . "' \n";
+                    $log_new_values .= $fixed_name . " = " . addslashes($value) . "
+                
 ";
+                }
 
 
             }//if the name of the field matches with the prefix
@@ -1603,21 +1608,18 @@ class Main
     }
 
     //converts the date format. it finds the from format
-    function convertDateFormat($date,$toFormat = 'dd/mm/yyyy', $date_time = 0, $return_time = 0){
+    function convertDateFormat($date, $toFormat = 'dd/mm/yyyy', $date_time = 0, $return_time = 0)
+    {
 
-        if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/",$date)) {
-            return $this->convert_date_format($date,'yyyy-mm-dd',$toFormat,$date_time,$return_time);
-        }
-        else if (preg_match("/^[0-9]{1,2}-[0-9]{1,2}-[0-9]{4}$/",$date)) {
-            return $this->convert_date_format($date,'dd-mm-yyyy',$toFormat,$date_time,$return_time);
-        }
-        else if (preg_match("/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}$/",$date)) {
-            return $this->convert_date_format($date,'dd/mm/yyyy',$toFormat,$date_time,$return_time);
-        }
-        else if (preg_match("/^[0-9]{4}\/(0[1-9]|1[0-2])\/(0[1-9]|[1-2][0-9]|3[0-1])$/",$date)) {
-            return $this->convert_date_format($date,'yyyy/mm/dd',$toFormat,$date_time,$return_time);
-        }
-        else {
+        if (preg_match("/^[0-9]{4}-(0[1-9]|1[0-2])-(0[1-9]|[1-2][0-9]|3[0-1])$/", $date)) {
+            return $this->convert_date_format($date, 'yyyy-mm-dd', $toFormat, $date_time, $return_time);
+        } else if (preg_match("/^[0-9]{1,2}-[0-9]{1,2}-[0-9]{4}$/", $date)) {
+            return $this->convert_date_format($date, 'dd-mm-yyyy', $toFormat, $date_time, $return_time);
+        } else if (preg_match("/^[0-9]{1,2}\/[0-9]{1,2}\/[0-9]{4}$/", $date)) {
+            return $this->convert_date_format($date, 'dd/mm/yyyy', $toFormat, $date_time, $return_time);
+        } else if (preg_match("/^[0-9]{4}\/(0[1-9]|1[0-2])\/(0[1-9]|[1-2][0-9]|3[0-1])$/", $date)) {
+            return $this->convert_date_format($date, 'yyyy/mm/dd', $toFormat, $date_time, $return_time);
+        } else {
             return false;
         }
     }
@@ -1702,7 +1704,7 @@ class Main
     }
 
     //returns 1 if date1 > date2, returns 0 if date1 < date2, returns 0 if date1 = date2
-    //works with date format dd/mm/yyyy but also converts with 3rd parameter from yyyy-mm-dd 
+    //works with date format dd/mm/yyyy but also converts with 3rd parameter from yyyy-mm-dd
     function compare2dates($date1, $date2, $format = 'dd/mm/yyyy')
     {
 
@@ -1927,13 +1929,15 @@ class Main
 
     //api methods
     //headers
-    public function apiGetReadHeaders()
+    public
+    function apiGetReadHeaders()
     {
         header("Access-Control-Allow-Origin: *");
         header("Content-Type: application/json; charset=UTF-8");
     }
 
-    public function apiGetPostHeaders()
+    public
+    function apiGetPostHeaders()
     {
         header("Access-Control-Allow-Origin: *");
         header("Content-Type: application/json; charset=UTF-8");
@@ -1949,7 +1953,8 @@ class Main
      * @return string
      */
 
-    public function buildNumber($prefix, $totalLeadingZeros, $number)
+    public
+    function buildNumber($prefix, $totalLeadingZeros, $number)
     {
         $out = $prefix;
         if ($totalLeadingZeros > 0 && $totalLeadingZeros <= 100) {
@@ -1964,7 +1969,8 @@ class Main
         return $out;
     }
 
-    public function CustomersWhere()
+    public
+    function CustomersWhere()
     {
 
         if ($this->user_data['usr_user_rights'] == 0) {
@@ -1980,13 +1986,13 @@ class Main
 
     }
 
-    public function encrypt($text,$encryption_key='')
+    public
+    function encrypt($text, $encryption_key = '')
     {
         // Remove the base64 encoding from our key
-        if ($encryption_key == ''){
+        if ($encryption_key == '') {
             $encryption_key = base64_decode($this->encryptionKey);
-        }
-        else {
+        } else {
             $encryption_key = base64_decode($encryption_key);
         }
 
@@ -2002,7 +2008,8 @@ class Main
         return $data;
     }
 
-    public function decrypt($text,$encryption_key = '')
+    public
+    function decrypt($text, $encryption_key = '')
     {
         //fix $text
         $text = str_replace(['-', '_'], ['+', '/'], $text);
@@ -2010,8 +2017,7 @@ class Main
         // Remove the base64 encoding from our key
         if ($encryption_key == '') {
             $encryption_key = base64_decode($this->encryptionKey);
-        }
-        else {
+        } else {
             $encryption_key = base64_decode($encryption_key);
         }
         // To decrypt, split the encrypted data from our IV - our unique separator used was "::"
@@ -2019,13 +2025,15 @@ class Main
         return openssl_decrypt($encrypted_data, 'aes-256-cbc', $encryption_key, 0, $iv);
     }
 
-    public function encodeGetValues($string)
+    public
+    function encodeGetValues($string)
     {
         //convert them to hex
         return dechex($string);
     }
 
-    public function decodeGetValues($string)
+    public
+    function decodeGetValues($string)
     {
         return hexdec($string);
     }
@@ -2035,13 +2043,15 @@ class Main
      * @param $precision
      * @return float|int
      */
-    public function floorp($val, $precision)
+    public
+    function floorp($val, $precision)
     {
         $mult = pow(10, $precision); // Can be cached in lookup table
         return floor($val * $mult) / $mult;
     }
 
-    public function dateDiff($a, $b, $format = 'dd/mm/yyyy')
+    public
+    function dateDiff($a, $b, $format = 'dd/mm/yyyy')
     {
         if ($format == 'yyyy-mm-dd') {
             $a = $this->convert_date_format($a, 'yyyy-mm-dd', 'dd/mm/yyyy');
@@ -2056,7 +2066,8 @@ class Main
     }
 
     //provide date and months and will generate the next expiry date. Can be used for policies
-    public function getNewExpiryDate($curDate, $months, $format = 'dd/mm/yyyy')
+    public
+    function getNewExpiryDate($curDate, $months, $format = 'dd/mm/yyyy')
     {
         //echo $curDate."\n\n";
         if ($format == 'yyyy-mm-dd') {
@@ -2138,7 +2149,8 @@ class Main
         return $return;
     }
 
-    public function showLangText($eng, $gre)
+    public
+    function showLangText($eng, $gre)
     {
         if ($this->user_data['usr_default_lang'] == 'gre') {
             return $gre;

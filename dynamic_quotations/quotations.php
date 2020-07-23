@@ -65,6 +65,7 @@ if ($_SESSION['dyqt_filter']) {
         OR oqq_insureds_tel LIKE '%".$_SESSION['dyqt_filter_number']."%'
         OR oqq_insureds_mobile LIKE '%".$_SESSION['dyqt_filter_number']."%'
         OR oqq_insureds_name LIKE '%".$_SESSION['dyqt_filter_number']."%'
+        OR oqq_quotations_ID = '".$_SESSION['dyqt_filter_number']."'
         )";
     }
 

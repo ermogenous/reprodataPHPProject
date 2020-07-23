@@ -671,7 +671,8 @@ $formValidator = new customFormValidator();
 
                             <div class="form-group row">
                                 <label for="fld_show_excess_replace" class="col-sm-5 col-form-label">Allow Excess
-                                    Replace</label>
+                                    Replace
+                                </label>
                                 <div class="col-sm-2">
                                     <select name="fld_show_excess_replace" id="fld_show_excess_replace"
                                             class="form-control">
@@ -686,6 +687,25 @@ $formValidator = new customFormValidator();
                                     $formValidator->addField([
                                         "fieldName" => "fld_show_excess_replace",
                                         "fieldDataType" => "select"
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="fld_clauses_restrictions" class="col-sm-5 col-form-label">
+                                    Clauses Restrictions (comma separated) Which commodity options to show
+                                </label>
+                                <div class="col-xl-7">
+                                    <input name="fld_clauses_restrictions" type="text"
+                                           id="fld_clauses_restrictions"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_clauses_restrictions']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_clauses_restrictions",
+                                        "fieldDataType" => "text",
+                                        "required" => false
                                     ]);
                                     ?>
                                 </div>

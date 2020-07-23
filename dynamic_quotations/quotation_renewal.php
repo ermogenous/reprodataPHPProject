@@ -16,12 +16,15 @@ if ($_POST['action'] == 'renew'){
     $db->working_section = 'Dynamic quotation Renew';
     $quote = new dynamicQuotation($_POST['lid']);
 
+    $db->start_transaction();
     if ($quote->makeRenewal($_POST['new_expiry_date'])==true){
         $db->generateSessionAlertSuccess('Renewed Successfully');
+        $db->commit_transaction();
         header("Location: quotations.php");
         exit();
     }
     else{
+        $db->rollback_transaction();
         $db->generateAlertError($quote->errorDescription);
     }
 

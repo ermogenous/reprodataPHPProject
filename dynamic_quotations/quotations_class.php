@@ -401,6 +401,19 @@ class dynamicQuotation
         $newData['status'] = 'Outstanding';
         $newData['replacing_ID'] = $this->quotationID;
 
+        //remove the unesserary to avoid db errors
+        if ($newData['nationality_ID'] == ''){
+            unset($newData['nationality_ID']);
+        }
+        if ($newData['birthdate'] == ''){
+            unset($newData['birthdate']);
+        }
+        if ($newData['replaced_by_ID'] == ''){
+            unset($newData['replaced_by_ID']);
+        }
+
+        //print_r($newData);exit();
+
         $newID = $db->db_tool_insert_row('oqt_quotations', $newData,'',1, 'oqq_');
 
         //update current quotation
@@ -420,6 +433,14 @@ class dynamicQuotation
             unset($itemNewData['oqqit_last_update_date_time']);
             unset($itemNewData['oqqit_last_update_by']);
             $itemNewData['oqqit_quotations_ID'] = $newID;
+
+            //remove the empty ones to avoid db errors
+            foreach ($itemNewData as $name => $value){
+                if ($itemNewData[$name] == '' ){
+                    unset($itemNewData[$name]);
+                }
+            }
+            //print_r($itemNewData);exit();
 
             $db->db_tool_insert_row('oqt_quotations_items', $itemNewData,'', 0, '');
         }

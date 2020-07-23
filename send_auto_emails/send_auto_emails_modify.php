@@ -12,7 +12,7 @@ if ($_POST["action"] == "insert") {
 	$_POST["fld_sae_type"] = 'Manual';
 	$_POST["fld_sae_send_result"] = 0;
 	$_POST["fld_sae_send_datetime"] = $db->convert_date_format($_POST["fld_sae_send_datetime"],"dd/mm/yyyy","yyyy-mm-dd",1);
-	$_POST["fld_sae_created_datetime"] = date("Y-m-d G:i:s");
+	$_POST["fld_sae_created_date_time"] = date("Y-m-d G:i:s");
 	
 	$db->db_tool_insert_row('send_auto_emails',$_POST,'fld_');
 	header("Location: send_auto_emails.php");
@@ -23,7 +23,14 @@ else if ($_POST["action"] == "update") {
 	$db->check_restriction_area('update');
 	
 	$_POST["fld_sae_send_datetime"] = $db->convert_date_format($_POST["fld_sae_send_datetime"],"dd/mm/yyyy","yyyy-mm-dd",1);
-	$_POST["fld_sae_created_datetime"] = $db->convert_date_format($_POST["fld_sae_created_datetime"],"dd/mm/yyyy","yyyy-mm-dd",1);
+	//$_POST["fld_sae_created_date_time"] = $db->convert_date_format($_POST["fld_sae_created_date_time"],"dd/mm/yyyy","yyyy-mm-dd",1);
+    unset($_POST["fld_sae_created_date_time"]);
+    if ($_POST['fld_sae_send_result'] == ''){
+        unset($_POST['fld_sae_send_result']);
+    }
+    if ($_POST['fld_sae_send_datetime'] == ''){
+        unset($_POST['fld_sae_send_datetime']);
+    }
 
 	$db->db_tool_update_row('send_auto_emails',$_POST,"`sae_send_auto_emails_serial` = ".$_POST["lid"],$_POST["lid"], 'fld_');
 	header("Location: send_auto_emails.php");
@@ -77,7 +84,7 @@ $db->show_header();
     <tr>
       <td>&nbsp;</td>
       <td height="28">Created Date/Time</td>
-      <td><?php if ($_GET["lid"] != "") { ?><input type="text" name="fld_sae_created_datetime" id="fld_sae_created_datetime" value="<?php echo $db->convert_date_format($data["sae_created_datetime"],'yyyy-mm-dd','dd/mm/yyyy',1);?>"><?php } ?></td>
+      <td><?php if ($_GET["lid"] != "") { ?><input type="text" name="fld_sae_created_date_time" id="fld_sae_created_date_time" value="<?php echo $db->convert_date_format($data["sae_created_date_time"],'yyyy-mm-dd','dd/mm/yyyy',1);?>"><?php } ?></td>
     </tr>
     <tr>
       <td>&nbsp;</td>
@@ -139,11 +146,6 @@ $db->show_header();
       <td height="28">Message Body<br />
         <a href="view_email_html.php?lid=<? echo $data["sae_send_auto_emails_serial"];?>" target="_blank">View HTML</a></td>
       <td><textarea name="fld_sae_email_body" id="fld_sae_email_body" cols="60" rows="8"><?php echo $data["sae_email_body"];?></textarea></td>
-    </tr>
-    <tr>
-      <td>&nbsp;</td>
-      <td height="28">Agent Code</td>
-      <td><input type="text" name="fld_sae_agent_code" id="fld_sae_agent_code" value="<?php echo $data["sae_agent_code"];?>"></td>
     </tr>
     <tr>
       <td>&nbsp;</td>

@@ -130,12 +130,18 @@ if ($_POST["action"] == "save") {
             //update the quotations price
             //get the result in an array 'premium' 'fees' 'stamps'
             $premium_result = quotation_price_calculation($quotation_id);
+            if ($premium_result["custom_premium1"] == ''){
+                $premium_result["custom_premium1"] = 0;
+            }
+            if ($premium_result["custom_premium2"] == ''){
+                $premium_result["custom_premium2"] = 0;
+            }
             $sql = "UPDATE oqt_quotations SET 
 		        oqq_fees = " . $premium_result["fees"] . " , 
 		        oqq_stamps = " . $premium_result["stamps"] . " , 
 		        oqq_premium = " . $premium_result["premium"] . ",
-		        oqq_custom_premium1 = '" . $premium_result["custom_premium1"] . "',
-		        oqq_custom_premium2 = '" . $premium_result["custom_premium2"] . "',
+		        oqq_custom_premium1 = " . $premium_result["custom_premium1"] . ",
+		        oqq_custom_premium2 = " . $premium_result["custom_premium2"] . ",
 		        oqq_detail_price_array = '" . $premium_result["detailed_result"] . "' WHERE oqq_quotations_ID = " . $quotation_id;
 
             //only update the premium if the calculation type is not Manual

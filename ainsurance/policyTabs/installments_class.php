@@ -26,7 +26,7 @@ Class Installments
           SELECT cur.*,
           (SELECT inapol_installment_ID FROM ina_policies as prev WHERE prev.inapol_policy_ID = cur.inapol_replacing_ID )as clo_prev_installment_ID 
           FROM ina_policies as cur WHERE cur.inapol_policy_ID = ' . $this->policyID);
-        $this->totalPolicyPremium = ($this->policyData['inapol_premium'] /*+ $this->policyData['inapol_mif']*/
+        $this->totalPolicyPremium = ($this->policyData['inapol_premium'] + $this->policyData['inapol_mif']
                 + $this->policyData['inapol_fees'] + $this->policyData['inapol_stamps'] + $this->policyData['inapol_special_discount']);
         $this->policyCommission = $this->policyData['inapol_commission'];
         $instResult = $db->query('SELECT * FROM ina_policy_installments WHERE inapi_policy_ID = ' . $this->policyID);
@@ -259,7 +259,7 @@ Class Installments
 
         } else {
             $this->error = true;
-            $this->errorDescription = 'Policy must be Outstanding to generate devided installments';
+            $this->errorDescription = 'Policy must be Outstanding to generate divided installments';
             return false;
         }
     }

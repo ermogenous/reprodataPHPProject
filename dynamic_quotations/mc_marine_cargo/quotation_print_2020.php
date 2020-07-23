@@ -250,7 +250,7 @@ body{
                     </tr>
                     <tr>
                        <td>Via</td>
-                       <td>' . $sect1['clo_country_via'] . $approvalViaCountry . '</td>
+                       <td>' . $sect1['oqqit_rate_11'] . $approvalViaCountry . '</td>
                        <td>To</td>
                        <td>' . $sect1['clo_country_to'] . $approvalToCountry . ' - '.$sect1['oqqit_rate_15'].'</td>
                        <td>Insured Value/Currency</td>

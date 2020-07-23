@@ -627,7 +627,7 @@ $formB->setLabelClasses('col-sm-3');
                                 ?>
                             </div>
 
-                            <?php if ($_GET['type'] == 'Vehicles' && 1 == 2) { ?>
+                            <?php if ($_GET['type'] == 'Vehicles') { ?>
                                 <label for="fld_mif" class="col-sm-3 col-form-label">
                                     <?php echo $db->showLangText('MIF', 'Τ.Α.Μ.Ο'); ?>
                                 </label>

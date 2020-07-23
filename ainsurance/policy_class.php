@@ -489,7 +489,7 @@ class Policy
         $total = $db->query_fetch($sql);
 
         $data['premium'] = round($total['clo_total_premium'], 2);
-        //$data['mif'] = round($total['clo_total_mif'], 2);
+        $data['mif'] = round($total['clo_total_mif'], 2);
 
 
         //if premium is changed then need to calculate the commissions
@@ -1490,8 +1490,8 @@ class Policy
             $return['commission'] += $row['inapol_commission'];
             $return['fees'] += $row['inapol_fees'];
             $return['stamps'] += $row['inapol_stamps'];
+            $return['mif'] += $row['inapol_mif'];
             $return['specialDiscount'] += $row['inapol_special_discount'];
-
 
             $return['agent_level1_commission'] += $row['inapol_agent_level1_commission'];
             $return['agent_level2_commission'] += $row['inapol_agent_level2_commission'];
@@ -1503,7 +1503,7 @@ class Policy
             $return['agent_level3_released'] += $row['inapol_agent_level3_released'];
             $return['overwrite_released'] += $row['inapol_overwrite_released'];
         }
-        $return['gross_premium'] = $return['premium'] + $return['fees'] + $return['stamps'] + $return['specialDiscount'];
+        $return['gross_premium'] = $return['premium'] + $return['fees'] + $return['stamps'] + $return['specialDiscount'] + $return['mif'];
         //total paid
         $totalPaid = $db->query_fetch("SELECT SUM(inapp_amount) as clo_total_paid
                 FROM ina_policy_payments WHERE inapp_policy_ID = ".$this->installmentID." AND inapp_status = 'Active'");

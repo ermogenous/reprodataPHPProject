@@ -36,6 +36,7 @@ if ($_GET['action'] == 'calculate' && $_GET['pid'] != '') {
 } else if ($_GET['action'] == 'genrecursive') {
     $db->start_transaction();
     $inst = new Installments($_GET['pid']);
+    //$_GET['amount'] -> the total installments to create
     if ($inst->generateRecursiveInstallments($_GET['amount']) == true) {
 
         //update the amounts/commissions

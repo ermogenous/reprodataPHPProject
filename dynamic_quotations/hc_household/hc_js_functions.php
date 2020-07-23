@@ -11,7 +11,7 @@
 <script>
     function js_function_on_load() {
 
-
+        checkValuablesField();
 
     }
 

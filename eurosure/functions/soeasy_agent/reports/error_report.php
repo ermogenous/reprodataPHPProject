@@ -6,6 +6,9 @@
  * Time: 13:58
  */
 
+ini_set('max_execution_time', 1800);
+ini_set('memory_limit','1024M');
+
 include("../../../../include/main.php");
 include("../../../lib/odbccon.php");
 
@@ -117,6 +120,9 @@ $db->show_header();
 
                         //check to find the policy in synthesis
                         $synSql = "SELECT * FROM BrokerInsuranceImport 
+                                    left outer join inimportpolicies on bii_policy_number = if CHARINDEX('(',inipol_reference) <> 0 then
+                                    TRIM(\"Left\"(inipol_reference,CHARINDEX('(',inipol_reference)-1))
+                                    else inipol_reference endif
                                     WHERE 
                                     bii_policy_number = '".$row['Policy_Number']."'";
                         $synData = $syn->query_fetch($synSql);
@@ -130,7 +136,12 @@ $db->show_header();
                         ?>
                             <div class="row">
                                 <div class="col-12">
-                                    <?php echo $row['Policy_Number'];?>
+                                    <?php
+                                    echo $row['Policy_Number'];
+                                    echo " BI Row Status [".$synData['bii_row_status']."] ";
+                                    echo " Import Status [".$synData['inipol_row_status']."]";
+                                    echo " Import Batch [".$synData['inipol_import_batch_number']."]";
+                                    ?>
                                 </div>
                             </div>
                         <?php

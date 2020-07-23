@@ -187,7 +187,7 @@ class Synthesis
         );
         $response = file_get_contents($url, false, stream_context_create($arrContextOptions));
         $data = json_decode($response);
-        return $data[0];
+        return $data;
     }
     public function logout()
     {

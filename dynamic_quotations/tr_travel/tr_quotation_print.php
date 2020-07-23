@@ -1522,6 +1522,11 @@ function getConfirmationLetter($data){
         </p>
         
         <p class="normalFonts" align="justify">
+            The Emergency Medical, Repratriation and Other Expenses Section 7 of the policy does not exclude medical 
+            expenses arising from Covid19.
+        </p>
+        
+        <p class="normalFonts" align="justify">
             If you have any questions or would like to speak to someone regarding the above cover, please feel free to 
             contact our office at the number listed below.
         </p>

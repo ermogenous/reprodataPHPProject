@@ -19,12 +19,21 @@ if ($db->user_data['usr_user_rights'] > 0){
 
 $table = new draw_table('log_file', 'lgf_log_file_ID', 'DESC');
 
+if ($_GET['type'] == 'errors'){
+    $table->extras = 'lgf_table_name = "Error"';
+}
+
 $table->generate_data();
 
 $db->show_header();
 ?>
 
     <div class="container">
+        <div class="row form-group">
+            <div class="col-12">
+                <a href="log_file_view.php?type=errors">Only Errors</a>
+            </div>
+        </div>
         <div class="table-responsive">
             <table class="table table-hover">
                 <thead>

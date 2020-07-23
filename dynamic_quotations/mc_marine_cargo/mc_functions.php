@@ -8,7 +8,7 @@
 
 function mc_shipment_details_3()
 {
-    global $db, $items_data, $qitem_data, $formValidator;
+    global $db, $items_data, $qitem_data, $formValidator,$underwriter,$quote;
     ?>
 
     <div class="form-group row">
@@ -59,37 +59,91 @@ function mc_shipment_details_3()
         <label for="3_oqqit_rate_4" class="col-sm-4 col-form-label">
             <?php show_quotation_text("Commodity", "Commodity"); ?>
         </label>
+        <?php
+        //get underwriter clauses restriction to decide which options to show
+        $clausesRestrictionList = explode(",",$underwriter['oqun_clauses_restrictions']);
+        $clausesRestriction = array();
+        foreach($clausesRestrictionList as $value){
+            if ($value > 0) $clausesRestriction[$value] = 1;
+        }
+
+        if ($db->user_data['usr_user_rights'] <= 12 //set this to 2 if you want to activate the restriction
+            || ($quote->quotationData()['oqq_status'] != 'Outstanding' && $_GET['quotation'] > 0)
+        ) {
+            for($i=1;  $i <= 9; $i++){
+                $clausesRestriction[$i] = 1;
+            }
+        }
+        ?>
         <div class="col-sm-8">
             <select name="3_oqqit_rate_4" id="3_oqqit_rate_4"
                     class="form-control">
                 <option value=""></option>
-                <option value="General Cargo & Merchandise" <?php if ($qitem_data['oqqit_rate_4'] == 'General Cargo & Merchandise') echo 'selected'; ?>>
-                    General Cargo & Merchandise
-                </option>
+                <?php
+                if ($clausesRestriction[1] == 1) {
+                    ?>
+                    <option value="General Cargo & Merchandise" <?php if ($qitem_data['oqqit_rate_4'] == 'General Cargo & Merchandise') echo 'selected'; ?>>
+                        1. General Cargo & Merchandise
+                    </option>
+                    <?php
+                }
+                if ($clausesRestriction[2] == 1) {
+                ?>
                 <option value="New/Used Vehicles" <?php if ($qitem_data['oqqit_rate_4'] == 'New/Used Vehicles') echo 'selected'; ?>>
-                    New/Used Vehicles
+                    2. New/Used Vehicles
                 </option>
+                    <?php
+                }
+                if ($clausesRestriction[3] == 1) {
+                ?>
                 <option value="Machinery" <?php if ($qitem_data['oqqit_rate_4'] == 'Machinery') echo 'selected'; ?>>
-                    Machinery
+                    3. Machinery
                 </option>
+                    <?php
+                }
+                if ($clausesRestriction[4] == 1) {
+                ?>
                 <option value="Temp. Controlled Cargo other than meat" <?php if ($qitem_data['oqqit_rate_4'] == 'Temp. Controlled Cargo other than meat') echo 'selected'; ?>>
-                    Temp. Controlled Cargo other than meat
+                    4. Temp. Controlled Cargo other than meat
                 </option>
+                    <?php
+                }
+                if ($clausesRestriction[5] == 1) {
+                ?>
                 <option value="Temp. Controlled Cargo Meat" <?php if ($qitem_data['oqqit_rate_4'] == 'Temp. Controlled Cargo Meat') echo 'selected'; ?>>
-                    Temp. Controlled Cargo Meat
+                    5. Temp. Controlled Cargo Meat
                 </option>
+                    <?php
+                }
+                if ($clausesRestriction[6] == 1) {
+                ?>
                 <option value="Special Cover Mobile Phones, Electronic Equipment" <?php if ($qitem_data['oqqit_rate_4'] == 'Special Cover Mobile Phones, Electronic Equipment') echo 'selected'; ?>>
-                    Special Cover Mobile Phones, Electronic Equipment
+                    6. Special Cover Mobile Phones, Electronic Equipment
                 </option>
+                    <?php
+                }
+                if ($clausesRestriction[7] == 1) {
+                ?>
                 <option value="Personal Effects professionally packed" <?php if ($qitem_data['oqqit_rate_4'] == 'Personal Effects professionally packed') echo 'selected'; ?>>
-                    Personal Effects professionally packed
+                    7. Personal Effects professionally packed
                 </option>
+                    <?php
+                }
+                if ($clausesRestriction[8] == 1) {
+                ?>
                 <option value="CPMB - Cyprus Potato Marketing Board" <?php if ($qitem_data['oqqit_rate_4'] == 'CPMB - Cyprus Potato Marketing Board') echo 'selected'; ?>>
-                    Cyprus Potatoes
+                    8. Cyprus Potatoes
                 </option>
+                    <?php
+                }
+                if ($clausesRestriction[9] == 1) {
+                ?>
                 <option value="Other" <?php if ($qitem_data['oqqit_rate_4'] == 'Other') echo 'selected'; ?>>
-                    Other [Requires Approval]
+                    9. Other [Requires Approval]
                 </option>
+                    <?php
+                }
+                ?>
             </select>
             <?php
             $formValidator->addField(
@@ -753,6 +807,11 @@ function mc_cargo_details_4()
 
 function insured_amount_custom_rates($array, $values, $quotation_id)
 {
+
+    //rate $values[4][8]['rate']
+    //print_r($array);exit();
+    $array[4][8] = round($values[3][3]['rate'] * ($values[4][8]['rate'] / 100),2);
+
     return $array;
 }
 

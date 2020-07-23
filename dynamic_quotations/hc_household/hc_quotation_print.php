@@ -261,7 +261,8 @@ function getQuotationHTML($quotationID)
             <td></td>
             <td>
                 Endorsements that apply to this insurance / Οι Πρόσθετες Πράξεις που 
-                ισχύουν για αυτό το ασφαλιστήριο συμβόλαιο.<br>&nbsp;
+                ισχύουν για αυτό το ασφαλιστήριο συμβόλαιο.&nbsp;
+                '.getEndorsementList($sect1,$sect2,$sect3,$sect4,$sect5).'
             </td>
             <td></td>
         </tr>
@@ -525,5 +526,49 @@ function getQuotationHTML($quotationID)
     
 </div>
 ';
+    return $html;
+}
+
+function getEndorsementList($sect1,$sect2,$sect3,$sect4,$sect5){
+    global $db;
+
+    $html = '';
+
+    //always add 18
+    $html = '<br>Unoccupancy Clause (18) / Ρήτρα περί Ακατοίκητης Κατοικίας (18)';
+
+    $buildingData = explode("##",$sect2['oqqit_rate_5']);
+    if ($buildingData[1] == 'Wooden' || $buildingData[1] == 'Metal'){
+        $html .= "<br>Non-Standard Construction Clause (8) / Ρήτρα περί Μη Συνηθισμένης Κατασκευής (8)";
+    }
+    if ($buildingData[1] == 'Other'){
+        $html .= "<br>Non-Standard Construction Clause (8) / Ρήτρα περί Μη Συνηθισμένης Κατασκευής (8) 
+                    <br>Earthquake Exclusion Clause (22) / Ρήτρα    περί   Εξαίρεσης Σεισμού (22)";
+    }
+
+    if($buildingData[2] == 'Flat') {
+        $html .= "<br>Flat Roof Endorsement (20) / Ρήτρα περί Επίπεδης Οροφής (20)";
+    }
+
+    if ($sect4['oqqit_rate_12'] == 'Yes'){
+        $html .= "<br>Theft Extension Clause (7) / Ρήτρα περί Επέκτασης της Κάλυψης για Κλοπή (7)";
+    }
+
+    if ($sect4['oqqit_rate_3'] > 0 ){
+        if ($sect4['oqqit_rate_15'] == 'Yes'){
+            $html .= "<br> Hotel and Motel Clause (1) / Ρήτρα περί Ξενοδοχείων και Μοτέλ (1)";
+        }
+        $html .= "<br> Safe Clause (Limited) (3) / Ρήτρα περί Χρηματοκιβωτίου (Περιορισμένη) (3)
+                    <br> Safe Clause (Full) (4) / Ρήτρα περί Χρηματοκιβωτίου (Πλήρης) (4)
+                    <br> Keys Clause (5) / Ρήτρα περί Κλειδιών (5)
+                    <br> Minimum Security Clause (9) / Ρήτρα περί Ελάχιστης Προστασίας (9)
+                    <br> Unattended Vehicles Clause (17) / Ρήτρα περί Μη Επιτηρούμενων Οχημάτων (17)";
+    }
+
+    if ($sect2['oqqit_rate_13'] == 'Yes'){
+        $html .= "<br> Subsidence, Heave or Landslip Exclusion Clause (10) / Ρήτρα περί Εξαίρεσης Καθίζησης, Ανύψωσης Εδάφους ή Κατολίσθησης (10)";
+    }
+
+
     return $html;
 }

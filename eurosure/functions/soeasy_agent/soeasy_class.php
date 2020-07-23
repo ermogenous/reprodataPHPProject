@@ -101,6 +101,24 @@ class soeasyClass
                 $valNewData['fld_validate_batch'] = $batchNumber;
             }
 
+            //other validations
+            //1. IF EL then field EL_BUSiness_USE cannot be empty
+            if (substr($row['Policy_Number'],0,3) == 'EL-' && $row['EL_Business_Use'] == ''){
+                $valNewData['EL_Business_Use'] = 'UKN';
+            }
+            else {
+                $valNewData['EL_Business_Use'] = '';
+                unset($valNewData['EL_Business_Use']);
+            }
+            //2. MED [FMD] if member address is empty get address from client
+            if (substr($row['Policy_Number'],0,4) == 'MED-' && $row['FMD_Address_Street_Name'] == ''){
+                $valNewData['FMD_Address_Street_Name'] = $row['Client_Address_Street_Name'];
+            }
+            else {
+                $valNewData['FMD_Address_Street_Name'] = '';
+                unset($valNewData['FMD_Address_Street_Name']);
+            }
+
             //$valNewData['fld_status'] = 'IMPORT'; //DELETE THIS LINE
             $db->db_tool_update_row('es_soeasy_import_data', $valNewData
                 , 'essesid_soeasy_import_data_ID = ' . $row['essesid_soeasy_import_data_ID']
@@ -184,7 +202,7 @@ class soeasyClass
         //3. Check if the package exists in the table BrokerPlanImport===========================================================================================================2
         $this->loadBrokerPlanCodes();
         if ($this->brokerPlanImport[$row['Policy_Plan_Code']] == '') {
-            $return['message'] .= "[3] - No package found";
+            $return['message'] .= "[3] - No package found [".$row['Policy_Plan_Code']."]";
             $return['validation_status'] = 'ERROR';
             return $return;
         }
@@ -279,6 +297,39 @@ class soeasyClass
                 */
             }
         }
+        //4.a.5 Check if motor and registration conflicts on cover dates
+        if ($row['MOT_Registration_Number'] != '' && strlen($row['MOT_Registration_Number']) > 4) {
+            $sql = "
+            SELECT inpol_policy_number, inpit_starting_date,
+			COALESCE(IF inpol_status = 'A' AND inpol_replaced_by_policy_serial = 0   /* CANCELLED */
+					THEN DATE(DATEADD(DAY, -1, inpit_cancellation_date))             /* Not Covered On Cancellation Date */
+					ELSE inpit_cancellation_date ENDIF, inpit_expiry_date) as clo_pit_end_date
+			FROM inpolicies 
+			JOIN inpolicyitems ON inpol_policy_serial = inpit_policy_serial
+			JOIN initems ON initm_item_serial = inpit_item_serial
+            --    WHERE  initm_item_code = inimportpolicyitems.inipit_item_code
+            --    AND inpol_expiry_date BETWEEN inipol_starting_date AND inipol_expiry_date
+
+			WHERE initm_item_code = '".$row['MOT_Registration_Number']."'
+			AND ((inpol_status IN ('O','C','N')) OR /* Found On Another Policy (Active OR Under Process) - IRRELEVANT OF ANY CONFLICT ON THE DATES */
+				 ((inpol_status = 'A') AND    /* Found On An Archived Policy Phase, Where there is Conflict with the period of insurance */
+				  (".$this->convertDate($row['Policy_Start_Date'])." BETWEEN inpit_starting_date AND clo_pit_end_date OR
+                   ".$this->convertDate($row['Policy_Expiry_Date'])." BETWEEN inpit_starting_date AND clo_pit_end_date OR
+                   inpit_starting_date BETWEEN ".$this->convertDate($row['Policy_Start_Date'])." AND ".$this->convertDate($row['Policy_Expiry_Date'])." OR
+                   clo_pit_end_date BETWEEN ".$this->convertDate($row['Policy_Start_Date'])." AND ".$this->convertDate($row['Policy_Expiry_Date'])."
+                  )
+                 )
+                )
+            ";
+            $resultData = $syn->query_fetch($sql);
+            if ($resultData['inpol_policy_serial'] > 0) {
+                $return['message'] .= "[4.a.5] Policy[NEW] with serial " . $resultData['inpol_policy_serial']
+                    . " registration date conflicts. Current dates From: ".$row['Policy_Start_Date']." To: ".$row['Policy_Expiry_Date']
+                    . " New Dates From: ".$resultData['inpit_starting_date']." To: ".$resultData['clo_pit_end_date'];
+                $return['validation_status'] = 'ERROR';
+                return $return;
+            }
+        }
 
         return $return;
     }
@@ -306,7 +357,7 @@ class soeasyClass
         //3. Check if the package exists in the table BrokerPlanImport===========================================================================================================2
         $this->loadBrokerPlanCodes();
         if ($this->brokerPlanImport[$row['Policy_Plan_Code']] == '') {
-            $return['message'] .= "[3] - No package found\n";
+            $return['message'] .= "[3] - No package found [".$row['Policy_Plan_Code']."]";
             $return['validation_status'] = 'ERROR';
             return $return;
         }
@@ -479,7 +530,7 @@ class soeasyClass
             <div class="row form-group">
                 <div class="col-12">
                     <?php
-                    echo $row['Policy_Number'] . " - Scheduler ID:" . $row['essesid_lapse_syscheduler_ID'];
+                    echo $row['Policy_Number'] . " [".$row['MOT_Registration_Number'] .'] - Scheduler ID:' . $row['essesid_lapse_syscheduler_ID'];
                     echo " - Scheduler Result: " . $schData['syst_status_flag'];
                     echo " Policy Serial: " . $row['essesid_lapse_policy_ID'];
                     echo " - Policy Process Status: " . $polData['inped_process_status'];
@@ -516,17 +567,29 @@ class soeasyClass
         $result = $db->query($sql);
         $successPolicies = 0;
         $errorPolicies = 0;
+        $totalPremiumDiff = 0;
         $html = '';
         while ($row = $db->fetch_assoc($result)) {
+            $synPremium = 0;
+            $importPremium = 0;
             $policyNumberSplit = explode("/", $row['Policy_Number']);
 
             $synimportSQL = "SELECT * FROM inimportpolicies
                                 WHERE inipol_policy_number = '" . $policyNumberSplit[0] . "'";
             $synImpData = $syn->query_fetch($synimportSQL);
 
-            $synSql = "SELECT * FROM inpolicies 
-                        WHERE inpol_policy_number = '" . $policyNumberSplit[0] . "'";
-            $synData = $syn->query_fetch($synSql);
+            $policyType = '';
+            if ($row['Policy_Refund'] == 1){
+                $policyType = 'Cancel';
+            }
+            else {
+                if ($policyNumberSplit[1] == ''){
+                    $policyType = 'New';
+                }
+                else {
+                    $policyType = 'Renew';
+                }
+            }
 
             if ($synImpData['inipol_auto_serial'] > 0) {
                 $html .= ' Found import ' . $synImpData['inipol_auto_serial'];
@@ -535,20 +598,55 @@ class soeasyClass
                     $errorMessage = str_replace(PHP_EOL," ",$errorMessage);
                     $errorMessage = $db->prepare_text_as_html($errorMessage);
                     $html = '<span class="alert-danger">';
-                    $html .= '<u><b>Validating policy: [' . $row['essesid_soeasy_import_data_ID'] . '] ' . $row['Policy_Number'] . "</b></u>";
+                    $html .= '<u><b>Validating '.$policyType.' policy: [' . $row['essesid_soeasy_import_data_ID'] . '] ' . $row['Policy_Number'] . "</b></u>";
                     $html .= ' Start:' . $row['Policy_Start_Date'] . " Expiry:" . $row['Policy_Expiry_Date'];
                     $html .= ' Row Status ERROR! [' . $synImpData['inipol_row_status'] . ']</span>';
                     $html .= '<br>Error - ' . $errorMessage;
                     $errorPolicies++;
                 } else {
                     //find the policy and see its status
-                    $sqlVal = "SELECT inpol_status,inpol_policy_number,inpol_policy_serial
-                                FROM inpolicies WHERE inpol_policy_serial = ".$synImpData['inipol_policy_serial'];
+                    $sqlVal = "
+                        SELECT 
+                        inpol_policy_number,
+                        inpol_policy_serial,
+                        inped_financial_policy_abs,
+                         (-1 * sum (inped_premium_debit_credit * inped_premium)) As clo_premium,   
+                         (-1 * sum (inped_premium_debit_credit * inped_mif)) As clo_mif,  
+                         (-1 * sum (inped_premium_debit_credit * inped_fees)) As clo_fees,   
+                         (-1 * sum (inped_premium_debit_credit * inped_stamps)) As clo_stamps,   
+                         (-1 * sum (inped_premium_debit_credit * inped_x_premium)) As clo_x_premium,
+                         inpol_process_status as clo_policy_status
+                        FROM inpolicies   
+                        JOIN inagents ON inag_agent_serial = inpol_agent_serial
+                        JOIN inpolicyendorsement ON inped_financial_policy_abs = inpol_policy_serial      
+                        WHERE 1 = 1
+                        AND COALESCE(inped_process_status, inpol_process_status) IN ('N','R','E','D','C') 
+                           AND COALESCE(inped_phase_status, inpol_status) IN ('A','N','O','C') 
+                        AND COALESCE(inped_status, CASE inpol_status WHEN 'Q' THEN '2' WHEN 'D' THEN '3' END, '?') IN ('1','2') 
+                        //AND inity_insurance_form IN ('M','O','L','R','P','E','T') 
+                        //AND (inped_year*100+inped_period)>=(2020*100+1) AND (inped_year*100+inped_period)<=(2020*100+6) 
+                        //AND inag_agent_code >= 'ag488' AND inagents.inag_agent_code <= 'ag488' 
+                        AND inpol_policy_number = '" . $policyNumberSplit[0] . "'
+                        GROUP BY inpol_policy_number, inped_financial_policy_abs, clo_policy_status,
+                                 inpol_policy_number ,inpol_policy_serial
+                        ORDER BY inpol_policy_number ASC ";
                     $valData = $syn->query_fetch($sqlVal);
-                    $html = '<u><b>Validating policy: [' . $row['essesid_soeasy_import_data_ID'] . '] ' . $row['Policy_Number'] . "</b></u>";
+                    $synPremium = round(($valData['clo_premium'] + $valData['clo_mif'] + $valData['clo_fees'] + $valData['clo_stamps']),2);
+                    $importPremium = round(($row['Policy_Premium'] + $row['Policy_Stamps'] + $row['Policy_MIF']),2);
+                        $html = '<u><b>Validating '.$policyType.' policy: [' . $row['essesid_soeasy_import_data_ID'] . '] ' . $row['Policy_Number'] . "</b></u>";
                     $html .= ' Row Status [' . $synImpData['inipol_row_status'] . ']';
-                    $html .= ' SynPolicy['.$valData['inpol_policy_serial']."] Status[".$valData['inpol_status']."]";
+                    $html .= ' SynPolicy['.$valData['inpol_policy_serial']."] Status[".$valData['clo_policy_status']."]";
                     $html .= " Number[".$valData['inpol_policy_number']."]";
+                    if ($synPremium !== $importPremium && $policyType != 'Cancel'){
+                        $html .= " <span class='alert-danger'>Import Gross Premium [".$importPremium."]";
+                        $html .= " Synthesis GrossPremium [".$synPremium."]</span>";
+                        $totalPremiumDiff += ($importPremium - $synPremium);
+                    }
+                    else {
+                        $html .= " Import Gross Premium [".$importPremium."]";
+                        $html .= " Synthesis GrossPremium [".$synPremium."]";
+                    }
+
                     $successPolicies++;
                 }
 
@@ -570,6 +668,11 @@ class soeasyClass
             <div class="row form-group">
                 <div class="col-12">
                     <?php echo $html; ?>
+                </div>
+            </div>
+            <div class="row form-group">
+                <div class="col-12">
+                    Total Premium Difference: <?php echo $totalPremiumDiff;?>
                 </div>
             </div>
             <?php

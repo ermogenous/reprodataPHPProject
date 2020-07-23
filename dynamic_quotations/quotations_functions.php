@@ -21,6 +21,34 @@ function insert_quotation_data_to_db($quotation_id, $quotation_type_id)
 
     }//use update
 
+    if ($_POST['nationality_ID'] == ''){
+        $_POST['nationality_ID'] = 0;
+    }
+    if ($_POST['birthdate'] == ''){
+        $birthdate = '0000-00-00';
+    }
+    else {
+        $birthdate = addslashes($db->convertDateToUS($_POST['birthdate']));
+    }
+    if ($_POST['starting_date'] == ''){
+        $startingDate = '0000-00-00';
+    }
+    else {
+        $startingDate = addslashes($db->convert_date_format($_POST['starting_date'],'dd/mm/yyyy','yyyy-mm-dd'));
+    }
+    if ($_POST['expiry_date'] == ''){
+        $expiryDate = '0000-00-00';
+    }
+    else {
+        $expiryDate = addslashes($db->convert_date_format($_POST['expiry_date'],'dd/mm/yyyy','yyyy-mm-dd'));
+    }
+    if ($_POST['insureds_city'] == ''){
+        $_POST['insureds_city'] = 0;
+    }
+
+//echo "Expiry:".$expiryDate;
+//print_r($_POST);
+//    exit();
     $sql .= "
 oqq_language = '" . $_SESSION["oq_quotations_language"] . "', 
 oqq_quotations_type_ID = " . $quotation_type_id . ",
@@ -28,7 +56,7 @@ oqq_person_company = '" . addslashes($_POST["person_company"]) . "',
 oqq_insureds_name = '" . addslashes($_POST["insureds_name"]) . "',
 oqq_insureds_id = '" . addslashes($_POST["insureds_id"]) . "',
 oqq_nationality_ID = '".addslashes($_POST['nationality_ID'])."',
-oqq_birthdate = '".addslashes($db->convertDateToUS($_POST['birthdate']))."',
+oqq_birthdate = '".$birthdate."',
 oqq_insureds_tel = '" . addslashes($_POST["insureds_tel"]) . "',
 oqq_insureds_mobile = '" . addslashes($_POST["insureds_mobile"]) . "',
 oqq_insureds_address = '" . addslashes($_POST["insureds_address"]) . "',
@@ -39,8 +67,8 @@ oqq_insureds_postal_code = '" . addslashes($_POST["insureds_postal_code"]) . "',
 oqq_situation_address = '" . addslashes($_POST["situation_address"]) . "',
 oqq_situation_postal_code = '" . addslashes($_POST["situation_postal_code"]) . "',
 oqq_extra_details = '" . addslashes($_POST["situations_extra_details"]) . "',
-oqq_starting_date = '".addslashes($db->convert_date_format($_POST['starting_date'],'dd/mm/yyyy','yyyy-mm-dd'))."',
-oqq_expiry_date = '".addslashes($db->convert_date_format($_POST['expiry_date'],'dd/mm/yyyy','yyyy-mm-dd'))."',
+oqq_starting_date = '".$startingDate."',
+oqq_expiry_date = '".$expiryDate."',
 oqq_extra_field_1 = '".addslashes($_POST['extra_field_1'])."',
 oqq_extra_field_2 = '".addslashes($_POST['extra_field_2'])."',
 oqq_extra_field_3 = '".addslashes($_POST['extra_field_3'])."',
@@ -130,9 +158,11 @@ function insert_item_data_to_db($quotation_type_data, $quotation_id, $item_id)
                     $field_value = $_POST[$item_id . "_" . $field_name];
                     //convert the date from dd/mm/yyyy to yyyy-mm-dd
                     $field_value = $db->convert_date_format($field_value,'dd/mm/yyyy','yyyy-mm-dd');
+                    //echo "IF:".$name."-> #".$field_value."#<br>";
+                    $sql .= ",\n" . $field_name . " = \"" . $field_value . "\"";
                 }
                 //echo $_POST[$item_id . "_" . $field_name];
-                $sql .= ",\n" . $field_name . " = \"" . $field_value . "\"";
+
 //echo $item_id . "_" . $field_name;exit();
             }//insured amount fields that are not empty.
 
@@ -143,7 +173,7 @@ function insert_item_data_to_db($quotation_type_data, $quotation_id, $item_id)
     //add the rest of the fields
     $sql .= "\n ,oqqit_quotations_ID = '" . $quotation_id . "', oqqit_items_ID = '" . $item_id . "'";
 
-//exit();
+//echo $sql;exit();
     //remove the first comma from the SQL
     $sql = substr($sql, 1);
     //echo $sql;
