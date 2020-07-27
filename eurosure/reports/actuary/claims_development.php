@@ -149,6 +149,7 @@ function makeReport($asAtDate,$type, $excelFile = true){
 
     $asAtSplit = explode("/",$asAtDate);
     $asAtSpaces = $asAtSplit[0].' '.$asAtSplit[1].' '.$asAtSplit[2];
+    $asAtUnderscore = $asAtSplit[0].'_'.$asAtSplit[1].'_'.$asAtSplit[2];
 
     if($type == 'ALLLOB'){
         $paidAc = '511001';
@@ -210,7 +211,7 @@ SUM(IF actln_acct_code = '".$paidAc."' AND (actln_docu_year*100+actln_docu_perd>
 SUM(IF actln_acct_code = '".$paidAc."' AND (actln_docu_year*100+actln_docu_perd>=201801 AND actln_docu_year*100+actln_docu_perd<=201812) THEN (actln_line_amnt * actln_drmv_crmv) ELSE 0 ENDIF ) as clo_paid_2018,
 SUM(IF actln_acct_code = '".$paidAc."' AND (actln_docu_year*100+actln_docu_perd>=201901 AND actln_docu_year*100+actln_docu_perd<=201912) THEN (actln_line_amnt * actln_drmv_crmv) ELSE 0 ENDIF ) as clo_paid_2019,
 SUM(IF actln_acct_code = '".$paidAc."' AND (actln_docu_year*100+actln_docu_perd>=202001 AND actln_docu_year*100+actln_docu_perd<=202012) THEN (actln_line_amnt * actln_drmv_crmv) ELSE 0 ENDIF ) as clo_paid_2020,
-SUM(IF actln_acct_code = '".$paidAc."' AND (actln_docu_year*100+actln_docu_perd>=200501 AND actln_docu_year*100+actln_docu_perd<=202003) THEN (actln_line_amnt * actln_drmv_crmv) ELSE 0 ENDIF ) as clo_paid_31_03_2020,
+SUM(IF actln_acct_code = '".$paidAc."' AND (actln_docu_year*100+actln_docu_perd>=200501 AND actln_docu_year*100+actln_docu_perd<=".$asAtSplit[2].$asAtSplit[1].") THEN (actln_line_amnt * actln_drmv_crmv) ELSE 0 ENDIF ) as clo_paid_".$asAtUnderscore.",
 
 SUM(IF actln_acct_code = '".$osAc."' AND (actln_docu_year*100+actln_docu_perd>=200501 AND actln_docu_year*100+actln_docu_perd<=200512) THEN (actln_line_amnt * actln_drmv_crmv*-1) ELSE 0 ENDIF ) as clo_os_2005,
 SUM(IF actln_acct_code = '".$osAc."' AND (actln_docu_year*100+actln_docu_perd>=200501 AND actln_docu_year*100+actln_docu_perd<=200612) THEN (actln_line_amnt * actln_drmv_crmv*-1) ELSE 0 ENDIF ) as clo_os_2006,
@@ -228,10 +229,10 @@ SUM(IF actln_acct_code = '".$osAc."' AND (actln_docu_year*100+actln_docu_perd>=2
 SUM(IF actln_acct_code = '".$osAc."' AND (actln_docu_year*100+actln_docu_perd>=200501 AND actln_docu_year*100+actln_docu_perd<=201812) THEN (actln_line_amnt * actln_drmv_crmv*-1) ELSE 0 ENDIF ) as clo_os_2018,
 SUM(IF actln_acct_code = '".$osAc."' AND (actln_docu_year*100+actln_docu_perd>=200501 AND actln_docu_year*100+actln_docu_perd<=201912) THEN (actln_line_amnt * actln_drmv_crmv*-1) ELSE 0 ENDIF ) as clo_os_2019,
 SUM(IF actln_acct_code = '".$osAc."' AND (actln_docu_year*100+actln_docu_perd>=200501 AND actln_docu_year*100+actln_docu_perd<=202012) THEN (actln_line_amnt * actln_drmv_crmv*-1) ELSE 0 ENDIF ) as clo_os_2020,
-SUM(IF actln_acct_code = '".$osAc."' AND (actln_docu_year*100+actln_docu_perd>=200501 AND actln_docu_year*100+actln_docu_perd<=202003) THEN (actln_line_amnt * actln_drmv_crmv*-1) ELSE 0 ENDIF ) as clo_os_31_03_2020,
+SUM(IF actln_acct_code = '".$osAc."' AND (actln_docu_year*100+actln_docu_perd>=200501 AND actln_docu_year*100+actln_docu_perd<=".$asAtSplit[2].$asAtSplit[1].") THEN (actln_line_amnt * actln_drmv_crmv*-1) ELSE 0 ENDIF ) as clo_os_".$asAtUnderscore.",
 (clo_paid_cy+clo_os_cy-clo_os_py) as clo_incurred,
 (clo_paid_ytd_py+clo_paid_cy+clo_os_cy) as clo_incurredT,
-SUM(IF actln_acct_code = '".$paidAc."' AND (actln_docu_year*100+actln_docu_perd>=200501 AND actln_docu_year*100+actln_docu_perd<=202003) THEN (actln_line_amnt * actln_drmv_crmv) ELSE 0 ENDIF ) as clo_paid_upto31_03_2020,
+SUM(IF actln_acct_code = '".$paidAc."' AND (actln_docu_year*100+actln_docu_perd>=200501 AND actln_docu_year*100+actln_docu_perd<=".$asAtSplit[2].$asAtSplit[1].") THEN (actln_line_amnt * actln_drmv_crmv) ELSE 0 ENDIF ) as clo_paid_upto".$asAtUnderscore.",
 'END' as_clo_end,
 
 'A' as xclo_lob,   
@@ -243,7 +244,7 @@ SUM(IF actln_acct_code = '".$paidAc."' AND (actln_docu_year*100+actln_docu_perd>
 ((xclo_upto_year-1)*100+'12') as clo_prev_year_period,
 
 1 as xclo_from_period,   
-3 as xclo_upto_period,   
+".($asAtSplit[1]*1)." as xclo_upto_period,   
 
 //SUM(IF actln_acct_code = '".$paidAc."' AND (actln_docu_year*100+actln_docu_perd>=201701 AND actln_docu_year*100+actln_docu_perd<=201712) THEN (actln_line_amnt * actln_drmv_crmv) ELSE 0 ENDIF ) as clo_paid_2017,
 

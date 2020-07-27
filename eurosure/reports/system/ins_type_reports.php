@@ -17,8 +17,7 @@ $db->show_header();
 
     <div class="container-fluid">
         <div class="row">
-            <div class="col-1"></div>
-            <div class="col-10">
+            <div class="col-12">
                 <div class="row form-group">
                     <div class="col-12 alert alert-primary text-center">
                         <b>Insurance Types Info</b>
@@ -44,17 +43,28 @@ $db->show_header();
                         </div>
                     </div>
                     <div class="row form-group">
-                        <div class="col-2">Schedule Object</div>
-                        <div class="col-4"><?php echo $row['clo_schedule_object'];?></div>
-                        <div class="col-2">Certificate Object</div>
-                        <div class="col-4"><?php echo $row['clo_certificate_object'];?></div>
+                        <div class="col-3">Schedule Object</div>
+                        <div class="col-3"><?php echo $row['clo_schedule_object'];?></div>
+                        <div class="col-3">Certificate Object</div>
+                        <div class="col-3"><?php echo $row['clo_certificate_object'];?></div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-3"><?php echo $row['inity_user_defined_doc1_title'];?></div>
+                        <div class="col-3"><?php echo $row['inity_user_defined_doc1_layout'];?></div>
+                        <div class="col-3"><?php echo $row['inity_user_defined_doc2_title'];?></div>
+                        <div class="col-3"><?php echo $row['inity_user_defined_doc2_layout'];?></div>
+                    </div>
+                    <div class="row form-group">
+                        <div class="col-3">Pol.Aux: <?php echo $row['inity_policy_aux_input_dw'];?></div>
+                        <div class="col-3">Sit.Obj: <?php echo $row['inity_situation_layout'];?></div>
+                        <div class="col-3">Pit.Obj: <?php echo $row['inity_detailed_policy_item_layout'];?></div>
+                        <div class="col-3"></div>
                     </div>
                     <?php
                 }
                 ?>
 
             </div>
-            <div class="col-1"></div>
         </div>
     </div>
 

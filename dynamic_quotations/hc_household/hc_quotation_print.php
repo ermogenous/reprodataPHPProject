@@ -5,15 +5,17 @@
  * Date: 19/12/2019
  * Time: 10:52 π.μ.
  */
-
+//a variable to be picked up by hc_functions/insured_amount_custom_rates
+//this variable will change the package to be able to calculate prices for all 3 packages
+$changePackage = '';
 function getQuotationHTML($quotationID)
 {
-    global $db, $main;
+    global $db, $main, $changePackage;
 
     $quotationData = $db->query_fetch('SELECT * FROM oqt_quotations WHERE oqq_quotations_ID = ' . $quotationID);
 
     //underwriter data
-    $underwriterData = $db->query_fetch('SELECT * FROM oqt_quotations_underwriters WHERE oqun_user_ID = '.$quotationData['oqq_users_ID']);
+    $underwriterData = $db->query_fetch('SELECT * FROM oqt_quotations_underwriters WHERE oqun_user_ID = ' . $quotationData['oqq_users_ID']);
 
     $sect1 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $quotationID . " AND oqqit_items_ID = 9");
     $sect2 = $db->query_fetch("SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = " . $quotationID . " AND oqqit_items_ID = 10");
@@ -39,7 +41,125 @@ function getQuotationHTML($quotationID)
 
     }
 
-    $html = '
+
+    if ($sect2['oqqit_rate_3'] == 'Quotation') {
+        include_once('quotations_functions.php');
+
+        //use the global variable $changePackage to force hc_functions/insured_amount_custom_rates to change package and recalculate
+        $changePackage = 'Basic'; //Classic Luxury
+        $res = quotation_price_calculation($quotationID);
+        $allPackagesPremium['Basic']['premium'] = $res['premium'];
+        $allPackagesPremium['Basic']['fees'] = $res['fees'];
+        $allPackagesPremium['Basic']['stamps'] = $res['stamps'];
+        $allPackagesPremium['Basic']['net'] = $res['premium'] + $res['fees'] + $res['stamps'];
+
+        $changePackage = 'Classic'; //Classic Luxury
+        $res = quotation_price_calculation($quotationID);
+        $allPackagesPremium['Classic']['premium'] = $res['premium'];
+        $allPackagesPremium['Classic']['fees'] = $res['fees'];
+        $allPackagesPremium['Classic']['stamps'] = $res['stamps'];
+        $allPackagesPremium['Classic']['net'] = $res['premium'] + $res['fees'] + $res['stamps'];
+
+        $changePackage = 'Luxury'; //Classic Luxury
+        $res = quotation_price_calculation($quotationID);
+        $allPackagesPremium['Luxury']['premium'] = $res['premium'];
+        $allPackagesPremium['Luxury']['fees'] = $res['fees'];
+        $allPackagesPremium['Luxury']['stamps'] = $res['stamps'];
+        $allPackagesPremium['Luxury']['net'] = $res['premium'] + $res['fees'] + $res['stamps'];
+
+        $html = '
+        <style>
+.tableTdBorder td{
+    border:1px solid #000000;
+    padding:10px;
+    border-spacing: 0px;
+    font-size: 12px;
+    font-family: Tahoma;
+}
+.elementPageBreak{
+    page-break-before: always;
+}
+.mainFonts{
+    font-size: 14px;
+    font-family: Tahoma;
+}
+</style>
+
+<div style="font-family: Tahoma; ' . $draftImage . '">
+    <table width="900" class="mainFonts">
+        <tr>
+            <td width="60%">
+                <img src="' . $db->admin_layout_url . '/images/kemter_logo2.jpg" width="200">
+            </td>
+            <td width="40%" align="right">
+                <img src="' . $db->admin_layout_url . '/images/LLOYDS-Logo.png" width="200">
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center" style="font-size: 30px; color: grey">
+                <b>Quotation / Προσφορά</b>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center">
+                <hr>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center" style="font-size: 20px;">
+                <b>Kemter Household Insurance / Kemter Ασφάλεια Κατοικίας</b>
+            </td>
+        </tr>
+        
+    </table>
+    <br><br>
+    <table width="900" class="mainFonts">
+        <tr>
+            <td colspan="5" align="center" style="font-size: 25px; color: grey">
+                <b>Quotation Prices for all Packages<br>Προσφορά για όλα τα Πακέτα</b><br><br><br>
+            </td>
+        </tr>
+        <tr>
+            <td width="70"></td>
+            <td width="50"></td>
+            <td><b>Basic</b></td>
+            <td><b>Classic</b></td>
+            <td><b>Luxury</b></td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>Premium</td>
+            <td>'.$allPackagesPremium['Basic']['premium'].'</td>
+            <td>'.$allPackagesPremium['Classic']['premium'].'</td>
+            <td>'.$allPackagesPremium['Luxury']['premium'].'</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>Fees</td>
+            <td>'.$allPackagesPremium['Basic']['fees'].'</td>
+            <td>'.$allPackagesPremium['Classic']['fees'].'</td>
+            <td>'.$allPackagesPremium['Luxury']['fees'].'</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>Stamps</td>
+            <td>'.$allPackagesPremium['Basic']['stamps'].'</td>
+            <td>'.$allPackagesPremium['Classic']['stamps'].'</td>
+            <td>'.$allPackagesPremium['Luxury']['stamps'].'</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td><b>Total</b></td>
+            <td><b>'.$allPackagesPremium['Basic']['net'].'</b></td>
+            <td><b>'.$allPackagesPremium['Classic']['net'].'</b></td>
+            <td><b>'.$allPackagesPremium['Luxury']['net'].'</b></td>
+        </tr>
+    </table>
+</div>
+        ';
+    } else {
+
+        $html = '
     <style>
 .tableTdBorder td{
     border:1px solid #000000;
@@ -85,14 +205,14 @@ function getQuotationHTML($quotationID)
             <td colspan="2">
                 <br>
                 Policy Details / Στοιχεία Συμβολαίου: <br><br>
-                Policy Number / Αριθμός Συμβολαίου: '.$certificateNumber.'<br><br>
+                Policy Number / Αριθμός Συμβολαίου: ' . $certificateNumber . '<br><br>
                 Unique Market Reference / Αποκλειστική Αναφορά Αγοράς: <br><br>
                 Wording / Λεκτικό:	Kemter Household Insurance <br><br>
-                Insured / Ασφαλιζόμενος: '.$quotationData['oqq_insureds_name'].'<br><br>
-                Premises / Υποστατικά: '.$sect1['oqqit_rate_8'].', '.$sect1['oqqit_rate_9'].', '.$sect1['oqqit_rate_10'].', '.$sect1['oqqit_rate_11'].', '.$sect1['oqqit_rate_12'].'<br><br>
+                Insured / Ασφαλιζόμενος: ' . $quotationData['oqq_insureds_name'] . '<br><br>
+                Premises / Υποστατικά: ' . $sect1['oqqit_rate_8'] . ', ' . $sect1['oqqit_rate_9'] . ', ' . $sect1['oqqit_rate_10'] . ', ' . $sect1['oqqit_rate_11'] . ', ' . $sect1['oqqit_rate_12'] . '<br><br>
                 Description of Business Use / Περιγραφή Επαγγελματικής Χρήσης: <br><br>
-                Period of Insurance / Περίοδος Ασφάλισης: From / Από: '.$db->convertDateToEU($quotationData['oqq_starting_date'],1,0).'&nbsp;&nbsp;
-                Το / Μέχρι: '.$db->convertDateToEU($quotationData['oqq_expiry_date'],1,0).' <br>
+                Period of Insurance / Περίοδος Ασφάλισης: From / Από: ' . $db->convertDateToEU($quotationData['oqq_starting_date'], 1, 0) . '&nbsp;&nbsp;
+                Το / Μέχρι: ' . $db->convertDateToEU($quotationData['oqq_expiry_date'], 1, 0) . ' <br>
                 Συμπεριλαμβανομένων και των δύο ημερομηνιών, τοπική ώρα στη διεύθυνση Σας που προαναφέρθηκε.<br>
                 Both dates Inclusive local standard time at Your address stated above.<br>
                 <br>
@@ -118,9 +238,9 @@ function getQuotationHTML($quotationID)
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sum Insured / Ασφαλισμένο Ποσό<br>&nbsp;
             </td>
             <td align="center" valign="top" width="25%">
-                '.($sect3['oqqit_rate_14'] > 0? 'Included / Περιλαμβάνεται':'Not Included / Δεν Περιλαμβάνεται').'<br>
+                ' . ($sect3['oqqit_rate_14'] > 0 ? 'Included / Περιλαμβάνεται' : 'Not Included / Δεν Περιλαμβάνεται') . '<br>
                 <br>
-                '.($sect3['oqqit_rate_14'] > 0? '€'.$sect3['oqqit_rate_14']:'').'
+                ' . ($sect3['oqqit_rate_14'] > 0 ? '€' . $sect3['oqqit_rate_14'] : '') . '
             </td>
         </tr>
         <tr>
@@ -130,9 +250,9 @@ function getQuotationHTML($quotationID)
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sum Insured / Ασφαλισμένο Ποσό<br>&nbsp;
             </td>
             <td align="center" valign="top">
-                '.($sect4['oqqit_rate_1'] > 0? 'Included / Περιλαμβάνεται':'Not Included / Δεν Περιλαμβάνεται').'<br>
+                ' . ($sect4['oqqit_rate_1'] > 0 ? 'Included / Περιλαμβάνεται' : 'Not Included / Δεν Περιλαμβάνεται') . '<br>
                 <br>
-                '.($sect4['oqqit_rate_1'] > 0? '€'.$sect4['oqqit_rate_1']:'').'
+                ' . ($sect4['oqqit_rate_1'] > 0 ? '€' . $sect4['oqqit_rate_1'] : '') . '
             </td>
         </tr>
         <tr>
@@ -140,7 +260,7 @@ function getQuotationHTML($quotationID)
                 <b>Section Three – Accidents to Domestic Staff / Μέρος Τρία - Ατυχήματα σε Οικιακό Προσωπικό</b><br>&nbsp;
             </td>
             <td align="center" valign="top">
-                '.($sect5['oqqit_rate_1'] == 'Yes'? 'Included / Περιλαμβάνεται':'Not Included / Δεν Περιλαμβάνεται').'<br>
+                ' . ($sect5['oqqit_rate_1'] == 'Yes' ? 'Included / Περιλαμβάνεται' : 'Not Included / Δεν Περιλαμβάνεται') . '<br>
             </td>
         </tr>
         <tr>
@@ -148,7 +268,7 @@ function getQuotationHTML($quotationID)
                 <b>Section Four – Legal Liability to the Public <br> Μέρος Τέσσερα – Νομική Ευθύνη έναντι του Κοινού</br><br>
             </td>
             <td align="center" valign="top">
-                '.($sect3['oqqit_rate_14'] > 0 || $sect4['oqqit_rate_1'] > 0? 'Included / Περιλαμβάνεται':'Not Included / Δεν Περιλαμβάνεται').'<br>
+                ' . ($sect3['oqqit_rate_14'] > 0 || $sect4['oqqit_rate_1'] > 0 ? 'Included / Περιλαμβάνεται' : 'Not Included / Δεν Περιλαμβάνεται') . '<br>
             </td>
         </tr>
         <tr>
@@ -164,7 +284,7 @@ function getQuotationHTML($quotationID)
                 <b>Section Five – Valuables and Personal Possessions <br> Μέρος Πέντε - Τιμαλφή και Προσωπικά Αντικείμενα</br><br>
             </td>
             <td align="center" valign="top">
-                '.($sect4['oqqit_rate_3'] > 0 ? 'Included / Περιλαμβάνεται':'Not Included / Δεν Περιλαμβάνεται').'<br>
+                ' . ($sect4['oqqit_rate_3'] > 0 ? 'Included / Περιλαμβάνεται' : 'Not Included / Δεν Περιλαμβάνεται') . '<br>
                 Do not show the amount??????
             </td>
         </tr>
@@ -208,7 +328,7 @@ function getQuotationHTML($quotationID)
                 <b>Section Six – Domestic Freezer / Μέρος Έξι – Οικιακοί Καταψύκτες</b><br>&nbsp;
             </td>
             <td align="center" valign="top">
-                '.($sect4['oqqit_rate_13'] == 'Yes' ? 'Included / Περιλαμβάνεται':'Not Included / Δεν Περιλαμβάνεται').'<br>
+                ' . ($sect4['oqqit_rate_13'] == 'Yes' ? 'Included / Περιλαμβάνεται' : 'Not Included / Δεν Περιλαμβάνεται') . '<br>
             </td>
         </tr>
         <tr>
@@ -216,7 +336,7 @@ function getQuotationHTML($quotationID)
                 <b>Section Seven – Pedal Cycles / Μέρος Επτά – Ποδήλατα</b><br>
             </td>
             <td align="center" valign="top">
-                '.($sect5['oqqit_rate_4'] == 'Yes' ? 'Included / Περιλαμβάνεται':'Not Included / Δεν Περιλαμβάνεται').'<br>
+                ' . ($sect5['oqqit_rate_4'] == 'Yes' ? 'Included / Περιλαμβάνεται' : 'Not Included / Δεν Περιλαμβάνεται') . '<br>
             </td>
         </tr>
         <tr>
@@ -226,8 +346,8 @@ function getQuotationHTML($quotationID)
                 Sum Insured / Ασφαλισμένο Ποσό<br>&nbsp;
             </td>
             <td align="center">
-                '.($sect5['oqqit_rate_4'] == 'Yes' ?('€'.($sect5['oqqit_rate_5'] + explode('##',$sect5['oqqit_rate_6'])[1] + explode('##',$sect5['oqqit_rate_7'])[1]
-                    + explode('##',$sect5['oqqit_rate_8'])[1])):'').'
+                ' . ($sect5['oqqit_rate_4'] == 'Yes' ? ('€' . ($sect5['oqqit_rate_5'] + explode('##', $sect5['oqqit_rate_6'])[1] + explode('##', $sect5['oqqit_rate_7'])[1]
+                    + explode('##', $sect5['oqqit_rate_8'])[1])) : '') . '
             </td>
         </tr>
         <tr>
@@ -235,7 +355,7 @@ function getQuotationHTML($quotationID)
                 <b>Section Eight – Money and Bank Cards / Μέρος Οκτώ – Χρήματα και Τραπεζικές Κάρτες</b><br>
             </td>
             <td align="center">
-                '.($sect4['oqqit_rate_14'] == 'Yes' ? 'Included / Περιλαμβάνεται':'Not Included / Δεν Περιλαμβάνεται').'<br>
+                ' . ($sect4['oqqit_rate_14'] == 'Yes' ? 'Included / Περιλαμβάνεται' : 'Not Included / Δεν Περιλαμβάνεται') . '<br>
             </td>
         </tr>
         <tr>
@@ -262,7 +382,7 @@ function getQuotationHTML($quotationID)
             <td>
                 Endorsements that apply to this insurance / Οι Πρόσθετες Πράξεις που 
                 ισχύουν για αυτό το ασφαλιστήριο συμβόλαιο.&nbsp;
-                '.getEndorsementList($sect1,$sect2,$sect3,$sect4,$sect5).'
+                ' . getEndorsementList($sect1, $sect2, $sect3, $sect4, $sect5) . '
             </td>
             <td></td>
         </tr>
@@ -275,13 +395,13 @@ function getQuotationHTML($quotationID)
         <tr>
             <td></td>
             <td>
-                Premium / Ασφάλιστρα: €'.$db->fix_int_to_double($quotationData['oqq_premium']).'<br>
+                Premium / Ασφάλιστρα: €' . $db->fix_int_to_double($quotationData['oqq_premium']) . '<br>
                 <br>
-                Fees / Δικαιώματα: €'.$db->fix_int_to_double($quotationData['oqq_fees']).'<br>
+                Fees / Δικαιώματα: €' . $db->fix_int_to_double($quotationData['oqq_fees']) . '<br>
                 <br>							
-                Stamps / Χαρτόσημα: €'.$db->fix_int_to_double($quotationData['oqq_stamps']).'<br>
+                Stamps / Χαρτόσημα: €' . $db->fix_int_to_double($quotationData['oqq_stamps']) . '<br>
                 <br>						
-                Total Payable Amount / Ολικό Πληρωτέο Ποσό: €'.$db->fix_int_to_double($quotationData['oqq_premium']+$quotationData['oqq_fees']+$quotationData['oqq_stamps']).'<br>
+                Total Payable Amount / Ολικό Πληρωτέο Ποσό: €' . $db->fix_int_to_double($quotationData['oqq_premium'] + $quotationData['oqq_fees'] + $quotationData['oqq_stamps']) . '<br>
                 <br>			
                 Cancellation administration fee (see page 5 of the insurance document) / 
                 Έξοδα διαχείρισης ακυρώσεων (βλέπε σελίδα 5 του ασφαλιστικού εγγράφου)	€50,00<br>&nbsp;
@@ -526,10 +646,12 @@ function getQuotationHTML($quotationID)
     
 </div>
 ';
+    }
     return $html;
 }
 
-function getEndorsementList($sect1,$sect2,$sect3,$sect4,$sect5){
+function getEndorsementList($sect1, $sect2, $sect3, $sect4, $sect5)
+{
     global $db;
 
     $html = '';
@@ -537,25 +659,25 @@ function getEndorsementList($sect1,$sect2,$sect3,$sect4,$sect5){
     //always add 18
     $html = '<br>Unoccupancy Clause (18) / Ρήτρα περί Ακατοίκητης Κατοικίας (18)';
 
-    $buildingData = explode("##",$sect2['oqqit_rate_5']);
-    if ($buildingData[1] == 'Wooden' || $buildingData[1] == 'Metal'){
+    $buildingData = explode("##", $sect2['oqqit_rate_5']);
+    if ($buildingData[1] == 'Wooden' || $buildingData[1] == 'Metal') {
         $html .= "<br>Non-Standard Construction Clause (8) / Ρήτρα περί Μη Συνηθισμένης Κατασκευής (8)";
     }
-    if ($buildingData[1] == 'Other'){
+    if ($buildingData[1] == 'Other') {
         $html .= "<br>Non-Standard Construction Clause (8) / Ρήτρα περί Μη Συνηθισμένης Κατασκευής (8) 
                     <br>Earthquake Exclusion Clause (22) / Ρήτρα    περί   Εξαίρεσης Σεισμού (22)";
     }
 
-    if($buildingData[2] == 'Flat') {
+    if ($buildingData[2] == 'Flat') {
         $html .= "<br>Flat Roof Endorsement (20) / Ρήτρα περί Επίπεδης Οροφής (20)";
     }
 
-    if ($sect4['oqqit_rate_12'] == 'Yes'){
+    if ($sect4['oqqit_rate_12'] == 'Yes') {
         $html .= "<br>Theft Extension Clause (7) / Ρήτρα περί Επέκτασης της Κάλυψης για Κλοπή (7)";
     }
 
-    if ($sect4['oqqit_rate_3'] > 0 ){
-        if ($sect4['oqqit_rate_15'] == 'Yes'){
+    if ($sect4['oqqit_rate_3'] > 0) {
+        if ($sect4['oqqit_rate_15'] == 'Yes') {
             $html .= "<br> Hotel and Motel Clause (1) / Ρήτρα περί Ξενοδοχείων και Μοτέλ (1)";
         }
         $html .= "<br> Safe Clause (Limited) (3) / Ρήτρα περί Χρηματοκιβωτίου (Περιορισμένη) (3)
@@ -565,7 +687,7 @@ function getEndorsementList($sect1,$sect2,$sect3,$sect4,$sect5){
                     <br> Unattended Vehicles Clause (17) / Ρήτρα περί Μη Επιτηρούμενων Οχημάτων (17)";
     }
 
-    if ($sect2['oqqit_rate_13'] == 'Yes'){
+    if ($sect2['oqqit_rate_13'] == 'Yes') {
         $html .= "<br> Subsidence, Heave or Landslip Exclusion Clause (10) / Ρήτρα περί Εξαίρεσης Καθίζησης, Ανύψωσης Εδάφους ή Κατολίσθησης (10)";
     }
 

@@ -8,7 +8,11 @@
 
 function insured_amount_custom_rates($array, $values, $quotation_id)
 {
+    global $changePackage;
     $package = $values[10][3]['rate'];
+    if ($changePackage == 'Basic' || $changePackage == 'Classic' || $changePackage == 'Luxury' ){
+        $package = $changePackage;
+    }
     $buildingValue = $values[11][14]['rate'];
     $contentsInHome = $values[12][1]['rate'];
     $extentionFullTheft = $values[12][12]['rate'];
