@@ -72,6 +72,20 @@ if ($_POST["action"] == "insert") {
     $db->working_section = 'AInsurance Policy Modify';
 
     $policy = new Policy($_POST['lid']);
+
+    //if underwriter/agent field is disabled then set the value manually
+    if ($_POST['fld_underwriter_ID'] == ''){
+        $_POST['fld_underwriter_ID'] = $policy->policyData['inapol_underwriter_ID'];
+    }
+    //if insurance company field is disabled then set the value manually
+    if ($_POST['fld_insurance_company_ID'] == ''){
+        $_POST['fld_insurance_company_ID'] = $policy->policyData['inapol_insurance_company_ID'];
+    }
+    //if policy type is disabled then set the value manually
+    if ($_POST['fld_type_code'] == ''){
+        $_POST['fld_type_code'] = $policy->policyData['inapol_type_code'];
+    }
+
     if ($policy->checkInsuranceTypeChange($_POST['fld_type_code']) == false) {
 
         //remove the type change and generate error
@@ -147,12 +161,28 @@ $db->show_header();
                         <b><?php if ($_GET["lid"] == "") echo $db->showLangText('Insert Policy', 'Δημιουργία Συμβολαίου'); else echo $db->showLangText('Update Policy', 'Αλλαγή Συμβολαίου'); ?></b>
                     </div>
 
+                    <?php
+                    //if prepayment exists then disable underwriter/agent
+                    $prepaymentsDisableFields = '';
+                    $prepaymentsDisabledFieldsInfo = '';
+                    $prepaymentsDisabledFieldsClass = '';
+                    if ($policy->getPolicyTotalPrepayments() > 0){
+                        $prepaymentsDisableFields = 'disabled';
+                        $prepaymentsDisabledFieldsInfo = $db->showLangText('Prepayments Found. Field locked'
+                            ,'Βρέθηκαν Προπληρωμές. Πεδίο Κλειδωμένο');
+                        $prepaymentsDisabledFieldsClass = 'redColor';
+                    }
+                    ?>
+
                     <div class="form-group row">
-                        <label for="fld_underwriter_ID"
-                               class="col-md-2 col-form-label"><?php echo $db->showLangText('Agent', 'Ασφαλιστής'); ?></label>
+                        <label for="fld_underwriter_ID" title="<?php echo $prepaymentsDisabledFieldsInfo;?>"
+                               class="col-md-2 col-form-label <?php echo $prepaymentsDisabledFieldsClass;?>"><?php
+                            echo $db->showLangText('Agent', 'Ασφαλιστής');
+                            ?></label>
                         <div class="col-md-4">
                             <select name="fld_underwriter_ID" id="fld_underwriter_ID"
                                     class="form-control"
+                                    <?php echo $prepaymentsDisableFields;?>>
                                     onchange="loadInsuranceCompanies();">
                                 <option value=""></option>
                                 <?php
@@ -171,7 +201,7 @@ $db->show_header();
                                         AND inaund_status = 'Active' 
                                         AND inaund_subagent_ID != 0
                                         ORDER BY usr_name ASC";
-                                echo $sql;
+                                //echo $sql;
                                 $result = $db->query($sql);
                                 while ($underwriter = $db->fetch_assoc($result)) {
                                     ?>
@@ -207,12 +237,14 @@ $db->show_header();
                     </div>
 
                     <div class="form-group row">
-                        <label for="fld_insurance_company_ID" class="col-md-2 col-form-label">
+                        <label for="fld_insurance_company_ID" title="<?php echo $prepaymentsDisabledFieldsInfo;?>"
+                               class="col-md-2 col-form-label <?php echo $prepaymentsDisabledFieldsClass;?>">
                             <?php echo $db->showLangText('Company', 'Εταιρεία'); ?>
                         </label>
                         <div class="col-md-4">
                             <select name="fld_insurance_company_ID" id="fld_insurance_company_ID"
-                                    class="form-control" onchange="loadPolicyTypes();">
+                                    class="form-control" onchange="loadPolicyTypes();"
+                                    <?php echo $prepaymentsDisableFields;?>>
                                 <?php if ($_GET['lid'] > 0) { ?>
                                     <option value="<?php echo $data['inainc_insurance_company_ID']; ?>">
                                         <?php echo $data['inainc_name']; ?>
@@ -258,7 +290,8 @@ $db->show_header();
                             </script>
                         </div>
 
-                        <label for="fld_type_code" class="col-md-3 col-form-label">
+                        <label for="fld_type_code" title="<?php echo $prepaymentsDisabledFieldsInfo;?>"
+                               class="col-md-3 col-form-label <?php echo $prepaymentsDisabledFieldsClass;?>">
                             <?php echo $db->showLangText('Type', 'Τύπος'); ?>
                         </label>
                         <div class="col-md-3">
@@ -266,6 +299,7 @@ $db->show_header();
                                    value="<?php echo $data['inapol_type_code']; ?>">
                             <select name="fld_type_code" id="fld_type_code"
                                     class="form-control"
+                                    <?php echo $prepaymentsDisableFields;?>
                                     onchange="insuranceTypeChange()">
                                 <?php if ($_GET['lid'] > 0) { ?>
                                     <option value="<?php echo $data['inapol_type_code']; ?>">
@@ -319,12 +353,14 @@ $db->show_header();
                     </div>
 
                     <div class="form-group row">
-                        <label for="customerSelect" class="col-md-2 col-form-label">
+                        <label for="customerSelect" title="<?php echo $prepaymentsDisabledFieldsInfo;?>"
+                               class="col-md-2 col-form-label <?php echo $prepaymentsDisabledFieldsClass;?>">
                             <?php echo $db->showLangText('Customer', 'Πελάτης'); ?>
                         </label>
                         <div class="col-md-4">
                             <input name="customerSelect" type="text" id="customerSelect"
                                    class="form-control"
+                                   <?php echo $prepaymentsDisableFields;?>
                                    value="<?php echo $data["cst_name"] . " " . $data['cst_surname']; ?>">
                             <?php
                             $formValidator->addField(
@@ -761,11 +797,11 @@ $db->show_header();
                                    class="btn btn-secondary"
                                    onclick="window.location.assign('policies.php')">
 
-
                             <input type="submit"
                                    value="<?php echo $db->showLangText('Save Policy', 'Αποθήκευση Συμβόλαιου'); ?>"
                                    class="btn btn-secondary" id="Save"
                                    onclick="submitForm('save');">
+
                             <input type="submit"
                                    value="<?php if ($_GET["lid"] == "")
                                        echo $db->showLangText('Insert Policy & Exit', 'Δημιουργία Συμβόλαιου και Έξοδος');

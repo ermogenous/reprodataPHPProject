@@ -13,7 +13,10 @@ $db = new Main(1);
 $db->admin_title = "Credit cards API";
 
 $db->apiGetReadHeaders();
-
+//do not allow the api to work if the server and credit card server is the same
+if ($_SERVER['HTTP_HOST'] == 'localhost'){
+    exit();
+}
 $remoteUrl = 'http://localhost/insurance/rcb/credit_card_functions.php';
 $remoteUrlUsername = 'VFVrKzd5STNYRHZ6bXpTT0tieW5Ydz09Ojpl8sKxALeRVF6SiG-6QH42'; //encrypted using the key already
 $remoteUrlPassword = 'VFVrKzd5STNYRHZ6bXpTT0tieW5Ydz09Ojpl8sKxALeRVF6SiG-6QH42'; //encrypted using the key already

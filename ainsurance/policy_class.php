@@ -27,6 +27,7 @@ class Policy
     private $validForActive = false;
     private $totalItems = 0;
     private $insuranceSettings;
+    private $totalPolicyPrepayments = 0;
 
 
     //Accounts
@@ -94,12 +95,19 @@ class Policy
 
         $this->commissionCalculation = $commData['inaunc_commission_calculation'];
 
-        $this->totalPremium = round(($this->policyData['inapol_premium'] + /*$this->policyData['inapol_mif'] +*/
+        $this->totalPremium = round(($this->policyData['inapol_premium'] + $this->policyData['inapol_mif'] +
             $this->policyData['inapol_fees'] + $this->policyData['inapol_stamps'] + $this->policyData['inapol_special_discount']), 2);
         $this->commission = $this->policyData['inapol_commission'];
 
         $result = $db->query_fetch('SELECT COUNT(*)as clo_total FROM ina_policy_items WHERE inapit_policy_ID = ' . $this->policyID);
         $this->totalItems = $result['clo_total'];
+
+        //find total prepayments
+        $prepaymentsResult = $db->query_fetch(
+            "SELECT COUNT(*) as clo_total FROM ina_policy_payments WHERE 
+                    inapp_policy_ID = ".$this->policyID."
+                    AND inapp_status = 'Prepayment' ");
+        $this->totalPolicyPrepayments = $prepaymentsResult['clo_total'];
 
     }
 
@@ -594,7 +602,7 @@ class Policy
             }
             */
 
-            //2. Check if total installments premium/commission is correct
+            //4. Check if total installments premium/commission is correct
             $instCheck = $db->query_fetch('SELECT
                     SUM(ROUND(inapi_amount,2)) as clo_total_amount,
                     SUM(ROUND(inapi_commission_amount,2)) as clo_total_commission_amount
@@ -622,6 +630,30 @@ class Policy
             if ($this->policyData['inapol_fees'] == '' || $this->policyData['inapol_fees'] == null) {
                 $this->error = true;
                 $this->errorDescription = 'Policy fees are not specified';
+                return false;
+            }
+
+            //5. Check all payments. Only prepayment status is allowed. Maybe outstanding found so they must be deleted or set to prepayment
+            $paymentsCheck = $db->query_fetch("
+                SELECT COUNT(*) as clo_total FROM ina_policy_payments WHERE inapp_policy_ID = ".$this->policyID."
+                AND inapp_status != 'Prepayment' 
+            ");
+            if ($paymentsCheck['clo_total'] > 0){
+                $this->error = true;
+                $this->errorDescription = 'Found Outstanding (or other invalid status) payments. Only prepayment status is allowed. 
+                If you have any Outstanding set to Prepayment or delete so you can proceed activation.';
+                return false;
+            }
+
+            //6. if prepayments exists check if their total amount is more than gross premium
+            $sqlPrepResult = $db->query_fetch("
+                SELECT
+                SUM(inapp_amount)as clo_total_payment 
+                FROM ina_policy_payments WHERE inapp_policy_ID = ".$this->policyID." AND inapp_status = 'Prepayment'
+            ");
+            if ($sqlPrepResult['clo_total_payment'] > $this->totalPremium){
+                $this->error = true;
+                $this->errorDescription = 'Total Prepayments are more than the policy total premium.';
                 return false;
             }
 
@@ -673,6 +705,29 @@ class Policy
                 $transactionsResult = $this->insertAccountTransactions();
             } else if ($this->accountsUsed == 'Advanced' && $this->policyData['inainc_enable_commission_release'] == 1) {
 
+            }
+
+            //end of activating.
+            //check if any prepayment payments found. If yes then apply then and post them
+            //To avoid any case of activating the policy then the user can apply the payment and then reverse and then delete it.
+            include_once ('policyTabs/payments_class.php');
+            //get all the prepayments payments.
+            $sqlAllPrepayments = $db->query('SELECT * FROM ina_policy_payments WHERE inapp_policy_ID = '.$this->policyID." AND inapp_status = 'Prepayment'");
+            while ($payment = $db->fetch_assoc($sqlAllPrepayments)){
+                $payment = new PolicyPayment($payment['inapp_policy_payment_ID']);
+                if ($payment->applyPayment() == true){
+                    if ($payment->postPayment() == true){
+                        //success posting payment
+                    }
+                    else {
+                        $this->error = true;
+                        $this->errorDescription = $payment->errorDescription;
+                    }
+                }
+                else {
+                    $this->error = true;
+                    $this->errorDescription = $payment->errorDescription;
+                }
             }
         }
 
@@ -1976,6 +2031,10 @@ class Policy
         //}
 
         return $list;
+    }
+
+    public function getPolicyTotalPrepayments(){
+        return $this->totalPolicyPrepayments;
     }
 
     //input the list from the previous function getAllOverwrites to get a list for drop down to inject in formbuilder->setInputSelectArrayOptions

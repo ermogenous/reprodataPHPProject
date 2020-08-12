@@ -36,10 +36,12 @@ $db->show_header();
                 while ($row = $sybase->fetch_assoc($result)) {
                     ?>
                     <div class="row form-group">
-                        <div class="col-12 alert alert-secondary">
+                        <div class="col-12 alert alert-secondary text-center">
+                            <b>
                             <?php
                             echo $row['inity_insurance_type']." - ".$row['inity_long_description'];
                             ?>
+                            </b>
                         </div>
                     </div>
                     <div class="row form-group">
@@ -58,7 +60,7 @@ $db->show_header();
                         <div class="col-3">Pol.Aux: <?php echo $row['inity_policy_aux_input_dw'];?></div>
                         <div class="col-3">Sit.Obj: <?php echo $row['inity_situation_layout'];?></div>
                         <div class="col-3">Pit.Obj: <?php echo $row['inity_detailed_policy_item_layout'];?></div>
-                        <div class="col-3"></div>
+                        <div class="col-3">C.Note.Obj: <?php echo $row['inity_cover_note_layout'];?></div>
                     </div>
                     <?php
                 }

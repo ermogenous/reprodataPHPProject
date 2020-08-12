@@ -47,6 +47,7 @@ class TableList
     private $disableModifyIcon = false;
     private $disableDeleteIcon = false;
     private $disableIconColumn = false;
+    private $disableClickRowLink = false;
     private $functionIconArea; //Set a function name here and will be called passed the row data
     private $extraColumns = [];
 
@@ -272,6 +273,11 @@ class TableList
         return $this;
     }
 
+    public function setDisableClickRowLink(){
+        $this->disableClickRowLink = true;
+        return $this;
+    }
+
     public function setFunctionIconArea($function)
     {
         $this->functionIconArea = $function;
@@ -471,18 +477,20 @@ class TableList
             if (ignoreEdit === false) {
                 ';
 
-        if ($this->modifyLinkTarget == '_self') {
-            $this->tableHtml .= '
+        if ($this->disableClickRowLink == false) {
+            if ($this->modifyLinkTarget == '_self') {
+                $this->tableHtml .= '
                 window.location.assign("' . $this->modifyLink . '" + id);
                 ';
-        } else if ($this->modifyLinkTarget == '_parent') {
-            $this->tableHtml .= '
+            } else if ($this->modifyLinkTarget == '_parent') {
+                $this->tableHtml .= '
                 parent.document.location.href = "' . $this->modifyLink . '" + id;
                 ';
-        } else if ($this->modifyLinkTarget == '_blank') {
-            $this->tableHtml .= '
+            } else if ($this->modifyLinkTarget == '_blank') {
+                $this->tableHtml .= '
                 window.open("' . $this->modifyLink . '" + id);
                 ';
+            }
         }
         $this->tableHtml .= '
             }

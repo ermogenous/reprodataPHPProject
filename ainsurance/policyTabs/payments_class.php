@@ -59,6 +59,11 @@ class PolicyPayment
             $this->errorDescription = 'Payment must be outstanding to delete';
         }
 
+        if ($this->paymentData['inapp_status'] == 'Prepayment'){
+            $this->error = true;
+            $this->errorDescription = 'Cannot delete a Prepayment. You can only apply/post it.';
+        }
+
         if ($this->error == true) {
             return false;
         }
@@ -76,7 +81,7 @@ class PolicyPayment
 
         if ($this->paymentData['inapol_status'] != 'Active' && $this->paymentData['inapol_status'] != 'Archived') {
             $this->error = true;
-            $this->errorDescription = 'Policy must be Active to post payments';
+            $this->errorDescription = 'Policy must be Active to apply payments';
         }
 
         if ($this->paymentData['inapp_status'] != 'Outstanding') {
@@ -225,6 +230,63 @@ class PolicyPayment
 
         }
 
+    }
+
+    //make a payment from outstanding to prepayment
+    //this is only allowed when the policy is outstanding. When done then fields of the policy are restricted
+    /**
+     * A prepayment is when you get prepaid for a policy which is not yet posted.
+     *
+     */
+    public function prepaymentPayment(){
+        global $db;
+
+        if ($this->paymentID == '' || $this->paymentID == 0){
+            $this->error = true;
+            $this->errorDescription = 'Payment ID is not set';
+            return false;
+        }
+
+        if ($this->paymentData['inapol_status'] != 'Outstanding') {
+            $this->error = true;
+            $this->errorDescription = 'Policy must be Outstanding to set payment as prepaid';
+            return false;
+        }
+
+        if ($this->paymentData['inapp_status'] != 'Outstanding') {
+            $this->error = true;
+            $this->errorDescription = 'Payment must be Outstanding to set as prepaid';
+            return false;
+        }
+
+        $newData['fld_status'] = 'Prepayment';
+        $db->db_tool_update_row('ina_policy_payments',$newData,'inapp_policy_payment_ID = '.$this->paymentID,
+            $this->paymentID,'fld_','execute','inapp_');
+
+        return true;
+
+    }
+
+    public function makePrepaymentToOutstanding(){
+        global $db;
+
+        if ($this->paymentData['inapp_status'] != 'Prepayment') {
+            $this->error = true;
+            $this->errorDescription = 'Payment must be Prepayment to set as Outstanding';
+            return false;
+        }
+
+        if ($this->paymentData['inapol_status'] != 'Outstanding') {
+            $this->error = true;
+            $this->errorDescription = 'Policy must be Outstanding to set Prepayment as Outstanding';
+            return false;
+        }
+
+        $newData['fld_status'] = 'Outstanding';
+        $db->db_tool_update_row('ina_policy_payments',$newData,'inapp_policy_payment_ID = '.$this->paymentID,
+            $this->paymentID,'fld_','execute','inapp_');
+
+        return true;
     }
 
     public function postPayment()

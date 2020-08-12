@@ -199,7 +199,7 @@ function template_header()
                                 ?>
 
                                 <?php
-                                if ($db->user_data['usr_user_rights'] == 0 ) {
+                                if ($db->user_data['usr_user_rights'] == 0) {
                                     ?>
                                     <a class="dropdown-item"
                                        href="<?php echo $main["site_url"]; ?>/eurosure/reports/system/ins_type_reports.php"><i
@@ -210,9 +210,132 @@ function template_header()
                                 ?>
                             </div>
                         </li>
+
+
                         <?php
                     }
                     ?>
+
+
+
+                    <!--Reports -->
+                    <li class="nav-item dropdown">
+                        <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                           class="nav-link dropdown-toggle">
+                            <i class="fas fa-wrench"></i> <?php echo $db->showLangText('Reports', 'Reports'); ?>
+                            <i class="fas fa-caret-down"></i>
+                        </a>
+                        <ul aria-labelledby="dropdownMenu1" class="dropdown-menu border-0 shadow">
+                            <li>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/eurosure/reports/claims/claims_list_full_details.php"><i
+                                            class="fas fa-eye"></i> <?php echo $db->showLangText('Claims Full List', 'Claims Full List'); ?>
+                                </a>
+                            </li>
+
+                            <li>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/eurosure/functions/all_docs_to_pdf.php"><i
+                                            class="fas fa-eye"></i> <?php echo $db->showLangText('Save all docs to PDF', 'Φύλαξη Αρχείων σε PDF'); ?>
+                                </a>
+                            </li>
+                            <li>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/eurosure/functions/update_access_clients.php"><i
+                                            class="fas fa-eye"></i> <?php echo $db->showLangText('Clients List for Access Fire', 'Clients List for Access Fire'); ?>
+                                </a>
+                            </li>
+
+                            <li class="dropdown-divider"></li>
+
+                            <!-- Level two dropdown-->
+                            <li class="dropdown-submenu">
+                                <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown"
+                                   aria-haspopup="true"
+                                   aria-expanded="false" class="dropdown-item dropdown-toggle">
+                                    <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Claims', 'Claims'); ?>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                                <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
+                                    <li>
+                                        <a tabindex="-1"
+                                           href="<?php echo $main["site_url"]; ?>/eurosure/reports/claims/claims_list_full_details.php"
+                                           class="dropdown-item">
+                                            <i class="fas fa-file-import"></i> Claims Full List
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a tabindex="-1"
+                                           href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/validate_records.php"
+                                           class="dropdown-item">
+                                            <i class="fas fa-tasks"></i> Validate Records
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a tabindex="-1"
+                                           href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/lapse_policies.php"
+                                           class="dropdown-item">
+                                            <i class="fas fa-plug"></i> Lapse Process
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a tabindex="-1"
+                                           href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/validate_lapse.php"
+                                           class="dropdown-item">
+                                            <i class="fas fa-tasks"></i> Validate Lapsed Policies Process
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a tabindex="-1"
+                                           href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/export_file.php"
+                                           class="dropdown-item">
+                                            <i class="fas fa-file-export"></i> Export File
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a tabindex="-1"
+                                           href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/validate_policies.php"
+                                           class="dropdown-item">
+                                            <i class="fas fa-tasks"></i> Validate Policies
+                                        </a>
+                                    </li>
+
+
+                                    <li class="dropdown-submenu">
+                                        <a id="dropdownMenu3" href="#" role="button" data-toggle="dropdown"
+                                           aria-haspopup="true"
+                                           aria-expanded="false" class="dropdown-item dropdown-toggle">
+                                            <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Reports', 'Reports'); ?>
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                            <i class="fas fa-chevron-right"></i>
+                                        </a>
+                                        <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
+                                            <li>
+                                                <a tabindex="-1"
+                                                   href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/reports/error_report.php"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-exclamation-triangle"></i> Errors
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+
+
+                                </ul>
+                            </li>
+                            <!-- End Level two -->
+                        </ul>
+                    </li>
+
+
+
+
+
 
                     <!-- Functions -->
                     <?php

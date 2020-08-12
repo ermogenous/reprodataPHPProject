@@ -158,8 +158,9 @@ FormBuilder::buildPageLoader();
                         JOIN intransactiondetails ON inped_policy_serial= intrd_policy_serial AND inped_endorsement_serial =
                         intrd_endorsement_serial and COALESCE(intrd_claim_serial, 0) = 0
                         JOIN intransactionheaders ON intrd_trh_auto_serial = intrh_auto_serial
+                        JOIN inagents ON inag_agent_serial = inpol_agent_serial
                         WHERE inpol_policy_serial = " . $_POST['fld_policy_serial'] . "
-                        AND intrd_related_type = 'C'
+                        AND intrd_related_type = IF inag_internal_external_agent = 'I' THEN 'C' ELSE 'A' ENDIF
                         GROUP BY intrh_document_number, intrh_auto_serial, intrd_related_type";
                 //update all this print documents
                 $resultDrCr = $sybase->query($sql);
@@ -308,8 +309,9 @@ FormBuilder::buildPageLoader();
                                         JOIN inpolicyendorsement ON inped_financial_policy_abs = inpol_policy_serial
                                         JOIN intransactiondetails ON inped_policy_serial= intrd_policy_serial AND inped_endorsement_serial = intrd_endorsement_serial and COALESCE(intrd_claim_serial, 0) = 0
                                         JOIN intransactionheaders ON intrd_trh_auto_serial = intrh_auto_serial
+                                        JOIN inagents ON inag_agent_serial = inpol_agent_serial
                                         WHERE inpol_policy_serial = " . $_POST['fld_policy_serial'] . "
-                                        AND intrd_related_type = 'C'
+                                        AND intrd_related_type = IF inag_internal_external_agent = 'I' THEN 'C' ELSE 'A' ENDIF
                                         GROUP BY intrh_document_number, intrh_auto_serial, intrd_related_type, intrh_document_printed";
                             $result = $sybase->query($sql);
                             while ($prnt = $sybase->fetch_assoc($result)) {
