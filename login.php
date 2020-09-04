@@ -1,8 +1,6 @@
 <?php
 include("include/main.php");
 
-
-
 $db = new Main(0);
 
 //unset ($_SESSION);

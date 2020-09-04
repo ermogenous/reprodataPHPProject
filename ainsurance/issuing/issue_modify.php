@@ -326,7 +326,7 @@ if ($_GET['lid'] != '') {
                         <?php
                         $formB->initSettings()
                             ->setFieldName('fld_item_custom_view_file')
-                            ->setFieldDescription('Custom Item File')
+                            ->setFieldDescription('Custom Item File View')
                             ->setFieldType('input')
                             ->setInputValue($data['inaiss_item_custom_view_file'])
                             ->setLabelTitle('This will replace the items List table. Under ainsurance/custom_items folder put the custom file and enter here its filename. Leave empty to use defaults')

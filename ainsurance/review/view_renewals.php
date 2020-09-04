@@ -380,7 +380,7 @@ $db->show_header();
             $('#trResult_' + id).show();
             //add the result description in the td
             $('#tdResult_' + id).html(resultDescription +
-            ' < href="../policy_modify.php?lid=' + id +'" target="_blank">Open Policy</a>');
+            ' <a href="../policy_modify.php?lid=' + id +'" target="_blank">Open Policy</a>');
             //make the policy line green
             $('#policyTR_' + id).addClass('alert alert-success');
             $('#console').append('Success');

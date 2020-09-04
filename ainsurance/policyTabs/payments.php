@@ -131,6 +131,15 @@ if ($_GET['pid'] > 0) {
 
                 </div>
             </div>
+            <?php
+            if ($policy->policyData['inapol_status'] == 'Outstanding') {
+            ?>
+            <div class="row">
+                <div class="col-12 alert alert-warning">
+                    Note! You can only insert Prepayments since the policy is in Outstanding Status
+                </div>
+            </div>
+            <?php } ?>
             <div class="row">
                 <div class="col-12">
                     <div class="text-center"><?php $table->show_pages_links(); ?></div>

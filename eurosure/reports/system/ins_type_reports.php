@@ -62,6 +62,12 @@ $db->show_header();
                         <div class="col-3">Pit.Obj: <?php echo $row['inity_detailed_policy_item_layout'];?></div>
                         <div class="col-3">C.Note.Obj: <?php echo $row['inity_cover_note_layout'];?></div>
                     </div>
+                    <div class="row form-group">
+                        <div class="col-3">Attachments RTF:</div>
+                        <div class="col-3"><?php echo $row['inity_shedule_rtf'];?></div>
+                        <div class="col-3"></div>
+                        <div class="col-3"></div>
+                    </div>
                     <?php
                 }
                 ?>

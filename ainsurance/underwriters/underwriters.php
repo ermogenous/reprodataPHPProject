@@ -63,7 +63,7 @@ $db->show_header();
                                 href="underwriters_modify.php?lid=<?php echo $row["inaund_underwriter_ID"]; ?>">Modify</a>
                         </td>
                         <td width="58" height="30" align="center"><a
-                                href="underwriters_modify.php?lid=<?php echo $row["inaund_underwriter_ID"]; ?>"
+                                href="underwriters_delete.php?lid=<?php echo $row["inaund_underwriter_ID"]; ?>"
                                 onclick="return(confirm('Are you sure you want to delte this underwriter?'))">Delete</a>
                         </td>
                     </tr>

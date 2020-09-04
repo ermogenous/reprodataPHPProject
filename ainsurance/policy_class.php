@@ -108,6 +108,9 @@ class Policy
                     inapp_policy_ID = ".$this->policyID."
                     AND inapp_status = 'Prepayment' ");
         $this->totalPolicyPrepayments = $prepaymentsResult['clo_total'];
+        if ($this->totalPolicyPrepayments == null || $this->totalPolicyPrepayments == ''){
+            $this->totalPolicyPrepayments = 0;
+        }
 
     }
 
@@ -331,6 +334,13 @@ class Policy
     public function validatePolicyNumber()
     {
         global $db;
+
+        //if its renewal then no validation is required
+        if ($this->policyData['inapol_process_status'] == 'Renewal'
+            || $this->policyData['inapol_process_status'] == 'Endorsement'
+            || $this->policyData['inapol_process_status'] == 'Cancellation'){
+            return true;
+        }
 
         //first check if issuing exists
         $sql = 'SELECT * FROM ina_issuing WHERE

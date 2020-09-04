@@ -166,7 +166,7 @@ $db->show_header();
                     $prepaymentsDisableFields = '';
                     $prepaymentsDisabledFieldsInfo = '';
                     $prepaymentsDisabledFieldsClass = '';
-                    if ($policy->getPolicyTotalPrepayments() > 0){
+                    if ($_GET['lid'] > 0 && $policy->getPolicyTotalPrepayments() > 0){
                         $prepaymentsDisableFields = 'disabled';
                         $prepaymentsDisabledFieldsInfo = $db->showLangText('Prepayments Found. Field locked'
                             ,'Βρέθηκαν Προπληρωμές. Πεδίο Κλειδωμένο');
@@ -182,7 +182,7 @@ $db->show_header();
                         <div class="col-md-4">
                             <select name="fld_underwriter_ID" id="fld_underwriter_ID"
                                     class="form-control"
-                                    <?php echo $prepaymentsDisableFields;?>>
+                                    <?php echo $prepaymentsDisableFields;?>
                                     onchange="loadInsuranceCompanies();">
                                 <option value=""></option>
                                 <?php
@@ -270,6 +270,7 @@ $db->show_header();
                                                     data = response;
                                                 },
                                                 () => {
+                                                console.log('Error Fetching Companies')
                                                 }
                                                 ,
                                                 () => {
@@ -411,9 +412,17 @@ $db->show_header();
                         </label>
                         <div class="col-md-2">
                             <input type="hidden" id="policyNumberIssue" name="policyNumberIssue" value="false">
+                            <?php
+                            $policyNumberDisabled = '';
+                            if ($data['inapol_process_status'] == 'Renewal'
+                                || $data['inapol_process_status'] == 'Endorsement'
+                                || $data['inapol_process_status'] == 'Cancellation'){
+                                $policyNumberDisabled = 'disabled';
+                            }
+                            ?>
                             <input name="fld_policy_number" type="text" id="fld_policy_number"
                                    class="form-control" onkeyup="$('#policyNumberValidation').val('error');"
-                                   value="<?php echo $data["inapol_policy_number"]; ?>">
+                                   value="<?php echo $data["inapol_policy_number"]; ?>" <?php echo $policyNumberDisabled;?>>
                             <?php
                             $formValidator->addField(
                                 [
@@ -501,7 +510,7 @@ $db->show_header();
                         </label>
                         <div class="col-md-2">
                             <input name="fld_period_starting_date" type="text" id="fld_period_starting_date"
-                                   class="form-control"
+                                   class="form-control" <?php echo $policyNumberDisabled;?>
                                    value="" onchange="applyDatesAuto();">
                             <?php
                             $formValidator->addField(
@@ -561,7 +570,7 @@ $db->show_header();
                         </label>
                         <div class="col-md-2">
                             <input name="fld_starting_date" type="text" id="fld_starting_date"
-                                   class="form-control"
+                                   class="form-control" <?php echo $policyNumberDisabled;?>
                                    value="">
                             <?php
                             $formValidator->addField(

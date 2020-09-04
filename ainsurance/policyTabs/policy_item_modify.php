@@ -526,9 +526,9 @@ $formB->setLabelClasses('col-sm-3');
                                     <option value="0">No Package</option>
                                     <?php
                                     $sql = "SELECT * FROM ina_insurance_company_packages WHERE
-                              inaincpk_insurance_company_ID = " . $policy->policyData['inapol_insurance_company_ID'] . " 
-                              AND inaincpk_type = '" . $policy->policyData['inapol_type_code'] . "' 
-                              AND inaincpk_status = 'Active'";
+                                          inaincpk_insurance_company_ID = " . $policy->policyData['inapol_insurance_company_ID'] . " 
+                                          AND inaincpk_type = '" . $policy->policyData['inapol_type_code'] . "' 
+                                          AND inaincpk_status = 'Active'";
                                     $result = $db->query($sql);
                                     while ($pack = $db->fetch_assoc($result)) {
                                         ?>

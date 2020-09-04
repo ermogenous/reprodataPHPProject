@@ -1382,8 +1382,12 @@ class Main
         $log_entry = 'UPDATE Row At Table `' . $table . "`\n";
         $found_change = 0;
 
+        //get the structure of the table
+        //$structure =
+
         //LOOP in all the array
         foreach ($data_array as $name => $value) {
+
 
             //first check if the name of the field matches with the prefix
             if (substr($name, 0, strlen($data_prefix)) == $data_prefix) {
@@ -1399,7 +1403,14 @@ class Main
                     if ($found_change != 0)
                         $sql .= ', ';
 
-                    $sql .= "`" . $fixed_name . "` = '" . addslashes($value) . "' \n";
+                    if ($value == ''){
+                        $sql .= "`" . $fixed_name . "` = null \n";
+                    }
+                    else {
+                        $sql .= "`" . $fixed_name . "` = '" . addslashes($value) . "' \n";
+                    }
+
+
                     $found_change = 1;
 
                     //log file
@@ -1462,7 +1473,6 @@ class Main
             }
 
         }//if changes found
-
 
     }//function db_tool_update_row
 

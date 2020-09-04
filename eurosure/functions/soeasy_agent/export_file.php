@@ -270,6 +270,7 @@ $db->show_header();
             </div>
             <div class="row form-group">
                 <div class="col-12">
+                    Safe File to F:\SynImport <br>
                     C:\SynInSys\synthesi.exe /schedule:FUSINIMP:FUS123456:EUROSURE:BROKERIMPORT
                 </div>
             </div>
