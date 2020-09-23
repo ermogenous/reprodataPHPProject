@@ -16,12 +16,54 @@ $db->show_header();
 
 $table = new draw_table('ac_entities','acet_name','ASC');
 
-$table->generate_data();
+if ($_POST['search'] == 'search') {
+    $table->extras = "1=1".PHP_EOL;
+    if ($_POST['search_field-id'] > 0){
+        $table->extras .= " AND acet_entity_ID = ".$_POST['search_field-id'];
+    }
+    else {
+        $table->extras .= " 
+        AND 
+                (
+                acet_name LIKE '%".$_POST['search_field']."%'
+                OR
+                CONCAT(acet_mobile,' ' ,acet_work_tel, ' ', acet_fax, ' ', acet_email )
+	            LIKE '%".$_POST['search_field']."%'
+	            )";
+    }
+}
 
+
+$table->generate_data();
 ?>
 
 
     <div class="container-fluid">
+
+        <div class="row">
+
+            <div class="col-12">
+                <form name="myForm" id="myForm" method="post" action="" onsubmit="">
+                    <div class="form-group row">
+                        <label for="search_field" class="col-sm-2 col-form-label"><?php echo $db->showLangText("Search", "Αναζήτηση"); ?></label>
+                        <div class="col-sm-8 ui-widget">
+                            <input name="search_field" type="text" id="search_field"
+                                   class="form-control"
+                                   value="<?php echo $_POST['search_field'];?>">
+                            <input id="search_field-id" name="search_field-id" type="hidden">
+                            <input id="search" name="search" value="search" type="hidden">
+                        </div>
+                        <div class="col-sm-2">
+                            <input type="submit" name="Submit" id="Submit"
+                                   value="Search"
+                                   class="btn btn-secondary">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+
         <div class="row">
             <div class="col-1 d-none d-lg-block"></div>
             <div class="col-12 col-lg-10">

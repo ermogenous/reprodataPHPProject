@@ -29,6 +29,12 @@ class Policy
     private $insuranceSettings;
     private $totalPolicyPrepayments = 0;
 
+    //totals from installments
+    private $totalInstallmentAmount;
+    private $totalInstallmentPaidAmount;
+    private $totalInstallmentCommissionAmount;
+    private $totalInstallmentCommissionPaidAmount;
+
 
     //Accounts
     private $accountsUsed;
@@ -105,12 +111,24 @@ class Policy
         //find total prepayments
         $prepaymentsResult = $db->query_fetch(
             "SELECT COUNT(*) as clo_total FROM ina_policy_payments WHERE 
-                    inapp_policy_ID = ".$this->policyID."
+                    inapp_policy_ID = " . $this->policyID . "
                     AND inapp_status = 'Prepayment' ");
         $this->totalPolicyPrepayments = $prepaymentsResult['clo_total'];
-        if ($this->totalPolicyPrepayments == null || $this->totalPolicyPrepayments == ''){
+        if ($this->totalPolicyPrepayments == null || $this->totalPolicyPrepayments == '') {
             $this->totalPolicyPrepayments = 0;
         }
+
+        //find total amounts. Including any other endorsements. Get it from installments
+        $totalsFromInstallments = $db->query_fetch('SELECT 
+                SUM(inapi_amount)as clo_total_amount,
+                SUM(inapi_paid_amount)as clo_total_paid_amount,
+                SUM(inapi_commission_amount)as clo_total_commission_amount,
+                SUM(inapi_paid_commission_amount)as clo_total_paid_commission_amount
+                FROM ina_policy_installments WHERE inapi_policy_ID = '.$this->policyData['inapol_installment_ID']);
+        $this->totalInstallmentAmount = $totalsFromInstallments['clo_total_amount'];
+        $this->totalInstallmentPaidAmount = $totalsFromInstallments['clo_total_paid_amount'];
+        $this->totalInstallmentCommissionAmount = $totalsFromInstallments['clo_total_commission_amount'];
+        $this->totalInstallmentCommissionPaidAmount = $totalsFromInstallments['clo_total_paid_commission_amount'];
 
     }
 
@@ -338,7 +356,7 @@ class Policy
         //if its renewal then no validation is required
         if ($this->policyData['inapol_process_status'] == 'Renewal'
             || $this->policyData['inapol_process_status'] == 'Endorsement'
-            || $this->policyData['inapol_process_status'] == 'Cancellation'){
+            || $this->policyData['inapol_process_status'] == 'Cancellation') {
             return true;
         }
 
@@ -645,10 +663,10 @@ class Policy
 
             //5. Check all payments. Only prepayment status is allowed. Maybe outstanding found so they must be deleted or set to prepayment
             $paymentsCheck = $db->query_fetch("
-                SELECT COUNT(*) as clo_total FROM ina_policy_payments WHERE inapp_policy_ID = ".$this->policyID."
+                SELECT COUNT(*) as clo_total FROM ina_policy_payments WHERE inapp_policy_ID = " . $this->policyID . "
                 AND inapp_status != 'Prepayment' 
             ");
-            if ($paymentsCheck['clo_total'] > 0){
+            if ($paymentsCheck['clo_total'] > 0) {
                 $this->error = true;
                 $this->errorDescription = 'Found Outstanding (or other invalid status) payments. Only prepayment status is allowed. 
                 If you have any Outstanding set to Prepayment or delete so you can proceed activation.';
@@ -659,9 +677,9 @@ class Policy
             $sqlPrepResult = $db->query_fetch("
                 SELECT
                 SUM(inapp_amount)as clo_total_payment 
-                FROM ina_policy_payments WHERE inapp_policy_ID = ".$this->policyID." AND inapp_status = 'Prepayment'
+                FROM ina_policy_payments WHERE inapp_policy_ID = " . $this->policyID . " AND inapp_status = 'Prepayment'
             ");
-            if ($sqlPrepResult['clo_total_payment'] > $this->totalPremium){
+            if ($sqlPrepResult['clo_total_payment'] > $this->totalPremium) {
                 $this->error = true;
                 $this->errorDescription = 'Total Prepayments are more than the policy total premium.';
                 return false;
@@ -714,27 +732,25 @@ class Policy
             if ($this->accountsUsed == 'Advanced' && $this->policyData['inainc_enable_commission_release'] != 1) {
                 $transactionsResult = $this->insertAccountTransactions();
             } else if ($this->accountsUsed == 'Advanced' && $this->policyData['inainc_enable_commission_release'] == 1) {
-
+                $transactionsResult = $this->insertAccountTransactions();
             }
 
             //end of activating.
             //check if any prepayment payments found. If yes then apply then and post them
             //To avoid any case of activating the policy then the user can apply the payment and then reverse and then delete it.
-            include_once ('policyTabs/payments_class.php');
+            include_once('policyTabs/payments_class.php');
             //get all the prepayments payments.
-            $sqlAllPrepayments = $db->query('SELECT * FROM ina_policy_payments WHERE inapp_policy_ID = '.$this->policyID." AND inapp_status = 'Prepayment'");
-            while ($payment = $db->fetch_assoc($sqlAllPrepayments)){
+            $sqlAllPrepayments = $db->query('SELECT * FROM ina_policy_payments WHERE inapp_policy_ID = ' . $this->policyID . " AND inapp_status = 'Prepayment'");
+            while ($payment = $db->fetch_assoc($sqlAllPrepayments)) {
                 $payment = new PolicyPayment($payment['inapp_policy_payment_ID']);
-                if ($payment->applyPayment() == true){
-                    if ($payment->postPayment() == true){
+                if ($payment->applyPayment() == true) {
+                    if ($payment->postPayment() == true) {
                         //success posting payment
-                    }
-                    else {
+                    } else {
                         $this->error = true;
                         $this->errorDescription = $payment->errorDescription;
                     }
-                }
-                else {
+                } else {
                     $this->error = true;
                     $this->errorDescription = $payment->errorDescription;
                 }
@@ -1101,10 +1117,13 @@ class Policy
             $this->error = true;
             $this->errorDescription = 'Cannot insert transactions. Advanced accounts is not enabled.';
         }
+        /*
+         * Will do both if enabled and not 17/9/2020
         if ($this->policyData['inainc_enable_commission_release'] == 1) {
             $this->error = true;
             $this->errorDescription = 'Cannot insert transactions. Commission released is active for this insurance company.';
         }
+        */
         if ($this->error == true) {
             return false;
         }
@@ -1117,74 +1136,123 @@ class Policy
             return false;
         }
 
-        //set 1
-        $headerData['documentID'] = $this->insuranceSettings['inaset_ins_comm_ac_document_ID'];
-        $headerData['entityID'] = $transactions[1]['entityID'];
-        $headerData['comments'] = 'Policy ID:' . $this->policyID . " Commissions";
-        $headerData['fromModule'] = 'AInsurance';
-        $headerData['fromIDDescription'] = 'PolicyID';
-        $headerData['fromID'] = $this->policyID;
-        $transactionsData[1] = $transactions[1];
-        $transactionsData[2] = $transactions[2];
+        if ($this->policyData['inainc_enable_commission_release'] != 1) {
 
-        $transaction = new AccountsTransaction(0);
-        $transaction->makeNewTransaction($headerData, $transactionsData);
-        if ($transaction->error == true) {
-            $this->error = true;
-            $this->errorDescription = $transaction->errorDescription;
-            return false;
-        }
-        //set 2
-        if ($transactions[3]['type'] != '') {
-            $transactionsData[1] = $transactions[3];
-            $transactionsData[2] = $transactions[4];
-            $headerData['entityID'] = $transactions[3]['entityID'];
+            //set 1
+            $headerData['documentID'] = $this->insuranceSettings['inaset_ins_comm_ac_document_ID'];
+            $headerData['entityID'] = $transactions[1]['entityID'];
+            $headerData['comments'] = 'Policy ID:' . $this->policyID . " Commissions";
+            $headerData['fromModule'] = 'AInsurance';
+            $headerData['fromIDDescription'] = 'PolicyID';
+            $headerData['fromID'] = $this->policyID;
+            $transactionsData[1] = $transactions[1];
+            $transactionsData[2] = $transactions[2];
+
+            $transaction = new AccountsTransaction(0);
             $transaction->makeNewTransaction($headerData, $transactionsData);
             if ($transaction->error == true) {
                 $this->error = true;
                 $this->errorDescription = $transaction->errorDescription;
                 return false;
             }
-        }
+            //set 2
+            if ($transactions[3]['type'] != '') {
+                $transactionsData[1] = $transactions[3];
+                $transactionsData[2] = $transactions[4];
+                $headerData['entityID'] = $transactions[3]['entityID'];
+                $transaction->makeNewTransaction($headerData, $transactionsData);
+                if ($transaction->error == true) {
+                    $this->error = true;
+                    $this->errorDescription = $transaction->errorDescription;
+                    return false;
+                }
+            }
 
-        //set 3
-        if ($transactions[5]['type'] != '') {
-            $transactionsData[1] = $transactions[5];
-            $transactionsData[2] = $transactions[6];
-            $headerData['entityID'] = $transactions[5]['entityID'];
-            $transaction->makeNewTransaction($headerData, $transactionsData);
-            if ($transaction->error == true) {
-                $this->error = true;
-                $this->errorDescription = $transaction->errorDescription;
-                return false;
+            //set 3
+            if ($transactions[5]['type'] != '') {
+                $transactionsData[1] = $transactions[5];
+                $transactionsData[2] = $transactions[6];
+                $headerData['entityID'] = $transactions[5]['entityID'];
+                $transaction->makeNewTransaction($headerData, $transactionsData);
+                if ($transaction->error == true) {
+                    $this->error = true;
+                    $this->errorDescription = $transaction->errorDescription;
+                    return false;
+                }
+            }
+
+            //set 4
+            if ($transactions[7]['type'] != '') {
+                $transactionsData[1] = $transactions[7];
+                $transactionsData[2] = $transactions[8];
+                $headerData['entityID'] = $transactions[7]['entityID'];
+                $transaction->makeNewTransaction($headerData, $transactionsData);
+                if ($transaction->error == true) {
+                    $this->error = true;
+                    $this->errorDescription = $transaction->errorDescription;
+                    return false;
+                }
+            }
+
+            //set 5
+            if ($transactions[9]['type'] != '') {
+                $transactionsData[1] = $transactions[9];
+                $transactionsData[2] = $transactions[10];
+                $headerData['entityID'] = $transactions[9]['entityID'];
+                $transaction->makeNewTransaction($headerData, $transactionsData);
+                if ($transaction->error == true) {
+                    $this->error = true;
+                    $this->errorDescription = $transaction->errorDescription;
+                    return false;
+                }
+            }
+
+            //set 6 ??????? what is this set???? is it needed?
+            /*
+            if ($transactions[11]['type'] != '') {
+                $transactionsData[1] = $transactions[11];
+                $transactionsData[2] = $transactions[12];
+                $headerData['entityID'] = $transactions[11]['entityID'];
+                $transaction->makeNewTransaction($headerData, $transactionsData);
+                if ($transaction->error == true) {
+                    $this->error = true;
+                    $this->errorDescription = $transaction->errorDescription;
+                    return false;
+                }
+            }
+            */
+
+        }//if commission release is enabled
+        if ($this->policyData['inainc_enable_commission_release'] == 1) {
+            //check if broker. Then need to create the customers transactions found in 11 and 12 position in transaction list
+            if ($this->policyData['inainc_brokerage_agent'] == 'brokerage') {
+
+                $headerData['documentID'] = $this->insuranceSettings['inaset_ins_comm_ac_document_ID'];
+                $headerData['entityID'] = $transactions[20]['entityID'];
+                $headerData['comments'] = 'Policy ID:' . $this->policyID . " Customer Premium";
+                $headerData['fromModule'] = 'AInsurance';
+                $headerData['fromIDDescription'] = 'PolicyID';
+                $headerData['fromID'] = $this->policyID;
+
+                $transaction = new AccountsTransaction(0);
+                //set 6
+                if ($transactions[20]['type'] != '') {
+                    $transactionsData[1] = $transactions[20];
+                    $transactionsData[2] = $transactions[21];
+                    $transactionsData[3] = $transactions[22];
+                    $headerData['entityID'] = $transactions[20]['entityID'];
+                    $transaction->makeNewTransaction($headerData, $transactionsData);
+                    if ($transaction->error == true) {
+                        $this->error = true;
+                        $this->errorDescription = $transaction->errorDescription;
+                        return false;
+                    }
+                }
             }
         }
 
-        //set 4
-        if ($transactions[7]['type'] != '') {
-            $transactionsData[1] = $transactions[7];
-            $transactionsData[2] = $transactions[8];
-            $headerData['entityID'] = $transactions[7]['entityID'];
-            $transaction->makeNewTransaction($headerData, $transactionsData);
-            if ($transaction->error == true) {
-                $this->error = true;
-                $this->errorDescription = $transaction->errorDescription;
-                return false;
-            }
-        }
 
-        //set 5
-        if ($transactions[9]['type'] != '') {
-            $transactionsData[1] = $transactions[9];
-            $transactionsData[2] = $transactions[10];
-            $headerData['entityID'] = $transactions[9]['entityID'];
-            $transaction->makeNewTransaction($headerData, $transactionsData);
-            if ($transaction->error == true) {
-                $this->error = true;
-                $this->errorDescription = $transaction->errorDescription;
-                return false;
-            }
-        }
+        //exit();
 
         return true;
     }
@@ -1407,6 +1475,84 @@ class Policy
             //echo $result[4]['type']." Account: ".$subAgentCrAccountCode.' - '.$subAgentCrAccountName." Amount:".$result[4]['ammount']."<br>";
         }
 
+        //if for this company we work as broker then we also need to send transactions to the customers debit account
+        if ($this->policyData['inainc_brokerage_agent'] == 'brokerage') {
+            //echo "Building customer accounts".PHP_EOL;
+
+            //check if the customer has entity and if that entity exists in the accounts
+            if ($this->policyData['cst_entity_ID'] > 0) {
+                //verify that the entity exists
+                $dataCheck = $db->query_fetch('SELECT acet_entity_ID FROM ac_entities WHERE acet_entity_ID = ' . $this->policyData['cst_entity_ID']);
+                if ($dataCheck['acet_entity_ID'] != $this->policyData['cst_entity_ID']) {
+                    $this->error = true;
+                    $this->errorDescription = 'Creating transactions for customer: customer defined entity does not exists in accounts';
+                    return [
+                        "Error" => $this->errorDescription
+                    ];
+                }
+            } else {
+                $this->error = true;
+                $this->errorDescription = 'Creating transactions for customer: customer has no defined entity in the accounts';
+                return [
+                    "Error" => $this->errorDescription
+                ];
+            }
+
+            //check if the entity has debtor account connected to it
+            include_once($db->settings['local_url'] . '/accounts/entities/entities_class.php');
+            $entity = new AccountsEntity($this->policyData['cst_entity_ID']);
+            if ($entity->debtorAccountExists() != true) {
+                $entity->createDebtorsAccount();
+                if ($entity->error == true) {
+                    $this->error = true;
+                    $this->errorDescription = $entity->errorDescription;
+                    return [
+                        "Error" => $this->errorDescription
+                    ];
+                }
+            }
+
+
+            //GENERATE the debit transactions. Will debit the customer will the net premium
+
+            $accountID = $entity->getDebtorAccountData()['acacc_account_ID'];
+            $accountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $accountID);
+            $accountName = $accountDetails['acacc_name'];
+            $accountCode = $accountDetails['acacc_code'];
+            $result[20]['type'] = 'Dr';
+            $result[20]['name'] = $accountName;
+            $result[20]['code'] = $accountCode;
+            $result[20]['accountID'] = $accountID;
+            $result[20]['entityID'] = $entity->getEntityData()['acet_entity_ID'];
+            $result[20]['amount'] = $this->totalPremium;
+
+            //Credit the company account defined in insurance companies inainc_for_customer_credit_account_ID
+            $accountID = $this->policyData['inainc_for_customer_credit_account_ID'];
+            $accountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $accountID);
+            $accountName = $accountDetails['acacc_name'];
+            $accountCode = $accountDetails['acacc_code'];
+            $result[21]['type'] = 'Cr';
+            $result[21]['name'] = $accountName;
+            $result[21]['code'] = $accountCode;
+            $result[21]['accountID'] = $accountID;
+            $result[21]['entityID'] = $entity->getEntityData()['acet_entity_ID'];
+            $result[21]['amount'] = $this->totalPremium - $this->commission;
+
+            //Credit the company commission account defined in insurance companies inainc_for_customer_credit_account_ID
+            $accountID = $this->policyData['inainc_debtor_account_ID'];
+            $accountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $accountID);
+            $accountName = $accountDetails['acacc_name'];
+            $accountCode = $accountDetails['acacc_code'];
+            $result[22]['type'] = 'Cr';
+            $result[22]['name'] = $accountName;
+            $result[22]['code'] = $accountCode;
+            $result[22]['accountID'] = $accountID;
+            $result[22]['entityID'] = $entity->getEntityData()['acet_entity_ID'];
+            $result[22]['amount'] = $this->commission;
+
+
+        }
+
         return $result;
     }
 
@@ -1571,9 +1717,9 @@ class Policy
         $return['gross_premium'] = $return['premium'] + $return['fees'] + $return['stamps'] + $return['specialDiscount'] + $return['mif'];
         //total paid
         $totalPaid = $db->query_fetch("SELECT SUM(inapp_amount) as clo_total_paid
-                FROM ina_policy_payments WHERE inapp_policy_ID = ".$this->installmentID." AND inapp_status = 'Active'");
+                FROM ina_policy_payments WHERE inapp_policy_ID = " . $this->installmentID . " AND inapp_status = 'Active'");
         $return['totalPaid'] = $totalPaid['clo_total_paid'];
-        if ($return['totalPaid'] == ''){
+        if ($return['totalPaid'] == '') {
             $return['totalPaid'] = 0;
         }
 
@@ -2043,7 +2189,8 @@ class Policy
         return $list;
     }
 
-    public function getPolicyTotalPrepayments(){
+    public function getPolicyTotalPrepayments()
+    {
         return $this->totalPolicyPrepayments;
     }
 
@@ -2056,6 +2203,40 @@ class Policy
         }
         return $output;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getTotalInstallmentAmount()
+    {
+        return $this->totalInstallmentAmount;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTotalInstallmentPaidAmount()
+    {
+        return $this->totalInstallmentPaidAmount;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTotalInstallmentCommissionAmount()
+    {
+        return $this->totalInstallmentCommissionAmount;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTotalInstallmentCommissionPaidAmount()
+    {
+        return $this->totalInstallmentCommissionPaidAmount;
+    }
+
+
 }
 
 function getPolicyClass($status)

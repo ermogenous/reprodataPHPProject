@@ -22,6 +22,8 @@ class PolicyPayment
     private $installmentID; //the id of the primary policy which holds the commissions. In case of endorsements/cancellations
     private $allowedModify = true;
 
+    private $policy;//the policy object
+
     function __construct($paymentID)
     {
         global $db;
@@ -29,11 +31,16 @@ class PolicyPayment
           SELECT * FROM 
             ina_policy_payments
             JOIN ina_policies ON inapp_policy_ID = inapol_policy_ID
+            LEFT OUTER JOIN ina_insurance_companies ON inapol_insurance_company_ID = inainc_insurance_company_ID
+            LEFT OUTER JOIN customers ON inapol_customer_ID = cst_customer_ID
             WHERE inapp_policy_payment_ID = ' . $paymentID);
         $this->paymentID = $paymentID;
         $this->installmentID = $this->paymentData['inapol_installment_ID'];
         $this->policyID = $this->paymentData['inapol_installment_ID'];
         $this->currentPolicyID = $this->paymentData['inapp_current_policy_ID'];
+        include_once ($db->settings['local_url']."/ainsurance/policy_class.php");
+
+        $this->policy = new Policy($this->paymentData['inapp_policy_ID']);
 
         if ($this->paymentData['inapp_locked'] == 1 || $this->paymentData['inapp_status'] != 'Outstanding') {
             $this->allowedModify = false;
@@ -223,7 +230,8 @@ class PolicyPayment
             $payNewData['allocated_amount'] = $totalAllocatedAmount;
             $payNewData['allocated_commission'] = $totalAllocatedCommission;
             $this->error = true;
-            $this->errorDescription('Total allocated amount is not equal with the total payment. Contact administrator.');
+            $this->errorDescription = 'Total allocated amount('.$totalAllocatedAmount.')
+             is not equal with the total payment('.$this->paymentData['inapp_amount'].'). Contact administrator.';
             //$db->generateAlertError('Error');
             //$db->rollback_transaction();
             return false;
@@ -502,6 +510,105 @@ class PolicyPayment
                     return false;
                 }
             }
+
+            //check if brokerage then need to transfer the commissions receivable to commissions received.
+            //and also move customers (debtor) amount to
+            if ($policy->policyData['inainc_brokerage_agent'] == 'brokerage'){
+                unset($transactionsData);
+                if ($lastPayment == true){
+                    $transCommission = $this->policy->getTotalInstallmentCommissionAmount() - $this->policy->getTotalInstallmentCommissionPaidAmount();
+                }
+                else {
+                    $transCommission = $this->paymentData['inapp_allocated_commission'];
+                }
+
+                //1. credit a 7011 insurance company received
+                //   debit a 3021 company receivables
+                $accountID = $this->paymentData['inainc_debtor_account_ID'];
+                $accountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $accountID);
+                $accountName = $accountDetails['acacc_name'];
+                $accountCode = $accountDetails['acacc_code'];
+                $result[1]['type'] = 'Dr';
+                $result[1]['name'] = $accountName;
+                $result[1]['code'] = $accountCode;
+                $result[1]['accountID'] = $accountID;
+                $result[1]['entityID'] = $accountDetails['acacc_entity_ID'];
+                $result[1]['amount'] = $transCommission;
+
+                $accountID = $this->paymentData['inainc_revenue_account_ID'];
+                $accountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $accountID);
+                $accountName = $accountDetails['acacc_name'];
+                $accountCode = $accountDetails['acacc_code'];
+                $result[2]['type'] = 'Cr';
+                $result[2]['name'] = $accountName;
+                $result[2]['code'] = $accountCode;
+                $result[2]['accountID'] = $accountID;
+                $result[2]['entityID'] = $accountDetails['acacc_entity_ID'];
+                $result[2]['amount'] = $transCommission;
+
+                unset($transactionsData);
+                $transactionsData[1] = $result[1];
+                $transactionsData[2] = $result[2];
+                //fix the amounts
+                $headerData['entityID'] = $result[1]['entityID'];
+                $transaction->makeNewTransaction($headerData, $transactionsData);
+                if ($transaction->error == true) {
+                    $this->error = true;
+                    $this->errorDescription = $transaction->errorDescription;
+                    return false;
+                }
+
+                //2. Credit the debtor 3020
+                //   Debit a current asset 3020001
+//**************THIS NEED TO BE FIXED. ON PAYMENT THE USER WILL SELECT THE PAYMENT METHOD AND THE ACCOUNT WILL BE DEFINED THERE***************************************************************************
+                $accountCode = '3020100';
+                $accountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_code = "' . $accountCode.'"');
+                //check if the account exists
+                if ($accountDetails['acacc_code'] != $accountCode){
+                    $this->error = true;
+                    $this->errorDescription = 'Temporary account 3020100 does not exists';
+                    return false;
+                }
+                $accountName = $accountDetails['acacc_name'];
+                $accountCode = $accountDetails['acacc_code'];
+                $result[3]['type'] = 'Dr';
+                $result[3]['name'] = $accountName;
+                $result[3]['code'] = $accountCode;
+                $result[3]['accountID'] = $accountID;
+                $result[3]['entityID'] = $accountDetails['acacc_entity_ID'];
+                $result[3]['amount'] = $this->paymentData['inapp_amount'];
+
+                //find the customers A/C
+                $accountID = $this->paymentData['inainc_revenue_account_ID'];
+                $accountDetails = $db->query_fetch('SELECT acacc_name,acacc_code FROM ac_accounts WHERE acacc_account_ID = ' . $accountID);
+                $accountName = $accountDetails['acacc_name'];
+                $accountCode = $accountDetails['acacc_code'];
+                $result[4]['type'] = 'Cr';
+                $result[4]['name'] = $accountName;
+                $result[4]['code'] = $accountCode;
+                $result[4]['accountID'] = $accountID;
+                $result[4]['entityID'] = $accountDetails['acacc_entity_ID'];
+                $result[4]['amount'] = $this->paymentData['inapp_amount'];
+
+                unset($transactionsData);
+                $transactionsData[1] = $result[3];
+                $transactionsData[2] = $result[4];
+                //fix the amounts
+                $headerData['entityID'] = $result[3]['entityID'];
+                $transaction->makeNewTransaction($headerData, $transactionsData);
+                if ($transaction->error == true) {
+                    $this->error = true;
+                    $this->errorDescription = $transaction->errorDescription;
+                    return false;
+                }
+                //print_r($this->policy);
+                //echo "Tot Inst:".$this->paymentData['inapp_amount'];;
+                //exit();
+
+            }
+
+
+
             //get all accounting transactions of this policy to verify that total amount of commission is correct.
             //if not add the difference in this transaction
 

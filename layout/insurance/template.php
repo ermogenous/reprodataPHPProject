@@ -498,8 +498,8 @@ function template_header()
                                     <i class="fas fa-envelope"></i> Auto Emails</a>
 
                                 <a class="dropdown-item"
-                                   href="<?php echo $main["site_url"]; ?>/settings/settings_update.php">
-                                    <i class="fas fa-screwdriver"></i> System Settings</a>
+                                   href="<?php echo $main["site_url"]; ?>/ainsurance/ainsurance_settings.php">
+                                    <i class="fas fa-screwdriver"></i> Insurance Settings</a>
 
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/agents/agents.php">
@@ -563,7 +563,7 @@ function template_header()
                             </li>
                  -->
             </ul>
-            <img src="<?php echo $db->admin_layout_url; ?>/images/demetriou-insurance.jpg" height="50">
+            <img src="<?php echo $db->admin_layout_url; ?>/images/demetriou_broker.png" height="50">
         </div>
     </nav>
 

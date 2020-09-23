@@ -156,7 +156,64 @@ $db->show_header();
                                 <?php echo $balance->getBalance(); ?>
                             </div>
                         </div>
+
+
+                            <div class="form-group row">
+                                <label for="fld_underwriter_ID" class="col-sm-3 col-form-label">Agent</label>
+                                <div class="col-sm-9">
+                                    <?php
+                                    $showAgentField = true;
+                                    if ($_GET['lid'] > 0) {
+                                        //check if this customer is already been used in a policy
+                                        //if yes then lock the agent field
+                                        $sql = 'SELECT COUNT(*) as clo_total FROM ina_policies WHERE inapol_customer_ID = ' . $_GET['lid'];
+                                        $res = $db->query_fetch($sql);
+                                        if ($res['clo_total'] > 0) {
+                                            $agentData = $db->query_fetch("
+                                            SELECT * FROM ina_underwriters
+                                            JOIN users ON usr_users_ID = inaund_user_ID
+                                            WHERE inaund_underwriter_ID = " . $data['cst_underwriter_ID']);
+                                            echo $agentData['usr_name'] . " [Found used policies. Agent is locked]";
+                                            $showAgentField = false;
+                                        }
+                                    }
+
+                                    if ($showAgentField) {
+                                    ?>
+                                    <select name="fld_underwriter_ID" id="fld_underwriter_ID"
+                                            class="form-control">
+                                        <option value="">Auto update when you apply this customer to a policy</option>
+                                        <?php
+                                        $undResult = $db->query("
+                                        SELECT * FROM ina_underwriters
+                                        JOIN users ON usr_users_ID = inaund_user_ID
+                                        WHERE inaund_status = 'Active' ORDER BY usr_name ASC");
+                                        while ($und = $db->fetch_assoc($undResult)) {
+
+                                            ?>
+                                            <option value="<?php echo $und['inaund_underwriter_ID']; ?>"
+                                                <?php if ($und['inaund_underwriter_ID'] == $data['cst_underwriter_ID']) echo 'selected'; ?>>
+                                                <?php echo $und['usr_name']; ?>
+                                            </option>
+                                        <?php } ?>
+                                    </select>
+                                    <?php
+                                    $formValidator->addField(
+                                        [
+                                            'fieldName' => 'fld_underwriter_ID',
+                                            'fieldDataType' => 'select',
+                                            'required' => false,
+                                            'invalidTextAutoGenerate' => true
+                                        ]);
+
+                                    }//if no policies are connected with this customer
+                                    ?>
+                                </div>
+                            </div>
+
+
                         <div class="form-group row">
+
                             <label for="fld_business_type_code_ID" class="col-sm-3 col-form-label">Business Type</label>
                             <div class="col-sm-9">
                                 <select name="fld_business_type_code_ID" id="fld_business_type_code_ID"

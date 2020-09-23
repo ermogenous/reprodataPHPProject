@@ -585,8 +585,18 @@ FormBuilder::buildPageLoader();
 
         }
 
+        function calculateMIF(){
+            let netPremium = $('#fld_premium').val() * 1;
+            let newMIF = (netPremium * 0.05).toFixed(2);
+
+            if ($('#fld_mif').val() == ''){
+                $('#fld_mif').val(newMIF);
+            }
+        }
+
         $(document).ready(function () {
             updateGrossPremium();
+            calculateMIF();
 
             <?php if ($_GET['rel'] == 'yes') { ?>
             //every time this page loads reload the premium tab

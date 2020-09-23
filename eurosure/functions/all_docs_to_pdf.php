@@ -8,7 +8,7 @@ include("../../scripts/meBuildDataTable.php");
 $db = new Main();
 
 $sybase = new ODBCCON();
-
+$db->enable_jquery_ui();
 $db->show_header();
 
 
@@ -48,6 +48,28 @@ FormBuilder::buildPageLoader();
                                     'fieldName' => $formB->fieldName,
                                     'fieldDataType' => 'text',
                                     'required' => true,
+                                    'requiredAddedCustomCode' => ' && $("#fld_policy_number").val() == ""',
+                                    'invalidTextAutoGenerate' => true
+                                ]);
+                            ?>
+                        </div>
+
+                        <?php
+                        $formB->setFieldName('fld_policy_number')
+                            ->setFieldDescription('Or Policy Number')
+                            ->setFieldType('input')
+                            ->setInputValue($_POST['fld_policy_number'])
+                            ->buildLabel();
+                        ?>
+                        <div class="col-sm-3">
+                            <?php
+                            $formB->buildInput();
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => $formB->fieldName,
+                                    'fieldDataType' => 'text',
+                                    'required' => true,
+                                    'requiredAddedCustomCode' => ' && $("#fld_policy_serial").val() == ""',
                                     'invalidTextAutoGenerate' => true
                                 ]);
                             ?>
@@ -255,8 +277,23 @@ FormBuilder::buildPageLoader();
         ?>
 
         <?php
-        if ($_POST['fld_policy_serial'] > 0) {
+        if ($_POST['fld_policy_serial'] > 0 || $_POST['fld_policy_number'] != '') {
             if ($_POST['action'] == 'showLogs') {
+
+                if ($_POST['fld_policy_serial'] == ''){
+                    $sql = "SELECT * FROM 
+                            inpolicies 
+                            WHERE inpol_policy_number = '".$_POST['fld_policy_number']."'
+                            AND inpol_status = 'N'
+                            ORDER BY inpol_policy_serial DESC
+                            ";
+                    $resultPolicyNumber = $sybase->query_fetch($sql);
+                    $_POST['fld_policy_serial'] = $resultPolicyNumber['inpol_policy_serial'];
+
+                }
+
+                $policyData = $sybase->query_fetch("SELECT * FROM inpolicies WHERE inpol_policy_serial = ".$_POST['fld_policy_serial']);
+
                 ?>
                 <form method="post">
                     <div class="row">
@@ -268,7 +305,7 @@ FormBuilder::buildPageLoader();
 
                             $sql = "
 
-    select
+                                        select
                                             indpl_auto_serial as AutoSerial,
                                             indpl_document_type as 'Document Type',
                                             indpl_primary_serial as 'Primary Serial',
@@ -283,6 +320,24 @@ FormBuilder::buildPageLoader();
                             while ($prnt = $sybase->fetch_assoc($result)) {
                                 $allRecords[] = $prnt;
                             }
+                            ?>
+                            <div class="row">
+                                <div class="col-12">
+                                    <?php
+                                        echo "Policy Number: ".$policyData['inpol_policy_number']." [".$policyData['inpol_policy_serial']."]";
+                                        echo " Process Status: ".$policyData['inpol_process_status']." Status: ".$policyData['inpol_status'];
+                                    ?>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12">
+                                    <?php
+                                    echo $policyData['inpol_policy_folder'];
+                                    ?>
+                                </div>
+                            </div>
+
+                            <?php
 
                             $table = new MEBuildDataTable();
                             echo $table->getHeadersFromFieldNames()

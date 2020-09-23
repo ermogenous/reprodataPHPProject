@@ -276,6 +276,13 @@ FormBuilder::buildPageLoader();
                 </div>
 
                 <div class="form-group row">
+                    <div class="col-sm-12">
+                        <b>Yes</b> - When is set to YES then transactions will be created on payments only<br>
+                        <b>No</b> - When is set to NO then transactions will be created upon posting policy
+                    </div>
+                </div>
+
+                <div class="form-group row">
                     <label for="fld_brokerage_agent" class="col-sm-4 col-form-label">Brokerage/Agent</label>
                     <div class="col-sm-8">
                         <select name="fld_brokerage_agent" id="fld_brokerage_agent"
@@ -302,7 +309,46 @@ FormBuilder::buildPageLoader();
                     <div class="col-sm-12">
                         <b>Agent</b> - The insurance company controls their accounts. Only commission transactions will be generated<br>
                         <b>Brokerage</b> - Transactions will be created for all customers. If customer is not connected to an account one will
-                        created automatically
+                        created automatically.
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <label for="fld_for_customer_credit_account_ID" class="col-sm-4 col-form-label">For Brokerage - Credit Account</label>
+                    <div class="col-sm-8">
+                        <select name="fld_for_customer_credit_account_ID" id="fld_for_customer_credit_account_ID"
+                                class="form-control">
+                            <option value=""></option>
+                            <?php
+                            $btResult = $db->query("
+                              SELECT * FROM ac_accounts
+                              JOIN vac_types on vactpe_account_type_ID = acacc_account_type_ID 
+                              WHERE acacc_control = 0
+                              AND vactpe_category = 'CurrentLiability'");
+                            while ($bt = $db->fetch_assoc($btResult)) {
+
+                                ?>
+                                <option value="<?php echo $bt['acacc_account_ID']; ?>"
+                                    <?php if ($bt['acacc_account_ID'] == $data['inainc_for_customer_credit_account_ID']) echo 'selected'; ?>>
+                                    <?php echo $bt['acacc_code'] . ' - ' . $bt['acacc_name']; ?>
+                                </option>
+                            <?php } ?>
+                        </select>
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_for_customer_credit_account_ID",
+                            "fieldDataType" => "select",
+                            "required" => true,
+                            "requiredAddedCustomCode" => " && $('#fld_brokerage_agent').val() == 'brokerage' ",
+                            "invalidTextAutoGenerate" => true
+                        ]);
+                        ?>
+                    </div>
+                </div>
+                <div class="form-group row">
+                    <div class="col-sm-12">
+                        When brokerage is selected then total premium will be debited to customer and here you define the insurance company account which
+                        net premium - commission will be credited
                     </div>
                 </div>
 

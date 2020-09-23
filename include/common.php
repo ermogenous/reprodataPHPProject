@@ -109,7 +109,11 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
 }
 
 if ($_SERVER['HTTP_HOST'] == 'localhost') {
-    //ini_set('error_reporting','E_ALL & ~E_NOTICE & ~E_WARNING');
+    ini_set('error_reporting',E_ALL & ~E_NOTICE & ~E_WARNING);
+    //ini_set('error_reporting',E_ALL);
+    ini_set('display_errors', '1');
+    ini_set('html_errors', '1');
+    ini_set('log_errors', 1);
 }
 else {
     //header("Location: ".$main["site_host"]."/under_construction.php");

@@ -58,6 +58,14 @@ if ($_POST["action"] == "insert") {
         exit();
     }
 
+    //check if the customer underwriter ID is null or empty then update it with the underwriter on this policy
+    $cstCheck = $db->query_fetch('SELECT * FROM customers WHERE cst_customer_ID = '.$_POST['fld_customer_ID']);
+    if ($cstCheck['cst_underwriter_ID'] == ''){
+        $customerNewData['fld_underwriter_ID'] = $_POST['fld_underwriter_ID'];
+        $db->db_tool_update_row('customers',$customerNewData,'cst_customer_ID = '.$_POST['fld_customer_ID'],
+            $_POST['fld_customer_ID'],'fld_','execute','cst_');
+    }
+
     $db->commit_transaction();
     if ($_POST['sub-action'] == 'exit') {
         header("Location: policies.php");
@@ -261,7 +269,6 @@ $db->show_header();
                                 ]);
                             ?>
                             <script>
-
                                 function loadInsuranceCompanies(clear = true) {
                                     let underwriterSelected = $('#fld_underwriter_ID').val();
                                     if (underwriterSelected > 0) {
@@ -378,7 +385,11 @@ $db->show_header();
                             <script>
 
                                 $('#customerSelect').autocomplete({
-                                    source: 'customers/customers_api.php?section=customers',
+                                    source: function(request, response){
+                                        let url = 'customers/customers_api.php?underwriter=' + $("#fld_underwriter_ID").val() + '&section=customers';
+                                        url += '&term=' + $('#customerSelect').val();
+                                        $.getJSON(url,response);
+                                    },
                                     delay: 500,
                                     minLength: 2,
                                     messages: {

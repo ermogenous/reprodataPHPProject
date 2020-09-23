@@ -22,7 +22,6 @@ if ($_GET['action'] == 'apply' && $_GET['lid'] != '') {
     $db->start_transaction();
     $payment = new PolicyPayment($_GET['lid']);
     if ($payment->applyPayment() == true) {
-
         $db->commit_transaction();
         $db->generateAlertSuccess('Payment Applied Successfully');
     } else {

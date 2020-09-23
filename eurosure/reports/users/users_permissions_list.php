@@ -132,9 +132,9 @@ FormBuilder::buildPageLoader();
                     ?>
                     <table class="table table-responsive" width="100%">
                         <tr>
-                            <td width="8%">UserName</td>
-                            <td width="82%">Name</td>
-                            <td width="10%">Insurance Access</td>
+                            <td width="20%">UserName</td>
+                            <td width="60%">Name</td>
+                            <td width="20%">Insurance Access</td>
                         </tr>
                         <?php
                         $sql = "SELECT * FROM syplogins";

@@ -16,7 +16,7 @@ $fileCreateList['acc_account.csv'] = 'acc_account_insert.php';
 $fileCreateList['cor_entity.csv'] = 'core_entity_insert.php';
 $fileCreateList['insa_policy.csv'] = 'insa_policy_insert.php';
 
-if ($_POST['action'] == 'show' && $_POST['createSql'] == 'CreateSql'){
+if ($_POST['action'] == 'show' && $_POST['createSql'] == 'Import File'){
     $fileLocation = $fileCreateList[$_POST['fld_file']];
     header("Location: create_sql/".$fileLocation);
     exit();
@@ -58,7 +58,7 @@ $formB->setLabelClasses('col-sm-3');
             <div class="col-3">
                 <input type="hidden" value="show" id="action" name="action">
                 <input type="submit" value="Show" class="btn btn-primary">
-                <input type="submit" id="createSql" name="createSql" value="CreateSql" class="btn btn-secondary">
+                <input type="submit" id="createSql" name="createSql" value="Import File" class="btn btn-secondary">
             </div>
         </div>
     </div>
