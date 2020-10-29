@@ -22,6 +22,12 @@ if ($syn->error == true) {
 }
 //print_r($accountList);
 
+if ($_POST['action'] == 'search'){
+    if ($_POST['searchAccount'] != ''){
+        $searchWhere = "clo_account_code LIKE '%".$_POST['searchAccount']."%'";
+    }
+}
+
 $db->enable_jquery_ui();
 $db->enable_rxjs_lite();
 $db->show_header();
@@ -47,11 +53,13 @@ if ($syn->error != true) {
                     <input type="text" class="form-control mb-2 mr-sm-2" value="<?php echo $_POST['searchAccount']; ?>"
                            name="searchAccount" id="searchAccount">
 
+                    <input type="hidden" name="action" value="search">
 
-                        <input type="button" value="<?php echo $db->showLangText('Reset', 'Καθαρισμός'); ?>"
-                               class="btn btn-warning" onclick="resetForm();">
-                        <input type="submit" value="<?php echo $db->showLangText('Search', 'Αναζήτηση'); ?>"
-                               class="btn btn-primary" id="Search">
+
+                    <input type="button" value="<?php echo $db->showLangText('Reset', 'Καθαρισμός'); ?>"
+                           class="btn btn-warning" onclick="resetForm();">
+                    <input type="submit" value="<?php echo $db->showLangText('Search', 'Αναζήτηση'); ?>"
+                           class="btn btn-primary" id="Search">
                 </form>
             </div>
 
@@ -94,25 +102,17 @@ if ($syn->error != true) {
     </div>
 
 
-    <div class="row" id="accountsSearchDiv">
-        <div class="col-1">
-            Account
-        </div>
-        <div class="col-2">
-            <input type="text" class="form-control"
-                   id="searchAccount" name="searchAccount" value="">
-        </div>
-    </div>
-
     <div class="row" style="height: 20px;"></div>
 
     <?php
+    $accountList = $syn->getAccountList($searchWhere);
     if (!empty($accountList)) {
         ?>
         <div class="row form-group">
             <table class="table table-hover table-light">
                 <thead class="alert alert-secondary">
                 <tr>
+                    <th width="20"></th>
                     <th>Account Code</th>
                     <th>Description</th>
                     <th>Balance</th>
@@ -127,6 +127,7 @@ if ($syn->error != true) {
                     if ($value->acc_account_code != '') {
                         ?>
                         <tr onclick="editLine('<?php echo $value->acc_account_code; ?>')">
+                            <td></td>
                             <td><?php echo $value->acc_account_code; ?></td>
                             <td><?php echo $value->acc_address_description; ?></td>
                             <td><?php echo $value->acc_account_balance; ?></td>

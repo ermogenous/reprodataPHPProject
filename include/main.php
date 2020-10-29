@@ -1578,7 +1578,7 @@ class Main
             $month = $fields[1];
             $year = $fields[0];
         } else if ($from_format == 'dd-mm-yyyy') {
-            $fields = explode("/", $date);
+            $fields = explode("-", $date);
             $day = $fields[0];
             $month = $fields[1];
             $year = $fields[2];

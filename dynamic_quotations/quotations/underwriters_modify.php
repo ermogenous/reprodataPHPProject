@@ -22,6 +22,32 @@ if ($_POST["action"] == "insert") {
     $_POST['fld_allow_quotations'] .= '#5-' . $db->get_check_value($_POST['allow_crm']) . "#";
     $_POST['fld_allow_quotations'] .= '#6-' . $db->get_check_value($_POST['allow_fpa']) . "#";
 
+    //db does not allow empty value
+    if ($_POST['fld_tr_show_prem'] == '') { $_POST['fld_tr_show_prem'] = 0; }
+    if ($_POST['fld_tr_basic_premium'] == '') { $_POST['fld_tr_basic_premium'] = 0; }
+    if ($_POST['fld_tr_basic_min_premium'] == '') { $_POST['fld_tr_basic_min_premium'] = 0; }
+    if ($_POST['fld_tr_basic_fees'] == '') { $_POST['fld_tr_basic_fees'] = 0; }
+    if ($_POST['fld_tr_basic_stamps'] == '') { $_POST['fld_tr_basic_stamps'] = 0; }
+    if ($_POST['fld_tr_standard_premium'] == '') { $_POST['fld_tr_standard_premium'] = 0; }
+    if ($_POST['fld_tr_standard_min_premium'] == '') { $_POST['fld_tr_standard_min_premium'] = 0; }
+    if ($_POST['fld_tr_standard_fees'] == '') { $_POST['fld_tr_standard_fees'] = 0; }
+    if ($_POST['fld_tr_standard_stamps'] == '') { $_POST['fld_tr_standard_stamps'] = 0; }
+    if ($_POST['fld_tr_luxury_premium'] == '') { $_POST['fld_tr_luxury_premium'] = 0; }
+    if ($_POST['fld_tr_luxury_min_premium'] == '') { $_POST['fld_tr_luxury_min_premium'] = 0; }
+    if ($_POST['fld_tr_luxury_fees'] == '') { $_POST['fld_tr_luxury_fees'] = 0; }
+    if ($_POST['fld_tr_luxury_stamps'] == '') { $_POST['fld_tr_luxury_stamps'] = 0; }
+    if ($_POST['fld_tr_special_premium'] == '') { $_POST['fld_tr_special_premium'] = 0; }
+    if ($_POST['fld_tr_special_min_premium'] == '') { $_POST['fld_tr_special_min_premium'] = 0; }
+    if ($_POST['fld_tr_special_fees'] == '') { $_POST['fld_tr_special_fees'] = 0; }
+    if ($_POST['fld_tr_special_stamps'] == '') { $_POST['fld_tr_special_stamps'] = 0; }
+    if ($_POST['fld_tr_schengen_premium'] == '') { $_POST['fld_tr_schengen_premium'] = 0; }
+    if ($_POST['fld_tr_schengen_min_premium'] == '') { $_POST['fld_tr_schengen_min_premium'] = 0; }
+    if ($_POST['fld_tr_schengen_fees'] == '') { $_POST['fld_tr_schengen_fees'] = 0; }
+    if ($_POST['fld_tr_schengen_stamps'] == '') { $_POST['fld_tr_schengen_stamps'] = 0; }
+    if ($_POST['fld_tr_limited_premium'] == '') { $_POST['fld_tr_limited_premium'] = 0; }
+    if ($_POST['fld_tr_limited_min_premium'] == '') { $_POST['fld_tr_limited_min_premium'] = 0; }
+    if ($_POST['fld_tr_limited_fees'] == '') { $_POST['fld_tr_limited_fees'] = 0; }
+    if ($_POST['fld_tr_limited_stamps'] == '') { $_POST['fld_tr_limited_stamps'] = 0; }
 
     $db->db_tool_insert_row('oqt_quotations_underwriters', $_POST, 'fld_', 0, 'oqun_');
     $db->commit_transaction();
@@ -60,6 +86,33 @@ if ($_POST["action"] == "insert") {
     if ($_POST['packageLimited'] == 1) {
         $_POST['fld_tr_package_selection'] .= '#limited#';
     }
+
+    //db does not allow empty value
+    if ($_POST['fld_tr_show_prem'] == '') { $_POST['fld_tr_show_prem'] = 0; }
+    if ($_POST['fld_tr_basic_premium'] == '') { $_POST['fld_tr_basic_premium'] = 0; }
+    if ($_POST['fld_tr_basic_min_premium'] == '') { $_POST['fld_tr_basic_min_premium'] = 0; }
+    if ($_POST['fld_tr_basic_fees'] == '') { $_POST['fld_tr_basic_fees'] = 0; }
+    if ($_POST['fld_tr_basic_stamps'] == '') { $_POST['fld_tr_basic_stamps'] = 0; }
+    if ($_POST['fld_tr_standard_premium'] == '') { $_POST['fld_tr_standard_premium'] = 0; }
+    if ($_POST['fld_tr_standard_min_premium'] == '') { $_POST['fld_tr_standard_min_premium'] = 0; }
+    if ($_POST['fld_tr_standard_fees'] == '') { $_POST['fld_tr_standard_fees'] = 0; }
+    if ($_POST['fld_tr_standard_stamps'] == '') { $_POST['fld_tr_standard_stamps'] = 0; }
+    if ($_POST['fld_tr_luxury_premium'] == '') { $_POST['fld_tr_luxury_premium'] = 0; }
+    if ($_POST['fld_tr_luxury_min_premium'] == '') { $_POST['fld_tr_luxury_min_premium'] = 0; }
+    if ($_POST['fld_tr_luxury_fees'] == '') { $_POST['fld_tr_luxury_fees'] = 0; }
+    if ($_POST['fld_tr_luxury_stamps'] == '') { $_POST['fld_tr_luxury_stamps'] = 0; }
+    if ($_POST['fld_tr_special_premium'] == '') { $_POST['fld_tr_special_premium'] = 0; }
+    if ($_POST['fld_tr_special_min_premium'] == '') { $_POST['fld_tr_special_min_premium'] = 0; }
+    if ($_POST['fld_tr_special_fees'] == '') { $_POST['fld_tr_special_fees'] = 0; }
+    if ($_POST['fld_tr_special_stamps'] == '') { $_POST['fld_tr_special_stamps'] = 0; }
+    if ($_POST['fld_tr_schengen_premium'] == '') { $_POST['fld_tr_schengen_premium'] = 0; }
+    if ($_POST['fld_tr_schengen_min_premium'] == '') { $_POST['fld_tr_schengen_min_premium'] = 0; }
+    if ($_POST['fld_tr_schengen_fees'] == '') { $_POST['fld_tr_schengen_fees'] = 0; }
+    if ($_POST['fld_tr_schengen_stamps'] == '') { $_POST['fld_tr_schengen_stamps'] = 0; }
+    if ($_POST['fld_tr_limited_premium'] == '') { $_POST['fld_tr_limited_premium'] = 0; }
+    if ($_POST['fld_tr_limited_min_premium'] == '') { $_POST['fld_tr_limited_min_premium'] = 0; }
+    if ($_POST['fld_tr_limited_fees'] == '') { $_POST['fld_tr_limited_fees'] = 0; }
+    if ($_POST['fld_tr_limited_stamps'] == '') { $_POST['fld_tr_limited_stamps'] = 0; }
 
     //in case of change user
     //check if this user has quotations. if yes do not allow change

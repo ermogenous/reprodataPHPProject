@@ -119,7 +119,7 @@ function template_header()
 
 
                     <li class="nav-item">
-                        <a class="nav-link" href="<?php echo $main["site_url"]; ?>/synthesis/web_service_test.php">
+                        <a class="nav-link" href="<?php echo $main["site_url"]; ?>/synthesis/accounts/accounts.php">
                             SynTest</a>
                     </li>
 

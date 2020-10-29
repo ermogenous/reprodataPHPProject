@@ -29,6 +29,15 @@ $db->start_transaction();
         $totalExists = 0;
         $totalCreated = 0;
         $htmlOutput = "<div class='container'>";
+        $htmlOutput .= "<div class='row'>File: ".$_FILES['importFile']['name']."</div>";
+
+        //move the file to the archive folder
+        /*
+        $sourceFile = 'F:/SynImport/MI Folder/'.$_FILES['importFile']['name'];
+        $destination = 'F:\\SynImport\\MI Folder\\Archive\\'.$_FILES['importFile']['name'];
+        move_uploaded_file($_FILES['importFile']['tmp_name'],$destination);
+        exit();
+        */
         while (($line = fgets($handle)) !== false) {
             $lineNum++;
             //remove any " that exists
@@ -119,9 +128,13 @@ $db->start_transaction();
                 }
             }
 
-        }
+        }//while
         $htmlOutput .= "</div>";
         fclose($handle);
+
+        //move the file into the archive folder
+
+
         $db->commit_transaction();
     } else {
         $db->generateAlertError('Error reading the file');

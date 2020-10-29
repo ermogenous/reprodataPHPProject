@@ -29,17 +29,17 @@ class Synthesis
 
     public function getToken()
     {
-        $url = self::$url."/ws_token?arg_username=" . self::$username . "&arg_password=" . self::$password;
+        $url = self::$url . "/ws_token?arg_username=" . self::$username . "&arg_password=" . self::$password;
 
-        $arrContextOptions=array(
-            "ssl"=>array(
-                "verify_peer"=>false,
-                "verify_peer_name"=>false,
+        $arrContextOptions = array(
+            "ssl" => array(
+                "verify_peer" => false,
+                "verify_peer_name" => false,
             ),
         );
 
         @$response = file_get_contents($url, false, stream_context_create($arrContextOptions));
-        if ($response == false){
+        if ($response == false) {
             $this->errorDescription = 'Cannot reach the database.';
             $this->error = true;
             return false;
@@ -57,38 +57,65 @@ class Synthesis
         }
     }
 
-    public function getAccountList()
+    public function getAccountList($whereClause = '', $orderClause = '')
     {
+        global $db;
         $this->getToken();
-        if ($this->error == true){
+        if ($this->error == true) {
             return false;
         }
-        $url = self::$url."/ws_accountlist?arg_username=".self::$username."&arg_token=".$this->currentToken;
-        $arrContextOptions=array(
-            "ssl"=>array(
-                "verify_peer"=>false,
-                "verify_peer_name"=>false,
+
+        if ($whereClause == '' && $orderClause == '') {
+            $url = self::$url . "/ws_accountlist?arg_username=" . self::$username . "&arg_token=" . $this->currentToken;
+        } else {
+            $whereSql = '';
+            $orderSql = '';
+            if ($whereClause != '') {
+                $whereSql = "&arg_where=" . $whereClause;
+                //$whereSql = "&arg_where=Left(clo_account_code,6)='002101' Or (COALESCE(NULLIF(clo_address_email,''),'synthesis') not like('%synthesis%') AND CHARINDEX('@',clo_address_email) <> 0)&arg_sort=clo_account_code,clo_address_description desc";
+            }
+            if ($orderClause != '') {
+                $orderSql = "&arg_sort=" . $orderClause;
+            }
+            $url = self::$url . "/ws_accountlisttest?arg_username=" . self::$username . "&arg_token=" . $this->currentToken . $whereSql . $orderSql;
+
+        }
+        //echo $url;
+
+        $arrContextOptions = array(
+            "ssl" => array(
+                "verify_peer" => false,
+                "verify_peer_name" => false,
             ),
         );
         @$response = file_get_contents($url, false, stream_context_create($arrContextOptions));
-        if ($response == false){
+        if ($response == false) {
             $this->error = true;
             $this->errorDescription = 'Cannot reach the database.';
             return false;
         }
         $data = json_decode($response);
         $data['totalRows'] = count($data);
-
+        if ($data[0]->status == 'error') {
+            echo "An error has been found.";
+            if ($db->user_data['usr_user_rights'] == 0){
+                echo "<br><br>".$url;
+                echo "<br><br>".$data[0]->message;
+            }
+        }
+        //echo $data[0]->status;
+        //print_r($data);
         return $data;
     }
 
-    public function getAccountDetails($accountCode){
+    public function getAccountDetails($accountCode)
+    {
         $this->getToken();
-        $url = self::$url."/ws_accountdetail?arg_username=".self::$username."&arg_token=".$this->currentToken."&arg_account=".$accountCode;
-        $arrContextOptions=array(
-            "ssl"=>array(
-                "verify_peer"=>false,
-                "verify_peer_name"=>false,
+        $url = self::$url . "/ws_accountdetail?arg_username=" . self::$username . "&arg_token=" . $this->currentToken . "&arg_account=" . $accountCode;
+        $arrContextOptions = array(
+            "ssl" => array(
+                "verify_peer" => false,
+                "verify_peer_name" => false,
             ),
         );
         $response = file_get_contents($url, false, stream_context_create($arrContextOptions));
@@ -96,39 +123,40 @@ class Synthesis
         return $data[0];
     }
 
-    public function updateAccountDetails($newData){
+    public function updateAccountDetails($newData)
+    {
         global $db;
         $this->getToken();
-        $url = self::$url."/ws_accountimport?arg_username=".self::$username."&arg_token=".$this->currentToken;
+        $url = self::$url . "/ws_accountimport?arg_username=" . self::$username . "&arg_token=" . $this->currentToken;
 
-        if ($newData['account_code'] != ''){
-            $url .= "&arg_account_code=".$newData['account_code'];
+        if ($newData['account_code'] != '') {
+            $url .= "&arg_account_code=" . $newData['account_code'];
         }
-        if ($newData['long_description'] != ''){
-            $url .= "&arg_long_description=".$newData['long_description'];
+        if ($newData['long_description'] != '') {
+            $url .= "&arg_long_description=" . $newData['long_description'];
         }
-        if ($newData['addr_lin1'] != ''){
-            $url .= "&arg_addr_lin1=".$newData['addr_lin1'];
+        if ($newData['addr_lin1'] != '') {
+            $url .= "&arg_addr_lin1=" . $newData['addr_lin1'];
         }
-        if ($newData['addr_lin2'] != ''){
-            $url .= "&arg_addr_lin2=".$newData['addr_lin2'];
+        if ($newData['addr_lin2'] != '') {
+            $url .= "&arg_addr_lin2=" . $newData['addr_lin2'];
         }
-        if ($newData['addr_lin3'] != ''){
-            $url .= "&arg_addr_lin3=".$newData['addr_lin3'];
+        if ($newData['addr_lin3'] != '') {
+            $url .= "&arg_addr_lin3=" . $newData['addr_lin3'];
         }
-        if ($newData['addr_lin4'] != ''){
-            $url .= "&arg_addr_lin4=".$newData['addr_lin4'];
+        if ($newData['addr_lin4'] != '') {
+            $url .= "&arg_addr_lin4=" . $newData['addr_lin4'];
         }
-        if ($newData['crdt_lmit'] != ''){
-            $url .= "&arg_crdt_lmit=".$newData['crdt_lmit'];
+        if ($newData['crdt_lmit'] != '') {
+            $url .= "&arg_crdt_lmit=" . $newData['crdt_lmit'];
         }
-        if ($newData['crdt_days'] != ''){
-            $url .= "&arg_crdt_days=".$newData['crdt_days'];
+        if ($newData['crdt_days'] != '') {
+            $url .= "&arg_crdt_days=" . $newData['crdt_days'];
         }
-        $arrContextOptions=array(
-            "ssl"=>array(
-                "verify_peer"=>false,
-                "verify_peer_name"=>false,
+        $arrContextOptions = array(
+            "ssl" => array(
+                "verify_peer" => false,
+                "verify_peer_name" => false,
             ),
         );
         $response = file_get_contents($url, false, stream_context_create($arrContextOptions));
@@ -136,33 +164,35 @@ class Synthesis
 
         //create a record in sy_import_status
         //first delete any existing
-        $deleteSql = "Delete FROM sy_import_status WHERE syist_record_type = 'Account' AND syist_record_ID = '".$newData['account_code']."'";
+        $deleteSql = "Delete FROM sy_import_status WHERE syist_record_type = 'Account' AND syist_record_ID = '" . $newData['account_code'] . "'";
         $db->query($deleteSql);
         $insertData['fld_record_ID'] = $newData['account_code'];
         $insertData['fld_import_ID'] = $data[0]->rs_auto_serial;
         $insertData['fld_record_type'] = 'Account';
-        $db->db_tool_insert_row('sy_import_status',$insertData,'fld_',0,'syist_');
+        $db->db_tool_insert_row('sy_import_status', $insertData, 'fld_', 0, 'syist_');
 
         return $data[0];
 
     }
 
-    public function checkImportStatus($recordType, $recordID){
+    public function checkImportStatus($recordType, $recordID)
+    {
         global $db;
 
-        $sql = "SELECT * FROM sy_import_status WHERE syist_record_type = '".$recordType."' AND syist_record_ID = '".$recordID."'";
+        $sql = "SELECT * FROM sy_import_status WHERE syist_record_type = '" . $recordType . "' AND syist_record_ID = '" . $recordID . "'";
         $result = $db->query_fetch($sql);
 
         return $this->checkSynthesisImportStatus($result['syist_import_ID']);
     }
 
-    private function checkSynthesisImportStatus($id){
+    private function checkSynthesisImportStatus($id)
+    {
         $this->getToken();
-        $url = self::$url."/ws_checkacimport?arg_username=".self::$username."&arg_token=".$this->currentToken."&arg_auto_serial=".$id;
-        $arrContextOptions=array(
-            "ssl"=>array(
-                "verify_peer"=>false,
-                "verify_peer_name"=>false,
+        $url = self::$url . "/ws_checkacimport?arg_username=" . self::$username . "&arg_token=" . $this->currentToken . "&arg_auto_serial=" . $id;
+        $arrContextOptions = array(
+            "ssl" => array(
+                "verify_peer" => false,
+                "verify_peer_name" => false,
             ),
         );
         $response = file_get_contents($url, false, stream_context_create($arrContextOptions));
@@ -170,25 +200,27 @@ class Synthesis
         return $data[0];
     }
 
-    public function getAccountTransactionList($accountCode, $fromDate = '', $toDate = ''){
+    public function getAccountTransactionList($accountCode, $fromDate = '', $toDate = '')
+    {
         $this->getToken();
-        $url = self::$url."/ws_accounttransactions?arg_username=".self::$username."&arg_token=".$this->currentToken."&arg_account_code=".$accountCode;
-        if ($fromDate != ''){
-            $url .= '&arg_from_date='.$fromDate;
+        $url = self::$url . "/ws_accounttransactions?arg_username=" . self::$username . "&arg_token=" . $this->currentToken . "&arg_account_code=" . $accountCode;
+        if ($fromDate != '') {
+            $url .= '&arg_from_date=' . $fromDate;
         }
-        if ($toDate != ''){
-            $url .= '&arg_upto_date='.$toDate;
+        if ($toDate != '') {
+            $url .= '&arg_upto_date=' . $toDate;
         }
-        $arrContextOptions=array(
-            "ssl"=>array(
-                "verify_peer"=>false,
-                "verify_peer_name"=>false,
+        $arrContextOptions = array(
+            "ssl" => array(
+                "verify_peer" => false,
+                "verify_peer_name" => false,
             ),
         );
         $response = file_get_contents($url, false, stream_context_create($arrContextOptions));
         $data = json_decode($response);
         return $data;
     }
+
     public function logout()
     {
         /*

@@ -14,7 +14,7 @@ $db->admin_title = "Synthesis Accounts Transaction List";
 
 $syn = new Synthesis();
 $transactionList = $syn->getAccountTransactionList($_GET['lid']);
-if ($syn->error == true){
+if ($syn->error == true) {
     $db->generateAlertError($syn->errorDescription);
 }
 
@@ -25,13 +25,44 @@ if ($syn->error == false) {
 
     <div class="container">
         <div class="col-12 alert alert-primary text-center">
-            <b>Account <?php echo $_GET['lid'];?> Transaction List</b>
+            <b>Account <?php echo $_GET['lid']; ?> Transaction List</b>
         </div>
 
-        <div class="row">
-            <?php
-            echo $db->prepare_text_as_html(print_r($transactionList,true));
-            ?>
+        <div class="row form-group">
+            <table class="table table-hover table-light">
+                <thead class="alert alert-secondary">
+                <tr>
+                    <th width="20"></th>
+                    <th>Address</th>
+                    <th>Document Number</th>
+                    <th>Doc.Date</th>
+                    <th>Line Comment</th>
+                    <th>Amount</th>
+                    <th>Account Balance</th>
+                    <th>Stock Balance</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                foreach ($transactionList as $row) {
+                    ?>
+                    <tr>
+                        <td></td>
+                        <td><?php echo $row->act_address_code;?></td>
+                        <td><?php echo $row->act_document_number;?></td>
+                        <td><?php echo $db->convert_date_format($row->act_document_date,'dd-mm-yyyy','dd/mm/yyyy');?></td>
+                        <td><?php echo $row->act_line_comment;?></td>
+                        <td><?php echo $row->act_account_amount;?></td>
+                        <td><?php echo $row->act_account_balance;?></td>
+                        <td><?php echo $row->act_stock_balance;?></td>
+                        <td></td>
+                    </tr>
+                    <?php
+                }
+                ?>
+                </tbody>
+            </table>
         </div>
     </div>
 
