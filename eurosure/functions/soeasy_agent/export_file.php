@@ -39,11 +39,11 @@ if ($_POST['action'] == 'export') {
     SELECT * FROM
     es_soeasy_import_data
     WHERE
-    essesid_status = 'VALIDATED'
-    AND essesid_validation_status = 'OK'
+    essesid_validation_status = 'OK'
     ";
         if ($_POST['batchSelect'] == 'new') {
             $sql .= "
+        AND essesid_status = 'VALIDATED'
         AND (essesid_export_batch = '' OR essesid_export_batch is null)
         ";
         } else {
@@ -52,6 +52,8 @@ if ($_POST['action'] == 'export') {
             $batchNumber = $_POST['batchSelect'];
         }
         $result = $db->query($sql);
+
+        //echo $sql;exit();
 
 
         if ($_POST['batchSelect'] == 'new') {
@@ -77,6 +79,13 @@ if ($_POST['action'] == 'export') {
                 WHERE essesid_soeasy_import_data_ID = ' . $row['essesid_soeasy_import_data_ID'];
                 $db->query($updateBatchSql);
             }
+
+            //fill the bussiness use on EUEL
+            //check if the field EL_AME is not empty then fill the bussiness use if empty
+            if ($row['EL_AME'] == '' && $row['EL_Business_Use'] == ''){
+                $row['EL_Business_Use'] = 'EMPTY';
+            }
+
             $i++;
             $line = $row['Client_Person_Company'] . "|"
                 . $row['Client_ID_Company_Registration'] . "|"

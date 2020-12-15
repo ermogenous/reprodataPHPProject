@@ -113,7 +113,7 @@ if ($_POST["action"] == "save") {
             $db->start_transaction();
 
             //execute the modify_post_function if exists
-            if (function_exists('modify_post_values')){
+            if (function_exists('modify_post_values')) {
                 $_POST = modify_post_values($_POST);
             }
 
@@ -130,10 +130,10 @@ if ($_POST["action"] == "save") {
             //update the quotations price
             //get the result in an array 'premium' 'fees' 'stamps'
             $premium_result = quotation_price_calculation($quotation_id);
-            if ($premium_result["custom_premium1"] == ''){
+            if ($premium_result["custom_premium1"] == '') {
                 $premium_result["custom_premium1"] = 0;
             }
-            if ($premium_result["custom_premium2"] == ''){
+            if ($premium_result["custom_premium2"] == '') {
                 $premium_result["custom_premium2"] = 0;
             }
             $sql = "UPDATE oqt_quotations SET 
@@ -290,6 +290,7 @@ $formB->setLabelClasses('col-sm-4');
                 <div class="alert alert-success text-center">
                     <b><?php echo $quotation_type_data["oqqt_quotation_label_" . $_SESSION["oq_quotations_language"]]; ?></b>
                 </div>
+
                 <div class="container">
                     <div class="form-group row">
                         <div class="col-sm-9 text-center">
@@ -740,12 +741,11 @@ $formB->setLabelClasses('col-sm-4');
 
                     <?php
                     for ($i = 1; $i <= 5; $i++) {
-                        if ($quotation_type_data['oqqt_extra_field_'.$i.'_title'] != '' && $quotation_type_data['oqqt_extra_field_'.$i.'_title'] != null) {
-                            $extraFieldText = explode('||',$quotation_type_data['oqqt_extra_field_'.$i.'_title']);
-                            if ($quotation_type_data['oqqt_extra_field_'.$i.'_required'] == 1){
+                        if ($quotation_type_data['oqqt_extra_field_' . $i . '_title'] != '' && $quotation_type_data['oqqt_extra_field_' . $i . '_title'] != null) {
+                            $extraFieldText = explode('||', $quotation_type_data['oqqt_extra_field_' . $i . '_title']);
+                            if ($quotation_type_data['oqqt_extra_field_' . $i . '_required'] == 1) {
                                 $extraFieldRequired = true;
-                            }
-                            else {
+                            } else {
                                 $extraDetailsRequired = false;
                             }
                             ?>
@@ -754,13 +754,14 @@ $formB->setLabelClasses('col-sm-4');
                                     <?php show_quotation_text($extraFieldText[1], $extraFieldText[0]); ?>
                                 </label>
                                 <div class="col-sm-8">
-                                    <input name="extra_field_<?php echo $i; ?>" type="text" id="extra_field_<?php echo $i; ?>"
+                                    <input name="extra_field_<?php echo $i; ?>" type="text"
+                                           id="extra_field_<?php echo $i; ?>"
                                            class="form-control"
-                                           value="<?php echo $q_data["oqq_extra_field_".$i]; ?>">
+                                           value="<?php echo $q_data["oqq_extra_field_" . $i]; ?>">
                                     <?php
                                     $formValidator->addField(
                                         [
-                                            'fieldName' => 'extra_field_'.$i,
+                                            'fieldName' => 'extra_field_' . $i,
                                             'fieldDataType' => 'text',
                                             'required' => $extraDetailsRequired,
                                             'invalidTextAutoGenerate' => true
@@ -892,6 +893,17 @@ $formB->setLabelClasses('col-sm-4');
                                    onclick="document.getElementById('save_and_print').value = 0;">
                         <?php } ?>
                         <input name="save_and_print" id="save_and_print" type="hidden" value="0"/>
+
+                        <?php
+                        //copy button
+                        if ($quotation_type_data['oqqt_enable_copy'] == 1 && $q_data['oqq_status'] == 'Active') {
+                            ?>
+                                <a href="quotation_copy.php?lid=<?php echo $_GET["quotation"];?>"
+                                   onclick="return confirm('Are you sure you want to copy this to a new cover note?')">Copy To New</a>
+                            <?php
+                        }
+                        ?>
+
                     </div>
                 </div>
                 <div class="row">

@@ -57,7 +57,10 @@ else if ($part == 'data')
 
 }
 
-//sql , $database like db or sybase , separator like # or @ etc , colon like ' or " for the text
+//sql ,
+// $database like db or sybase ,
+// separator like # or @ etc ,
+// colon like ' or " for the text
 //out -> download or return
 function export_data_delimited($sql,$database,$separator,$colon,$out,$new_line = '
 ',$data_type = 'SQL',$filename = 'output_file') {
@@ -192,5 +195,9 @@ if ($show_totals == 1) {
 
 }
 return $output;
+}
+
+function exportToExcel(){
+
 }
 ?>

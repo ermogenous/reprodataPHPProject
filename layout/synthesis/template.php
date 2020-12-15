@@ -119,15 +119,14 @@ function template_header()
 
 
                     <!-- ACCOUNTS -->
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="fas fa-file-invoice-dollar"></i> Accounts <i class="fas fa-caret-down"></i>
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <a class="dropdown-item" href="<?php echo $main["site_url"]; ?>/synthesis/accounts/accounts.php"><i
-                                        class="fas fa-eye"></i> View Accounts</a>
-                        </div>
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?php echo $main["site_url"]; ?>/synthesis/accounts/accounts.php">
+                            <i class="fas fa-file-invoice-dollar"></i> View Accounts</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="<?php echo $main["site_url"]; ?>/synthesis/inventory/inventory.php">
+                            <i class="fas fa-warehouse"></i> View Inventory</a>
                     </li>
 
                     <!-- USERS -->
@@ -163,6 +162,41 @@ function template_header()
                                        href="<?php echo $main["site_url"]; ?>/users/codes_modify.php"><i
                                                 class="fas fa-plus-circle"></i> New Code</a>
                                 <?php } ?>
+                            </div>
+                        </li>
+                    <?php } ?>
+
+                    <!-- COMPANIES -->
+                    <?php if ($db->user_data["usr_user_rights"] <= 1) { ?>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="far fa-building"></i> Companies <i class="fas fa-caret-down"></i>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="<?php echo $main["site_url"]; ?>/synthesis/companies/companies.php"><i
+                                            class="fas fa-eye"></i> View Companies</a>
+                                <a class="dropdown-item" href="<?php echo $main["site_url"]; ?>/synthesis/companies/company_modify.php"><i
+                                            class="fas fa-plus-circle"></i> New Company</a>
+
+                                <a class="dropdown-item" href="<?php echo $main["site_url"]; ?>/synthesis/companies/company_modify.php"><i
+                                            class="fas fa-plus-circle"></i> Update All Users From Companies</a>
+                            </div>
+                        </li>
+                    <?php } ?>
+
+                    <!-- WEB USERS -->
+                    <?php if ($db->user_data["usr_user_rights"] <= 1) { ?>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-users"></i> Web Users <i class="fas fa-caret-down"></i>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item" href="<?php echo $main["site_url"]; ?>/synthesis/web_users/web_users.php"><i
+                                            class="fas fa-eye"></i> View Web Users</a>
+                                <a class="dropdown-item" href="<?php echo $main["site_url"]; ?>/synthesis/web_users/web_user_modify.php"><i
+                                            class="fas fa-plus-circle"></i> New Web Users</a>
                             </div>
                         </li>
                     <?php } ?>

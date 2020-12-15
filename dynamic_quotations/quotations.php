@@ -118,9 +118,14 @@ else {
     $table->extras .= " AND oqq_users_ID = " . $db->user_data["usr_users_ID"];
 }
 
+//marine reference extra column
+$table->extra_select_section = ",IF (oqq_quotations_type_ID = 2,  
+(SELECT oqqit_rate_7 FROM oqt_quotations_items WHERE oqqit_quotations_ID = oqq_quotations_ID AND oqqit_items_ID = 4)
+,'')
+as clo_marine_reference";
 
 $table->generate_data();
-//echo $table->sql;
+echo $table->sql;
 $db->admin_on_load = "show_price();";
 $db->show_header();
 
@@ -324,6 +329,9 @@ if ($_GET["price_id"] != "") {
                                     <th scope="col"><?php $table->display_order_links('Type', 'oqqt_name'); ?></th>
                                     <th scope="col"><?php $table->display_order_links('Status', 'oqq_status'); ?></th>
                                     <th scope="col"><?php $table->display_order_links('Expiry', 'oqq_expiry_date'); ?></th>
+                                    <?php if ($db->user_data['usr_user_rights'] >= 0) { ?>
+                                    <th scope="col"><?php $table->display_order_links('Reference', 'clo_marine_reference'); ?></th>
+                                    <?php } ?>
                                     <th scope="col">
                                     </th>
                                 </tr>
@@ -366,6 +374,9 @@ if ($_GET["price_id"] != "") {
                                         <td><?php echo $row["oqqt_name"]; ?></td>
                                         <td><?php echo $row["oqq_status"]; ?></td>
                                         <td><?php echo $db->convert_date_format($row["oqq_expiry_date"],'yyyy-mm-dd','dd/mm/yyyy',1,0); ?></td>
+                                        <?php if ($db->user_data['usr_user_rights'] >= 0) { ?>
+                                        <td><?php echo $row["clo_marine_reference"]; ?></td>
+                                        <?php } ?>
                                         <td>
                                             <a href="quotations_show.php?lid=<?php echo $row["oqq_quotations_ID"]; ?>">
                                                 <i class="fas fa-info-circle" title="View Info"></i>

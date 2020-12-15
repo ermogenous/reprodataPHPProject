@@ -333,25 +333,28 @@ class FormBuilder
     </div>
     <script>
 
-        $("#pageLoadingDialog").dialog({
-            autoOpen: true,
-            show: "slide",
-            modal: true,
-            height: 180,
-            width: 150,
-            create: function () {
-                $(".ui-dialog").find(".ui-dialog-titlebar").css({
-                    "background-image": "none",
-                    "background-color": "white",
-                    "border": "none"
-                });
-            },
-            closeOnEscape: false,
-            open: function (event, ui) {
-                $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
-            }
-
-        });
+        function startPageLoader(){
+            $("#pageLoadingDialog").dialog({
+                autoOpen: true,
+                show: "slide",
+                modal: true,
+                height: 180,
+                width: 150,
+                create: function () {
+                    $(".ui-dialog").find(".ui-dialog-titlebar").css({
+                        "background-image": "none",
+                        "background-color": "white",
+                        "border": "none"
+                    });
+                },
+                closeOnEscape: false,
+                open: function (event, ui) {
+                    $(".ui-dialog-titlebar-close", ui.dialog | ui).hide();
+                }
+    
+            });
+        }
+        startPageLoader();
 
         $(document).ready(function () {
             $("#pageLoadingDialog").dialog("close");

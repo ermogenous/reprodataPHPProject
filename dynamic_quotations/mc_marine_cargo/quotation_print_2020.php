@@ -279,10 +279,11 @@ body{
                             <b>Marks and Numbers</b><br><br>
                             ' . nl2br($sect2['oqqit_rate_2']) . '<br><br><br>
                             <strong>Supplier</strong><br>
-                            ' . nl2br($sect2['oqqit_rate_5']) . '
+                            ' . nl2br($sect2['oqqit_rate_5']) . '<br><br>
+                            ' .nl2br($sect2['oqqit_rate_3']).'
                         </td>
                         <td width="50%" valign="top">
-                            <b>Goods Insured - (as per bill of lading)</b><br><br>
+                            <b>Goods Insured</b><br><br>
                             ' . nl2br($sect2['oqqit_rate_1']) . '<br>
                             '.$oceanVessel.'
                             '.($sect2['oqqit_rate_7'] != ''?('<br><b>Your Ref:</b>'.$sect2['oqqit_rate_7']):'').'
@@ -346,7 +347,7 @@ body{
                 <b>Within Cyprus</b> to Kemter Insurance Agencies, Sub-Agencies and Consultants Ltd or Claims outside of Cyprus the nearest Lloyd’s Agent 
                 at the port or place where the loss or damage is discovered in order that they may examine the goods and issue a survey report if 
                 required. All documentation to be submitted to:
-                <br><br><br>
+                <br><br>
             </td>
         </tr>
         <tr>
@@ -927,7 +928,26 @@ function getConditionsOfInsurance($commodity,$clause){
     }
 
     if ($commodity == 'Other'){
-        $return[0] = 'Refer';
+        $return[0] = '
+        <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009. and/or Institute Cargo Clauses (Air) (excluding sendings by
+        <br>Post) CL387 dated 01.01.2009 Institute Frozen / Chilled Food Clauses (A) - amended to 8 consecutive hours
+        <br>Breakdown Cl. 423 01.03.2017 as applicable.
+        <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009 and/ or Institute Strikes Clauses (Cargo) (Air Cargo)
+        <br>CL389 dated 01.01.2009 and/or Strikes Clause (Frozen Chilled Food) CL. 424 01.03.2017 as applicable.
+        <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009 and/or Institute War Clauses (Air Cargo) (excluding
+        <br>sendings by Post) CL388 dated 01.01.2009 as applicable.
+        <br>Institute Classification Clause CL354 dated 1.1.01.
+        <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical & Electromagnetic Weapons Exclusion
+        CL370 dated 10.11.03.
+        <br>Institute Cyber Attack Exclusion Clause CL380 dated 10.11.03.
+        <br>Termination of Transit Clause (Terrorism) JC 2009/056 1.1.09 JC 2009/056 1.1.09
+        <br>Marine Cyber Exclusion Clause LMA5402 11.11.19
+        <br>Communicable Disease Exclusion Clause (Cargo) JC2020/011 17.04.20
+        <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
+        
+        
+        
+        ';
     }
 
     return $return;

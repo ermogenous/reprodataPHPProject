@@ -32,7 +32,8 @@ inped_process_status,
 STRING(',',(SELECT LIST(DISTINCT inlsc_record_code,',' ORDER BY inlsc_record_code) FROM inpolicyloadings a JOIN inloadings b ON b.inldg_loading_serial = a.inplg_loading_serial JOIN inloadingstatcodes c ON b.inldg_claim_reserve_group = c.inlsc_pcode_serial WHERE a.inplg_policy_serial = inpolicies.inpol_policy_serial /*AND a.inplg_pit_auto_serial = inpolicyitems.inpit_pit_auto_serial*/ AND (c.inlsc_record_type = 'LT' OR c.inlsc_record_code = 'CCX050') ),',') as clo_loading_stat_codes
 FROM
 inpolicies
-LEFT OUTER JOIN inpolicyendorsement ON inpolicies.inpol_policy_serial = inpolicyendorsement.inped_policy_serial AND inpolicies.inpol_last_endorsement_serial = inpolicyendorsement.inped_endorsement_serial, inpolicyitems
+LEFT OUTER JOIN inpolicyendorsement ON inpolicies.inpol_policy_serial = inpolicyendorsement.inped_policy_serial AND inpolicies.inpol_last_endorsement_serial = inpolicyendorsement.inped_endorsement_serial, 
+inpolicyitems
 LEFT OUTER JOIN inpolicysituations ON inpolicyitems.inpit_situation_serial = inpolicysituations.inpst_situation_serial
 LEFT OUTER JOIN inreinsurancetreaties ON inpolicyitems.inpit_reinsurance_treaty = inreinsurancetreaties.inrit_reinsurance_treaty_serial
 

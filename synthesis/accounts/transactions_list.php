@@ -46,6 +46,7 @@ if ($syn->error == false) {
                 <tbody>
                 <?php
                 foreach ($transactionList as $row) {
+                    //print_r($row);
                     ?>
                     <tr>
                         <td></td>

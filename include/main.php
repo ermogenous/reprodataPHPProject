@@ -285,7 +285,7 @@ class Main
             $this->user_data = $this->fetch_assoc($result);
 
             //if imitate user keep the admin login into the originalUserData
-            if ($this->dbSettings['admin_imitate_user']['value'] != 'No' && $this->user_data['usr_user_rights'] == 0) {
+            if ($this->dbSettings['admin_imitate_user']['value'] != 'No' && $this->user_data['usr_user_rights'] == 0 && $this->dbSettings['admin_imitate_user']['value'] > 0) {
                 $this->imitationMode = true;
                 $this->originalUserData = $this->user_data;
                 $this->user_data = $this->query_fetch('SELECT * FROM users WHERE usr_users_ID = ' . $this->dbSettings['admin_imitate_user']['value']);

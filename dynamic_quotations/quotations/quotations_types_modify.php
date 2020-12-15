@@ -515,6 +515,15 @@ FormBuilder::buildPageLoader();
                                 </div>
                             </div>
 
+                            <div class="form-group row">
+                                <label for="fld_enable_copy" class="col-sm-4 col-form-label">Enable Copy</label>
+                                <div class="col-sm-8">
+                                    <input type="checkbox" value="1" class="form-control" style="margin-top: 12px;"
+                                           id="fld_enable_copy" name="fld_enable_copy"
+                                        <?php if ($data['oqqt_enable_copy'] == 1) echo "checked"; ?>>
+                                </div>
+                            </div>
+
                             <div class="row" style="height: 25px;"></div>
                             <div class="form-group row">
                                 <label for="fld_active_send_mail" class="col-sm-4 col-form-label">

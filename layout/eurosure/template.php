@@ -231,6 +231,13 @@ function template_header()
                                         <?php
                                     }
                                     ?>
+                                    <li>
+                                        <a tabindex="-1"
+                                           href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/motor_business_production_bands.php"
+                                           class="dropdown-item">
+                                            <i class="fas fa-exclamation-triangle"></i> Motor Business Production Bands
+                                        </a>
+                                    </li>
 
 
                                     <li class="dropdown-submenu">
@@ -251,6 +258,13 @@ function template_header()
                                                     <i class="fas fa-exclamation-triangle"></i> HSR Export for quarter
                                                 </a>
                                             </li>
+                                            <li>
+                                                <a tabindex="-1"
+                                                   href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/export_policies_for_quarter.php"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-exclamation-triangle"></i> Export Policies for Quarter
+                                                </a>
+                                            </li>
                                             <?php
                                             if ($db->user_data['usr_user_rights'] < 3
                                                 || $db->user_data['usr_users_groups_ID'] == 6) {
@@ -265,6 +279,7 @@ function template_header()
                                                 <?php
                                             }
                                             ?>
+
                                         </ul>
                                     </li>
 

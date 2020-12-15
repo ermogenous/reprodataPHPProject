@@ -149,6 +149,7 @@ $db->show_header();
 
 include('../../scripts/form_validator_class.php');
 $formValidator = new customFormValidator();
+$formValidator->showErrorList();
 ?>
 
     <div class="container-fluid">
@@ -332,6 +333,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "number",
                                         "required" => true,
                                         "invalidText" => "Must provide a valid age limit",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mff').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -403,6 +405,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "text",
                                         "required" => true,
                                         "invalidText" => "Must provide excess",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -419,6 +422,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "number",
                                         "required" => true,
                                         "invalidText" => "Provide rate",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -438,6 +442,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "text",
                                         "required" => true,
                                         "invalidText" => "Must provide excess",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -454,6 +459,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "number",
                                         "required" => true,
                                         "invalidText" => "Provide rate",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -473,6 +479,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "text",
                                         "required" => true,
                                         "invalidText" => "Must provide excess",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -489,6 +496,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "number",
                                         "required" => true,
                                         "invalidText" => "Provide rate",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -509,6 +517,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "text",
                                         "required" => true,
                                         "invalidText" => "Must provide excess",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -525,6 +534,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "number",
                                         "required" => true,
                                         "invalidText" => "Provide rate",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -545,6 +555,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "text",
                                         "required" => true,
                                         "invalidText" => "Must provide excess",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -561,6 +572,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "number",
                                         "required" => true,
                                         "invalidText" => "Provide rate",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -580,6 +592,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "text",
                                         "required" => true,
                                         "invalidText" => "Must provide excess",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -596,6 +609,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "number",
                                         "required" => true,
                                         "invalidText" => "Provide rate",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -615,6 +629,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "text",
                                         "required" => true,
                                         "invalidText" => "Must provide excess",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -631,6 +646,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "number",
                                         "required" => true,
                                         "invalidText" => "Provide rate",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -648,6 +664,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "text",
                                         "required" => true,
                                         "invalidText" => "Must provide excess",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -660,17 +677,18 @@ $formValidator = new customFormValidator();
                                            value="<?php echo $data['oqun_excess_owner_packed_rate']; ?>">
                                     <?php
                                     $formValidator->addField([
-                                        "fieldName" => "fld_excess_general_cargo_rate",
+                                        "fieldName" => "fld_excess_owner_packed_rate",
                                         "fieldDataType" => "number",
                                         "required" => true,
                                         "invalidText" => "Provide rate",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label for="fld_excess_other" class="col-sm-5 col-form-label">Excess Other</label>
+                                <label for="fld_excess_other" class="col-sm-5 col-form-label">Pharmaceutical</label>
                                 <div class="col-sm-5">
                                     <input name="fld_excess_other" type="text" id="fld_excess_other"
                                            class="form-control" maxlength="100"
@@ -681,6 +699,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "text",
                                         "required" => true,
                                         "invalidText" => "Must provide excess",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -693,10 +712,11 @@ $formValidator = new customFormValidator();
                                            value="<?php echo $data['oqun_excess_other_rate']; ?>">
                                     <?php
                                     $formValidator->addField([
-                                        "fieldName" => "fld_excess_general_cargo_rate",
+                                        "fieldName" => "fld_excess_other_rate",
                                         "fieldDataType" => "number",
                                         "required" => true,
                                         "invalidText" => "Provide rate",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -716,6 +736,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "number",
                                         "required" => true,
                                         "invalidText" => "Provide rate",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
                                 </div>
@@ -1428,6 +1449,7 @@ $formValidator = new customFormValidator();
                                         "fieldDataType" => "number",
                                         "required" => true,
                                         "invalidText" => "Must provide a valid age limit",
+                                        "requiredAddedCustomCode" => "&& $('#allow_fpa').is(':checked')"
                                     ]);
                                     ?>
                                 </div>

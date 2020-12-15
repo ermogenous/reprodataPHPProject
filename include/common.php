@@ -4,8 +4,8 @@
 $main["start_script_time"] = microtime(true);
 
 if ($_SERVER['HTTP_HOST'] == 'localhost') {
-    $main["conf_title"] = 'A.K.Demetriou';
-    $main["admin_title"] = "A.K.Demetriou";
+    $main["conf_title"] = 'Sythesis';
+    $main["admin_title"] = "Synthesis";
 
     //Global variables
     $main["site_host"] = 'localhost';
@@ -44,11 +44,12 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
     $main['smtp_enable_authentication'] = true; //Enable SMTP authentication
 
     $main["test_dadabase"] = 'yes';
-    $main["environment"] = 'reprodata';
+    $main["environment"] = 'synthesis';
 
     $main["login_page_filename"] = 'login.php';
 
     $main["timeZone"] = 'Europe/Athens';
+
 
 } else {
 
@@ -56,9 +57,9 @@ if ($_SERVER['HTTP_HOST'] == 'localhost') {
     $main["timeZone"] = 'Europe/Athens';
     //date_default_timezone_set($main["time_zone"]);
 
-    $main["conf_title"] = 'Reprodata';
+    $main["conf_title"] = 'Synthesis';
 
-    $main["admin_title"] = "Reprodata";
+    $main["admin_title"] = "Synthesis";
 
     //Global variables
     $main["site_host"] = 'http://rds.agentscy.com';

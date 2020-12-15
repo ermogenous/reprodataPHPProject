@@ -24,7 +24,7 @@ if ($syn->error == true) {
 
 if ($_POST['action'] == 'search'){
     if ($_POST['searchAccount'] != ''){
-        $searchWhere = "clo_account_code LIKE '%".$_POST['searchAccount']."%'";
+        $searchWhere = "acc_account_code LIKE '%".$_POST['searchAccount']."%'";
     }
 }
 
@@ -170,8 +170,14 @@ if ($syn->error != true) {
 
         function editLine(id) {
             if (ignoreEdit === false) {
+                startPageLoader();
                 window.location.assign("account_modify.php?lid=" + id);
             }
+        }
+
+        function resetForm(){
+            $('#searchAccount').val('');
+
         }
 
     </script>

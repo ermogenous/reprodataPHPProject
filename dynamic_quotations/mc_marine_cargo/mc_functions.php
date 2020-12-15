@@ -139,7 +139,7 @@ function mc_shipment_details_3()
                 if ($clausesRestriction[9] == 1) {
                 ?>
                 <option value="Other" <?php if ($qitem_data['oqqit_rate_4'] == 'Other') echo 'selected'; ?>>
-                    9. Other [Requires Approval]
+                    9. Medicine & Pharmaceutical Goods
                 </option>
                     <?php
                 }
@@ -161,8 +161,8 @@ function mc_shipment_details_3()
 
                     let result = [];
                     if ($('#3_oqqit_rate_4').val() == 'Other') {
-                        result['result'] = 1;
-                        result['info'] = 'Commodity: Requires Approval';
+                        //result['result'] = 1;
+                        //result['info'] = 'Commodity: Requires Approval';
                     }
                     else {
                         result['result'] = 0;
@@ -269,9 +269,9 @@ function mc_shipment_details_3()
             $formValidator->addField(
                 [
                     'fieldName' => '3_oqqit_rate_3',
-                    'fieldDataType' => 'integer',
+                    'fieldDataType' => 'number',
                     'required' => true,
-                    'invalidText' => show_quotation_text("Συμπληρώστε Insured Value.", "Must Enter Insured Value (Integer)no comma`s, no dots.", 'Return')
+                    'invalidText' => show_quotation_text("Συμπληρώστε Insured Value.", "Must Enter Insured Value.", 'Return')
                 ]);
             ?>
         </div>
@@ -316,6 +316,27 @@ function mc_shipment_details_3()
                 </option>
                 <option value="Multimode" <?php if ($qitem_data['oqqit_rate_6'] == 'Multimode') echo 'selected'; ?>>
                     Multimode
+                </option>
+
+
+
+                <option value="By Air" <?php if ($qitem_data['oqqit_rate_6'] == 'By Air') echo 'selected'; ?>>
+                    By Air
+                </option>
+                <option value="Airfreight" <?php if ($qitem_data['oqqit_rate_6'] == 'Airfreight') echo 'selected'; ?>>
+                    Airfreight
+                </option>
+                <option value="By Sea" <?php if ($qitem_data['oqqit_rate_6'] == 'By Sea') echo 'selected'; ?>>
+                    By Sea
+                </option>
+                <option value="By Sea/Air" <?php if ($qitem_data['oqqit_rate_6'] == 'By Sea/Air') echo 'selected'; ?>>
+                    By Sea/Air
+                </option>
+                <option value="By Sea/Truck" <?php if ($qitem_data['oqqit_rate_6'] == 'By Sea/Truck') echo 'selected'; ?>>
+                    By Sea/Truck
+                </option>
+                <option value="By Truck" <?php if ($qitem_data['oqqit_rate_6'] == 'By Truck') echo 'selected'; ?>>
+                    By Truck
                 </option>
             </select>
             <?php
@@ -520,7 +541,7 @@ function mc_shipment_details_3()
                     class="form-control">
                 <option value=""></option>
                 <?php
-                $sql = "SELECT * FROM codes WHERE cde_type = 'Countries' ORDER BY cde_value ASC";
+                $sql = "SELECT * FROM codes WHERE cde_type = 'Countries' AND cde_value <> 'Cyprus' ORDER BY cde_value ASC";
                 $result = $db->query($sql);
                 while ($country = $db->fetch_assoc($result)) {
                     $reffered = '';
@@ -590,12 +611,24 @@ function mc_shipment_details_3()
                    class="form-control"
                    value="<?php echo $qitem_data["oqqit_date_1"]; ?>">
             <?php
+            if ($db->user_data['usr_user_rights'] <= 2){
+                $dateMinDate = 31;
+            }
+            else {
+                if ($db->user_data['usr_users_ID'] == 58){
+                    $dateMinDate = 30;
+                }
+                else {
+                    $dateMinDate = 0;
+                }
+            }
             $formValidator->addField(
                 [
                     'fieldName' => '3_oqqit_date_1',
                     'fieldDataType' => 'date',
                     'enableDatePicker' => true,
                     'datePickerValue' => $db->convert_date_format($qitem_data["oqqit_date_1"],'yyyy-mm-dd', 'dd/mm/yyyy'),
+                    'dateMinDate' => date('d/m/Y', mktime(0, 0, 0, date('m'), (date('d') - $dateMinDate), date('Y'))),
                     'required' => true,
                     'invalidText' => show_quotation_text("Καταχωρήστε Shipment Date.", "Must supply Shipment Date", 'Return')
                 ]);
@@ -1015,8 +1048,8 @@ function customCheckForApproval($data)
     }
 
     if ($item3['oqqit_rate_4'] == 'Other') {
-        $result['error'] = true;
-        $result['errorDescription'] .= 'Commodity Other Needs Approval.<br>';
+        //$result['error'] = true;
+        //$result['errorDescription'] .= 'Commodity Other Needs Approval.<br>';
     }
 
     return $result;

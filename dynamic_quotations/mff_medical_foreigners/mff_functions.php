@@ -209,6 +209,16 @@ function mff_insurance_period_2()
                 <?php $formValidator->echoDateFieldFormatTag(); ?>
                    value="<?php echo $db->convert_date_format($q_data["oqq_starting_date"], 'yyyy-mm-dd', 'dd/mm/yyyy',1,0);?>">
             <?php
+
+            if ($db->user_data['usr_user_rights'] <= 2){
+                $dateMaxDate = 100;
+                $dateMinDate = 31;
+            }
+            else {
+                $dateMaxDate = 45;
+                $dateMinDate = 0;
+            }
+
             $formValidator->addField(
                 [
                     'fieldName' => 'starting_date',
@@ -216,8 +226,8 @@ function mff_insurance_period_2()
                     'required' => true,
                     'enableDatePicker' => ($q_data['oqq_replacing_ID'] > 0)? false :true,
                     'datePickerValue' => $db->convert_date_format($q_data["oqq_starting_date"], 'yyyy-mm-dd', 'dd/mm/yyyy',1,0),
-                    'dateMinDate' => ($allowEditAdvanced == true) ? '01/01/2000' : date('d/m/Y'),
-                    'dateMaxDate' => date('d/m/Y', mktime(0, 0, 0, date('m'), (date('d') + 45), date('Y'))),
+                    'dateMinDate' => date('d/m/Y', mktime(0, 0, 0, date('m'), (date('d') - $dateMinDate), date('Y'))),
+                    'dateMaxDate' => date('d/m/Y', mktime(0, 0, 0, date('m'), (date('d') + $dateMaxDate), date('Y'))),
                     'invalidText' => show_quotation_text("Λάθος Ημερομηνία", "Wrong Date", 'Return')
                 ]);
             //echo date('d/m/Y', mktime(0, 0, 0, date('m'), (date('d') + 45), date('Y')));
@@ -676,7 +686,7 @@ function activate_custom_validation($quotationData)
     $days45Split = explode('-', $days45);
     $days45 = ($days45Split[0] * 10000) + ($days45Split[1] * 100) + $days45Split[2];
     //1. if startdate is before today
-    if ($startDate < $today) {
+    if ($startDate < $today && $db->user_data['usr_user_rights'] > 2) {
         $result['error'] = true;
         $result['errorDescription'] = "Starting Date cannot be before today.";
     }

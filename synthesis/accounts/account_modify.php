@@ -234,6 +234,7 @@ FormBuilder::buildPageLoader();
                             ->setFieldDescription('Credit Limit')
                             ->setFieldType('input')
                             ->setFieldInputType('text')
+                            ->setDisableField()
                             ->setInputValue($data->ccad_crdt_lmit)
                             ->setFieldStyle($fontSize);
 
@@ -258,6 +259,7 @@ FormBuilder::buildPageLoader();
                             ->setFieldDescription('Credit Days')
                             ->setFieldType('input')
                             ->setFieldInputType('text')
+                            ->setDisableField()
                             ->setInputValue($data->ccad_crdt_days)
                             ->setFieldStyle($fontSize);
 

@@ -1,8 +1,15 @@
 <?php
 include("include/main.php");
-$db = new Main(1);
+if ($main['environment'] == 'synthesis'){
 
+    include('synthesis/synthesis_class.php');
+    $syn = new Synthesis();
+    $db = new Main(0);
 
+}
+else {
+    $db = new Main(1);
+}
 
 //check if in the layout folder home.php file exists.
 if (is_file($main["local_url"]."/layout/".$db->admin_default_layout."/home.php")){
