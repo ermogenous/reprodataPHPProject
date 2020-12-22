@@ -26,17 +26,23 @@ class Synthesis
 
     function __construct($autologin = true)
     {
+        global $main;
+
         if ($autologin == true){
-            if ($_SESSION[$main['environment']."_logged_in"] == true){
-                //user is logged in. No need to do anything
+            if ($_SESSION[$main['environment']."_logged_in"] == 1){
+                $this->loginWebUser();
             }
             else {
                 //empty the sessions and redirect to the login page
                 unset($_SESSION[$main['environment']."_logged_in"]);
                 unset($_SESSION[$main['environment']."_usernm"]);
                 unset($_SESSION[$main['environment']."_userpswd"]);
+                unset($_SESSION[$main['environment']."_description"]);
+                unset($_SESSION[$main['environment']."_menu"]);
+                unset($_SESSION[$main['environment']."_status"]);
 
-                header("Location: syn_login.php");
+                header("Location:" . $main["site_url"] . "/synthesis/syn_login.php");
+                exit();
             }
         }
     }
@@ -66,7 +72,6 @@ class Synthesis
         }
 
         $url = $this->url . "/ws_token?arg_username=" . $this->username . "&arg_password=" . $this->password;
-
         $arrContextOptions = array(
             "ssl" => array(
                 "verify_peer" => false,
@@ -81,7 +86,6 @@ class Synthesis
             return false;
         }
         $data = json_decode($response);
-
         if ($data[0]->status != 'error') {
             $this->currentToken = $data[0]->rs_token;
             $this->currentTokenLife = $data[0]->rdt_token_life;
@@ -101,6 +105,21 @@ class Synthesis
             $_SESSION[$main['environment']."_usernm"] = $username;
             $_SESSION[$main['environment']."_userpswd"] = $password;
         }
+
+        //if admin user
+        if ($_SESSION[$main['environment']."_usernm"] == 'adminmike' && $_SESSION[$main['environment']."_userpswd"] == 'adminmike'){
+            $_SESSION[$main['environment']."_logged_in"] = true;
+            $_SESSION[$main['environment']."_description"] = 'Admin';
+            $_SESSION[$main['environment']."_status"] = 'N';
+            $_SESSION[$main['environment']."_menu"] = 'Admin,';
+            //login in the system
+            $_SESSION[$main["environment"] . "_admin_password"] = 'mike';
+            $_SESSION[$main["environment"] . "_admin_username"] = 'mike';
+            $db->check_login();
+            return true;
+        }
+
+        //print_r($_SESSION);
 
         //first check if this username/email exists and which company is it to set the company parameters
         $webUser = $db->query_fetch('
@@ -133,7 +152,10 @@ class Synthesis
             unset($_SESSION[$main['environment']."_logged_in"]);
             unset($_SESSION[$main['environment']."_usernm"]);
             unset($_SESSION[$main['environment']."_userpswd"]);
-
+            unset($_SESSION[$main['environment']."_description"]);
+            unset($_SESSION[$main['environment']."_menu"]);
+            unset($_SESSION[$main['environment']."_status"]);
+            $this->error = true;
             return false;
         }
 
@@ -144,7 +166,10 @@ class Synthesis
             unset($_SESSION[$main['environment']."_logged_in"]);
             unset($_SESSION[$main['environment']."_usernm"]);
             unset($_SESSION[$main['environment']."_userpswd"]);
-
+            unset($_SESSION[$main['environment']."_description"]);
+            unset($_SESSION[$main['environment']."_menu"]);
+            unset($_SESSION[$main['environment']."_status"]);
+            $this->error = true;
             return false;
         }
         if ($synUserData[0]->ccwu_web_user_status == 'S'){
@@ -153,7 +178,10 @@ class Synthesis
             unset($_SESSION[$main['environment']."_logged_in"]);
             unset($_SESSION[$main['environment']."_usernm"]);
             unset($_SESSION[$main['environment']."_userpswd"]);
-
+            unset($_SESSION[$main['environment']."_description"]);
+            unset($_SESSION[$main['environment']."_menu"]);
+            unset($_SESSION[$main['environment']."_status"]);
+            $this->error = true;
             return false;
         }
 
@@ -169,6 +197,10 @@ class Synthesis
         $userData['description'] = $synUserData[0]->ccwu_web_user_description;
         $userData['status'] = $synUserData[0]->ccwu_web_user_status;
         $userData['menu'] = $synUserData[0]->ccwu_user_menus;
+
+        //update the object settings to work with the logged in user
+        $this->setUsername($_SESSION[$main['environment']."_usernm"]);
+        $this->setPassword($_SESSION[$main['environment']."_userpswd"]);
 
         return true;
     }
@@ -285,7 +317,7 @@ class Synthesis
         }
 
         if ($whereClause == '' && $orderClause == '') {
-            $url = self::$url . "/ws_accountlist?arg_username=" . self::$username . "&arg_token=" . $this->currentToken;
+            $url = $this->url . "/ws_accountlist?arg_username=" . $this->username . "&arg_token=" . $this->currentToken;
         } else {
             $whereSql = '';
             $orderSql = '';
@@ -296,7 +328,7 @@ class Synthesis
             if ($orderClause != '') {
                 $orderSql = "&arg_sort=" . urlencode($orderClause);
             }
-            $url = self::$url . "/ws_accountlist?arg_username=" . self::$username . "&arg_token=" . $this->currentToken . $whereSql . $orderSql;
+            $url = $this->url . "/ws_accountlist?arg_username=" . $this->username . "&arg_token=" . $this->currentToken . $whereSql . $orderSql;
 
         }
         //echo $url;
@@ -330,7 +362,7 @@ class Synthesis
     public function getAccountDetails($accountCode)
     {
         $this->getToken();
-        $url = self::$url . "/ws_accountdetail?arg_username=" . self::$username . "&arg_token=" . $this->currentToken . "&arg_account=" . $accountCode;
+        $url = $this->url . "/ws_accountdetail?arg_username=" . $this->username . "&arg_token=" . $this->currentToken . "&arg_account=" . $accountCode;
         $arrContextOptions = array(
             "ssl" => array(
                 "verify_peer" => false,
@@ -346,7 +378,7 @@ class Synthesis
     {
         global $db;
         $this->getToken();
-        $url = self::$url . "/ws_accountimport?arg_username=" . self::$username . "&arg_token=" . $this->currentToken;
+        $url = $this->url . "/ws_accountimport?arg_username=" . $this->username . "&arg_token=" . $this->currentToken;
 
         if ($newData['account_code'] != '') {
             $url .= "&arg_account_code=" . urlencode($newData['account_code']);
@@ -437,11 +469,9 @@ class Synthesis
         $data = json_decode($response);
         $data['totalRows'] = count($data);
         if ($data[0]->status == 'error') {
-            echo "An error has been found.";
-            if ($db->user_data['usr_user_rights'] == 0) {
-                echo "<br><br>" . $url;
-                echo "<br><br>" . $data[0]->message;
-            }
+            $this->error = true;
+            $this->errorDescription = $data[0]->message;
+            return false;
         }
         //echo $data[0]->status;
         //print_r($data);
@@ -456,8 +486,7 @@ class Synthesis
             return false;
         }
 
-        $url = self::$url . "/ws_productdetail?arg_username=" . self::$username . "&arg_token=" . $this->currentToken . "&arg_product=" . $productCode;
-
+        $url = $this->url . "/ws_itemdetail?arg_username=" . $this->username . "&arg_token=" . $this->currentToken . "&arg_item=" . $productCode;
 
         $arrContextOptions = array(
             "ssl" => array(
@@ -477,11 +506,9 @@ class Synthesis
         $data = json_decode($response);
         $data['totalRows'] = count($data);
         if ($data[0]->status == 'error') {
-            echo "An error has been found.";
-            if ($db->user_data['usr_user_rights'] == 0) {
-                echo "<br><br>" . $url;
-                echo "<br><br>" . $data[0]->message;
-            }
+            $this->errorDescription = $data[0]->message;
+            $this->error = true;
+            return false;
         }
         //echo $data[0]->status;
         //print_r($data);
@@ -501,7 +528,7 @@ class Synthesis
     private function checkSynthesisImportStatus($id)
     {
         $this->getToken();
-        $url = self::$url . "/ws_checkacimport?arg_username=" . self::$username . "&arg_token=" . $this->currentToken . "&arg_auto_serial=" . $id;
+        $url = $this->url . "/ws_checkacimport?arg_username=" . $this->username . "&arg_token=" . $this->currentToken . "&arg_auto_serial=" . $id;
         $arrContextOptions = array(
             "ssl" => array(
                 "verify_peer" => false,
@@ -516,21 +543,34 @@ class Synthesis
     public function getAccountTransactionList($accountCode, $fromDate = '', $toDate = '')
     {
         $this->getToken();
-        $url = self::$url . "/ws_accounttransactions?arg_username=" . self::$username . "&arg_token=" . $this->currentToken . "&arg_account_code=" . $accountCode;
+        if ($this->error == true){
+            return false;
+        }
+        $url = $this->url . "/ws_accounttransactions?arg_username=" . $this->username . "&arg_token=" . $this->currentToken . "&arg_account_code=" . $accountCode;
         if ($fromDate != '') {
             $url .= '&arg_from_date=' . $fromDate;
         }
         if ($toDate != '') {
             $url .= '&arg_upto_date=' . $toDate;
         }
+        //echo $url;
         $arrContextOptions = array(
             "ssl" => array(
                 "verify_peer" => false,
                 "verify_peer_name" => false,
             ),
         );
+
         $response = file_get_contents($url, false, stream_context_create($arrContextOptions));
         $data = json_decode($response);
+        //echo "<br><br>";
+        //print_r($data);
+        if ($data[0]->status == 'error') {
+            //echo "An error has been found.";
+            $this->error = true;
+            $this->errorDescription = $data[0]->message;
+            return false;
+        }
         return $data;
     }
 

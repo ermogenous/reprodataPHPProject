@@ -10,11 +10,14 @@ include("../../include/main.php");
 include("../synthesis_class.php");
 include('../../scripts/form_builder_class.php');
 
-$db = new Main(1);
+$db = new Main(0);
 $db->admin_title = "Synthesis Account List";
 
-
 $syn = new Synthesis();
+if (strpos($_SESSION['synthesis_menu'], 'AC,') === false) {
+    header("Location: ".$main['site_url']."/home.php");
+    exit();
+}
 
 //$accountList = $syn->getAccountList();
 if ($syn->error == true) {
@@ -22,9 +25,9 @@ if ($syn->error == true) {
 }
 //print_r($accountList);
 
-if ($_POST['action'] == 'search'){
-    if ($_POST['searchAccount'] != ''){
-        $searchWhere = "acc_account_code LIKE '%".$_POST['searchAccount']."%'";
+if ($_POST['action'] == 'search') {
+    if ($_POST['searchAccount'] != '') {
+        $searchWhere = "acc_account_code LIKE '%" . $_POST['searchAccount'] . "%' OR acc_address_description LIKE '%" . $_POST['searchAccount'] . "%'";
     }
 }
 
@@ -101,68 +104,68 @@ if ($syn->error != true) {
         </div>
     </div>
 
+    <div class="container">
 
-    <div class="row" style="height: 20px;"></div>
-
-    <?php
-    $accountList = $syn->getAccountList($searchWhere);
-    if (!empty($accountList)) {
-        ?>
-        <div class="row form-group">
-            <table class="table table-hover table-light">
-                <thead class="alert alert-secondary">
-                <tr>
-                    <th width="20"></th>
-                    <th>Account Code</th>
-                    <th>Description</th>
-                    <th>Balance</th>
-                    <th>Stock Balance</th>
-                    <th></th>
-                </tr>
-                </thead>
-                <tbody>
-                <?php
-
-                foreach ($accountList as $value) {
-                    if ($value->acc_account_code != '') {
-                        ?>
-                        <tr onclick="editLine('<?php echo $value->acc_account_code; ?>')">
-                            <td></td>
-                            <td><?php echo $value->acc_account_code; ?></td>
-                            <td><?php echo $value->acc_address_description; ?></td>
-                            <td><?php echo $value->acc_account_balance; ?></td>
-                            <td><?php echo $value->acc_stock_balance; ?></td>
-                            <td>
-                                <a href="account_modify.php?lid=<?php echo $value->acc_account_code; ?>"
-                                   title="View/Modify Account">
-                                    <i class="far fa-edit"></i>
-                                </a>
-                                <a href="transactions_list.php?lid=<?php echo $value->acc_account_code; ?>"
-                                   title="Transaction List"
-                                   onclick="ignoreEdit=true;">
-                                    <i class="fas fa-list"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        <?php
-                    }//do not show the empty rows
-                }
-
-                ?>
-                </tbody>
-            </table>
-        </div>
+        <div class="row" style="height: 20px;"></div>
         <?php
-    } else {
-        ?>
-        <div class="row form-group">
-            <div class="col-12 alert alert-warning">
-                No records found!
+        $accountList = $syn->getAccountList($searchWhere);
+        if (!empty($accountList)) {
+            ?>
+            <div class="row form-group">
+                <table class="table table-hover table-light">
+                    <thead class="alert alert-secondary">
+                    <tr>
+                        <th width="20"></th>
+                        <th>Account Code</th>
+                        <th>Description</th>
+                        <th>Balance</th>
+                        <th>Stock Balance</th>
+                        <th></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <?php
+
+                    foreach ($accountList as $value) {
+                        if ($value->acc_account_code != '') {
+                            ?>
+                            <tr onclick="editLine('<?php echo $value->acc_account_code; ?>')">
+                                <td></td>
+                                <td><?php echo $value->acc_account_code; ?></td>
+                                <td><?php echo $value->acc_address_description; ?></td>
+                                <td><?php echo $value->acc_account_balance; ?></td>
+                                <td><?php echo $value->acc_stock_balance; ?></td>
+                                <td>
+                                    <a href="account_modify.php?lid=<?php echo $value->acc_account_code; ?>"
+                                       title="View/Modify Account">
+                                        <i class="far fa-edit"></i>
+                                    </a>
+                                    <a href="transactions_list.php?lid=<?php echo $value->acc_account_code; ?>"
+                                       title="Transaction List"
+                                       onclick="ignoreEdit=true;">
+                                        <i class="fas fa-list"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            <?php
+                        }//do not show the empty rows
+                    }
+
+                    ?>
+                    </tbody>
+                </table>
             </div>
-        </div>
-        <?php
-    }
-    ?>
+            <?php
+        } else {
+            ?>
+            <div class="row form-group">
+                <div class="col-12 alert alert-warning">
+                    No records found!
+                </div>
+            </div>
+            <?php
+        }
+        ?>
     </div>
     <script>
 
@@ -175,7 +178,7 @@ if ($syn->error != true) {
             }
         }
 
-        function resetForm(){
+        function resetForm() {
             $('#searchAccount').val('');
 
         }

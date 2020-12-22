@@ -1,11 +1,10 @@
 <?php
 include("include/main.php");
-if ($main['environment'] == 'synthesis'){
 
+$db = new Main(0);
+if ($db->admin_default_layout == 'synthesis'){
     include('synthesis/synthesis_class.php');
     $syn = new Synthesis();
-    $db = new Main(0);
-
 }
 else {
     $db = new Main(1);
@@ -17,12 +16,9 @@ if (is_file($main["local_url"]."/layout/".$db->admin_default_layout."/home.php")
     exit();
 }
 
-
-
-
 $db->show_header();
 ?>
-
+home
 <div class="container-fluid" style="">
 
     <div class="row">

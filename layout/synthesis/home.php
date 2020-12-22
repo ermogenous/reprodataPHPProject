@@ -6,12 +6,17 @@
  * Time: 5:19 ΜΜ
  */
 
-header("Location:synthesis/accounts/accounts.php");
-exit();
+//header("Location:synthesis/accounts/accounts.php");
+//exit();
 
 include_once("include/main.php");
-$db = new Main(1);
+include_once("../../synthesis/synthesis_class.php");
+$db = new Main(0);
+
+$syn = new Synthesis();
 
 $db->show_header();
-
+?>
+Synthesis Home
+<?php
 $db->show_footer();

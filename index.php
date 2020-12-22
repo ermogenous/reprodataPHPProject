@@ -9,6 +9,10 @@ if ($db->admin_default_layout == 'tolc') {
         exit();
     }
 }
+if ($db->admin_default_layout == 'synthesis'){
+    header("Location:" . $main["site_url"] . "/synthesis/syn_login.php");
+    exit();
+}
 header("Location: login.php");
 exit();
 ?>

@@ -9,7 +9,7 @@
 include("../../include/main.php");
 include("../synthesis_class.php");
 
-$db = new Main();
+$db = new Main(0);
 $db->admin_title = "Synthesis - Update All Web Users";
 
 //get all the companies (Active) and loop in them to get all their webusers

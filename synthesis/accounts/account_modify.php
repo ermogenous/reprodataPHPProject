@@ -11,11 +11,14 @@ include("../synthesis_class.php");
 include('../../scripts/form_validator_class.php');
 include('../../scripts/form_builder_class.php');
 
-$db = new Main(1);
+$db = new Main(0);
 $db->admin_title = "Synthesis Account Modify";
 
 $syn = new Synthesis();
-
+if (strpos($_SESSION['synthesis_menu'], 'AC,') === false) {
+    header("Location: ".$main['site_url']."/home.php");
+    exit();
+}
 
 if ($_POST['action'] == 'update') {
     //$syn = new Synthesis();

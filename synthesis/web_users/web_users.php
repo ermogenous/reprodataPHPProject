@@ -10,7 +10,7 @@ include("../../include/main.php");
 //include("../../include/tables.php");
 include("../../tools/table_list.php");
 
-$db = new Main(1, 'UTF-8');
+$db = new Main(0, 'UTF-8');
 $db->admin_title = "Synthesis - Web Users";
 
 $db->show_header();
@@ -19,7 +19,7 @@ $list = new TableList();
 $list->setTable('sy_web_users', 'ID')
     ->setSqlFrom('JOIN sy_companies ON syco_company_ID = sywu_company_ID')
     ->setSqlSelect('sywu_web_user_ID', 'ID')
-    ->setSqlSelect('sywu_name', 'Name')
+    ->setSqlSelect('sywu_description', 'Name')
     ->setSqlSelect('syco_name', 'Company')
     ->setSqlSelect('sywu_status', 'Status')
     ->setSqlOrder('ID', 'ASC')

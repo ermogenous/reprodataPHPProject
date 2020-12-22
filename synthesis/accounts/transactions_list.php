@@ -9,10 +9,16 @@
 include("../../include/main.php");
 include("../synthesis_class.php");
 
-$db = new Main(1);
+$db = new Main(0);
 $db->admin_title = "Synthesis Accounts Transaction List";
 
 $syn = new Synthesis();
+
+if (strpos($_SESSION['synthesis_menu'], 'AC,') === false) {
+    header("Location: ".$main['site_url']."/home.php");
+    exit();
+}
+
 $transactionList = $syn->getAccountTransactionList($_GET['lid']);
 if ($syn->error == true) {
     $db->generateAlertError($syn->errorDescription);

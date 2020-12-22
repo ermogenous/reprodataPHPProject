@@ -9,6 +9,20 @@ if ($db->get_setting("under_construction") == 1) {
 	echo "<div align=\"center\">Website is under construction. <br> Please try again in a few moments.</div>";
 	exit();
 }
+
+if ($db->admin_default_layout == 'synthesis'){
+    header("Location:" . $main["site_url"] . "/synthesis/syn_login.php");
+    exit();
+}
+
+
+
+
+
+
+
+
+
 if ($_GET["action"] == "logout") {
 
 	$_SESSION[$main["environment"]."_admin_username"] = "";

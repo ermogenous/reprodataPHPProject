@@ -7,7 +7,6 @@
  */
 
 include("../../include/main.php");
-include("../lib/odbccon.php");
 $db = new Main(1);
 $db->working_section = 'Eurosure vehicle details for Rescueline API';
 $db->apiGetReadHeaders();
@@ -19,7 +18,6 @@ $db->apiGetReadHeaders();
 
 if ($_GET['reg'] != '' && $_GET['usr'] == 'rescuel' && $_GET['psw'] == 'rreess123'){
 
-    $sybase = new ODBCCON();
     $sql = "
         SELECT 
         inpol_policy_number as policy_number,
@@ -40,8 +38,8 @@ if ($_GET['reg'] != '' && $_GET['usr'] == 'rescuel' && $_GET['psw'] == 'rreess12
         initm_item_code = '".$_GET['reg']."'
         AND inpol_status = 'N'
         ";
-    $result = $sybase->query($sql);
-    while($data = $sybase->fetch_assoc($result)){
+    $result = $db->query($sql);
+    while($data = $db->fetch_assoc($result)){
         $output[] = $data;
     }
 

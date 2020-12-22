@@ -14,9 +14,12 @@ if ($_GET["action"] == "logout") {
     unset($_SESSION[$main['environment']."_logged_in"]);
     unset($_SESSION[$main['environment']."_usernm"]);
     unset($_SESSION[$main['environment']."_userpswd"]);
+    unset($_SESSION[$main['environment']."_description"]);
+    unset($_SESSION[$main['environment']."_menu"]);
+    unset($_SESSION[$main['environment']."_status"]);
     $_GET["error"] = "You are logged out.";
     $_SESSION["prev_url"] = "";
-    header("Location: login.php?action=".$_GET["error"]);
+    header("Location: syn_login.php?action=".$_GET["error"]);
     exit();
 }
 
@@ -34,6 +37,9 @@ if ($_POST["action"] == "login") {
 
     $syn = new Synthesis(false);
     $syn->loginWebUser($_POST['username'],$_POST['password']);
+    if ($syn->error == true){
+        $db->generateAlertError($syn->errorDescription);
+    }
     if ($syn->error == false){
         header("Location: ../home.php");
         exit();
@@ -55,7 +61,7 @@ if ($_GET['error'] != '') {
 
     <div class="container">
         <div class="col-lg-4 col-xs-12">
-            <form action="" method="post">
+            <form action="syn_login.php" method="post">
                 <div class="form-group">
                     <label for="username">Username</label>
                     <input type="text" class="form-control" id="username" name="username" aria-describedby="UsernameHelp" placeholder="Enter Username">

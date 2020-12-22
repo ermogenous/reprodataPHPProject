@@ -1817,6 +1817,7 @@ class Main
     function export_file_for_download($data, $filename)
     {
         global $db;
+        //$data = mb_convert_encoding($data,'UTF-8');
         header("Content-Type: application/octet-stream");
         header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
         header("Content-Transfer-Encoding: binary");
