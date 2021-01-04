@@ -1,5 +1,11 @@
 <?php
 
+use PhpOffice\PhpSpreadsheet\Helper\Sample;
+use PhpOffice\PhpSpreadsheet\IOFactory;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+
 ini_set('memory_limit','2048M');
 ini_set('max_execution_time', 120);
 
@@ -232,8 +238,110 @@ if ($_POST['action'] == 'execute'){
   AND  1=1  ORDER BY clo_band
   ";
 
-    export_data_delimited($sql,'sybase',',',"'",'download');
-    exit();
+    if ($_POST['fld_export_type'] == 'Delimited') {
+        export_data_delimited($sql, 'sybase', '#', "'", 'download');
+        exit();
+    }
+    else if ($_POST['fld_export_type'] == 'Excel'){
+
+        $spreadsheet = new Spreadsheet();
+// Set document properties
+        $spreadsheet->getProperties()
+            ->setCreator('Eurosure')
+            ->setLastModifiedBy('Eurosure')
+            ->setTitle('Eurosure - Motor Business Production Bands')
+            ->setSubject('Eurosure - Motor Business Production Bands')
+            ->setDescription('Eurosure - Motor Business Production Bands - Intranet/Reports/Production/Motor Business Production Bands')
+            ->setKeywords('Eurosure - Motor Business Production Bands')
+            ->setCategory('Eurosure - Motor Business Production Bands');
+
+        // add first line header data
+        $str = 'A';
+        $spreadsheet->setActiveSheetIndex(0)
+            ->setCellValue($str . '1', 'Band')
+            ->setCellValue(++$str . '1', 'No Of Policies')
+            ->setCellValue(++$str . '1', 'No Of Vehicles')
+            ->setCellValue(++$str . '1', 'Gross Written Premium')
+            ->setCellValue(++$str . '1', 'GWP TP')
+            ->setCellValue(++$str . '1', 'GWP OD')
+            ->setCellValue(++$str . '1', '   ')
+            ->setCellValue(++$str . '1', 'No Of Claims')
+            ->setCellValue(++$str . '1', 'Claims Paid Total')
+            ->setCellValue(++$str . '1', 'Claims Paid TP')
+            ->setCellValue(++$str . '1', 'Claims Paid OD')
+            ->setCellValue(++$str . '1', 'Claim Reserve CF Total')
+            ->setCellValue(++$str . '1', 'Claim Reserve CF TP')
+            ->setCellValue(++$str . '1', 'Claim Reserve CF OD');
+        //make all align of the row LEFT
+        $spreadsheet->getActiveSheet()->getStyle('A1:' . $str . '1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        //make all row Bold
+        $spreadsheet->getActiveSheet()->getStyle('A1:' . $str . '1')->getFont()->setBold(true);
+
+        $line = 1;
+        $result = $sybase->query($sql);
+        while ($row = $sybase->fetch_assoc($result)) {
+            $str = 'A';
+            $line++;
+            $spreadsheet->getActiveSheet()
+                ->setCellValue($str . $line, $row['clo_band'])
+                ->setCellValue(++$str . $line, $row['clo_no_of_policies'])
+                ->setCellValue(++$str . $line, $row['clo_no_vehicles_'])
+                ->setCellValue(++$str . $line, $row['clo_period_premium'])
+                ->setCellValue(++$str . $line, $row['clo_period_premium_tp'])
+                ->setCellValue(++$str . $line, $row['clo_period_premium_od'])
+                ->setCellValue(++$str . $line, '   ')
+                ->setCellValue(++$str . $line, $row['clo_no_of_claims'])
+                ->setCellValue(++$str . $line, $row['clo_amount_paid_in_prd'])
+                ->setCellValue(++$str . $line, $row['clo_amount_paid_in_prd_tp'])
+                ->setCellValue(++$str . $line, $row['clo_amount_paid_in_prd_od'])
+                ->setCellValue(++$str . $line, $row['clo_os_reserve_cf'])
+                ->setCellValue(++$str . $line, $row['clo_os_reserve_cf_tp'])
+                ->setCellValue(++$str . $line, $row['clo_os_reserve_cf_od']);
+
+            $spreadsheet->getActiveSheet()->getStyle('A1:' . $str . $line)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        }
+
+        $str = 'A';
+        $stop = false;
+        while ($stop == false) {
+            //set columns to autosize the width
+            $spreadsheet->getActiveSheet()->getColumnDimension($str)->setAutoSize(true);
+
+            ++$str;
+            if ($str == 'Z') {
+                $stop = true;
+            }
+        }
+        $filename = $_POST['fld_from_period']." ".$_POST['fld_from_year']."-".$_POST['fld_to_period']." ".$_POST['fld_to_year'];
+        $spreadsheet->getActiveSheet()
+            ->setTitle('Motor Bands '.$filename);
+
+        // Set active sheet index to the first sheet, so Excel opens this as the first sheet
+        $spreadsheet->setActiveSheetIndex(0);
+        //$writer = IOFactory::createWriter($spreadsheet, 'Xls');
+        //$writer->save('output.xls');
+        //$file = file_get_contents('output.xls');
+
+
+
+        // Redirect output to a client’s web browser (Xls)
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="motor_bands_'.$filename.'.xls"');
+        header('Cache-Control: max-age=0');
+// If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+
+// If you're serving to IE over SSL, then the following may be needed
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header('Pragma: public'); // HTTP/1.0
+
+        $writer = IOFactory::createWriter($spreadsheet, 'Xls');
+        $writer->save('php://output');
+
+    }
 
 }
 
@@ -349,6 +457,35 @@ FormBuilder::buildPageLoader();
                             [
                                 'fieldName' => $formB->fieldName,
                                 'fieldDataType' => 'integer',
+                                'required' => true,
+                                'invalidTextAutoGenerate' => true
+                            ]);
+                        ?>
+                    </div>
+
+                </div>
+
+                <div class="row form-group">
+                    <?php
+                    $formB = new FormBuilder();
+                    $formB->setFieldName('fld_export_type')
+                        ->setFieldDescription('Export Type')
+                        ->setLabelClasses('col-sm-2')
+                        ->setFieldType('select')
+                        ->setInputSelectAddEmptyOption(true)
+                        ->setInputSelectArrayOptions([
+                                'Delimited'=>'Delimited - Problem with thousand separator',
+                                'Excel'=>'Excel'
+                        ])
+                        ->buildLabel();
+                    ?>
+                    <div class="col-2">
+                        <?php
+                        $formB->buildInput();
+                        $formValidator->addField(
+                            [
+                                'fieldName' => $formB->fieldName,
+                                'fieldDataType' => 'select',
                                 'required' => true,
                                 'invalidTextAutoGenerate' => true
                             ]);

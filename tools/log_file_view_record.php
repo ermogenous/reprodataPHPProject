@@ -65,14 +65,14 @@ $db->show_header();
 
     <div class="row">
         <div class="col-2"><strong>New Values:</strong></div>
-        <div class="col-10"><?php echo $db->prepare_text_as_html($data['lgf_new_values']);?></div>
+        <div class="col-10"><?php echo $data['lgf_new_values'];?></div>
     </div>
 
     <div class="row" style="height: 25px;"></div>
 
     <div class="row">
         <div class="col-2"><strong>Old Values</strong></div>
-        <div class="col-10"><?php echo $db->prepare_text_as_html($data['lgf_old_values']);?></div>
+        <div class="col-10"><?php echo $data['lgf_old_values'];?></div>
     </div>
 
     <div class="row" style="height: 25px;"></div>

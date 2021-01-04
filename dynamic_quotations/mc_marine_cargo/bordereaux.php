@@ -457,7 +457,7 @@ function outputExcelMarine($sql)
         ->setKeywords('Kemter Borderaux')
         ->setCategory('Kemter Borderaux');
 
-// add first line header data
+    // add first line header data
     $str = 'A';
     $spreadsheet->setActiveSheetIndex(0)
         ->setCellValue($str . '1', 'Type')

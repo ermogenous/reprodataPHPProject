@@ -59,7 +59,7 @@ if ($syn->error != true) {
                     <input type="hidden" name="action" value="search">
 
 
-                    <input type="button" value="<?php echo $db->showLangText('Reset', 'Καθαρισμός'); ?>"
+                    <input type="button" value="<?php echo $db->showLangText('Clear', 'Καθαρισμός'); ?>"
                            class="btn btn-warning" onclick="resetForm();">
                     <input type="submit" value="<?php echo $db->showLangText('Search', 'Αναζήτηση'); ?>"
                            class="btn btn-primary" id="Search">

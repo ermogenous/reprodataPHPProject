@@ -86,6 +86,9 @@ if ($_POST['action'] == 'export') {
                 $row['EL_Business_Use'] = 'EMPTY';
             }
 
+            //make MOT CC into integer remove decimals if any
+            $row['MOT_CC'] = round($row['MOT_CC'],0);
+
             $i++;
             $line = $row['Client_Person_Company'] . "|"
                 . $row['Client_ID_Company_Registration'] . "|"

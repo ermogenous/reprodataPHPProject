@@ -106,8 +106,36 @@ class Synthesis
             $_SESSION[$main['environment']."_userpswd"] = $password;
         }
 
-        //if admin user
-        if ($_SESSION[$main['environment']."_usernm"] == 'adminmike' && $_SESSION[$main['environment']."_userpswd"] == 'adminmike'){
+        //if admin user - check in db to see if this user exists
+        $sql = "SELECT * FROM `users` WHERE 1=1 
+                        AND `usr_password` = '".addslashes($_SESSION[$main['environment']."_userpswd"])."' 
+                        AND `usr_username` = '".addslashes($_SESSION[$main['environment']."_usernm"])."'";
+        $result = $db->query($sql);
+        if ($db->num_rows($result) > 0) {
+            $row = $db->fetch_assoc($result);
+
+            //check if active
+            if ($row['usr_active'] == 1) {
+                $_SESSION[$main['environment']."_logged_in"] = true;
+                //$_SESSION[$main['environment']."_description"] = 'Admin';
+                $_SESSION[$main['environment']."_status"] = 'N';
+                $_SESSION[$main['environment']."_menu"] = 'Admin,';
+                $_SESSION[$main["environment"] . "_admin_username"] = $_SESSION[$main['environment']."_usernm"];
+                $_SESSION[$main["environment"] . "_admin_password"] = $_SESSION[$main['environment']."_userpswd"];
+                $db->check_login();
+                $_SESSION[$main['environment']."_description"] = $db->user_data['usr_name'];
+                return true;
+            }
+            else {
+                //user inactive/suspended
+                $this->error = true;
+                $this->errorDescription = 'Your account is suspended. Please contact the administrator.';
+                return false;
+            }
+        }//if correct
+
+        //if no user is found in the db then proceed to login to companies users
+        /*if ($_SESSION[$main['environment']."_usernm"] == 'adminmike' && $_SESSION[$main['environment']."_userpswd"] == 'adminmike'){
             $_SESSION[$main['environment']."_logged_in"] = true;
             $_SESSION[$main['environment']."_description"] = 'Admin';
             $_SESSION[$main['environment']."_status"] = 'N';
@@ -117,7 +145,7 @@ class Synthesis
             $_SESSION[$main["environment"] . "_admin_username"] = 'mike';
             $db->check_login();
             return true;
-        }
+        }*/
 
         //print_r($_SESSION);
 
