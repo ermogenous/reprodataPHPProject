@@ -184,6 +184,13 @@ body{
         setlocale(LC_MONETARY, 'it_IT');
 
 
+        if ($quotationData['oqq_quotations_ID'] <= 4020){
+            $marketReferenceNum = 'B0750RARSP1900822';
+        }
+        else {
+            $marketReferenceNum = 'B0750RARSP2000822';
+        }
+
         $html .= '
 </head>
 <body>
@@ -231,7 +238,7 @@ body{
             <td colspan="3" align="justify">
                 <b>This is to Certify</b> that Cromar Insurance Brokers Ltd are authorised by Underwriters at Tokio Marine 
                 Europe Ltd to sign and issue this Certificate on their behalf (Under Unique Market Reference Number: 
-                B0750RARSP1900822 and that the said Underwriters have undertaken to Issue Policy/Policies of Insurance 
+                '.$marketReferenceNum.' and that the said Underwriters have undertaken to Issue Policy/Policies of Insurance 
                 to cover up to EUR1.000.000 (or equivalent in other currencies), in all by any one approved steamer(s) 
                 and/or motor vessel(s) and/or air and/or road and/or rail and/or as may be agreed in which will be embodied 
                 to the Insurance declared hereunder to have been effected. 

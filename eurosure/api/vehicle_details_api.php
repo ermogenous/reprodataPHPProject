@@ -7,12 +7,19 @@
  */
 
 include("../../include/main.php");
-$db = new Main(1);
+$db = new Main(0);
 $db->working_section = 'Eurosure vehicle details for Rescueline API';
 $db->apiGetReadHeaders();
 
 
+if ($_SERVER['REMOTE_ADDR'] != '213.207.149.26'
+    && $_SERVER['REMOTE_ADDR'] != '82.102.41.234'
+    && $_SERVER['REMOTE_ADDR'] != '46.28.177.54'){
 
+    header("Location: http://www.eurosure.net");
+    exit();
+
+}
 
 
 
@@ -20,31 +27,42 @@ if ($_GET['reg'] != '' && $_GET['usr'] == 'rescuel' && $_GET['psw'] == 'rreess12
 
     $sql = "
         SELECT 
-        inpol_policy_number as policy_number,
-        inpol_starting_date as starting_date,
-        inpol_expiry_date as expiry_date,
-        inpol_status as policy_status,
-        initm_item_code as vehicle_registration,
-        initm_make as vehicle_make,
-        initm_cubic_capacity as vehicle_cc,
-        incl_first_name,
-        incl_long_description
-        FROM 
-        inpolicies
-        JOIN inpolicyitems ON inpit_policy_serial = inpol_policy_serial
-        JOIN initems ON initm_item_serial = inpit_item_serial
-        JOIN inclients ON incl_client_serial = inpol_client_serial        
+        esrsc_registration as registration,
+        esrsc_make as make,
+        esrsc_model as model,
+        esrsc_body_type as body_type,
+        esrsc_color as clolor,
+        esrsc_engine_cc as engine_cc,
+        esrsc_weight as weight,
+        esrsc_starting_date as starting_date,
+        esrsc_period_starting_date as first_starting_date,
+        esrsc_expiry_date as expiry_date,
+        #esrsc_price as price,
+        esrsc_cover_type as cover_type,
+        esrsc_breakdown as breakdown_cover,
+        esrsc_accident as accident_cover
+        #,esrsc_home_city as home_city
+        FROM
+             es_rescueline_vehicles
         WHERE
-        initm_item_code = '".$_GET['reg']."'
-        AND inpol_status = 'N'
+        esrsc_registration LIKE '%".$_GET['reg']."%'
         ";
-    $result = $db->query($sql);
-    while($data = $db->fetch_assoc($result)){
-        $output[] = $data;
-    }
+    if ($result = mysqli_query($db->db_handle,$sql)) {
+        while ($data = $db->fetch_assoc($result)) {
+            //$data['home_city'] = mb_convert_encoding($data['home_city'], "ISO-8859-1", "UTF-8");
+            $output[] = $data;
+        }
 
-    echo json_encode($output);
-    exit();
+        echo json_encode($output);
+        exit();
+    }
+    else {
+        echo $sql.PHP_EOL.PHP_EOL;
+        echo mysqli_error($db->db_handle);
+        echo "<hr>";
+        echo mysqli_errno($db->db_handle);
+        $db->update_log_file_custom($sql,'Rescueline API get vehicle details ERROR');
+    }
 
 }
 else {

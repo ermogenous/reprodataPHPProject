@@ -89,6 +89,14 @@ if ($_POST['action'] == 'export') {
             //make MOT CC into integer remove decimals if any
             $row['MOT_CC'] = round($row['MOT_CC'],0);
 
+            //check policy transaction date if empty
+            if ($row['Policy_Transaction_Date'] == '' || $row['Policy_Transaction_Date'] == ' '){
+                $row['Policy_Transaction_Date'] = $row['Policy_Start_Date'];
+            }
+            if ($row['Policy_Transaction_Time'] == '' || $row['Policy_Transaction_Time'] == ' '){
+                $row['Policy_Transaction_Time'] = $row['Policy_Start_Time'];
+            }
+
             $i++;
             $line = $row['Client_Person_Company'] . "|"
                 . $row['Client_ID_Company_Registration'] . "|"
