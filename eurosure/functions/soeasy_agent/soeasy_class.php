@@ -362,6 +362,20 @@ class soeasyClass
             return $return;
         }
 
+        //4.b.1 First check if there is a policy to renew and is not lapsed
+        $renewalPol = $syn->query_fetch("
+                SELECT inpol_policy_serial,inpol_expiry_date 
+                FROM inpolicies
+                JOIN inpolicyendorsement ON inped_financial_policy_abs = inpol_policy_serial
+                WHERE inpol_policy_number = '" . $policyNumberSplit[0] . "'
+                AND inped_process_status = 'L'
+                AND inpol_agent_serial = " . $this->agentSerial);
+        if ($renewalPol['inpol_policy_serial'] > 0) {
+            $return['message'] .= "[4.b.1] Policy[Renewal] Found Lapsed. Cannot renew";
+            $return['validation_status'] = 'ERROR';
+            return $return;
+        }
+
         //4.b.1 First check if there is a policy to renew
         $renewalPol = $syn->query_fetch("
                 SELECT inpol_policy_serial,inpol_expiry_date FROM inpolicies 
@@ -369,7 +383,7 @@ class soeasyClass
                 AND inpol_status = 'N'
                 AND inpol_agent_serial = " . $this->agentSerial);
         if ($renewalPol['inpol_policy_serial'] == '' || $renewalPol['inpol_policy_serial'] == 0) {
-            $return['message'] .= "[4.b.1] Policy[Renewal] cannot find a policy to renew";
+            $return['message'] .= "[4.b.1] Policy[Renewal] cannot find a policy to renew ";
             $return['validation_status'] = 'ERROR';
             return $return;
         }
@@ -630,6 +644,7 @@ class soeasyClass
                         GROUP BY inpol_policy_number, inped_financial_policy_abs, clo_policy_status,
                                  inpol_policy_number ,inpol_policy_serial
                         ORDER BY inpol_policy_number ASC ";
+
                     $valData = $syn->query_fetch($sqlVal);
                     $synPremium = round(($valData['clo_premium'] + $valData['clo_mif'] + $valData['clo_fees'] + $valData['clo_stamps']),2);
                     $importPremium = round(($row['Policy_Premium'] + $row['Policy_Stamps'] + $row['Policy_MIF']),2);

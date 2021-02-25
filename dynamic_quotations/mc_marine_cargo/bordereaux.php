@@ -488,6 +488,7 @@ function outputExcelMarine($sql)
         ->setCellValue(++$str . '1', 'Excess')
         ->setCellValue(++$str . '1', 'Reference')
         ->setCellValue(++$str . '1', 'Rate')
+        ->setCellValue(++$str . '1', 'SI Euro')
         ->setCellValue(++$str . '1', 'Premium');
 //make all align of the row LEFT
     $spreadsheet->getActiveSheet()->getStyle('A1:' . $str . '1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
@@ -528,7 +529,8 @@ function outputExcelMarine($sql)
             ->setCellValue(++$str . $line, $row['excess'])
             ->setCellValue(++$str . $line, $row['reference'])
             ->setCellValue(++$str . $line, $row['rate'])
-            ->setCellValue(++$str . $line, round((($row['insuredValue'] / $row['exchangeRate']) * ($row['rate']/100)),2) );
+            ->setCellValue(++$str . $line, round(($row['insuredValue'] * $row['exchangeRate']),2))
+            ->setCellValue(++$str . $line, round((($row['insuredValue'] * $row['exchangeRate']) * ($row['rate']/100)),2) );
 
         $spreadsheet->getActiveSheet()->getStyle('A1:' . $str . $line)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 

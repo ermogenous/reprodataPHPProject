@@ -145,7 +145,7 @@ function template_header()
                                     <i class="fas fa-envelope"></i> AutoEmails</a>
                             <?php } ?>
 
-                            <?php if ($db->user_data["usr_user_rights"] <= 2 && $db->user_data['usr_users_groups_ID'] == 2) { ?>
+                            <?php if ($db->user_data["usr_user_rights"] <= 2 || $db->user_data['usr_users_groups_ID'] == 2) { ?>
                                 <a class="dropdown-item"
                                    href="<?php echo $main["site_url"]; ?>/dynamic_quotations/mc_marine_cargo/bordereaux.php">
                                     <i class="fas fa-signal"></i> Bordereaux</a>
@@ -155,7 +155,7 @@ function template_header()
                     </li>
 
                     <!-- MY USERS -->
-                    <?php if ($db->user_data["usr_user_rights"] <= 2 && $db->user_data['usr_users_groups_ID'] == 2) { ?>
+                    <?php if ($db->user_data["usr_user_rights"] <= 2 || $db->user_data['usr_users_groups_ID'] == 2) { ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

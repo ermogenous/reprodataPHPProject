@@ -11,7 +11,7 @@ ini_set('max_execution_time', 1200);
 
 include("../../include/main.php");
 include("../lib/odbccon.php");
-$db = new Main(1);
+$db = new Main(0);
 $db->working_section = 'Eurosure vehicles Rescueline update extranet table';
 
 $log = 'Starting Extranet Rescueline Vehicle Update'.PHP_EOL;
@@ -22,6 +22,8 @@ $sql = "
 SELECT
 sp_car_id,
 sp_registration_num,
+incl_identity_card,
+inpol_policy_number,
 sp_make,
 sp_model,
 sp_body_type,
@@ -38,8 +40,11 @@ sp_begindate,
 sp_city_home
 FROM
 sp_rescueline_export('".date("Y-m-d")."','Y','N')
+JOIN inpolicies on inpol_policy_serial = sp_policy_serial
+JOIN inclients on incl_client_serial = inpol_client_serial
 ORDER BY sp_registration_num
 ";
+
 
 //step 2: connect to extranet
 $extranet = new mysqli('136.243.227.37', 'mic.ermogenous', '4Xd3l5&w','eurosureADMIN_extranet');
@@ -53,10 +58,10 @@ $result = $syn->query($sql);
 $log .= 'Total Vehicles Found: '.$syn->num_rows($result).PHP_EOL;
 
 //empty the extranet database
-$log .= 'Truncate Extranet Vehicles'.PHP_EOL;
+$log .= '<br>Truncate Extranet Vehicles'.PHP_EOL;
 $sql = 'TRUNCATE es_rescueline_vehicles';
 $extranet->query($sql);
-$log .= 'TRUNCATE completed '.PHP_EOL;
+$log .= '<br>TRUNCATE completed '.PHP_EOL;
 $sql = '';
 $createdOn = date('Y-m-d G:i:s');
 $totalVehicles = 0;
@@ -67,6 +72,8 @@ while ($row = $syn->fetch_assoc($result)){
         (
         '".$row['sp_car_id']."',
         '".$row['sp_registration_num']."',
+        '".$row['incl_identity_card']."',
+        '".$row['inpol_policy_number']."',
         '".$row['sp_make']."',
         '".$row['sp_model']."',
         '".$row['sp_body_type']."',
@@ -81,6 +88,7 @@ while ($row = $syn->fetch_assoc($result)){
         '".$row['sp_Breakdown']."',
         '".$row['sp_Accident']."',
         '".$row['sp_city_home']."',
+        0,
         '".$createdOn."',
         '0',
         '".$createdOn."',
@@ -94,7 +102,9 @@ while ($row = $syn->fetch_assoc($result)){
         INSERT INTO `es_rescueline_vehicles` 
                     (
                     `esrsc_car_id`,
-                    `esrsc_registration`, 
+                    `esrsc_registration`,
+                    `esrsc_client_id`,
+                    `esrsc_policy_number`,
                     `esrsc_make`, 
                     `esrsc_model`, 
                     `esrsc_body_type`, 
@@ -109,12 +119,13 @@ while ($row = $syn->fetch_assoc($result)){
                     `esrsc_breakdown`, 
                     `esrsc_accident`, 
                     `esrsc_home_city`, 
+                     `esrsc_is_cover_note`,
                     `esrsc_created_on`, 
                     `esrsc_created_by`, 
                     `esrsc_last_update_on`, 
                     `esrsc_last_update_by`
                     ) VALUES '.PHP_EOL.$db->remove_last_char($sql);
-        //echo $sql.PHP_EOL.PHP_EOL."<hr>";
+        //echo $sql.PHP_EOL.PHP_EOL."<hr>";exit();
         $extranet->query($sql) or die ($extranet->error);
         $sql = '';
         $i=0;
@@ -123,9 +134,9 @@ while ($row = $syn->fetch_assoc($result)){
 
 }
 
-$log .= 'Total rows found: '.$totalVehicles.PHP_EOL;
+$log .= '<br>Total rows found: '.$totalVehicles.PHP_EOL;
 $time_elapsed_secs = microtime(true) - $startTime;
-$log .= 'Total Execution Seconds: '.$time_elapsed_secs;
+$log .= '<br>Total Execution Seconds: '.$time_elapsed_secs;
 $db->update_log_file('import rescueline api',0,$log,'test');
 echo $log;
 $time_elapsed_secs = microtime(true) - $startTime;

@@ -61,6 +61,9 @@ class TableList
     private $totalPages;
     private $currentPage;
 
+    //Main object variable
+    private $mainObjectVar = 'db'; /*if not defined it will use $db or else the defined one note: it will execute sql functions from this object*/
+
     function __construct()
     {
 
@@ -314,7 +317,9 @@ class TableList
         //need to re-execute to get the total records in this page.
         $this->buildPagesLinks();
 
-        global $db;
+        //global $db;
+        $mainObjectVar = $this->mainObjectVar;
+        global $$mainObjectVar;
         //Main container
         $this->tableHtml .= '
         <div class="' . $this->topContainer . '">
@@ -391,7 +396,7 @@ class TableList
         ';
 
         //loop into all the rows and columns for the data
-        while ($row = $db->fetch_assoc($this->sqlResult)) {
+        while ($row = $$mainObjectVar->fetch_assoc($this->sqlResult)) {
             $this->tableHtml .= '<tr onclick="editLine(' . $row[$this->mainIDField] . ');">' . PHP_EOL;
             for ($i = 1; $i <= $this->sqlTotalFields; $i++) {
                 $fieldData = $row[$this->allFieldsArray[$i]['name']];
@@ -524,20 +529,40 @@ class TableList
 
     public function generateData()
     {
-        global $db;
+        //global $db;
+        $mainObjectVar = $this->mainObjectVar;
+        global $$mainObjectVar;
         if ($this->sqlGenerated == false) {
             $this->generateSQL();
         }
-        $this->sqlResult = $db->query($this->sql);
-        $this->sqlTotalResults = $db->num_rows($this->sqlResult);
+
+        echo $this->sql;
+
+        $this->sqlResult = $$mainObjectVar->query($this->sql);
+        $this->sqlTotalResults = $$mainObjectVar->num_rows($this->sqlResult);
         $this->sqlDataGenerated = true;
         return $this;
     }
 
     public function generateSQL()
     {
-        global $db;
+        $mainObjectVar = $this->mainObjectVar;
+        global $$mainObjectVar;
         $this->sql = "SELECT ";
+
+        if ($this->perPage > 0) {
+            if ($this->mainObjectVar == 'syn'){
+                //$this->sql .= "LIMIT " . (($this->currentPage - 1) * $this->perPage) . ", " . $this->perPage;
+                if ((($this->currentPage - 1) * $this->perPage) <= 0){
+                    $startPageNum = 1;
+                }
+                else {
+                    $startPageNum = (($this->currentPage - 1) * $this->perPage);
+                }
+                $this->sql .= "TOP ".$this->perPage." START AT ".$startPageNum." ";
+            }
+        }
+
         if ($this->sqlSelect != '') {
             $this->sql .= $this->sqlSelect . PHP_EOL;
         } else {
@@ -560,12 +585,16 @@ class TableList
             $this->sql .= 'ORDER BY ' . $this->sqlOrderBy . PHP_EOL;
         }
         //get here the total of table results
-        $totalResults = $db->query($this->sql);
-        $this->tableTotalResults = $db->num_rows($totalResults);
+        $totalResults = $$mainObjectVar->query($this->sql);
+        $this->tableTotalResults = $$mainObjectVar->num_rows($totalResults);
 
         //add here the limit and pages
         $this->buildPagesLinks();
-        $this->sql .= "LIMIT " . (($this->currentPage - 1) * $this->perPage) . ", " . $this->perPage;
+        if ($this->perPage > 0) {
+            if ($this->mainObjectVar == 'db'){
+                $this->sql .= "LIMIT " . (($this->currentPage - 1) * $this->perPage) . ", " . $this->perPage;
+            }
+        }
 
         $this->sqlGenerated = true;
         return $this;
@@ -592,7 +621,12 @@ class TableList
     private function buildPagesLinks()
     {
 
-        $this->totalPages = ceil($this->tableTotalResults / $this->perPage);
+        if ($this->perPage > 0) {
+            $this->totalPages = ceil($this->tableTotalResults / $this->perPage);
+        }
+        else {
+            $this->totalPages = $this->tableTotalResults;
+        }
         //if session current page is empty then set to one
         $this->currentPage = $_SESSION['tableList-' . $this->uniqueID]['currentPage'];
 
@@ -658,5 +692,22 @@ class TableList
             $this->buildPagesLinks();
         }
         return $this->pagesLinksHtml;
+    }
+
+    /**
+     * @param $varName
+     * @return $this
+     */
+    public function defineMainObjectVar($varName){
+        //first check if this variable exists
+        //make it global to be able to access it
+        global $$varName;
+        if (isset($$varName)){
+            $this->mainObjectVar = $varName;
+        }
+        else {
+            $this->mainObjectVar = 'db';
+        }
+        return $this;
     }
 }

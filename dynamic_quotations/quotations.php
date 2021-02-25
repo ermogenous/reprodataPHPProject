@@ -66,6 +66,11 @@ if ($_SESSION['dyqt_filter']) {
         OR oqq_insureds_mobile LIKE '%".$_SESSION['dyqt_filter_number']."%'
         OR oqq_insureds_name LIKE '%".$_SESSION['dyqt_filter_number']."%'
         OR oqq_quotations_ID = '".$_SESSION['dyqt_filter_number']."'
+        
+        OR IF (oqq_quotations_type_ID = 2,  
+            (SELECT oqqit_rate_7 FROM oqt_quotations_items WHERE oqqit_quotations_ID = oqq_quotations_ID AND oqqit_items_ID = 4)
+            ,'') LIKE '%".$_SESSION['dyqt_filter_number']."%'
+        
         )";
     }
 
@@ -125,7 +130,7 @@ $table->extra_select_section = ",IF (oqq_quotations_type_ID = 2,
 as clo_marine_reference";
 
 $table->generate_data();
-echo $table->sql;
+//echo $table->sql;
 $db->admin_on_load = "show_price();";
 $db->show_header();
 

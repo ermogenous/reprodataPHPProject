@@ -612,7 +612,7 @@ function mc_shipment_details_3()
                    value="<?php echo $qitem_data["oqqit_date_1"]; ?>">
             <?php
             if ($db->user_data['usr_user_rights'] <= 2){
-                $dateMinDate = 31;
+                $dateMinDate = 60;
             }
             else {
                 if ($db->user_data['usr_users_ID'] == 58){
