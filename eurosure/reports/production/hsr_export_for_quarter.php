@@ -55,7 +55,7 @@ AND '".$dateFields[2]."/".$dateFields[1]."/".$dateFields[0]."' BETWEEN inpol_sta
 COALESCE(IF (SELECT a.inped_year * 100 + a.inped_period FROM inpolicyendorsement a 
     WHERE a.inped_endorsement_serial = inpol_last_cancellation_endorsement_serial) 
     <= YEAR('".$dateFields[2]."/".$dateFields[1]."/".$dateFields[0]."') * 100 + MONTH('".$dateFields[2]."/".$dateFields[1]."/".$dateFields[0]."') THEN inpol_cancellation_date ELSE NULL ENDIF, inpol_expiry_date) 
-AND inity_insurance_type >= 'hsr' AND inity_insurance_type <= 'hsr'
+AND inity_insurance_type IN ('HSR','FPR')
 
 GROUP BY
 inpol_policy_number ,

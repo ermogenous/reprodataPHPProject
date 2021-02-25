@@ -5,6 +5,12 @@
  * Date: 1/12/2020
  * Time: 4:49 ΜΜ
  */
+
+/*
+ * This file retrieves all the now active vehicles from synthesis, empties the extranet table es_rescueline_vehicles
+ * then inserts all the vehicles
+ */
+
 $startTime = microtime(true);
 ini_set("memory_limit","2024M");
 ini_set('max_execution_time', 1200);
@@ -13,8 +19,12 @@ include("../../include/main.php");
 include("../lib/odbccon.php");
 $db = new Main(0);
 $db->working_section = 'Eurosure vehicles Rescueline update extranet table';
-
+$db->update_log_file('Eurosure send vehicles to extranet',0,'Eurosure send vehicles to extranet'
+    ,'Eurosure send vehicles to extranet');
 $log = 'Starting Extranet Rescueline Vehicle Update'.PHP_EOL;
+
+//insert into settings the time this process starts
+$db->update_setting('eurosure_send_vehicles_extranet',1,0,date('Y-m-d G:i:s'));
 
 //step 1 collect the data from sybase
 $syn = new ODBCCON();
@@ -65,6 +75,7 @@ $log .= '<br>TRUNCATE completed '.PHP_EOL;
 $sql = '';
 $createdOn = date('Y-m-d G:i:s');
 $totalVehicles = 0;
+$perPage = 50;
 while ($row = $syn->fetch_assoc($result)){
     $i++;
     $totalVehicles++;
@@ -96,7 +107,7 @@ while ($row = $syn->fetch_assoc($result)){
         )".PHP_EOL.",";
     //echo $row['sp_registration_num']." ";
     //do it per 100 to save time
-    if ($i > 50){
+    if ($i > $perPage){
 
         $sql = '
         INSERT INTO `es_rescueline_vehicles` 
@@ -132,6 +143,38 @@ while ($row = $syn->fetch_assoc($result)){
     }
 
 
+}
+//check if any left to send
+if ($sql != ''){
+    $sql = '
+        INSERT INTO `es_rescueline_vehicles` 
+                    (
+                    `esrsc_car_id`,
+                    `esrsc_registration`,
+                    `esrsc_client_id`,
+                    `esrsc_policy_number`,
+                    `esrsc_make`, 
+                    `esrsc_model`, 
+                    `esrsc_body_type`, 
+                    `esrsc_color`, 
+                    `esrsc_engine_cc`, 
+                    `esrsc_weight`, 
+                    `esrsc_starting_date`, 
+                    `esrsc_period_starting_date`, 
+                    `esrsc_expiry_date`, 
+                    `esrsc_price`, 
+                    `esrsc_cover_type`, 
+                    `esrsc_breakdown`, 
+                    `esrsc_accident`, 
+                    `esrsc_home_city`, 
+                     `esrsc_is_cover_note`,
+                    `esrsc_created_on`, 
+                    `esrsc_created_by`, 
+                    `esrsc_last_update_on`, 
+                    `esrsc_last_update_by`
+                    ) VALUES '.PHP_EOL.$db->remove_last_char($sql);
+    //echo $sql.PHP_EOL.PHP_EOL."<hr>";exit();
+    $extranet->query($sql) or die ($extranet->error);
 }
 
 $log .= '<br>Total rows found: '.$totalVehicles.PHP_EOL;

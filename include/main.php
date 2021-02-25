@@ -776,10 +776,11 @@ class Main
         }
     }
 
-    public function update_setting($section, $newValue = '', $startup = 0)
+    public function update_setting($section, $newValue = '', $startup = 0,$dateValue = null)
     {
         $newData['value'] = $newValue;
         $newData['section'] = $section;
+        $newData['value_date'] = $dateValue;
         $newData['fetch_on_startup'] = $this->get_check_value($startup);
         $this->db_tool_update_row('settings', $newData, "stg_section = '" . $section . "'", ''
             , '', 'execute', 'stg_');
