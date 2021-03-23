@@ -541,7 +541,7 @@ function mc_shipment_details_3()
                     class="form-control">
                 <option value=""></option>
                 <?php
-                $sql = "SELECT * FROM codes WHERE cde_type = 'Countries' AND cde_value <> 'Cyprus' ORDER BY cde_value ASC";
+                $sql = "SELECT * FROM codes WHERE cde_type = 'Countries' ORDER BY cde_value ASC";
                 $result = $db->query($sql);
                 while ($country = $db->fetch_assoc($result)) {
                     $reffered = '';
@@ -616,6 +616,9 @@ function mc_shipment_details_3()
             }
             else {
                 if ($db->user_data['usr_users_ID'] == 58){
+                    $dateMinDate = 30;
+                }
+                else if ($db->user_data['usr_users_ID'] == 42){
                     $dateMinDate = 30;
                 }
                 else {

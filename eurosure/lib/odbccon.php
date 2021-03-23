@@ -12,7 +12,7 @@ class ODBCCON
 
     private $startTransaction = false;
 
-    function __construct($database = 'EUROSURE', $charset = 'UTF-8')
+    function __construct($database = 'EUROSURE', $charset = 'UTF-8') /*windows-1253*/
     {
         global $db;
         $this->database = $database;

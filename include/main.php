@@ -1714,7 +1714,7 @@ class Main
 
     }
 
-    //returns 1 if date1 > date2, returns 0 if date1 < date2, returns 0 if date1 = date2
+    //returns 1 if date1 > date2, returns -1 if date1 < date2, returns 0 if date1 = date2
     //works with date format dd/mm/yyyy but also converts with 3rd parameter from yyyy-mm-dd
     function compare2dates($date1, $date2, $format = 'dd/mm/yyyy')
     {

@@ -14,8 +14,10 @@ $db->working_section = 'Eurosure Test API';
 
 $db->update_log_file('Execute Diff Urls file', 0, 'Execute Diff Urls file', 'Execute Diff Urls file');
 
-
-//update extranet with vehicles for odyky api
+/*
+ * 1************************************1****************************1***************************1*********************1
+ */
+//Update extranet with vehicles for odyky api
 $lastExecute = $db->get_setting('eurosure_send_vehicles_extranet', 'value_date');
 //execute this once a day after 18:00 hours
 $today = (date('Y') * 10000) + (date('m') * 100) + date('d');
@@ -39,3 +41,15 @@ if ($today == $lastExecuteDay || $today < $lastExecuteDay) {
         curl_close($ch);
     }
 }
+
+/*
+ * 2************************************2****************************2***************************2*********************2
+ */
+$ch = curl_init();
+// set URL and other appropriate options
+curl_setopt($ch, CURLOPT_URL, "http://126.0.0.13/intranet/eurosure/api/get_latest_odyky_incidents.php");
+curl_setopt($ch, CURLOPT_HEADER, 0);
+// grab URL and pass it to the browser
+curl_exec($ch);
+// close cURL resource, and free up system resources
+curl_close($ch);

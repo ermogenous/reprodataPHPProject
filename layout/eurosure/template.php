@@ -343,6 +343,20 @@ global $main, $db;
                                     }
                                     ?>
 
+                                    <?php
+                                    if ($db->user_data['usr_user_rights'] < 3 || $db->user_data['usr_users_groups_ID'] == 7) {
+                                        ?>
+                                        <li>
+                                            <a tabindex="-1"
+                                               href="<?php echo $main["site_url"]; ?>/eurosure/reports/users/underwriters_insurance_types.php"
+                                               class="dropdown-item">
+                                                <i class="fas fa-file-import"></i> Underwriters Insurance Types
+                                            </a>
+                                        </li>
+                                        <?php
+                                    }
+                                    ?>
+
 
                                 </ul>
                             </li>
@@ -477,6 +491,13 @@ global $main, $db;
                                     </a>
                                 </li>
 
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/eurosure/functions/export_sql_delimited.php"><i
+                                                class="fas fa-eye"></i> <?php echo $db->showLangText('Export Sql to Delimited', 'Export Sql to Delimited'); ?>
+                                    </a>
+                                </li>
+
                                 <li class="dropdown-divider"></li>
 
                                 <!-- Level two dropdown-->
@@ -551,6 +572,13 @@ global $main, $db;
                                                        href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/reports/error_report.php"
                                                        class="dropdown-item">
                                                         <i class="fas fa-exclamation-triangle"></i> Errors
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a tabindex="-1"
+                                                       href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/reports/view_policy_data.php"
+                                                       class="dropdown-item">
+                                                        <i class="fas fa-exclamation-triangle"></i> View Policy Data
                                                     </a>
                                                 </li>
                                             </ul>

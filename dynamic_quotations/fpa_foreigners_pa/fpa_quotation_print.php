@@ -232,7 +232,7 @@ function getQuotationHTML($quotationID)
     </div>
     <div style="height: 20px;"></div>
     <div style="font-size: 10px;" align="center">
-        P.O.Box 53538, 3033 Limassol Tel.:+357 25755952 Fax: +357 25755953 E-mail: kemter@kemterinsurance.com
+        P.O.Box 53538, 3040 Limassol Tel.:+357 25755952 Fax: +357 25755953 E-mail: kemter@kemterinsurance.com
     </div>
         
  </div>

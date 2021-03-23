@@ -77,6 +77,13 @@ $db->start_transaction();
                             $field = strtoupper($field);
                         }
 
+                        //if motor KW has stars in it make it to 0.
+                        if ($fieldNames[$fieldNum] == 'MOT_PS_KW_Power'){
+                            if (strpos($field,'*') === true){
+                                $field = '0';
+                            }
+                        }
+
                         //no spaces in client ID
                         if ($fieldNames[$fieldNum] == 'Client_ID_Company_Registration'){
                             $field = str_replace(' ','',$field);

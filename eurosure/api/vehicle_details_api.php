@@ -11,9 +11,11 @@ $db = new Main(0);
 $db->working_section = 'Eurosure vehicle details for Rescueline API';
 $db->apiGetReadHeaders();
 
+$db->update_log_file('odyky_vehicle_details',0,
+    'Request for reg:'.$_GET['reg'].' Or identity:'.$_GET['identity']." Or Policy:".$_GET['policy']);
 
 if ($_SERVER['REMOTE_ADDR'] != '213.207.149.26'
-    && $_SERVER['REMOTE_ADDR'] != '82.102.46.7' /*Ali House*/
+    && $_SERVER['REMOTE_ADDR'] != '82.102.46.6' /*Ali House*/
     && $_SERVER['REMOTE_ADDR'] != '5.79.78.235' /*Odyky IP */) {
 
     header("Location: http://www.eurosure.net");
@@ -44,7 +46,9 @@ if ($_GET['usr'] == 'odyky_usr' && $_GET['psw'] == 'odod-21_aa(36^') {
         SELECT 
         esrsc_policy_number as policy_number,
         esrsc_client_id as client_id,
+        esrsc_client_district as client_city,
         esrsc_registration as registration,
+        esrsc_agent_code as agent_code,
         esrsc_make as make,
         esrsc_model as model,
         esrsc_body_type as body_type,
@@ -55,9 +59,10 @@ if ($_GET['usr'] == 'odyky_usr' && $_GET['psw'] == 'odod-21_aa(36^') {
         #esrsc_period_starting_date as first_starting_date,
         esrsc_expiry_date as expiry_date,
         #esrsc_price as price,
-        esrsc_cover_type as cover_type
-        #esrsc_breakdown as breakdown_cover,
-        #esrsc_accident as accident_cover
+        esrsc_cover_type as cover_type,
+        esrsc_road_assistance as road_assistance,
+        esrsc_accident_care as accident_care,
+        esrsc_is_cover_note as is_cover_note
         #,esrsc_home_city as home_city
         FROM
              es_rescueline_vehicles
