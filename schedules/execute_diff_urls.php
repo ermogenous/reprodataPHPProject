@@ -6,6 +6,9 @@
  * Time: 10:58 π.μ.
  */
 
+$startTime = microtime(true);
+ini_set("memory_limit","2024M");
+ini_set('max_execution_time', 2800);
 
 //this file is executed by the windows task scheduler every 10 minutes. Write below the other files you want to execute
 include("../include/main.php");
@@ -44,7 +47,23 @@ if ($today == $lastExecuteDay || $today < $lastExecuteDay) {
 
 /*
  * 2************************************2****************************2***************************2*********************2
+ * Verifies that all the incidents in odyky exists in extranet
  */
+$ch = curl_init();
+// set URL and other appropriate options
+curl_setopt($ch, CURLOPT_URL, "http://126.0.0.13/intranet/eurosure/api/verify_odyky_incidents_by_day.php");
+curl_setopt($ch, CURLOPT_HEADER, 0);
+// grab URL and pass it to the browser
+curl_exec($ch);
+// close cURL resource, and free up system resources
+curl_close($ch);
+
+
+/*
+ * 3************************************3****************************3***************************3*********************3
+ * Downloads all the files from odyky
+ */
+
 $ch = curl_init();
 // set URL and other appropriate options
 curl_setopt($ch, CURLOPT_URL, "http://126.0.0.13/intranet/eurosure/api/get_latest_odyky_incidents.php");

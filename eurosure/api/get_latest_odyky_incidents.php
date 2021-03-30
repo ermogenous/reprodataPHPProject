@@ -9,7 +9,7 @@
 /*
  * SITS ON INTRANET
  * checks the extranet if there is any new incidents in the table es_odyky_incidents
- * saves in the settings table the last id esoin_incident_id found
+ * creates a folder for the incident and downloads all the image files
  */
 
 $startTime = microtime(true);
@@ -35,12 +35,12 @@ if ($extranet -> connect_errno) {
 //find the last incident id (primary of the table es_odyky_incidents) saved in the settings table
 $lastIncidentID = $db->get_setting('eurosure_last_odyky_incident');
 
-//now find on extranet any new incidents where the primary key is higher
-//$sql = 'SELECT * FROM es_odyky_incidents WHERE esoin_incident_id > '.$lastIncidentID;
-$sql = 'SELECT * FROM es_odyky_incidents WHERE esoin_processed = 0';
+//now find on extranet any new incidents
+$sql = 'SELECT * FROM es_odyky_incidents WHERE esoin_processed = 0 ORDER BY esoin_incident_id ASC ';
 
 $result = $extranet->query($sql);
 $lastID = 0;
+$incidentData = '';
 while ($row = $result->fetch_assoc()){
     $lastID = $row['esoin_incident_id'];
     //connect to odyky api to get the information and files for this incident
@@ -49,8 +49,10 @@ while ($row = $result->fetch_assoc()){
     //update extranet that this record has been processed
     $sql = 'UPDATE es_odyky_incidents 
             SET esoin_processed = 1
+            ,esoin_vehicle_registration = "'.$incidentData->Incident->InsurancePolicy->vehicle_registration.'"
             ,esoin_last_update_date_time = "'.date("Y-m-d G:i:s").'"
             WHERE esoin_incident_id = '.$row['esoin_incident_id'];
+    //echo $sql;
     $extranet->query($sql);
 
 }
@@ -63,7 +65,7 @@ if ($lastID > $lastIncidentID){
 
 
 function getOdykyFiles($odykyID){
-    global $main;
+    global $main,$incidentData;
 
     //retrieve the incidents data
     $ch = curl_init();
@@ -75,7 +77,7 @@ function getOdykyFiles($odykyID){
     curl_setopt($ch, CURLOPT_URL, $url);
     $incidentData = json_decode(curl_exec($ch));
     curl_close($ch);
-
+//return '';
     //print_r($incidentData);exit();
 
     //retrieve the list of documents
@@ -96,7 +98,7 @@ function getOdykyFiles($odykyID){
         $getDocumentUrl = 'https://portal.odyky.com/webservices/eurosure/get_document.json?user=eurosure&pass=Tt04U17paE7WSJvNwFFz';
         $getDocumentUrl .= '&incident_id='.$odykyID.'&doc_id='.$document->Documents->document_id;
         //print_r($document);
-        echo "Retrieving Document: ".$document->Documents->document_id;
+        echo "Retrieving Document: ".$document->Documents->document_id." For Incident ID:".$odykyID;
         echo "<br>";
         echo "GetDocumentURL Api: ".$getDocumentUrl;
         echo "<br>";
@@ -113,7 +115,7 @@ function getOdykyFiles($odykyID){
         echo "Checking/Creating Folder: ";
         //check for the folder on the server first
         if (makeCheckFolderOnServer($odykyID,$incidentData)){
-            echo "Success";
+            echo " Success.";
             //save the file
             echo " Make File: ";
             if (makeFileOnServer($document->Documents->document_file_name
@@ -183,3 +185,6 @@ function getFolder($claimNumber,$incidentData){
     $folder = '//126.0.0.3//Eurosure Assist//ODYKY//'.$folderName;
     return $folder;
 }
+
+$time_elapsed_secs = microtime(true) - $startTime;
+echo "Total Seconds:".$time_elapsed_secs;
