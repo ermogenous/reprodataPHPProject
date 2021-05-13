@@ -13,6 +13,21 @@ $sybase = new ODBCCON();
 
 if ($_POST['action'] == 'execute'){
     $dateFields = explode('/',$_POST['fld_as_at_date']);
+
+    //extraFields
+    $extraSelect = '';
+    $extraGroup = '';
+    if ($_POST['fld_add_agent_field'] == 1){
+        $extraSelect = ',inag_agent_code';
+        $extraGroup = ',inag_agent_code';
+    }
+    if ($_POST['fld_add_hsr_items'] == 1){
+        $extraSelect .= PHP_EOL.",SUM(IF initm_item_flag = 'B' then fn_get_policyitem_premium(inpit_pit_auto_serial) else 0 endif) as clo_building_premium";
+        $extraSelect .= PHP_EOL.",SUM(IF initm_item_flag = 'N' then fn_get_policyitem_premium(inpit_pit_auto_serial) else 0 endif) as clo_contents_premium";
+        $extraSelect .= PHP_EOL.",SUM(IF initm_item_flag = '4' then fn_get_policyitem_premium(inpit_pit_auto_serial) else 0 endif) as clo_pl_premium";
+        $extraSelect .= PHP_EOL.",SUM(IF initm_item_flag = '5' then fn_get_policyitem_premium(inpit_pit_auto_serial) else 0 endif) as clo_death_of_the_insured_premium";
+    }
+
     $sql = "
     SELECT 
 inpol_policy_number ,
@@ -30,6 +45,7 @@ inped_process_status,
 (SELECT SUM(inpit_insured_amount) FROM inpolicyitems JOIN initems ON initm_item_serial = inpit_item_serial WHERE inpit_policy_serial = inpol_policy_serial AND initm_item_flag = 'B')as clo_building_ia,
 (SELECT SUM(inpit_insured_amount) FROM inpolicyitems JOIN initems ON initm_item_serial = inpit_item_serial WHERE inpit_policy_serial = inpol_policy_serial AND initm_item_flag = 'N')as clo_contents_ia,
 STRING(',',(SELECT LIST(DISTINCT inlsc_record_code,',' ORDER BY inlsc_record_code) FROM inpolicyloadings a JOIN inloadings b ON b.inldg_loading_serial = a.inplg_loading_serial JOIN inloadingstatcodes c ON b.inldg_claim_reserve_group = c.inlsc_pcode_serial WHERE a.inplg_policy_serial = inpolicies.inpol_policy_serial /*AND a.inplg_pit_auto_serial = inpolicyitems.inpit_pit_auto_serial*/ AND (c.inlsc_record_type = 'LT' OR c.inlsc_record_code = 'CCX050') ),',') as clo_loading_stat_codes
+".$extraSelect."
 FROM
 inpolicies
 LEFT OUTER JOIN inpolicyendorsement ON inpolicies.inpol_policy_serial = inpolicyendorsement.inped_policy_serial AND inpolicies.inpol_last_endorsement_serial = inpolicyendorsement.inped_endorsement_serial, 
@@ -70,6 +86,7 @@ inped_phase_status,
 inped_process_status,
 incl_first_name,
 incl_long_description
+".$extraGroup."
 
 ORDER BY
 inpol_policy_number ASC 
@@ -147,6 +164,52 @@ FormBuilder::buildPageLoader();
                             ?>
                         </div>
 
+                        <?php
+                        $formB = new FormBuilder();
+                        $formB->setFieldName('fld_add_agent_field')
+                            ->setFieldDescription('Add Agent Code Field')
+                            ->setLabelClasses('col-sm-2')
+                            ->setFieldType('checkbox')
+                            ->setInputCheckBoxValue(1)
+                            ->setInputValue($_POST['fld_add_agent_field'])
+                            ->buildLabel();
+                        ?>
+                        <div class="col-4">
+                            <?php
+                            $formB->buildInput();
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => $formB->fieldName,
+                                    'required' => false,
+                                    'invalidTextAutoGenerate' => true
+                                ]);
+                            ?>
+                        </div>
+
+                    </div>
+
+                    <div class="row form-group">
+                        <?php
+                        $formB = new FormBuilder();
+                        $formB->setFieldName('fld_add_hsr_items')
+                            ->setFieldDescription('Add Fields for items breakdown(HSR)')
+                            ->setLabelClasses('col-sm-3')
+                            ->setFieldType('checkbox')
+                            ->setInputCheckBoxValue(1)
+                            ->setInputValue($_POST['fld_add_hsr_items'])
+                            ->buildLabel();
+                        ?>
+                        <div class="col-4">
+                            <?php
+                            $formB->buildInput();
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => $formB->fieldName,
+                                    'required' => false,
+                                    'invalidTextAutoGenerate' => true
+                                ]);
+                            ?>
+                        </div>
                     </div>
 
                     <div class="form-group row">

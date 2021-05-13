@@ -72,6 +72,7 @@ class Synthesis
         }
 
         $url = $this->url . "/ws_token?arg_username=" . $this->username . "&arg_password=" . $this->password;
+        //echo $url;exit();
         $arrContextOptions = array(
             "ssl" => array(
                 "verify_peer" => false,
@@ -114,16 +115,46 @@ class Synthesis
         if ($db->num_rows($result) > 0) {
             $row = $db->fetch_assoc($result);
 
-            //check if active
+            //check if local user is active
             if ($row['usr_active'] == 1) {
                 $_SESSION[$main['environment']."_logged_in"] = true;
-                //$_SESSION[$main['environment']."_description"] = 'Admin';
+                $_SESSION[$main['environment']."_user_ID"] = $row['usr_users_ID'];
                 $_SESSION[$main['environment']."_status"] = 'N';
                 $_SESSION[$main['environment']."_menu"] = 'Admin,';
                 $_SESSION[$main["environment"] . "_admin_username"] = $_SESSION[$main['environment']."_usernm"];
                 $_SESSION[$main["environment"] . "_admin_password"] = $_SESSION[$main['environment']."_userpswd"];
                 $db->check_login();
                 $_SESSION[$main['environment']."_description"] = $db->user_data['usr_name'];
+
+                //check if the session is the same
+                $sessionID = session_id();
+                if ($sessionID == $db->user_data['usr_session_ID']){
+                    //same session. login success
+                }
+                //session is not the same.
+                else {
+
+                    //check if the session is expired or session empty
+                    $dateSession = strtotime($db->user_data['usr_last_login']);
+                    $dateNow = strtotime(date("Y-m-d G:i:s"));
+                    $secondsLapsed = $dateNow - $dateSession;
+                    if ($secondsLapsed > 600 || $db->user_data['usr_session_ID'] == '' || $db->user_data['usr_session_ID'] == null){
+                        //should allow login with new session
+                        $newData['fld_session_id'] = $sessionID;
+                        //update last login
+                        $newData['fld_last_login'] = date("Y-m-d G:i:s");
+                        $db->db_tool_update_row('users',$newData,
+                            'usr_users_ID = '.$row['usr_users_ID'],$row['usr_users_ID'],'fld_','execute','usr_');
+                        return true;
+                    }
+
+                    //not allowed to login
+                    $this->error = true;
+                    $this->errorDescription = 'You are already connected on another session. Logout first from that one.';
+                    return false;
+                }
+
+
                 return true;
             }
             else {
@@ -178,6 +209,7 @@ class Synthesis
             $this->errorDescription = 'Wrong Username and/or Password';
             //empty the session vars
             unset($_SESSION[$main['environment']."_logged_in"]);
+            unset($_SESSION[$main['environment']."_web_user"]);
             unset($_SESSION[$main['environment']."_usernm"]);
             unset($_SESSION[$main['environment']."_userpswd"]);
             unset($_SESSION[$main['environment']."_description"]);
@@ -192,6 +224,7 @@ class Synthesis
             $this->errorDescription = 'Your account is inactive. Contact the system administrator';
             //empty the session vars
             unset($_SESSION[$main['environment']."_logged_in"]);
+            unset($_SESSION[$main['environment']."_web_user"]);
             unset($_SESSION[$main['environment']."_usernm"]);
             unset($_SESSION[$main['environment']."_userpswd"]);
             unset($_SESSION[$main['environment']."_description"]);
@@ -204,6 +237,7 @@ class Synthesis
             $this->errorDescription = 'Your account is suspended. Contact the system administrator';
             //empty the session vars
             unset($_SESSION[$main['environment']."_logged_in"]);
+            unset($_SESSION[$main['environment']."_web_user"]);
             unset($_SESSION[$main['environment']."_usernm"]);
             unset($_SESSION[$main['environment']."_userpswd"]);
             unset($_SESSION[$main['environment']."_description"]);
@@ -216,11 +250,12 @@ class Synthesis
         //up to here the user is valid
         //proceed to update the session with the user data
         $_SESSION[$main['environment']."_logged_in"] = true;
+        $_SESSION[$main['environment']."_web_user"] = $webUser['sywu_web_user_ID'];
         $_SESSION[$main['environment']."_description"] = $synUserData[0]->ccwu_web_user_description;
         $_SESSION[$main['environment']."_status"] = $synUserData[0]->ccwu_web_user_status;
         $_SESSION[$main['environment']."_menu"] = $synUserData[0]->ccwu_user_menus;
 
-        //also add the user data in db
+        //also add the user data in db ??????????
         $userData['username'] = $_SESSION[$main['environment']."_usernm"];
         $userData['description'] = $synUserData[0]->ccwu_web_user_description;
         $userData['status'] = $synUserData[0]->ccwu_web_user_status;
@@ -229,6 +264,40 @@ class Synthesis
         //update the object settings to work with the logged in user
         $this->setUsername($_SESSION[$main['environment']."_usernm"]);
         $this->setPassword($_SESSION[$main['environment']."_userpswd"]);
+
+
+        //check if the session is the same
+        $sessionID = session_id();
+        if ($sessionID == $webUser['sywu_session_id']){
+            //same session. login success
+        }
+        //session is not the same.
+        else {
+
+            //check if the session is expired or session empty
+            if ($webUser['sywu_last_login'] == ''){
+                $webUser['sywu_last_login'] = '0000-00-00';
+            }
+            $dateSession = strtotime($webUser['sywu_last_login']);
+            $dateNow = strtotime(date("Y-m-d G:i:s"));
+            $secondsLapsed = $dateNow - $dateSession;
+            if ($secondsLapsed > 600 || $webUser['sywu_session_id'] == '' || $webUser['sywu_session_id'] == null){
+                //should allow login with new session
+                $newData['fld_session_id'] = $sessionID;
+                //update last login
+                $newData['fld_last_login'] = date("Y-m-d G:i:s");
+                $db->db_tool_update_row('sy_web_users',$newData,
+                    'sywu_web_user_ID = '.$webUser['sywu_web_user_ID'],$webUser['sywu_web_user_ID'],
+                    'fld_','execute','sywu_');
+                return true;
+            }
+
+            //not allowed to login
+            $this->error = true;
+            $this->errorDescription = 'You are already connected on another session. Logout first from that one.';
+            return false;
+        }
+
 
         return true;
     }

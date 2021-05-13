@@ -327,81 +327,22 @@ $db->show_header();
                         If users restrict IP is left empty then the restrict IP from the group is used.
                     </div>
                 </div>
+
+                <div class="form-group row">
+                    <label class="col-sm-4 col-form-label">Login Key</label>
+                    <div class="col-sm-8">
+                        <?php
+                        $key = $data['usr_username']."[sp]".$data['usr_password'];
+                        $key = $db->encrypt($key);
+                        echo $key;
+                        ?>
+                    </div>
+                </div>
             </form>
         </div>
         <div class="col-lg-3 col-md-3 hidden-xs hidden-sm"></div>
     </div>
 </div>
-<!--
-
-
-
-
-
-    <td height="26"><strong>Email2 </strong></td>
-    <td height="26"><input name="fld_usr_email2" type="text" id="fld_usr_email2" value="<?php echo $data["usr_email2"]; ?>" size="50"/></td>
-  </tr>
-  <tr>
-    <td height="26"><strong>Email CC </strong></td>
-    <td height="26"><input name="fld_usr_emailcc" type="text" id="fld_usr_emailcc" value="<?php echo $data["usr_emailcc"]; ?>" size="50"/></td>
-  </tr>
-  <tr>
-    <td height="26"><strong>Email Bcc </strong></td>
-    <td height="26"><input name="fld_usr_emailbcc" type="text" id="fld_usr_emailbcc" value="<?php echo $data["usr_emailbcc"]; ?>" size="50"/></td>
-  </tr>
-  <tr>
-    <td height="26"><strong>Tel</strong></td>
-    <td height="26"><input name="fld_usr_tel" type="text" id="fld_usr_tel" value="<?php echo $data["usr_tel"]; ?>" size="50"/></td>
-  </tr>
-  <tr>
-    <td height="26">&nbsp;</td>
-    <td height="26">&nbsp;</td>
-  </tr>
-  <tr>
-    <td height="26"><strong>Signature GR</strong></td>
-    <td height="26"><textarea name="fld_usr_signature_gr" id="fld_usr_signature_gr" cols="45" rows="5"><?php echo $data["usr_signature_gr"]; ?></textarea></td>
-  </tr>
-  <tr>
-    <td height="26"><strong>Signature EN</strong></td>
-    <td height="26"><textarea name="fld_usr_signature_en" id="fld_usr_signature_en" cols="45" rows="5"><?php echo $data["usr_signature_en"]; ?></textarea></td>
-  </tr>
-  <tr>
-    <td height="26">&nbsp;</td>
-    <td height="26">&nbsp;</td>
-  </tr>
-  <tr>
-    <td height="26"><input name="action" type="hidden" id="action" value="<?php if ($_GET["lid"] == "") echo "insert"; else echo "update"; ?>">
-      <input name="lid" type="hidden" id="lid" value="<?php echo $_GET["lid"]; ?>"></td>
-    <td height="26"><input type="submit" name="Submit" value="Submit"></td>
-  </tr>
-</table>
-
-<br />
-<table width="450" border="1" align="center" cellpadding="0" cellspacing="0" bordercolor="#000000">
-  <tr>
-    <td colspan="2" align="center"><strong>HELP</strong></td>
-    </tr>
-  <tr>
-    <td width="107">Restrict IP </td>
-    <td width="343">% -&gt; Gives access to all IP`s<br />
-      !% Blocks All IP`s<br />
-      Type an ip to allow or more separated by ,<br />
-      Type an ip with ! to block<br />
-      Example 192.168.1.164,192.168.1.165 Allow this IP`s<br />
-      !192.168.1.165 Block<br />
-      %,!81.21.35.457 Allow all except the ip<br />
-      Use wild cards. Allow 192.168.1.???<br />
-    Block !192.168.1.???<br />
-    If users restrict IP is left empty then the restrict IP from the group is used. </td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-    <td>&nbsp;</td>
-  </tr>
-</table>
-<p>&nbsp;</p>
-</form>
--->
 
 <?php
 $db->show_footer();

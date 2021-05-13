@@ -42,6 +42,13 @@ if ($_POST["action"] == "show") {
     </form>
     <?php
 
+
+    echo $db->encrypt('michael');
+
+    echo "<br>";
+
+    echo $db->decrypt('TmNFNWVqZndkUlVYRlJpWkxBejd5Zz09Ojqh66dU5n7abbHL0cUb9xx7');
+
     $db->show_footer();
 }
 ?>

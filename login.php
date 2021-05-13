@@ -47,7 +47,6 @@ if ($_POST["action"] == "login") {
 		$result = $db->query($sql);
 		if ($db->num_rows($result) > 0) {
 			$row = $db->fetch_assoc($result);
-
 			//check if active
             if ($row['usr_active'] == 1) {
 

@@ -249,6 +249,7 @@ $db->show_header();
                     es_soeasy_import_data
                     WHERE
                     essesid_status = 'VALIDATED'
+                    AND (essesid_export_batch = '' OR essesid_export_batch is null)
                     AND essesid_validation_status = 'OK'";
                     $totalNonExported = $db->query_fetch($sql);
 

@@ -10,7 +10,7 @@
 //exit();
 
 include_once("include/main.php");
-include_once("../../synthesis/synthesis_class.php");
+include_once($main['local_url']."/synthesis/synthesis_class.php");
 $db = new Main(0);
 
 $syn = new Synthesis();

@@ -36,8 +36,8 @@ if ($extranet -> connect_errno) {
 //always use from yesterday to today
 //$startDate = '2021-02-28';
 //$endDate = '2021-03-31';
-$startDate = date('Y-m-d',mktime(0,0,0,date('m'),date('d')-1,date('Y')   ));
-$endDate = date('Y-m-d');
+$startDate = date('Y-m-d',mktime(0,0,0,date('m'),date('d')-3,date('Y')   ));
+$endDate = date('Y-m-d',mktime(0,0,0,date('m'),date('d')+1,date('Y')   ));
 
 //echo $startDate." -> ".$endDate;exit();
 
@@ -57,7 +57,7 @@ foreach ($allData as $incident){
     $incidentID = $incident->Incident->incident_id;
     $registration = $incident->Incident->vehicle_registration;
     $acceptedDate = $incident->Incident->accepted_at;
-    $log .= "\n";
+    $log .= "\n<br>";
     $log .= $incidentID." ".$registration." Accepted at:".$acceptedDate;
 
     //print_r($incident);

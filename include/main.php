@@ -93,7 +93,7 @@ class Main
     {
         global $main;
 
-        $this->encryptionKey = base64_encode('lcsEncryption123321');
+        $this->encryptionKey = base64_encode('Euro$surEBen-654');
 
         if ($use_this_main != 'no') {
             $this->settings = $use_this_main;
@@ -109,6 +109,20 @@ class Main
         if ($this->settings["disable_headers"] != 'yes') {
             header('Content-Type: text/html; charset=' . $enc);
             session_start();
+
+            /*
+            if ($login == 0){
+                echo "Login:0";
+                print_r($_SESSION);
+            }
+            else {
+                echo "Login:1";
+                print_r($_SESSION);
+                exit();
+            }
+            */
+
+            //print_r($_SESSION);exit();
         }
 
         //check if to use $main or $bypass

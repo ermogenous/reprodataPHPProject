@@ -10,6 +10,22 @@ if ($db->get_setting("under_construction") == 1) {
     exit();
 }
 if ($_GET["action"] == "logout") {
+    global $main;
+    if ($_SESSION[$main['environment']."_menu"] == 'Admin,') {
+        //$db = new Main();
+        $newData['fld_session_id'] = '';
+        $db->db_tool_update_row('users', $newData,
+            'usr_users_ID = ' . $_SESSION[$main['environment']."_user_ID"],
+            $_SESSION[$main['environment']."_user_ID"], 'fld_', 'execute', 'usr_');
+    }
+    else {
+        if ($_SESSION[$main['environment']."_web_user"] > 0) {
+            $newData['fld_session_id'] = '';
+            $db->db_tool_update_row('sy_web_users', $newData,
+                'sywu_web_user_ID = ' . $_SESSION[$main['environment'] . "_web_user"],
+                $_SESSION[$main['environment'] . "_web_user"], 'fld_', 'execute', 'sywu_');
+        }
+    }
 
     unset($_SESSION[$main['environment']."_logged_in"]);
     unset($_SESSION[$main['environment']."_usernm"]);

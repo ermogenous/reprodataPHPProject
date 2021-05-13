@@ -15,5 +15,10 @@
 //exit();
 
 $db->show_header();
+?>
 
+Eurosure Extranet: Login Successful
+
+<?php
 $db->show_footer();
+?>

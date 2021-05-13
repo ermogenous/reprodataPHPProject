@@ -2,12 +2,16 @@
 include("include/main.php");
 
 $db = new Main(0);
+
 if ($db->admin_default_layout == 'synthesis'){
+
     include('synthesis/synthesis_class.php');
     $syn = new Synthesis();
 }
 else {
+
     $db = new Main(1);
+
 }
 
 //check if in the layout folder home.php file exists.
