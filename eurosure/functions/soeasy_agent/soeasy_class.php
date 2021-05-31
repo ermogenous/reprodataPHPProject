@@ -418,7 +418,7 @@ class soeasyClass
     private function validatePolicyNumber($policy)
     {
         $policyNumberSplit = explode("/", $policy);
-        $validList = ['MED', 'EUMO', 'EUEL', 'MOEU', 'EL', 'EUIM'];
+        $validList = ['MED', 'EUMO', 'EUEL', 'MOEU', 'EL', 'EUIM','MBEU'];
         $policyInsType = explode("-", $policyNumberSplit[0]);
         $isInsTypeValid = false;
         foreach ($validList as $val) {

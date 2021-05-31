@@ -40,7 +40,9 @@ if ($db->check_persistent_logins() == 0) {
             $_SESSION[$main["environment"] . "_admin_password"] = $password;
 
 
-            $loc = $main['site_url']."/home.php?";
+            //$loc = $main['site_url']."/home.php?";
+            $loc = $main['site_url']."/eurosure/extranet/live/live_production_statistics.php";
+
             //echo $loc;exit();
             header("Location: " . $loc);
             exit();

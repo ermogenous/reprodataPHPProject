@@ -213,16 +213,16 @@ $db->show_header();
                 </div>
 
 
-                <!--
+
                 <div class="form-group row">
-                    <label for="fld_usr_sub_agent_code" class="col-sm-4 col-form-label">Sub Agent Code</label>
+                    <label for="fld_usr_agent_code" class="col-sm-4 col-form-label">Agent Code</label>
                     <div class="col-sm-8">
-                        <input name="fld_usr_sub_agent_code" type="text" id="fld_usr_sub_agent_code"
+                        <input name="fld_usr_agent_code" type="text" id="fld_usr_agent_code"
                                class="form-control"
-                               value="<?php echo $data["usr_sub_agent_code"]; ?>"/>
+                               value="<?php echo $data["usr_agent_code"]; ?>"/>
                     </div>
                 </div>
-
+                <!--
 
                 <div class="form-group row">
                     <label for="fld_usr_issuing_office_serial" class="col-sm-4 col-form-label">Issuing Office</label>
