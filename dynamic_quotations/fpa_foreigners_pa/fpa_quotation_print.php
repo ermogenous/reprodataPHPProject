@@ -33,6 +33,9 @@ function getQuotationHTML($quotationID)
         $socialSecurity = $sect2['oqqit_rate_3']."/".$sect2['oqqit_rate_4']."/".$sect2['oqqit_rate_5'];
     }
 
+    $startDateParts = explode('-',$quotationData['oqq_starting_date']);
+    $startDateNum = ($startDateParts[0] * 10000) + ($startDateParts[1] * 100) + ($startDateParts[2] * 1);
+
     //certificate number
     if ($quotationData['oqq_status'] != 'Active'){
         $certificateNumber = 'DRAFT';
@@ -46,16 +49,30 @@ function getQuotationHTML($quotationID)
         $draft = '';
         $draftImage = '';
         $signature = '<img src="images/santamas_signature_200.png" width="200">';
-        $startDateParts = explode('-',$quotationData['oqq_starting_date']);
-        $startDateNum = ($startDateParts[0] * 10000) + ($startDateParts[1] * 100) + ($startDateParts[2] * 1);
-        if ($startDateNum >= 20200101){
+
+        if ($startDateNum < 20200101){
+            $stamp = '<img src="images/full_stamp_signature.png" width="140">';
+        }
+        else if ($startDateNum >= 20200101 && $startDateNum < 20210701){
             $stamp = '<img src="images/full_stamp_signature_2020.png" width="140">';
         }
         else {
-            $stamp = '<img src="images/full_stamp_signature.png" width="140">';
+            $stamp = '<img src="images/full_stamp_signature_2021.png" width="140">';
         }
 
+
     }
+
+    //if starting date is after 30/6/2021
+    if ($startDateNum < 20210701) {
+        $lloydsLogo = '<img src="' . $db->admin_layout_url . '/images/LLOYDS-Logo.png">';
+        $lloydsText = 'Authorised Coverholder at Lloyd`s';
+    }
+    else {
+        $lloydsLogo = '';
+        $lloydsText = '';
+    }
+
 
     $html = '
 <style>
@@ -72,7 +89,7 @@ function getQuotationHTML($quotationID)
         <tr>
             <td width="33%"><img src="' . $db->admin_layout_url . '/images/Kemter-Logo-WhiteBG-300x60.png"></td>        
             <td width="34%" align="center">Certificate Number<br>Αριθμός Πιστοποιητικού<br><b>'.$certificateNumber.'</b></td>
-            <td width="33%" align="right"><img src="' . $db->admin_layout_url . '/images/LLOYDS-Logo.png"></td>
+            <td width="33%" align="right">'.$lloydsLogo.'</td>
         </tr>
         <tr>
             <td colspan="3" align="center"><b>FOREIGNERS PERSONAL ACCIDENT / ΠΡΟΣΩΠΙΚΑ ΑΤΥΧΗΜΑΤΑ ΑΛΛΟΔΑΠΩΝ <br>PROPOSAL & EVIDENCE OF INSURANCE / ΠΡΟΤΑΣΗ & ΑΠΟΔΕΙΞΗ ΑΣΦΑΛΙΣΗΣ</b></td>
@@ -221,7 +238,8 @@ function getQuotationHTML($quotationID)
                 Γιάννος Σανταμάς<br>
                 Director / Διευθυντής<br>
                 Kemter Insurance Agencies, Sub-Agencies and Consultants Ltd<br>
-                Authorised Coverholder at Lloyd`s '.$draft.'
+                '.$lloydsText.' 
+                '.$draft.'
                 </td>
                 <td align="center">
                     '.$stamp.$draft.'<br><br>

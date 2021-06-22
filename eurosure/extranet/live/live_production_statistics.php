@@ -41,7 +41,7 @@ $current = $db->query_fetch(
             FROM report_gross_written_premium 
             WHERE rpgwp_agent_code = "' . $db->user_data['usr_agent_code'] . '"
             AND rpgwp_year = ' . $year . '
-            AND rpgwp_period BETWEEN 1 AND ' . $period.'
+            AND rpgwp_period BETWEEN 1 AND ' . $period . '
             GROUP BY 
             rpgwp_agent_code,
             rpgwp_agent_description');
@@ -49,7 +49,18 @@ $current = $db->query_fetch(
 ?>
 
 <div class="container">
-    <br><br>
+    <br>
+    <div class="row alert alert-primary text-center font-weight-bold">
+        <div class="col">
+            <?php echo $db->user_data['usr_name'] . " - " . $db->user_data['usr_agent_code']; ?>
+        </div>
+    </div>
+    <div class="row alert alert-secondary text-center font-weight-bold">
+        <div class="col">
+            Live Statistics
+        </div>
+    </div>
+    <br>
     <div class="row">
         <div class="col-md-6">
             <div class="list-group">
@@ -168,6 +179,7 @@ $current = $db->query_fetch(
             </div>
         </div>
         <div class="col-md-6">
+            <div class="list-group">
             <span class="list-group-item">
                 <h3 class="pull-right">
                     <i class="fas fa-chart-line"></i>
@@ -175,7 +187,7 @@ $current = $db->query_fetch(
                 <h4 class="list-group-item-heading count">
                     <?php
                     echo $db->fix_int_to_double($current['clo_gwp_previous']);
-                    echo getDifferenceProd($current['clo_gwp_current'],$current['clo_gwp_previous']);
+                    echo getDifferenceProd($current['clo_gwp_current'], $current['clo_gwp_previous']);
                     ?>
                 </h4>
                 <p class="list-group-item-text">
@@ -184,15 +196,15 @@ $current = $db->query_fetch(
                     ?>
                 </p>
             </span>
-            <hr>
-            <span class="list-group-item">
+                <hr>
+                <span class="list-group-item">
                 <h3 class="pull-right">
                     <i class="fas fa-car"></i>
                 </h3>
                 <h4 class="list-group-item-heading count">
                     <?php
                     echo $db->fix_int_to_double($current['clo_gwp_motor_previous']);
-                    echo getDifferenceProd($current['clo_gwp_motor_current'],$current['clo_gwp_motor_previous']);
+                    echo getDifferenceProd($current['clo_gwp_motor_current'], $current['clo_gwp_motor_previous']);
                     ?>
                 </h4>
                 <p class="list-group-item-text">
@@ -202,14 +214,14 @@ $current = $db->query_fetch(
                 </p>
             </span>
 
-            <span class="list-group-item">
+                <span class="list-group-item">
                     <h3 class="pull-right">
                         <i class="fas fa-user-shield"></i>
                     </h3>
                     <h4 class="list-group-item-heading count">€
                         <?php
                         echo $db->fix_int_to_double($current['clo_gwp_liability_previous']);
-                        echo getDifferenceProd($current['clo_gwp_liability_current'],$current['clo_gwp_liability_previous']);
+                        echo getDifferenceProd($current['clo_gwp_liability_current'], $current['clo_gwp_liability_previous']);
                         ?>
                     </h4>
                     <p class="list-group-item-text">
@@ -219,14 +231,14 @@ $current = $db->query_fetch(
                     </p>
             </span>
 
-            <span class="list-group-item">
+                <span class="list-group-item">
                     <h3 class="pull-right">
                         <i class="fas fa-home"></i>
                     </h3>
                     <h4 class="list-group-item-heading count">€
                         <?php
                         echo $db->fix_int_to_double($current['clo_gwp_property_previous']);
-                        echo getDifferenceProd($current['clo_gwp_property_current'],$current['clo_gwp_property_previous']);
+                        echo getDifferenceProd($current['clo_gwp_property_current'], $current['clo_gwp_property_previous']);
                         ?>
                     </h4>
                     <p class="list-group-item-text">
@@ -236,14 +248,14 @@ $current = $db->query_fetch(
                     </p>
             </span>
 
-            <span class="list-group-item">
+                <span class="list-group-item">
                     <h3 class="pull-right">
                         <i class="fas fa-wrench"></i>
                     </h3>
                     <h4 class="list-group-item-heading count">€
                         <?php
                         echo $db->fix_int_to_double($current['clo_gwp_engineering_previous']);
-                        echo getDifferenceProd($current['clo_gwp_engineering_current'],$current['clo_gwp_engineering_previous']);
+                        echo getDifferenceProd($current['clo_gwp_engineering_current'], $current['clo_gwp_engineering_previous']);
                         ?>
                     </h4>
                     <p class="list-group-item-text">
@@ -253,14 +265,14 @@ $current = $db->query_fetch(
                     </p>
             </span>
 
-            <span class="list-group-item">
+                <span class="list-group-item">
                     <h3 class="pull-right">
                         <i class="fas fa-mortar-pestle"></i>
                     </h3>
                     <h4 class="list-group-item-heading count">€
                         <?php
                         echo $db->fix_int_to_double($current['clo_gwp_misc_previous']);
-                        echo getDifferenceProd($current['clo_gwp_misc_current'],$current['clo_gwp_misc_previous']);
+                        echo getDifferenceProd($current['clo_gwp_misc_current'], $current['clo_gwp_misc_previous']);
                         ?>
                     </h4>
                     <p class="list-group-item-text">
@@ -270,14 +282,14 @@ $current = $db->query_fetch(
                     </p>
             </span>
 
-            <span class="list-group-item">
+                <span class="list-group-item">
                     <h3 class="pull-right">
                         <i class="fas fa-anchor"></i>
                     </h3>
                     <h4 class="list-group-item-heading count">€
                         <?php
                         echo $db->fix_int_to_double($current['clo_gwp_marine_previous']);
-                        echo getDifferenceProd($current['clo_gwp_marine_current'],$current['clo_gwp_marine_previous']);
+                        echo getDifferenceProd($current['clo_gwp_marine_current'], $current['clo_gwp_marine_previous']);
                         ?>
                     </h4>
                     <p class="list-group-item-text">
@@ -286,7 +298,7 @@ $current = $db->query_fetch(
                         ?>
                     </p>
             </span>
-
+            </div>
         </div>
     </div>
 </div>
@@ -295,21 +307,20 @@ $current = $db->query_fetch(
 //$db->show_footer();
 $db->show_empty_footer();
 
-function getDifferenceProd($current,$previous){
+function getDifferenceProd($current, $previous)
+{
     global $db;
     $diff = $current - $previous;
 
-    if ($previous > $current){
+    if ($previous > $current) {
         return ' &nbsp;&nbsp;<i class="fas fa-sort-amount-down"></i>
-                <span class="alert-danger">&nbsp;'.$db->fix_int_to_double($diff)."</span>";
-    }
-    else if ($previous == $current){
+                <span class="alert-danger">&nbsp;' . $db->fix_int_to_double($diff) . "</span>";
+    } else if ($previous == $current) {
         return ' &nbsp;&nbsp;<i class="fas fa-equals"></i>
-                <span class="alert-secondary">&nbsp;'.$db->fix_int_to_double($diff)."</span>";
-    }
-    else {
+                <span class="alert-secondary">&nbsp;' . $db->fix_int_to_double($diff) . "</span>";
+    } else {
         return ' &nbsp;&nbsp;<i class="fas fa-sort-amount-up"></i>
-                <span class="alert-success">&nbsp;'.$db->fix_int_to_double($diff)."</span>";
+                <span class="alert-success">&nbsp;' . $db->fix_int_to_double($diff) . "</span>";
     }
 
 }

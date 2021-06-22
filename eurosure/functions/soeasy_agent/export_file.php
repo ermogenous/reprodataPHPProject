@@ -97,6 +97,11 @@ if ($_POST['action'] == 'export') {
                 $row['Policy_Transaction_Time'] = $row['Policy_Start_Time'];
             }
 
+            //check if motorcycles and policy product code is empty
+            if ($row['Policy_Product_Code'] != '3' && substr($row['Policy_Number'],0,4) == 'MBEU'){
+                $row['Policy_Product_Code'] = 3;
+            }
+
             $i++;
             $line = $row['Client_Person_Company'] . "|"
                 . $row['Client_ID_Company_Registration'] . "|"

@@ -40,7 +40,7 @@ if ($db->user_data['usr_user_rights']>0){
         <td align="center" height="100" colspan="2">
             <br>
             No. &nbsp;
-            <span style="font-size: 25px">4719352</span>
+            <span style="font-size: 25px">6731242</span>
             <br><br>
             Ονοματεπώνυμο/Name:<br><br>
             ..........................................<br><br>

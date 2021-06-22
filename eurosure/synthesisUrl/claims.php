@@ -8,128 +8,536 @@ include("../../scripts/meBuildDataTable.php");
 $db = new Main();
 
 $sybase = new ODBCCON();
+$claimData = '';
+$data = findClaimFolder();
+$subFolders = [];
 
 $db->show_header();
+?>
 
-//getFoldersImages();
+<div class="container">
 
-$location = '//esdata/EUROSURE DOCUMENTS/CLAIMS/EUROSURE ASSIST';
-//getAllFolders($location);
-
-$data = findClaimFolders();
-//echo filemtime('');
-//exit();
-
-foreach ($data as $folder) {
-    ?>
     <div class="row">
-        <div class="col-12 alert alert-primary">
-            <?php
-            echo str_replace("/","\\",($location."/".$folder));
-            echo " - ".date('d/m/Y', filemtime(($location."/".$folder)));
-            ?>
-
+        <div class="col alert alert-primary text-center font-weight-bold">
+            Claim: <?php echo $claimData['inclm_claim_number'] . " Event Date: " . $db->convertDateToEU($claimData['inclm_date_of_event']); ?>
         </div>
     </div>
+
+    <!-- CLIENT INFO HEADER -->
+    <div class="row">
+        <div class="col alert alert-primary font-weight-bold text-center" onclick="showHide('clientBalances');"
+             style="cursor: pointer">
+            Policy Client Balances
+            <i class="far fa-plus-square" id="clientBalances_plus"></i>
+            <i class="far fa-minus-square" id="clientBalances_minus" style="display: none;"></i>
+            <input type="hidden" id="clientBalances_status" value="closed">
+        </div>
+    </div>
+    <!-- CLIENT BALANCES -->
     <?php
-    $list = getAllFolders($location . "/" . $folder);
-    showAllFoldersList($list);
-}
-
-
-function getFoldersImages($specificFolder = '')
-{
-    global $sybase;
-//get directory contents
-    $location = '\\\\esdata\\EUROSURE DOCUMENTS\\CLAIMS\\EUROSURE ASSIST';
-    $dir = scandir($location);
-
-//get claim info
-    $sql = "
-SELECT
-*
-FROM
-inclaims
-JOIN initems ON initm_item_serial = inclm_item_serial
-WHERE 
-inclm_claim_serial = " . $_GET['claimID'];
-    $claim = $sybase->query_fetch($sql);
-
-//search on the dir array for the vehicle
-    foreach ($dir as $dirName => $dirValue) {
-        if (stripos($dirValue, $claim['initm_item_code']) == true) {
-            //get folder last modified
-            $stat = filemtime($location . "/" . $dirValue);
-            //echo $claim['initm_item_code'] . " => " . $dirValue . " Last Modified:" . date("d/m/Y", $stat) . "<br>";
-
-            $folders[$stat] = $dirValue;
-        } else {
-
-        }
-    }
-//sort the folders using the date key
-    //echo "<hr>";
-    //print_r($folders);
-    //echo "<br>";
-    krsort($folders);
-    //print_r($folders);
-    //echo "<hr>";
-
-    foreach ($folders as $name => $value) {
-        showContents($location, $value);
-    }
-
-}
-
-function showContents($location, $folder)
-{
-    echo "<hr>Contents: " . $folder . "<hr>";
-    //check if folder exists
-    if (!is_dir($location . "/" . $folder)) {
-        return false;
-    }
-
-    $contents = scandir($location . "/" . $folder);
-    foreach ($contents as $name => $file) {
-        //echo"#".$file."#<br>";
-        if ($file != '.' && $file != '..') {
-            $fileInfo = pathinfo($location . "/" . $file);
-            print_r($fileInfo);
-            if (isset($fileInfo['extension'])) {
-                $extention = $fileInfo['extension'];
-                //print_r($fileInfo);
-                //$extention = $fileInfo['extension'];
-                echo $file . " #" . $extention . "<br>";
-                showImage($location . "/" . $folder . "/" . $file);
-
-            } else {
-                echo "<br>check if folder " . $location . "/" . $folder . "/" . $file . "<br>";
-                if (is_dir($location . "/" . $folder . "/" . $file)) {
-                    echo "IS DIRECTORY<br>";
-                    showContents($location . "/" . $folder, $file);
+    $balanceData = $sybase->query_fetch("
+        SELECT 
+        acmblnce.acbl_acct_serl ,
+        acmblnce.acbl_fncl_year ,
+        acmblnce.acbl_crcy_code ,
+        acmblnce.acbl_year_bfrw ,
+        acmblnce.acbl_drmv_prd01 ,
+        acmblnce.acbl_drmv_prd02 ,
+        acmblnce.acbl_drmv_prd03 ,
+        acmblnce.acbl_drmv_prd04 ,
+        acmblnce.acbl_drmv_prd05 ,
+        acmblnce.acbl_drmv_prd06 ,
+        acmblnce.acbl_drmv_prd07 ,
+        acmblnce.acbl_drmv_prd08 ,
+        acmblnce.acbl_drmv_prd09 ,
+        acmblnce.acbl_drmv_prd10 ,
+        acmblnce.acbl_drmv_prd11 ,
+        acmblnce.acbl_drmv_prd12 ,
+        acmblnce.acbl_drmv_prd13 ,
+        acmblnce.acbl_crmv_prd02 ,
+        acmblnce.acbl_crmv_prd03 ,
+        acmblnce.acbl_crmv_prd04 ,
+        acmblnce.acbl_crmv_prd05 ,
+        acmblnce.acbl_crmv_prd06 ,
+        acmblnce.acbl_crmv_prd07 ,
+        acmblnce.acbl_crmv_prd08 ,
+        acmblnce.acbl_crmv_prd09 ,
+        acmblnce.acbl_crmv_prd10 ,
+        acmblnce.acbl_crmv_prd11 ,
+        acmblnce.acbl_crmv_prd12 ,
+        acmblnce.acbl_crmv_prd13 ,
+        acmblnce.acbl_crmv_prd01 ,
+        acbl_year_bfrw ,
+        acmblnce.acbl_last_mvnt ,
+        acmblnce.acbl_drmv_otst ,
+        acmblnce.acbl_crmv_otst ,
+        acmblnce.acbl_rect_otst ,
+        acmblnce.acbl_paym_otst ,
+        ccmaccts.ccac_acct_code ,
+        ccmaccts.ccac_long_desc ,
+        ccmaccts.ccac_allc_flag ,
+        acmblnce.acbl_last_interest_post_serial ,
+        acmblnce.acbl_last_interest_balance ,
+        acmblnce.acbl_last_interest_date ,
+        space(1) AS clo_cash_on_off,
+        COALESCE((IF ccac_addr_type IN ('1','2') THEN (SELECT ccde_reco_code FROM ccmaddrs, ccpdecod WHERE ccad_addr_type = ccac_addr_type 
+            AND ccad_addr_code = ccac_addr_code 
+            AND ccde_reco_type = 'WC' 
+            AND ccde_reco_code = ccad_warning_code 
+            AND ccde_status_flag = '3') ELSE '' ENDIF), '') AS clo_warning_animated
+        FROM
+        acmblnce ,
+        ccmaccts
+        WHERE
+        ( ccmaccts.ccac_acct_serl = acmblnce.acbl_acct_serl )
+        //and ccac_acct_code = '" . $claimData['incl_account_code'] . "'
+        and ccac_acct_code = '1615AG477E012115' and acbl_fncl_year = 2020
+        
+        ORDER BY
+        acbl_fncl_year DESC
+    ");
+    ?>
+    <div class="container" id="clientBalances" style="display: none">
+        <div class="row">
+            <div class="col-2">Client Name:</div>
+            <div class="col-5"><?php echo $claimData['incl_first_name'] . " " . $claimData['incl_long_description']; ?></div>
+            <div class="col-2">Client ID:</div>
+            <div class="col-3"><?php echo $claimData['incl_identity_card']; ?></div>
+        </div>
+        <br>
+        <div class="row">
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th scope="col">Financial Period <?php echo $balanceData['acbl_fncl_year']; ?></th>
+                    <th scope="col">Outstanding Dr</th>
+                    <th scope="col"></th>
+                    <th scope="col">Outstanding Cr</th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <th scope="row">Period</th>
+                    <td align="center"><strong>Period B/F</strong></td>
+                    <td align="center"><strong>Period Debits</strong></td>
+                    <td align="center"><strong>Period Credits</strong></td>
+                    <td align="center"><strong>Period Balance</strong></td>
+                </tr>
+                <?php
+                $periodBalance = 0;
+                for ($i = 1; $i <= 12; $i++) {
+                    ?>
+                    <tr>
+                        <?php
+                        if ($i <= 9) {
+                            $prd = '0' . $i;
+                        } else {
+                            $prd = $i;
+                        }
+                        if ($i == 1) {
+                            $periodBF = $balanceData['acbl_year_bfrw'];
+                            $periodBalance = $balanceData['acbl_year_bfrw'] + $balanceData['acbl_drmv_prd' . $prd] - $balanceData['acbl_crmv_prd' . $prd];
+                        } else {
+                            $periodBF = $periodBalance;
+                            $periodBalance += $balanceData['acbl_drmv_prd' . $prd] - $balanceData['acbl_crmv_prd' . $prd];
+                        }
+                        ?>
+                        <td><?php echo showMonthName($i); ?></td>
+                        <td align="center"><?php echo $db->fix_int_to_double($periodBF); ?></td>
+                        <td align="center"><?php echo $db->fix_int_to_double($balanceData['acbl_drmv_prd' . $prd]); ?></td>
+                        <td align="center"><?php echo $db->fix_int_to_double($balanceData['acbl_crmv_prd' . $prd]); ?></td>
+                        <td align="center"><?php echo $db->fix_int_to_double($periodBalance); ?></td>
+                    </tr>
+                    <?php
                 }
+                function showMonthName($period)
+                {
+                    switch ($period) {
+                        case 1:
+                            return 'January';
+                            break;
+                        case 2:
+                            return 'February';
+                            break;
+                        case 3:
+                            return 'March';
+                            break;
+                        case 4:
+                            return 'April';
+                            break;
+                        case 5:
+                            return 'May';
+                            break;
+                        case 6:
+                            return 'June';
+                            break;
+                        case 7:
+                            return 'July';
+                            break;
+                        case 8:
+                            return 'August';
+                            break;
+                        case 9:
+                            return 'September';
+                            break;
+                        case 10:
+                            return 'October';
+                            break;
+                        case 11:
+                            return 'November';
+                            break;
+                        case 12:
+                            return 'December';
+                            break;
+                    }
+                }
+
+                ?>
+
+                </tbody>
+            </table>
+        </div>
+        <br>
+    </div>
+
+    <!-- POLICY DOCUMENTS HEADER -->
+    <div class="row">
+        <div class="col alert alert-primary font-weight-bold text-center" onclick="showHide('policyDocuments');"
+             style="cursor: pointer">
+            Policy Documents
+            <i class="far fa-plus-square" id="policyDocuments_plus"></i>
+            <i class="far fa-minus-square" id="policyDocuments_minus" style="display: none;"></i>
+            <input type="hidden" id="policyDocuments_status" value="closed">
+        </div>
+    </div>
+    <!-- POLICY DOCUMENTS -->
+    <div class="container" id="policyDocuments" style="display: ">
+        <?php
+        //find all policy records of the same policy, same period starting date and serial less or equal of the claim/policy
+        $sql = "
+            SELECT
+            inpol_policy_serial,
+            inpol_policy_folder,
+            inag_agent_code,
+            inpol_policy_number,
+            inpol_status,
+            inpol_starting_date,
+            case inpol_process_status
+                WHEN 'E' then 'Endorsement'
+                WHEN 'N' then 'New'
+                WHEN 'R' then 'Renewal'
+                WHEN 'D' then 'Declaration'
+                WHEN 'C' then 'Cancellation'
+                ELSE inpol_process_status
+            end as clo_process_status,
+                   
+            String(inpol_policy_folder,'\', IF ccusp_company_code = 'EUROSURE' THEN '' ELSE '--TEST-- ' ENDIF,
+            DATEFORMAT(inped_status_changed_on,'YYYY-MM-DD'),' ',
+            (CASE inped_process_status 
+                 WHEN 'E' THEN 'END'
+                 WHEN 'N' THEN 'NEW'
+                 WHEN 'R' THEN 'REN'
+                 WHEN 'C' THEN 'CNL'
+                 WHEN 'D' THEN 'DEC'
+                 ELSE '' END), ' (',inpol_policy_serial,') ', inpol_policy_number) as clo_filename
+                   
+            FROM
+            inpolicies JOIN inagents ON inag_agent_serial = inpol_agent_serial
+            JOIN inpolicyendorsement ON  inpol_policy_serial = inped_policy_serial AND inpol_last_endorsement_serial = inped_endorsement_serial
+            LEFT OUTER JOIN ccuserparameters ON 1=1
+            WHERE 
+            inpol_policy_number = '" . $claimData['inpol_policy_number'] . "'
+            AND inpol_period_starting_date = '" . $claimData['inpol_period_starting_date'] . "'
+            AND inpol_policy_serial <= " . $claimData['inpol_policy_serial'] . "
+            ORDER BY inpol_policy_serial ASC
+        ";
+        $pdocResult = $sybase->query($sql);
+        ?>
+        <div class="row">
+            <?php
+        while ($policy = $sybase->fetch_assoc($pdocResult)) {
+            //check if the pdf file exists
+            $PDFDoc = $policy['clo_filename'].".pdf";
+            //fix the path
+            $PDFDoc = str_replace('X:','\\\\hq-terminal\\Documents',$PDFDoc);
+            if (is_file($PDFDoc)){
+                ?>
+                    <div class="col-6">
+                    <div class="card">
+                        <div class="card-header">
+                            <?php
+                            echo $policy['clo_process_status']." On: ".$db->convertDateToEU($policy['inpol_starting_date']);
+                            ?>
+                        </div>
+                        <div class="card-body">
+                            <a href="show_file.php?file=<?php echo $PDFDoc; ?>" target="_blank"
+                               title="Policy Documents PDF">
+                                <?php showImage($PDFDoc, 'Policy-'.$policy['inpol_policy_number'].'-Documents'); ?>
+                            </a>
+                        </div>
+                    </div>
+                    </div>
+                <?php
+            }
+            else {
+                echo "Cannot find any file";
+            }
+
+            ?>
+
+            <?php
+        }
+        ?>
+        </div>
+    </div>
+
+    <!-- CLAIMS IMAGES HEADER -->
+    <div class="row">
+        <div class="col alert alert-primary font-weight-bold text-center"
+             onclick="showHide('claimsContainer');" style="cursor: pointer">
+            Claim Images
+            <i class="far fa-plus-square" id="claimsContainer_plus"></i>
+            <i class="far fa-minus-square" id="claimsContainer_minus" style="display: none"></i>
+            <input type="hidden" id="claimsContainer_status" value="closed">
+        </div>
+    </div>
+
+    <script>
+        function showHide(field) {
+            if ($('#' + field + '_status').val() == 'closed') {
+                $('#' + field).show();
+                $('#' + field + '_plus').hide();
+                $('#' + field + '_minus').show();
+                $('#' + field + '_status').val('open')
+            } else {
+                $('#' + field).hide();
+                $('#' + field + '_plus').show();
+                $('#' + field + '_minus').hide();
+                $('#' + field + '_status').val('closed')
+            }
+        }
+    </script>
+    <!-- CLAIMS IMAGES -->
+    <div class="row" id="claimsContainer" style="display: none">
+        <div class="col">
+            <div class="container">
+
+
+                <?php
+                //show only the first folder found
+                listFolderItems($data[0]);
+                //Also find all subfolders
+                findSubFolders($data[0]);
+
+                //now show all the subfolders
+                foreach ($subFolders as $sbFolder) {
+                    //echo $sbFolder." - ";
+                    listFolderItems($sbFolder);
+                }
+
+                ?>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<?php
+function findClaimFolder()
+{
+    global $sybase, $claimData;
+    if (!$_GET['claimID'] > 0) {
+        exit();
+    }
+    $sql = "SELECT 
+            initm_item_code,
+            inclm_claim_serial,
+            inclm_claim_number,
+            inclm_status,
+            inclm_process_status,
+            inclm_date_of_event,
+            inclm_claim_date,
+            incl_first_name,
+            incl_long_description,
+            incl_identity_card,
+            incl_account_code,
+            inpol_policy_number,
+            inpol_policy_serial,
+            inpol_period_starting_date,
+            if inclm_date_of_event < '2021-03-01' then 'rescueline' else 'odyky' endif as clo_handler
+            FROM 
+            inclaims 
+            join initems on initm_item_serial = inclm_item_serial
+            JOIN inpolicies ON inclm_policy_serial = inpol_policy_serial
+            JOIN inclients ON incl_client_serial = inpol_client_serial
+            WHERE inclm_claim_serial = " . $_GET['claimID'];
+
+    $claimData = $sybase->query_fetch($sql);
+
+    //if the claim is before 1/3/2021 the redirect to the old claims file
+    if ($claimData['clo_handler'] == 'rescueline') {
+        //header("Location: claims_old.php?claimID=" . $_GET['claimID']);
+        //exit();
+    }
+
+    $vehicleReg = $claimData['initm_item_code'];
+    $claimEventDate = $claimData['inclm_date_of_event'];
+    //fix event date
+    $eventDateParts = explode('-', $claimEventDate);
+    $claimEventDate = $eventDateParts[2] . $eventDateParts[1] . $eventDateParts[0];
+    //find the third party vehicle
+    $sql = "
+        select
+        inctp_regno_id
+        from
+        inclaimthirdparty
+        WHERE
+        inctp_claim_serial = " . $claimData['inclm_claim_serial'];
+    $tpResult = $sybase->query($sql);
+    while ($tp = $sybase->fetch_assoc($tpResult)) {
+        $tpVehicle[] = $tp['inctp_regno_id'];
+    }
+
+    //echo "<hr>Looking for: ".$vehicleReg." Event Date: ".$claimEventDate." TP: ".$tpVehicle[0]."<hr>";
+
+    //search in folders to find this claim
+    $mainFolder = '\\\\esapps2\\Eurosure Assist\\ODYKY';
+    $folders = scandir($mainFolder, 1);
+    $foldersFound = [];
+    foreach ($folders as $name) {
+
+        //first check if the event date is found
+        if (strpos($name, $claimEventDate) !== false) {
+
+            //now check to find the policy vehicle
+            if (strpos($name, $vehicleReg) !== false) {
+                $foldersFound[] = $mainFolder . "\\" . $name;
             }
         }
     }
 
+    //check if more than one folders is found
+    if (count($foldersFound) > 1) {
+        foreach ($foldersFound as $name => $value) {
+            //check also the third party
+            if (strpos($value, $tpVehicle[0]) === false) {
+                //does not exists should remove it from the list
+                unset($foldersFound[$name]);
+            } else {
+                //is found so do nothing, keep it in the list
+            }
+        }
+    }
+
+    //if none found find it using different methods
+    if (count($foldersFound) == 0) {
+        //echo "None found";
+    }
+
+    //print_r($foldersFound);
+    return $foldersFound;
+}
+
+function findSubFolders($folder)
+{
+    global $subFolders;
+    $mainFolder = scandir($folder);
+    foreach ($mainFolder as $item) {
+        if ($item != '.' && $item != '..')
+            if (is_dir($folder . "\\" . $item)) {
+                //echo "Folder:->".$item;
+                //add it in the list
+                $subFolders[] = $folder . "\\" . $item;
+                //recursive find if sub folders exists
+                findSubFolders($folder . "\\" . $item);
+            }
+    }
 
 }
 
-function showImage($file,$fileName, $fileType)
+function listFolderItems($folder)
 {
+    global $subFolders;
+    if ($folder == '') {
+        echo "No Folder Found";
+        return false;
+    }
+    $folderNameSplit = explode("\\", $folder);
+    $folderName = $folderNameSplit[count($folderNameSplit) - 1];
+    //$folder = '\\\\esapps2\\Eurosure Assist\\ODYKY\\' . $fld;
+    //echo $folder."<hr>";
+    $scan = scandir($folder);
+
+    $i = 0;
+    foreach ($scan as $name) {
+        $ignoreList = array('.', '..', 'Thumbs.db', 'desktop.ini');
+        //show only files
+        if (!in_array($name, $ignoreList)) {
+            //if its folder ignore it
+            if (is_dir($folder . "\\" . $name)) {
+                //add this folder to the list to show later
+                //$subFolders[] = $folder."\\".$name;
+            } else {
+                //show this items
+                $i++;
+                if ($i == 1) {
+                    //show the folder
+                    ?>
+                    <div class="row">
+                        <div class="col alert alert-secondary text-center font-weight-bold">
+                            Folder: <?php echo $folderName; ?>
+                        </div>
+                    </div>
+
+
+                    <?php
+                }
+                if ($i % 4 == 1) {
+                    ?>
+                    <ul class="list-inline">
+                    <?php
+                }
+                ?>
+                <li class="list-inline-item">
+                    <a href="show_file.php?file=<?php echo $folder . "\\" . $name; ?>" target="_blank"
+                       title="<?php echo $name; ?>">
+                        <?php showImage($folder . "\\" . $name, $name); ?>
+                    </a>
+                </li>
+                <?php
+
+
+                if ($i % 4 == 0) {
+                    ?>
+                    </ul>
+                    <?php
+                }
+
+            }//show only files
+
+        }
+
+
+    }
+    return true;
+}
+
+function showImage($file, $fileName = '')
+{
+    //get file type
+    $fileNameParts = explode(".", $file);
+    $fileType = $fileNameParts[count($fileNameParts) - 1];
     //read the file
     $contents = file_get_contents($file);
     if ($fileType == 'jpg' || $fileType == 'png') {
-        echo '<img src="data:image/jpeg;base64, ' . base64_encode($contents) . '" height="100">';
-    }
-    else if ($fileType == 'pdf'){
-        echo '<i class="fas fa-file-pdf fa-3x"></i>'.$fileName;
-    }
-    else if ($fileType == 'docx'){
-        echo '<i class="far fa-file-word fa-6x"></i>'.$fileName;
-    }
-    else {
-        echo '<i class="fas fa-file-pdf fa-8x"></i>'.$fileName;
+        echo '<img src="data:image/jpeg;base64, ' . base64_encode($contents) . '" height="190">';
+    } else if ($fileType == 'pdf') {
+        echo '<i class="fas fa-file-pdf fa-3x"></i><br>' . $fileName;
+    } else if ($fileType == 'docx' || $fileType == 'doc') {
+        echo '<i class="far fa-file-word fa-3x"></i><br>' . $fileName;
+    } else {
+        echo '<i class="fas fa-file-pdf fa-3x"></i><br>' . $fileName;
     }
     //firefox enable local files
     //in url about:config
@@ -138,119 +546,4 @@ function showImage($file,$fileName, $fileType)
 }
 
 $db->show_footer();
-
-function findClaimFolders()
-{
-    global $sybase;
-    //get claim info
-    $sql = "
-            SELECT
-            *
-            FROM
-            inclaims
-            JOIN initems ON initm_item_serial = inclm_item_serial
-            WHERE 
-            inclm_claim_serial = " . $_GET['claimID'];
-    $claim = $sybase->query_fetch($sql);
-    $location = '\\\\esdata\\EUROSURE DOCUMENTS\\CLAIMS\\EUROSURE ASSIST';
-    $dir = scandir($location);
-//search on the dir array for the vehicle
-    $folders = [];
-    foreach ($dir as $dirName => $dirValue) {
-        if (stripos($dirValue, $claim['initm_item_code']) == true) {
-            //echo $dirValue."<br>";
-            //if (stripos($dirValue, 'aaabbb') == true) {
-            //get folder last modified
-            $stat = filemtime($location . "/" . $dirValue);
-            //echo $claim['initm_item_code'] . " => " . $dirValue . " Last Modified:" . date("d/m/Y", $stat) . "<br>";
-
-            $folders[$stat] = $dirValue;
-        } else {
-
-        }
-    }
-    if (is_array($folders)) {
-        krsort($folders);
-    }
-    return $folders;
-}
-
-//recusrive function that puts in array all folders/subfolders and files
-function getAllFolders($folder)
-{
-    $i = 0;
-
-    $list = [];
-    $scan = scandir($folder);
-    foreach ($scan as $filename) {
-        if ($filename != '.' && $filename != '..' && $filename != 'Thumbs.db') {
-            $list[$i]['name'] = $filename;
-            $list[$i]['folder'] = $folder;
-            $info = pathinfo($folder . "/" . $filename);
-            $list[$i]['date'] = date('d/m/Y', filemtime(($folder . "/" . $filename)));
-            if (isset($info['extension'])) {
-                $list[$i]['fileType'] = $info['extension'];
-            }
-
-            if (is_dir($folder . "/" . $filename)) {
-                $list[$i]['type'] = 'folder';
-                $list2 = getAllFolders($folder . "/" . $filename);
-                if ($list != false) {
-                    $list[$i]['sub'] = $list2;
-                }
-            } else {
-                $list[$i]['type'] = 'file';
-            }
-            $i++;
-        }
-    }
-    if (count($list) > 0) {
-        return $list;
-    } else {
-        return false;
-    }
-}
-
-//shows the list from the previous function getAllFolders recursive
-function showAllFoldersList($list)
-{
-    $i = 0;
-    foreach ($list as $name => $value) {
-        $i++;
-        if ($value['type'] == 'folder') {
-            ?>
-            <div class="row">
-                <div class="col-12 alert alert-primary">
-                    <?php echo $value['folder']."/".$value['name']." - ".$value['date']; ?>
-                </div>
-            </div>
-
-            <?php
-        } else {
-            //show ul every 10 lines
-            if ($i % 7 == 1) {
-                ?>
-                <ul class="list-inline">
-                <?php
-            }
-            ?>
-            <li class="list-inline-item">
-                <a href="show_file.php?file=<?php echo $value['folder'] . "/" . $value['name']; ?>" target="_blank">
-                    <?php showImage($value['folder'] . "/" . $value['name'],$value['name'], $value['fileType']); ?>
-                </a>
-            </li>
-            <?php
-            if ($i % 7 == 0) {
-                ?>
-                </ul>
-                <?php
-            }
-        }
-
-        if (isset($value['sub'])) {
-            if (is_array($value['sub'])) {
-                showAllFoldersList($value['sub']);
-            }
-        }
-    }
-}
+?>

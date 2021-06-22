@@ -44,6 +44,12 @@ AND inity_insurance_type <= '".$_POST["klado_to"]."'
 	else {
 		$withdrawn = "";
 	}
+
+	if ($_POST['insurance_form'] != ''){
+	    $ins_form = " AND inity_insurance_form = '".$_POST['insurance_form']."'";
+    }else {
+        $ins_form = '';
+    }
 $sql = "
 SELECT  
 inclaims.inclm_claim_serial ,           
@@ -101,7 +107,7 @@ WHERE inpit_policy_serial = inpolicies.inpol_policy_serial
 //vehicles information.
 (SELECT LIST(DISTINCT(incd_long_description)) FROM initems JOIN inpolicyitems ON initm_item_serial = inpit_item_serial JOIN inpcodes ON incd_pcode_serial = initm_make_serial WHERE inpit_pit_auto_serial = inclm_pit_auto_serial)as clo_vehicle_make,
 (SELECT incd_long_description FROM initems JOIN inpolicyitems ON initm_item_serial = inpit_item_serial JOIN inpcodes ON incd_pcode_serial = initm_model_serial WHERE inpit_pit_auto_serial = inclm_pit_auto_serial)as clo_vehicle_model,
-(SELECT initm_body_type FROM initems JOIN inpolicyitems ON initm_item_serial = inpit_item_serial WHERE inpit_pit_auto_serial = inclm_pit_auto_serial)as clo_vehicle_body_type,
+(SELECT incd_long_description FROM initems JOIN inpolicyitems ON initm_item_serial = inpit_item_serial  JOIN inpcodes ON initm_body_type_serial = incd_pcode_serial WHERE inpit_pit_auto_serial = inclm_pit_auto_serial)as clo_vehicle_body_type,
 (SELECT initm_cubic_capacity FROM initems JOIN inpolicyitems ON initm_item_serial = inpit_item_serial WHERE inpit_pit_auto_serial = inclm_pit_auto_serial)as clo_vehicle_cubic_capacity,
 datepart(YEAR,inclm_date_of_event) - (SELECT initm_year_of_manufacture FROM initems JOIN inpolicyitems ON initm_item_serial = inpit_item_serial WHERE inpit_pit_auto_serial = inclm_pit_auto_serial)as clo_vehicle_year_of_manufacture_on_event,
 (SELECT initm_convertible FROM initems JOIN inpolicyitems ON initm_item_serial = inpit_item_serial WHERE inpit_pit_auto_serial = inclm_pit_auto_serial)as clo_vehicle_convertible,
@@ -170,6 +176,7 @@ AND inclm_open_date <='".$_POST["open_date_to"]."'
 ".$klado_exclude."
 ".$klado."
 ".$policy_cover."
+".$ins_form."
 
 GROUP BY inclaims.inclm_claim_serial ,           
 inclaims.inclm_claim_number ,           
@@ -269,7 +276,7 @@ WHERE inpit_policy_serial = inpolicies.inpol_policy_serial
 
 (SELECT TOP 1 incd_long_description FROM initems JOIN inpolicyitems ON initm_item_serial = inpit_item_serial JOIN inpcodes ON incd_pcode_serial = initm_make_serial WHERE inpit_policy_serial = inpol_policy_serial)as clo_vehicle_make,
 (SELECT TOP 1 incd_long_description FROM initems JOIN inpolicyitems ON initm_item_serial = inpit_item_serial JOIN inpcodes ON incd_pcode_serial = initm_model_serial WHERE inpit_policy_serial = inpol_policy_serial)as clo_vehicle_model,
-(SELECT TOP 1 initm_body_type FROM initems JOIN inpolicyitems ON initm_item_serial = inpit_item_serial WHERE inpit_policy_serial = inpol_policy_serial)as clo_vehicle_body_type,
+(SELECT TOP 1 incd_long_description FROM initems JOIN inpolicyitems ON initm_item_serial = inpit_item_serial JOIN inpcodes ON initm_body_type_serial = incd_pcode_serial WHERE inpit_policy_serial = inpol_policy_serial)as clo_vehicle_body_type,
 (SELECT TOP 1 initm_cubic_capacity FROM initems JOIN inpolicyitems ON initm_item_serial = inpit_item_serial WHERE inpit_policy_serial = inpol_policy_serial)as clo_vehicle_cubic_capacity,
 datepart(YEAR,inpol_period_starting_date) - (SELECT TOP 1 initm_year_of_manufacture FROM initems JOIN inpolicyitems ON initm_item_serial = inpit_item_serial WHERE inpit_policy_serial = inpol_policy_serial)as clo_vehicle_age,
 (SELECT TOP 1 initm_convertible FROM initems JOIN inpolicyitems ON initm_item_serial = inpit_item_serial WHERE inpit_policy_serial = inpol_policy_serial)as clo_vehicle_convertible,
@@ -320,6 +327,7 @@ AND (inped_year*100+inped_period)<=(".$_POST["to_year"]."*100+".$_POST["to_perio
 ".$klado_exclude."
 ".$klado."
 ".$policy_cover."
+".$ins_form."
 
 ORDER BY  
 inity_insurance_type ASC ,
@@ -406,6 +414,7 @@ AND (inped_year*100+inped_period)<=(".$_POST["to_year"]."*100+".$_POST["to_perio
 ".$klado_exclude."
 ".$klado."
 ".$policy_cover."
+".$ins_form."
 
 SELECT
 inpol_policy_number,
@@ -557,7 +566,22 @@ else if ($_POST["export_file"] == "totals") {
 			$data["Per Model"][$row["clo_vehicle_make"]." - ".$row["clo_vehicle_model"]]["PolCount"] += 1;
 			$data["Per Model"][$row["clo_vehicle_make"]." - ".$row["clo_vehicle_model"]]["Premium"] += $row["total_premium"];
 			ksort($data["Per Model"]);
-		
+
+            //get per Driver Age
+            $data["Per Driver Age"][$row["clo_driver_age"]]["PolCount"] += 1;
+            $data["Per Driver Age"][$row["clo_driver_age"]]["Premium"] += $row["total_premium"];
+            ksort($data["Per Driver Age"]);
+
+            //get per Driver Experience
+            $data["Per Driver Experience"][$row["clo_driver_experience"]]["PolCount"] += 1;
+            $data["Per Driver Experience"][$row["clo_driver_experience"]]["Premium"] += $row["total_premium"];
+            ksort($data["Per Driver Experience"]);
+
+            //get per driver age new/renewal
+            $data["Per Driver Age New/Renewal"][$row["clo_driver_age Age"].'-'.$row["Pol_New_Renewal_PStatus"]]["PolCount"] += 1;
+            $data["Per Driver Age New/Renewal"][$row["clo_driver_age Age"].'-'.$row["Pol_New_Renewal_PStatus"]]["Premium"] += $row["total_premium"];
+            ksort($data["Per Driver Age New/Renewal"]);
+
 		}//while all rows POLICIES
 	}
 	else if ($_POST["what_to_show"] == "DRIVERS") {
@@ -602,7 +626,7 @@ $("#open_date_to").datepicker({dateFormat: 'yy-mm-dd'});
 </script>
 
 <form name="form1" method="post" action="">
-  <table width="564" border="0" align="center" cellpadding="0" cellspacing="0" class="row_table_border">
+  <table width="800" border="0" align="center" cellpadding="0" cellspacing="0" class="row_table_border">
     <tr class="row_table_head">
       <td colspan="2" align="center">Claims List Full Details </td>
     </tr>
@@ -646,6 +670,11 @@ To
       <td><input name="klado_exclude" type="text" id="klado_exclude" value="<?php echo $_POST["insurance_type_exclude"];?>"/>
       (exclude) ex 17% </td>
     </tr>
+
+      <tr>
+          <td height="28">Insurance Form (M->Motor) </td>
+          <td><input name="insurance_form" type="text" id="insurance_form" value="<?php echo $_POST["insurance_form"];?>"/></td>
+      </tr>
     
     <tr>
       <td height="28">Policy Cover </td>
@@ -756,26 +785,26 @@ $total_policies = 0;
     <td align="center"><?php if ($total_cost > 0 ) echo $db->fix_int_to_double(($sec_value["Cost"] / $grand_total_cost)*100,2); else echo 0;?>%</td>
     <td align="center"><?php if ($total_count > 0) echo $db->fix_int_to_double(($sec_value["Count"] / $grand_total_count)*100,2); else echo 0;?>%</td>
     <td align="center"><?php echo $sec_value["PolCount"];?></td>
-    <td align="center"><?php echo $sec_value["Premium"];?></td>
+    <td align="center"><?php echo $db->fix_int_to_double($sec_value["Premium"],2);?></td>
     <td align="center"><?php if ($total_premium > 0) echo $db->fix_int_to_double(($sec_value["Premium"] / $pol_grand_total_premium)*100,2); else echo 0;?>%</td>
     <td align="center"><?php if ($total_policies > 0) echo $db->fix_int_to_double(($sec_value["PolCount"] / $pol_grand_total_count)*100,2); else echo 0;?>%</td>
-    <td align="center"><?php if ($fields[$name]["show_prof"] <> 'NO') { echo $sec_value["Premium"] - $sec_value["Cost"];} else echo "&nbsp;";?></td>
+    <td align="center"><?php if ($fields[$name]["show_prof"] <> 'NO') { echo $db->fix_int_to_double($sec_value["Premium"] - $sec_value["Cost"],2);} else echo "&nbsp;";?></td>
     <td align="center"><?php if ($sec_value["PolCount"] > 0) echo $db->fix_int_to_double(($sec_value["Count"] / $sec_value["PolCount"])*100,2); else echo 0;?>%</td>
-    <td align="center"><?php if ($sec_value["Premium"] > 0) echo $db->fix_int_to_double(($sec_value["Cost"] / $sec_value["Premium"])*100,2); else echo 0;?>%</td>
+    <td align="center"><?php if ($sec_value["Premium"] > 0) echo $db->fix_int_to_double(($sec_value["Cost"] / $sec_value["Premium"]),2); else echo 0;?>%</td>
   </tr>
 <?php } //for each section ?>
 
   <tr>
     <td align="right"><strong>Total</strong></td>
-    <td align="center"><?php echo $total_cost;?></td>
+    <td align="center"><?php echo $db->fix_int_to_double($total_cost,2);?></td>
     <td align="center"><?php echo $total_count;?></td>
     <td align="center">&nbsp;</td>
     <td align="center">&nbsp;</td>    
     <td align="center"><?php echo $total_policies;?></td>
-    <td align="center"><?php echo $total_premium;?></td>
+    <td align="center"><?php echo $db->fix_int_to_double($total_premium,2);?></td>
     <td align="center">&nbsp;</td>
     <td align="center">&nbsp;</td>
-    <td align="center"><?php if ($fields[$name]["show_prof"] <> 'NO') { echo $total_premium - $total_cost;} else echo "&nbsp;";?></td>
+    <td align="center"><?php if ($fields[$name]["show_prof"] <> 'NO') { echo $db->fix_int_to_double($total_premium - $total_cost,2);} else echo "&nbsp;";?></td>
     <td align="center">&nbsp;</td>
     <td align="center">&nbsp;</td>    
   </tr>

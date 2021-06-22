@@ -118,7 +118,8 @@ $db->start_transaction();
                         AND Policy_Expiry_Date = "'.$fields[25].'"
                         AND Client_ID_Company_Registration = "'.$fields[1].'"
                         AND MOT_Registration_Number = "'.$fields[58].'"
-                        AND Policy_Refund = "'.$fields[19].'"';
+                        AND Policy_Refund = "'.$fields[19].'"
+                        AND essesid_status <> "DELETED"';
                 //echo $sqlCheck.PHP_EOL.PHP_EOL;
                 $checkResult = $db->query_fetch($sqlCheck);
                 if ($checkResult['clo_total'] > 0){

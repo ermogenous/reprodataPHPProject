@@ -41,7 +41,16 @@ if ($db->check_persistent_logins() == 0) {
 
 
             //$loc = $main['site_url']."/home.php?";
-            $loc = $main['site_url']."/eurosure/extranet/live/live_production_statistics.php";
+            //find the location
+            if ($_GET['section'] == 'live') {
+                $loc = $main['site_url'] . "/eurosure/extranet/live/live_production_statistics.php";
+            }
+            else if ($_GET['section'] == 'reports'){
+                $loc = $main['site_url'] . "/eurosure/extranet/reports/loss_ratios.php";
+            }
+            else {
+                $loc = $main['site_url'];
+            }
 
             //echo $loc;exit();
             header("Location: " . $loc);
