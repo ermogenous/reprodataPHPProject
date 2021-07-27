@@ -386,6 +386,7 @@ $formValidator->showErrorList();
                             $defExcTempMeat = $data["oqun_excess_temp_meat"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_temp_meat"];
                             $defExcSpecialCover = $data["oqun_excess_special_cover"] == '' ? 'Deductible €250 or 1% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_special_cover"];
                             $defExcProPacked = $data["oqun_excess_pro_packed"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_pro_packed"];
+                            $defExcTobacco = $data["oqun_excess_tobacco"] == '' ? 'Deductible €250 or 5% of the total sum insured whichever is greater each and every loss.' : $data["oqun_excess_tobacco"];
                             $defExcOwnerPacked = $data["oqun_excess_owner_packed"] == '' ? 'Nil' : $data["oqun_excess_owner_packed"];//POTATO BOARD
                             $defExcOther = $data["oqun_excess_general_cargo"] == '' ? '' : $data["oqun_excess_general_cargo"];
 
@@ -713,6 +714,42 @@ $formValidator->showErrorList();
                                     <?php
                                     $formValidator->addField([
                                         "fieldName" => "fld_excess_other_rate",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide rate",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="fld_excess_tobacco" class="col-sm-5 col-form-label">Tobacco</label>
+                                <div class="col-sm-5">
+                                    <input name="fld_excess_tobacco" type="text" id="fld_excess_tobacco"
+                                           class="form-control" maxlength="100"
+                                           value="<?php echo $defExcTobacco; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_tobacco",
+                                        "fieldDataType" => "text",
+                                        "required" => true,
+                                        "invalidText" => "Must provide excess",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+
+                                <label for="fld_excess_tobacco_rate" class="col-xl-1">Rate</label>
+                                <div class="col-xl-1">
+                                    <input name="fld_excess_tobacco_rate" type="text"
+                                           id="fld_excess_tobacco_rate"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_excess_tobacco_rate']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_excess_tobacco_rate",
                                         "fieldDataType" => "number",
                                         "required" => true,
                                         "invalidText" => "Provide rate",

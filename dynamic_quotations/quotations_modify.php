@@ -269,7 +269,6 @@ $formB->setLabelClasses('col-sm-4');
 
 </script>
 
-
 <div class="container">
     <div class="row">
         <div class="d-none col-md-1"></div>

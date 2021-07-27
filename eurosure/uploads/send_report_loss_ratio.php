@@ -6,6 +6,7 @@
  * Time: 12:06 μ.μ.
  */
 
+
 /*
 ini_set('max_execution_time', 1800);
 ini_set('memory_limit', '4096M');
@@ -19,6 +20,9 @@ $db->admin_title = "Eurosure - Uploads - Loss Ratio";
 
 $sybase = new ODBCCON();
 */
+
+
+
 $log = '';
 
 $extranet = new mysqli('136.243.227.37', 'mic.ermogenous', '4Xd3l5&w','eurosureADMIN_extranet');
@@ -27,16 +31,38 @@ if ($extranet -> connect_errno) {
     $db->update_log_file('upload gross written premium',0,$log,'test');
     exit();
 }
-$year = date("Y");
-$period = date("m");
-$asAtDate = date("Y-m-d");
-//$year = 2021;
-//$period = 4;
-//$asAtDate = '2021-04-30';
-echo $year."/".$period." <br>AsAt:".$asAtDate;
-updateOnline($year,$period,$asAtDate);
 
-function updateOnline($year,$uptoPeriod,$asAtDate)
+//find the last closed period in synthesis
+$inParam = $sybase->query_fetch('select inpr_financial_year, inpr_financial_period from inpparam');
+//if january change to 12 of previous year
+
+if ($inParam['inpr_financial_period'] == 1){
+    $year = $inParam['inpr_financial_year'] - 1;
+    $period = 12;
+}
+else {
+    $year = $inParam['inpr_financial_year'];
+    $period = $inParam['inpr_financial_period'] - 1;
+}
+
+$asAtDate = date("Y-m-t",mktime(0,0,0,$period,1,$year));
+
+echo "<hr>Check if ".$period."/".$year." already exists on extranet -> <br>";
+$extranetCheck = $extranet->query('
+    SELECT COUNT(*)as clo_total FROM report_loss_ratio WHERE rplr_year = '.$year.' AND rplr_up_to_period = '.$period.'
+');
+$extranetCheck = mysqli_fetch_assoc($extranetCheck);
+if ($extranetCheck['clo_total'] > 0){
+    echo "Period already exists on extranet.";
+}
+else {
+    echo "Period does not exists. Proceeding to update.<br>";
+    echo "<hr>Send data for report loss ratio -> ";
+    echo $year."/".$period." <br>AsAt:".$asAtDate;
+    updateOnlineLossRatio($year,$period,$asAtDate);
+}
+
+function updateOnlineLossRatio($year,$uptoPeriod,$asAtDate)
 {
     global $sybase, $extranet;
     $sql = "

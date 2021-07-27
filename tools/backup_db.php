@@ -28,7 +28,7 @@ if ($_POST['action'] == 'backup') {
             $db->show_footer();
             exit();
         } else {
-            echo "Zip file created.<br>";
+            echo "Zip file created at /send_auto_emails/attachment_files/".$fileName[0].".zip<br>";
         }
         $zip->addFile($dbFileName);
         $zip->close();

@@ -82,7 +82,7 @@ if ($_POST['action'] == 'export') {
 
             //fill the bussiness use on EUEL
             //check if the field EL_AME is not empty then fill the bussiness use if empty
-            if ($row['EL_AME'] == '' && $row['EL_Business_Use'] == ''){
+            if ($row['EL_AME'] != '' && $row['EL_Business_Use'] == ''){
                 $row['EL_Business_Use'] = 'EMPTY';
             }
 
@@ -101,6 +101,8 @@ if ($_POST['action'] == 'export') {
             if ($row['Policy_Product_Code'] != '3' && substr($row['Policy_Number'],0,4) == 'MBEU'){
                 $row['Policy_Product_Code'] = 3;
             }
+
+            //if ()
 
             $i++;
             $line = $row['Client_Person_Company'] . "|"

@@ -15,6 +15,7 @@ if ($_POST["action"] == "insert") {
     $_POST["fld_usr_active"] = $db->get_check_value($_POST["fld_usr_active"]);
     $_POST["fld_usr_is_service"] = $db->get_check_value($_POST["fld_usr_is_service"]);
     $_POST["fld_usr_is_delivery"] = $db->get_check_value($_POST["fld_usr_is_delivery"]);
+    $_POST["fld_usr_allow_imitate"] = $db->get_check_value($_POST["fld_usr_allow_imitate"]);
 
     $db->db_tool_insert_row('users', $_POST, 'fld_');
     header("Location: users.php");
@@ -26,6 +27,7 @@ if ($_POST["action"] == "insert") {
     $_POST["fld_usr_active"] = $db->get_check_value($_POST["fld_usr_active"]);
     $_POST["fld_usr_is_service"] = $db->get_check_value($_POST["fld_usr_is_service"]);
     $_POST["fld_usr_is_delivery"] = $db->get_check_value($_POST["fld_usr_is_delivery"]);
+    $_POST["fld_usr_allow_imitate"] = $db->get_check_value($_POST["fld_usr_allow_imitate"]);
 
     $db->db_tool_update_row('users', $_POST, "`usr_users_ID` = " . $_POST["lid"], $_POST["lid"], 'fld_');
     header("Location: users.php");
@@ -189,6 +191,16 @@ $db->show_header();
                                 <option value="<?php echo $ug["usg_users_groups_ID"]; ?>" <?php if ($data["usr_users_groups_ID"] == $ug["usg_users_groups_ID"]) echo "selected=\"selected\""; ?>><?php echo $ug["usg_group_name"]; ?></option>
                             <?php } ?>
                         </select>
+                    </div>
+                </div>
+
+                <div class="form-group row">
+                    <div class="col"></div>
+                    <div class="col">
+                        <input name="fld_usr_allow_imitate" type="checkbox" id="fld_usr_allow_imitate"
+                               class="form-check-input"
+                               value="1" <?php if ($data["usr_allow_imitate"] == 1) echo "checked=\"checked\""; ?> />
+                        <label for="fld_usr_allow_imitate" class="form-check-label">Allow Imitating</label>
                     </div>
                 </div>
 

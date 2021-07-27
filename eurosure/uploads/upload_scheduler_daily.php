@@ -19,5 +19,8 @@ $db->admin_title = "Eurosure - Uploads - Scheduler";
 
 $sybase = new ODBCCON();
 
-//upload the data for the online reports
+//upload the data for the online reports loss ratio
 include('send_report_loss_ratio.php');
+
+//upload data for report claims
+include('send_report_claims.php');

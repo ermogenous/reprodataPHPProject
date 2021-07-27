@@ -930,6 +930,16 @@ function getConditionsOfInsurance($commodity,$clause){
         <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10/11/03.
         <br>Institute Cyber Attack Exclusion Clause CL380 dated 10/11/03.
         <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        <br>
+        
 ';
 
     }

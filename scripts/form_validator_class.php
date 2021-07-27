@@ -731,6 +731,9 @@ class customFormValidator
         if ($this->needEmailValidationFunction == true) {
             echo '
             function validateEmail($email) {
+                if ($email == ""){
+                    return false;
+                }
                 var emailReg = /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/;
                 return emailReg.test( $email );
             }

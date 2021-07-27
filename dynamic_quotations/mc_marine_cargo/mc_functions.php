@@ -8,7 +8,7 @@
 
 function mc_shipment_details_3()
 {
-    global $db, $items_data, $qitem_data, $formValidator,$underwriter,$quote;
+    global $db, $items_data, $qitem_data, $formValidator, $underwriter, $quote;
     ?>
 
     <div class="form-group row">
@@ -61,16 +61,16 @@ function mc_shipment_details_3()
         </label>
         <?php
         //get underwriter clauses restriction to decide which options to show
-        $clausesRestrictionList = explode(",",$underwriter['oqun_clauses_restrictions']);
+        $clausesRestrictionList = explode(",", $underwriter['oqun_clauses_restrictions']);
         $clausesRestriction = array();
-        foreach($clausesRestrictionList as $value){
+        foreach ($clausesRestrictionList as $value) {
             if ($value > 0) $clausesRestriction[$value] = 1;
         }
 
         if ($db->user_data['usr_user_rights'] <= 12 //set this to 2 if you want to activate the restriction
             || ($quote->quotationData()['oqq_status'] != 'Outstanding' && $_GET['quotation'] > 0)
         ) {
-            for($i=1;  $i <= 9; $i++){
+            for ($i = 1; $i <= 10; $i++) {
                 $clausesRestriction[$i] = 1;
             }
         }
@@ -88,59 +88,66 @@ function mc_shipment_details_3()
                     <?php
                 }
                 if ($clausesRestriction[2] == 1) {
-                ?>
-                <option value="New/Used Vehicles" <?php if ($qitem_data['oqqit_rate_4'] == 'New/Used Vehicles') echo 'selected'; ?>>
-                    2. New/Used Vehicles
-                </option>
+                    ?>
+                    <option value="New/Used Vehicles" <?php if ($qitem_data['oqqit_rate_4'] == 'New/Used Vehicles') echo 'selected'; ?>>
+                        2. New/Used Vehicles
+                    </option>
                     <?php
                 }
                 if ($clausesRestriction[3] == 1) {
-                ?>
-                <option value="Machinery" <?php if ($qitem_data['oqqit_rate_4'] == 'Machinery') echo 'selected'; ?>>
-                    3. Machinery
-                </option>
+                    ?>
+                    <option value="Machinery" <?php if ($qitem_data['oqqit_rate_4'] == 'Machinery') echo 'selected'; ?>>
+                        3. Machinery
+                    </option>
                     <?php
                 }
                 if ($clausesRestriction[4] == 1) {
-                ?>
-                <option value="Temp. Controlled Cargo other than meat" <?php if ($qitem_data['oqqit_rate_4'] == 'Temp. Controlled Cargo other than meat') echo 'selected'; ?>>
-                    4. Temp. Controlled Cargo other than meat
-                </option>
+                    ?>
+                    <option value="Temp. Controlled Cargo other than meat" <?php if ($qitem_data['oqqit_rate_4'] == 'Temp. Controlled Cargo other than meat') echo 'selected'; ?>>
+                        4. Temp. Controlled Cargo other than meat
+                    </option>
                     <?php
                 }
                 if ($clausesRestriction[5] == 1) {
-                ?>
-                <option value="Temp. Controlled Cargo Meat" <?php if ($qitem_data['oqqit_rate_4'] == 'Temp. Controlled Cargo Meat') echo 'selected'; ?>>
-                    5. Temp. Controlled Cargo Meat
-                </option>
+                    ?>
+                    <option value="Temp. Controlled Cargo Meat" <?php if ($qitem_data['oqqit_rate_4'] == 'Temp. Controlled Cargo Meat') echo 'selected'; ?>>
+                        5. Temp. Controlled Cargo Meat
+                    </option>
                     <?php
                 }
                 if ($clausesRestriction[6] == 1) {
-                ?>
-                <option value="Special Cover Mobile Phones, Electronic Equipment" <?php if ($qitem_data['oqqit_rate_4'] == 'Special Cover Mobile Phones, Electronic Equipment') echo 'selected'; ?>>
-                    6. Special Cover Mobile Phones, Electronic Equipment
-                </option>
+                    ?>
+                    <option value="Special Cover Mobile Phones, Electronic Equipment" <?php if ($qitem_data['oqqit_rate_4'] == 'Special Cover Mobile Phones, Electronic Equipment') echo 'selected'; ?>>
+                        6. Special Cover Mobile Phones, Electronic Equipment
+                    </option>
                     <?php
                 }
                 if ($clausesRestriction[7] == 1) {
-                ?>
-                <option value="Personal Effects professionally packed" <?php if ($qitem_data['oqqit_rate_4'] == 'Personal Effects professionally packed') echo 'selected'; ?>>
-                    7. Personal Effects professionally packed
-                </option>
+                    ?>
+                    <option value="Personal Effects professionally packed" <?php if ($qitem_data['oqqit_rate_4'] == 'Personal Effects professionally packed') echo 'selected'; ?>>
+                        7. Personal Effects professionally packed
+                    </option>
                     <?php
                 }
                 if ($clausesRestriction[8] == 1) {
-                ?>
-                <option value="CPMB - Cyprus Potato Marketing Board" <?php if ($qitem_data['oqqit_rate_4'] == 'CPMB - Cyprus Potato Marketing Board') echo 'selected'; ?>>
-                    8. Cyprus Potatoes
-                </option>
+                    ?>
+                    <option value="CPMB - Cyprus Potato Marketing Board" <?php if ($qitem_data['oqqit_rate_4'] == 'CPMB - Cyprus Potato Marketing Board') echo 'selected'; ?>>
+                        8. Cyprus Potatoes
+                    </option>
                     <?php
                 }
                 if ($clausesRestriction[9] == 1) {
-                ?>
-                <option value="Other" <?php if ($qitem_data['oqqit_rate_4'] == 'Other') echo 'selected'; ?>>
-                    9. Medicine & Pharmaceutical Goods
-                </option>
+                    ?>
+                    <option value="Other" <?php if ($qitem_data['oqqit_rate_4'] == 'Other') echo 'selected'; ?>>
+                        9. Medicine & Pharmaceutical Goods
+                    </option>
+                    <?php
+                }
+                if ($clausesRestriction[10] == 1) {
+                    ?>
+                    <option value="Tobacco" <?php if ($qitem_data['oqqit_rate_4'] == 'Tobacco') echo 'selected'; ?>>
+                        10. Tobacco and Manufactured Tobacco Substitutes
+                    </option>
                     <?php
                 }
                 ?>
@@ -163,8 +170,7 @@ function mc_shipment_details_3()
                     if ($('#3_oqqit_rate_4').val() == 'Other') {
                         //result['result'] = 1;
                         //result['info'] = 'Commodity: Requires Approval';
-                    }
-                    else {
+                    } else {
                         result['result'] = 0;
                         result['info'] = '';
                     }
@@ -247,10 +253,10 @@ function mc_shipment_details_3()
 
     <script>
         //update the exchange rate to 1 only if currency selected is EUR
-        function autoUpdateExchangeRate(){
+        function autoUpdateExchangeRate() {
             let currency = $('#3_oqqit_rate_2').val();
             console.log('#' + currency + '#');
-            if (currency == 'EUR'){
+            if (currency == 'EUR') {
                 console.log('EUR');
                 $('#3_oqqit_rate_5').val('1');
             }
@@ -319,7 +325,6 @@ function mc_shipment_details_3()
                 </option>
 
 
-
                 <option value="By Air" <?php if ($qitem_data['oqqit_rate_6'] == 'By Air') echo 'selected'; ?>>
                     By Air
                 </option>
@@ -382,15 +387,15 @@ function mc_shipment_details_3()
                    class="form-control"
                    value="<?php echo $qitem_data["oqqit_rate_8"]; ?>">
             <?php
-            $formValidator->addField(
-                [
-                    'fieldName' => '3_oqqit_rate_8',
-                    'fieldDataType' => 'text',
-                    'required' => true,
-                    'requiredAddedCustomCode' => "&& $('#3_oqqit_rate_6').val() == 'Ocean Vessel'",
-                    'invalidText' => show_quotation_text("Συμπληρώστε Approved Steamer.", "Must Enter Approved Steamer", 'Return')
-                ]);
-            ?>
+    $formValidator->addField(
+        [
+            'fieldName' => '3_oqqit_rate_8',
+            'fieldDataType' => 'text',
+            'required' => true,
+            'requiredAddedCustomCode' => "&& $('#3_oqqit_rate_6').val() == 'Ocean Vessel'",
+            'invalidText' => show_quotation_text("Συμπληρώστε Approved Steamer.", "Must Enter Approved Steamer", 'Return')
+        ]);
+    ?>
         </div>
     </div>
     -->
@@ -611,17 +616,14 @@ function mc_shipment_details_3()
                    class="form-control"
                    value="<?php echo $qitem_data["oqqit_date_1"]; ?>">
             <?php
-            if ($db->user_data['usr_user_rights'] <= 2){
+            if ($db->user_data['usr_user_rights'] <= 2) {
                 $dateMinDate = 60;
-            }
-            else {
-                if ($db->user_data['usr_users_ID'] == 58){
+            } else {
+                if ($db->user_data['usr_users_ID'] == 58) {
                     $dateMinDate = 30;
-                }
-                else if ($db->user_data['usr_users_ID'] == 42){
+                } else if ($db->user_data['usr_users_ID'] == 42) {
                     $dateMinDate = 30;
-                }
-                else {
+                } else {
                     $dateMinDate = 0;
                 }
             }
@@ -630,7 +632,7 @@ function mc_shipment_details_3()
                     'fieldName' => '3_oqqit_date_1',
                     'fieldDataType' => 'date',
                     'enableDatePicker' => true,
-                    'datePickerValue' => $db->convert_date_format($qitem_data["oqqit_date_1"],'yyyy-mm-dd', 'dd/mm/yyyy'),
+                    'datePickerValue' => $db->convert_date_format($qitem_data["oqqit_date_1"], 'yyyy-mm-dd', 'dd/mm/yyyy'),
                     'dateMinDate' => date('d/m/Y', mktime(0, 0, 0, date('m'), (date('d') - $dateMinDate), date('Y'))),
                     'required' => true,
                     'invalidText' => show_quotation_text("Καταχωρήστε Shipment Date.", "Must supply Shipment Date", 'Return')
@@ -748,6 +750,64 @@ function mc_cargo_details_4()
             <?php show_quotation_text("Excess Replace", "Excess Replace"); ?>
         </label>
         <div class="col-sm-8">
+            <?php
+            if ($db->user_data['usr_user_rights'] == 0 || $db->user_data['usr_users_ID'] == 14) {
+                ?>
+                    <div class="row">
+                        <div class="col-9">
+                            <select id="4_oqqit_rate_6" name="4_oqqit_rate_6" class="form-control">
+                                <option value="For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR150 each & every loss or 1% of Total Sum Insured, whichever is greater."
+                                    <?php if ($qitem_data['oqqit_rate_6'] == 'For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR150 each & every loss or 1% of Total Sum Insured, whichever is greater.') echo "selected";?>
+                                >For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR150 each & every loss or 1% of Total Sum Insured, whichever is greater.</option>
+
+                                <option value="For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR 250 each & every loss or 1% of Total Sum Insured, whichever is greater."
+                                    <?php if ($qitem_data['oqqit_rate_6'] == 'For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR 250 each & every loss or 1% of Total Sum Insured, whichever is greater.') echo "selected";?>
+                                >For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR250 each & every loss or 1% of Total Sum Insured, whichever is greater.</option>
+
+                                <option value="For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR 500 each & every loss or 1% of Total Sum Insured, whichever is greater."
+                                    <?php if ($qitem_data['oqqit_rate_6'] == 'For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR 500 each & every loss or 1% of Total Sum Insured, whichever is greater.') echo "selected";?>
+                                >For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR 500 each & every loss or 1% of Total Sum Insured, whichever is greater.</option>
+
+                                <option value="€1.000 each & every loss or 3% of Total Sum Insured, whichever is greater."
+                                    <?php if ($qitem_data['oqqit_rate_6'] == '€1.000 each & every loss or 3% of Total Sum Insured, whichever is greater.') echo "selected";?>
+                                >€1.000 each & every loss or 3% of Total Sum Insured, whichever is greater.</option>
+
+                                <option value="€250 each & every loss."
+                                    <?php if ($qitem_data['oqqit_rate_6'] == '€250 each & every loss.') echo "selected";?>
+                                >€250 each & every loss.</option>
+
+                                <option value="€300 each & every loss."
+                                    <?php if ($qitem_data['oqqit_rate_6'] == '€300 each & every loss.') echo "selected";?>
+                                >€300 each & every loss.</option>
+
+                                <option value="€500 each & every loss."
+                                    <?php if ($qitem_data['oqqit_rate_6'] == '€500 each & every loss.') echo "selected";?>
+                                >€500 each & every loss.</option>
+                            </select>
+                        </div>
+                        <div class="col-1">
+                            Lock
+                        </div>
+                        <div class="col-2">
+                            <select id="4_oqqit_rate_9" name="4_oqqit_rate_9" class="form-control">
+                                <option value="0" <?php if ($qitem_data['oqqit_rate_9'] != '1') echo "selected";?>>No</option>
+                                <option value="1" <?php if ($qitem_data['oqqit_rate_9'] == '1') echo "selected";?>>Yes</option>
+                            </select>
+                        </div>
+                    </div>
+
+                <?php
+            }else {
+            ?>
+                <?php
+                if ($qitem_data['oqqit_rate_9'] == '1') {
+                    echo $qitem_data['oqqit_rate_6'];
+                    ?>
+                        <input type="hidden" id="4_oqqit_rate_6" name="4_oqqit_rate_6" value="<?php echo $qitem_data['oqqit_rate_6'];?>">
+                        <?php
+                }
+                else{
+                ?>
             <textarea name="4_oqqit_rate_6" id="4_oqqit_rate_6"
                       class="form-control"><?php echo $qitem_data['oqqit_rate_6']; ?></textarea>
             <?php
@@ -757,85 +817,82 @@ function mc_cargo_details_4()
                     'fieldDataType' => 'text',
                     'required' => false
                 ]);
+                }//do not show if locked
+            }
             ?>
         </div>
     </div>
-    <?php }//show if user rights <= 2 ?>
+<?php }//show if user rights <= 2
+    ?>
 
     <?php
     if ($db->user_data['usr_user_rights'] <= 2) { ?>
-    <div class="form-group row">
-        <label for="4_oqqit_rate_8" class="col-sm-4 col-form-label">
-            <?php show_quotation_text("Rate", "Rate"); ?>
-        </label>
-        <div class="col-sm-8">
-            <input type="text" name="4_oqqit_rate_8" id="4_oqqit_rate_8"
-                      class="form-control" value="<?php echo $qitem_data['oqqit_rate_8']; ?>">
-            <?php
-            $formValidator->addField(
-                [
-                    'fieldName' => '4_oqqit_rate_8',
-                    'fieldDataType' => 'number',
-                    'required' => false,
-                    'invalidText' => show_quotation_text("Συμπληρώστε Rate.", "Must Fill Rate", 'Return')
-                ]);
-            ?>
+        <div class="form-group row">
+            <label for="4_oqqit_rate_8" class="col-sm-4 col-form-label">
+                <?php show_quotation_text("Rate", "Rate"); ?>
+            </label>
+            <div class="col-sm-8">
+                <input type="text" name="4_oqqit_rate_8" id="4_oqqit_rate_8"
+                       class="form-control" value="<?php echo $qitem_data['oqqit_rate_8']; ?>">
+                <?php
+                $formValidator->addField(
+                    [
+                        'fieldName' => '4_oqqit_rate_8',
+                        'fieldDataType' => 'number',
+                        'required' => false,
+                        'invalidText' => show_quotation_text("Συμπληρώστε Rate.", "Must Fill Rate", 'Return')
+                    ]);
+                ?>
+            </div>
         </div>
-    </div>
     <?php }//show if user rights <= 2
     else {
         ?>
-        <input type="hidden" id="4_oqqit_rate_8" name="4_oqqit_rate_8" value="<?php echo $qitem_data['oqqit_rate_8']; ?>">
+        <input type="hidden" id="4_oqqit_rate_8" name="4_oqqit_rate_8"
+               value="<?php echo $qitem_data['oqqit_rate_8']; ?>">
         <?php
     }//if user rights > 2 then show this
     ?>
 
-        <script>
-            function updateRate(){
-                let commodity = $('#3_oqqit_rate_4').val();
-                let clause = $('input[name=3_oqqit_rate_13]:checked', '#myForm').val();
-                let rate = 0;
-                if (commodity == 'General Cargo & Merchandise'){
-                    rate = '<?php echo $underwriter["oqun_excess_general_cargo_rate"];?>';
-                }
-                else if (commodity == 'New/Used Vehicles'){
-                    rate = '<?php echo $underwriter["oqun_excess_vehicles_rate"];?>';
-                }
-                else if (commodity == 'Machinery'){
-                    rate = '<?php echo $underwriter["oqun_excess_machinery_rate"];?>';
-                }
-                else if (commodity == 'Temp. Controlled Cargo other than meat'){
-                    rate = '<?php echo $underwriter["oqun_excess_temp_no_meat_rate"];?>';
-                }
-                else if (commodity == 'Temp. Controlled Cargo Meat'){
-                    rate = '<?php echo $underwriter["oqun_excess_temp_meat_rate"];?>';
-                }
-                else if (commodity == 'Special Cover Mobile Phones, Electronic Equipment'){
-                    rate = '<?php echo $underwriter["oqun_excess_special_cover_rate"];?>';
-                }
-                else if (commodity == 'Personal Effects professionally packed'){
-                    rate = '<?php echo $underwriter["oqun_excess_pro_packed_rate"];?>';
-                }
-                else if (commodity == 'CPMB - Cyprus Potato Marketing Board'){
-                    rate = '<?php echo $underwriter["oqun_excess_owner_packed_rate"];?>';
-                }
-                else if (commodity == 'Other'){
-                    rate = '<?php echo $underwriter["oqun_excess_other_rate"];?>';
-                }
-
-                if (clause == 'Clause C'){
-                    rate = '<?php echo $underwriter["oqun_icc_c_rate"];?>';
-                }
-                $('#4_oqqit_rate_8').val(rate);
+    <script>
+        function updateRate() {
+            let commodity = $('#3_oqqit_rate_4').val();
+            let clause = $('input[name=3_oqqit_rate_13]:checked', '#myForm').val();
+            let rate = 0;
+            if (commodity == 'General Cargo & Merchandise') {
+                rate = '<?php echo $underwriter["oqun_excess_general_cargo_rate"];?>';
+            } else if (commodity == 'New/Used Vehicles') {
+                rate = '<?php echo $underwriter["oqun_excess_vehicles_rate"];?>';
+            } else if (commodity == 'Machinery') {
+                rate = '<?php echo $underwriter["oqun_excess_machinery_rate"];?>';
+            } else if (commodity == 'Temp. Controlled Cargo other than meat') {
+                rate = '<?php echo $underwriter["oqun_excess_temp_no_meat_rate"];?>';
+            } else if (commodity == 'Temp. Controlled Cargo Meat') {
+                rate = '<?php echo $underwriter["oqun_excess_temp_meat_rate"];?>';
+            } else if (commodity == 'Special Cover Mobile Phones, Electronic Equipment') {
+                rate = '<?php echo $underwriter["oqun_excess_special_cover_rate"];?>';
+            } else if (commodity == 'Personal Effects professionally packed') {
+                rate = '<?php echo $underwriter["oqun_excess_pro_packed_rate"];?>';
+            } else if (commodity == 'CPMB - Cyprus Potato Marketing Board') {
+                rate = '<?php echo $underwriter["oqun_excess_owner_packed_rate"];?>';
+            } else if (commodity == 'Other') {
+                rate = '<?php echo $underwriter["oqun_excess_other_rate"];?>';
             }
-            //add event to commodity and conditions of insurance on change
-            $("#3_oqqit_rate_4").change(function(){
-                updateRate();
-            });
-            $("input[name=3_oqqit_rate_13]","#myForm").change(function(){
-                updateRate();
-            });
-        </script>
+
+            if (clause == 'Clause C') {
+                rate = '<?php echo $underwriter["oqun_icc_c_rate"];?>';
+            }
+            $('#4_oqqit_rate_8').val(rate);
+        }
+
+        //add event to commodity and conditions of insurance on change
+        $("#3_oqqit_rate_4").change(function () {
+            updateRate();
+        });
+        $("input[name=3_oqqit_rate_13]", "#myForm").change(function () {
+            updateRate();
+        });
+    </script>
 
 
     <?php
@@ -846,7 +903,7 @@ function insured_amount_custom_rates($array, $values, $quotation_id)
 
     //rate $values[4][8]['rate']
     //print_r($array);exit();
-    $array[4][8] = round($values[3][3]['rate'] * ($values[4][8]['rate'] / 100),2);
+    $array[4][8] = round($values[3][3]['rate'] * ($values[4][8]['rate'] / 100), 2);
 
     return $array;
 }
@@ -1011,9 +1068,6 @@ function customCheckForApproval($data)
     }
     $sql .= ")";
     $countriesResult = $db->query($sql);
-
-
-
 
 
     /*$countriesResult = $db->query("

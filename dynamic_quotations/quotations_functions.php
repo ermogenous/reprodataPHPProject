@@ -6,6 +6,7 @@ function insert_quotation_data_to_db($quotation_id, $quotation_type_id)
     global $db;
 
     //new quotation use insert
+    $sql2 = '';
     if ($quotation_id == "") {
 
         $sql = "INSERT INTO `oqt_quotations` SET 
@@ -49,6 +50,9 @@ function insert_quotation_data_to_db($quotation_id, $quotation_type_id)
 //echo "Expiry:".$expiryDate;
 //print_r($_POST);
 //    exit();
+
+
+
     $sql .= "
 oqq_language = '" . $_SESSION["oq_quotations_language"] . "', 
 oqq_quotations_type_ID = " . $quotation_type_id . ",
@@ -74,12 +78,15 @@ oqq_extra_field_2 = '".addslashes($_POST['extra_field_2'])."',
 oqq_extra_field_3 = '".addslashes($_POST['extra_field_3'])."',
 oqq_extra_field_4 = '".addslashes($_POST['extra_field_4'])."',
 oqq_extra_field_5 = '".addslashes($_POST['extra_field_5'])."',
-oqq_unique_identifier = '".$db->encrypt(date('G:i:s'))."'
+oqq_unique_identifier = '".$db->encrypt(date('G:i:s'))."',
+oqq_created_date_time = '".date("Y-m-d G:i:s")."',
+oqq_created_by = ".$db->originalUserData['usr_users_ID']."
 
 ";
+    //created by. If imitating user is enabled then use the original user
     $sql .= $sql2;
 
-    //echo $sql."<hr>";//exit();
+    //echo $sql."<hr>";exit();
     $db->query($sql);
 
     if ($quotation_id == "")

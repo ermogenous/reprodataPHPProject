@@ -39,11 +39,14 @@ $db->show_header();
 
                 <?php
                 $sybase = new ODBCCON();
-                $sql = 'SELECT
-                    number,NodeAddr,connection_property(\'AppInfo\', sci.number)as connInfo,BlockedOn,LockRowID,LockIndexID,LockTable
+                $sql = "SELECT
+                    db_name(DBNumber)as clo_database,
+                    number,NodeAddr,connection_property('AppInfo', sci.number)as connInfo,BlockedOn,LockRowID,LockIndexID,LockTable
                     ,LastReqTime
                     from sa_conn_info() sci
-                    ORDER BY BlockedOn DESC, number ASC';
+                    where
+                    clo_database = 'EUROSURE'
+                    ORDER BY BlockedOn DESC, number ASC";
                 $result = $sybase->query($sql);
                 $blockedID = 0;
                 while ($row = $sybase->fetch_assoc($result)) {

@@ -118,350 +118,381 @@ global $main, $db;
                     </li>
 
                     <!--Reports -->
-                    <li class="nav-item dropdown">
-                        <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
-                           class="nav-link dropdown-toggle">
-                            <i class="fas fa-chart-line"></i> <?php echo $db->showLangText('Reports', 'Reports'); ?>
-                            <i class="fas fa-caret-down"></i>
-                        </a>
-                        <ul aria-labelledby="dropdownMenu1" class="dropdown-menu border-0 shadow">
+                    <?php
+                    if ($db->user_data['usr_user_rights'] <= 3) {
+                        ?>
+                        <li class="nav-item dropdown">
+                            <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                               class="nav-link dropdown-toggle">
+                                <i class="fas fa-chart-line"></i> <?php echo $db->showLangText('Reports', 'Reports'); ?>
+                                <i class="fas fa-caret-down"></i>
+                            </a>
+                            <ul aria-labelledby="dropdownMenu1" class="dropdown-menu border-0 shadow">
 
 
-                            <!--<li class="dropdown-divider"></li>-->
+                                <!--<li class="dropdown-divider"></li>-->
 
-                            <!-- Level two dropdown Reports->Non Motor-->
-                            <li class="dropdown-submenu">
-                                <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown"
-                                   aria-haspopup="true"
-                                   aria-expanded="false" class="dropdown-item dropdown-toggle">
-                                    <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Production', 'Production'); ?>
-                                    &nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
-                                </a>
-                                <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
+                                <!-- Level two dropdown Reports->Non Motor-->
+                                <li class="dropdown-submenu">
+                                    <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown"
+                                       aria-haspopup="true"
+                                       aria-expanded="false" class="dropdown-item dropdown-toggle">
+                                        <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Production', 'Production'); ?>
+                                        &nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
+                                    </a>
+                                    <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
 
-                                    <?php
-                                    if ($db->user_data['usr_user_rights'] <= 3
-                                        || $db->user_data['usr_users_groups_ID'] == 6) {
-                                        ?>
-                                        <li>
-                                            <a tabindex="-1"
-                                               href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/period_production_new.php"
-                                               class="dropdown-item">
-                                                <i class="fas fa-file-import"></i> Production
-                                            </a>
-                                        </li>
                                         <?php
-                                    }
-                                    ?>
-
-                                    <?php
-                                    if ($db->user_data['usr_user_rights'] <= 3
-                                        || $db->user_data['usr_users_groups_ID'] == 6) {
-                                        ?>
-                                        <li>
-                                            <a tabindex="-1"
-                                               href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/production_full.php"
-                                               class="dropdown-item">
-                                                <i class="fas fa-file-import"></i> Production Full
-                                            </a>
-                                        </li>
-                                        <?php
-                                    }
-                                    ?>
-                                    <li>
-                                        <a tabindex="-1"
-                                           href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/motor_business_production_bands.php"
-                                           class="dropdown-item">
-                                            <i class="fas fa-exclamation-triangle"></i> Motor Business Production Bands
-                                        </a>
-                                    </li>
-
-
-                                    <li class="dropdown-submenu">
-                                        <a id="dropdownMenu3" href="#" role="button" data-toggle="dropdown"
-                                           aria-haspopup="true"
-                                           aria-expanded="false" class="dropdown-item dropdown-toggle">
-                                            <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Quarter Export', 'Quarter Export'); ?>
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                            <i class="fas fa-chevron-right"></i>
-                                        </a>
-                                        <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
+                                        if ($db->user_data['usr_user_rights'] <= 3
+                                            || $db->user_data['usr_users_groups_ID'] == 6) {
+                                            ?>
                                             <li>
                                                 <a tabindex="-1"
-                                                   href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/hsr_export_for_quarter.php"
+                                                   href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/period_production_new.php"
                                                    class="dropdown-item">
-                                                    <i class="fas fa-exclamation-triangle"></i> HSR Export for quarter
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a tabindex="-1"
-                                                   href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/export_policies_for_quarter.php"
-                                                   class="dropdown-item">
-                                                    <i class="fas fa-exclamation-triangle"></i> Export Policies for
-                                                    Quarter
+                                                    <i class="fas fa-file-import"></i> Production
                                                 </a>
                                             </li>
                                             <?php
-                                            if ($db->user_data['usr_user_rights'] < 3
-                                                || $db->user_data['usr_users_groups_ID'] == 6) {
-                                                ?>
+                                        }
+                                        ?>
+
+                                        <?php
+                                        if ($db->user_data['usr_user_rights'] <= 3
+                                            || $db->user_data['usr_users_groups_ID'] == 6) {
+                                            ?>
+                                            <li>
+                                                <a tabindex="-1"
+                                                   href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/production_full.php"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-file-import"></i> Production Full
+                                                </a>
+                                            </li>
+                                            <?php
+                                        }
+                                        ?>
+                                        <li>
+                                            <a tabindex="-1"
+                                               href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/motor_business_production_bands.php"
+                                               class="dropdown-item">
+                                                <i class="fas fa-exclamation-triangle"></i> Motor Business Production
+                                                Bands
+                                            </a>
+                                        </li>
+
+
+                                        <li class="dropdown-submenu">
+                                            <a id="dropdownMenu3" href="#" role="button" data-toggle="dropdown"
+                                               aria-haspopup="true"
+                                               aria-expanded="false" class="dropdown-item dropdown-toggle">
+                                                <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Quarter Export', 'Quarter Export'); ?>
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                            <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
                                                 <li>
                                                     <a tabindex="-1"
-                                                       href="<?php echo $main["site_url"]; ?>/eurosure/reports/actuary/index.php"
+                                                       href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/hsr_export_for_quarter.php"
                                                        class="dropdown-item">
-                                                        <i class="fas fa-exclamation-triangle"></i> Actuary Reports
+                                                        <i class="fas fa-exclamation-triangle"></i> HSR Export for
+                                                        quarter
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a tabindex="-1"
+                                                       href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/export_policies_for_quarter.php"
+                                                       class="dropdown-item">
+                                                        <i class="fas fa-exclamation-triangle"></i> Export Policies for
+                                                        Quarter
                                                     </a>
                                                 </li>
                                                 <?php
-                                            }
+                                                if ($db->user_data['usr_user_rights'] < 3
+                                                    || $db->user_data['usr_users_groups_ID'] == 6) {
+                                                    ?>
+                                                    <li>
+                                                        <a tabindex="-1"
+                                                           href="<?php echo $main["site_url"]; ?>/eurosure/reports/actuary/index.php"
+                                                           class="dropdown-item">
+                                                            <i class="fas fa-exclamation-triangle"></i> Actuary Reports
+                                                        </a>
+                                                    </li>
+                                                    <?php
+                                                }
+                                                ?>
+
+                                            </ul>
+                                        </li>
+
+                                    </ul>
+                                </li>
+                                <!-- End Level two -->
+
+
+                                <!-- Level two dropdown-->
+                                <li class="dropdown-submenu">
+                                    <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown"
+                                       aria-haspopup="true"
+                                       aria-expanded="false" class="dropdown-item dropdown-toggle">
+                                        <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Claims', 'Claims'); ?>
+                                        &nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
+                                    </a>
+                                    <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
+                                        <li>
+                                            <a tabindex="-1"
+                                               href="<?php echo $main["site_url"]; ?>/eurosure/reports/claims/claims_list_full_details.php"
+                                               class="dropdown-item">
+                                                <i class="fas fa-file-import"></i> Claims Full List
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a tabindex="-1"
+                                               href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/validate_records.php"
+                                               class="dropdown-item">
+                                                <i class="fas fa-tasks"></i> Validate Records
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a tabindex="-1"
+                                               href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/lapse_policies.php"
+                                               class="dropdown-item">
+                                                <i class="fas fa-plug"></i> Lapse Process
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a tabindex="-1"
+                                               href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/validate_lapse.php"
+                                               class="dropdown-item">
+                                                <i class="fas fa-tasks"></i> Validate Lapsed Policies Process
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a tabindex="-1"
+                                               href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/export_file.php"
+                                               class="dropdown-item">
+                                                <i class="fas fa-file-export"></i> Export File
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a tabindex="-1"
+                                               href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/validate_policies.php"
+                                               class="dropdown-item">
+                                                <i class="fas fa-tasks"></i> Validate Policies
+                                            </a>
+                                        </li>
+
+
+                                        <li class="dropdown-submenu">
+                                            <a id="dropdownMenu3" href="#" role="button" data-toggle="dropdown"
+                                               aria-haspopup="true"
+                                               aria-expanded="false" class="dropdown-item dropdown-toggle">
+                                                <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Reports', 'Reports'); ?>
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                            <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
+                                                <li>
+                                                    <a tabindex="-1"
+                                                       href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/reports/error_report.php"
+                                                       class="dropdown-item">
+                                                        <i class="fas fa-exclamation-triangle"></i> Errors
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </li>
+
+
+                                    </ul>
+                                </li>
+                                <!-- End Level two -->
+
+
+                                <!-- Level two dropdown Reports->Users -->
+                                <li class="dropdown-submenu">
+                                    <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown"
+                                       aria-haspopup="true"
+                                       aria-expanded="false" class="dropdown-item dropdown-toggle">
+                                        <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Users', 'Users'); ?>
+                                        &nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
+                                    </a>
+                                    <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
+                                        <?php
+                                        if ($db->user_data['usr_user_rights'] < 3
+                                            || $db->user_data['usr_users_groups_ID'] == 6) {
                                             ?>
-
-                                        </ul>
-                                    </li>
-
-                                </ul>
-                            </li>
-                            <!-- End Level two -->
-
-
-                            <!-- Level two dropdown-->
-                            <li class="dropdown-submenu">
-                                <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown"
-                                   aria-haspopup="true"
-                                   aria-expanded="false" class="dropdown-item dropdown-toggle">
-                                    <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Claims', 'Claims'); ?>
-                                    &nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
-                                </a>
-                                <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
-                                    <li>
-                                        <a tabindex="-1"
-                                           href="<?php echo $main["site_url"]; ?>/eurosure/reports/claims/claims_list_full_details.php"
-                                           class="dropdown-item">
-                                            <i class="fas fa-file-import"></i> Claims Full List
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a tabindex="-1"
-                                           href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/validate_records.php"
-                                           class="dropdown-item">
-                                            <i class="fas fa-tasks"></i> Validate Records
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a tabindex="-1"
-                                           href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/lapse_policies.php"
-                                           class="dropdown-item">
-                                            <i class="fas fa-plug"></i> Lapse Process
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a tabindex="-1"
-                                           href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/validate_lapse.php"
-                                           class="dropdown-item">
-                                            <i class="fas fa-tasks"></i> Validate Lapsed Policies Process
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a tabindex="-1"
-                                           href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/export_file.php"
-                                           class="dropdown-item">
-                                            <i class="fas fa-file-export"></i> Export File
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a tabindex="-1"
-                                           href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/validate_policies.php"
-                                           class="dropdown-item">
-                                            <i class="fas fa-tasks"></i> Validate Policies
-                                        </a>
-                                    </li>
-
-
-                                    <li class="dropdown-submenu">
-                                        <a id="dropdownMenu3" href="#" role="button" data-toggle="dropdown"
-                                           aria-haspopup="true"
-                                           aria-expanded="false" class="dropdown-item dropdown-toggle">
-                                            <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Reports', 'Reports'); ?>
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                                            <i class="fas fa-chevron-right"></i>
-                                        </a>
-                                        <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
                                             <li>
                                                 <a tabindex="-1"
-                                                   href="<?php echo $main["site_url"]; ?>/eurosure/functions/soeasy_agent/reports/error_report.php"
+                                                   href="<?php echo $main["site_url"]; ?>/eurosure/reports/users/users_permissions_list.php"
                                                    class="dropdown-item">
-                                                    <i class="fas fa-exclamation-triangle"></i> Errors
+                                                    <i class="fas fa-file-import"></i> Users Permission List
                                                 </a>
                                             </li>
-                                        </ul>
-                                    </li>
-
-
-                                </ul>
-                            </li>
-                            <!-- End Level two -->
-
-
-                            <!-- Level two dropdown Reports->Users -->
-                            <li class="dropdown-submenu">
-                                <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown"
-                                   aria-haspopup="true"
-                                   aria-expanded="false" class="dropdown-item dropdown-toggle">
-                                    <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Users', 'Users'); ?>
-                                    &nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
-                                </a>
-                                <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
-                                    <?php
-                                    if ($db->user_data['usr_user_rights'] < 3
-                                        || $db->user_data['usr_users_groups_ID'] == 6) {
+                                            <?php
+                                        }
                                         ?>
-                                        <li>
-                                            <a tabindex="-1"
-                                               href="<?php echo $main["site_url"]; ?>/eurosure/reports/users/users_permissions_list.php"
-                                               class="dropdown-item">
-                                                <i class="fas fa-file-import"></i> Users Permission List
-                                            </a>
-                                        </li>
                                         <?php
-                                    }
-                                    ?>
-                                    <?php
-                                    if ($db->user_data['usr_user_rights'] < 3 || $db->user_data['usr_users_groups_ID'] == 7) {
+                                        if ($db->user_data['usr_user_rights'] < 3 || $db->user_data['usr_users_groups_ID'] == 7) {
+                                            ?>
+                                            <li>
+                                                <a tabindex="-1"
+                                                   href="<?php echo $main["site_url"]; ?>/eurosure/reports/users/user_connections.php"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-file-import"></i> Users Connections
+                                                </a>
+                                            </li>
+                                            <?php
+                                        }
                                         ?>
-                                        <li>
-                                            <a tabindex="-1"
-                                               href="<?php echo $main["site_url"]; ?>/eurosure/reports/users/user_connections.php"
-                                               class="dropdown-item">
-                                                <i class="fas fa-file-import"></i> Users Connections
-                                            </a>
-                                        </li>
-                                        <?php
-                                    }
-                                    ?>
 
-                                    <?php
-                                    if ($db->user_data['usr_user_rights'] < 3 || $db->user_data['usr_users_groups_ID'] == 7) {
+                                        <?php
+                                        if ($db->user_data['usr_user_rights'] < 3 || $db->user_data['usr_users_groups_ID'] == 7) {
+                                            ?>
+                                            <li>
+                                                <a tabindex="-1"
+                                                   href="<?php echo $main["site_url"]; ?>/eurosure/reports/users/underwriters_insurance_types.php"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-file-import"></i> Underwriters Insurance Types
+                                                </a>
+                                            </li>
+                                            <?php
+                                        }
                                         ?>
-                                        <li>
-                                            <a tabindex="-1"
-                                               href="<?php echo $main["site_url"]; ?>/eurosure/reports/users/underwriters_insurance_types.php"
-                                               class="dropdown-item">
-                                                <i class="fas fa-file-import"></i> Underwriters Insurance Types
-                                            </a>
-                                        </li>
-                                        <?php
-                                    }
-                                    ?>
 
 
-                                </ul>
-                            </li>
-                            <!-- End Level two -->
+                                    </ul>
+                                </li>
+                                <!-- End Level two -->
 
-                            <!-- Level two dropdown Reports->Agents -->
-                            <li class="dropdown-submenu">
-                                <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown"
-                                   aria-haspopup="true"
-                                   aria-expanded="false" class="dropdown-item dropdown-toggle">
-                                    <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Agents', 'Αντιπροσωποι'); ?>
-                                    &nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
-                                </a>
-                                <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
-                                    <?php
-                                    if ($db->user_data['usr_user_rights'] < 3 || $db->user_data['usr_users_groups_ID'] == 7) {
-                                        ?>
-                                        <a class="dropdown-item"
-                                           href="<?php echo $main["site_url"]; ?>/eurosure/reports/agents/agents_commissions_list.php"><i
-                                                    class="fas fa-eye"></i> <?php echo $db->showLangText('Agents Commissions List', 'Agents Commissions List'); ?>
-                                        </a>
-                                        <?php
-                                    }
-                                    ?>
-
-                                    <?php
-                                    if ($db->user_data['usr_user_rights'] < 3 || $db->user_data['usr_users_groups_ID'] == 7) {
-                                        ?>
-                                        <a class="dropdown-item"
-                                           href="<?php echo $main["site_url"]; ?>/eurosure/reports/agents/agent_permission_profile.php"><i
-                                                    class="fas fa-eye"></i> <?php echo $db->showLangText('Agents Permissions Profile', 'Agents Commissions List'); ?>
-                                        </a>
-                                        <?php
-                                    }
-                                    ?>
-                                </ul>
-                            </li>
-                            <!-- End Level two -->
-
-
-                            <?php
-                            if ($db->user_data['usr_user_rights'] == 0) {
-                                ?>
                                 <!-- Level two dropdown Reports->Agents -->
                                 <li class="dropdown-submenu">
                                     <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown"
                                        aria-haspopup="true"
                                        aria-expanded="false" class="dropdown-item dropdown-toggle">
-                                        <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Insurance Types', 'Insurance Types'); ?>
+                                        <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Agents', 'Αντιπροσωποι'); ?>
+                                        &nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
+                                    </a>
+                                    <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
+                                        <?php
+                                        if ($db->user_data['usr_user_rights'] < 3 || $db->user_data['usr_users_groups_ID'] == 7) {
+                                            ?>
+                                            <a class="dropdown-item"
+                                               href="<?php echo $main["site_url"]; ?>/eurosure/reports/agents/agents_commissions_list.php"><i
+                                                        class="fas fa-eye"></i> <?php echo $db->showLangText('Agents Commissions List', 'Agents Commissions List'); ?>
+                                            </a>
+                                            <?php
+                                        }
+                                        ?>
+
+                                        <?php
+                                        if ($db->user_data['usr_user_rights'] < 3 || $db->user_data['usr_users_groups_ID'] == 7) {
+                                            ?>
+                                            <a class="dropdown-item"
+                                               href="<?php echo $main["site_url"]; ?>/eurosure/reports/agents/agent_permission_profile.php"><i
+                                                        class="fas fa-eye"></i> <?php echo $db->showLangText('Agents Permissions Profile', 'Agents Commissions List'); ?>
+                                            </a>
+                                            <?php
+                                        }
+                                        ?>
+                                    </ul>
+                                </li>
+                                <!-- End Level two -->
+
+
+                                <?php
+                                if ($db->user_data['usr_user_rights'] == 0) {
+                                    ?>
+                                    <!-- Level two dropdown Reports->Agents -->
+                                    <li class="dropdown-submenu">
+                                        <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown"
+                                           aria-haspopup="true"
+                                           aria-expanded="false" class="dropdown-item dropdown-toggle">
+                                            <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Insurance Types', 'Insurance Types'); ?>
+                                            &nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
+                                        </a>
+                                        <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
+
+                                            <a class="dropdown-item"
+                                               href="<?php echo $main["site_url"]; ?>/eurosure/reports/system/ins_type_reports.php"><i
+                                                        class="fas fa-eye"></i> <?php echo $db->showLangText('Insurance Types Info', 'Insurance Types Info'); ?>
+                                            </a>
+
+                                        </ul>
+                                    </li>
+                                    <?php
+                                }
+                                ?>
+                                <!-- End Level two -->
+
+                                <!-- Level two dropdown Reports->Agents -->
+                                <li class="dropdown-submenu">
+                                    <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown"
+                                       aria-haspopup="true"
+                                       aria-expanded="false" class="dropdown-item dropdown-toggle">
+                                        <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Other', 'Άλλα'); ?>
                                         &nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
                                     </a>
                                     <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
 
-                                        <a class="dropdown-item"
-                                           href="<?php echo $main["site_url"]; ?>/eurosure/reports/system/ins_type_reports.php"><i
-                                                    class="fas fa-eye"></i> <?php echo $db->showLangText('Insurance Types Info', 'Insurance Types Info'); ?>
-                                        </a>
+                                        <li>
+                                            <a class="dropdown-item"
+                                               href="<?php echo $main["site_url"]; ?>/eurosure/reports/claims/claims_list_full_details.php"><i
+                                                        class="fas fa-eye"></i> <?php echo $db->showLangText('Claims Full List', 'Claims Full List'); ?>
+                                            </a>
+                                        </li>
+
+                                        <li>
+                                            <a class="dropdown-item"
+                                               href="<?php echo $main["site_url"]; ?>/eurosure/functions/all_docs_to_pdf.php"><i
+                                                        class="fas fa-eye"></i> <?php echo $db->showLangText('Save all docs to PDF', 'Φύλαξη Αρχείων σε PDF'); ?>
+                                            </a>
+                                        </li>
+                                        <li>
+                                            <a class="dropdown-item"
+                                               href="<?php echo $main["site_url"]; ?>/eurosure/functions/update_access_clients.php"><i
+                                                        class="fas fa-eye"></i> <?php echo $db->showLangText('Clients List for Access Fire', 'Clients List for Access Fire'); ?>
+                                            </a>
+                                        </li>
+
+
+                                        <li class="dropdown-submenu">
+                                            <a id="dropdownMenu3" href="#" role="button" data-toggle="dropdown"
+                                               aria-haspopup="true"
+                                               aria-expanded="false" class="dropdown-item dropdown-toggle">
+                                                <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Closing Period', 'Closing Period'); ?>
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                                <i class="fas fa-chevron-right"></i>
+                                            </a>
+                                            <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
+                                                <li>
+                                                    <a tabindex="-1"
+                                                       href="<?php echo $main["site_url"]; ?>/eurosure/reports/other/non_posted_printed_policies.php"
+                                                       class="dropdown-item">
+                                                        <i class="fas fa-exclamation-triangle"></i>Non Posted Printed
+                                                        Policies</a>
+                                                </li>
+
+                                            </ul>
+                                        </li>
 
                                     </ul>
+
                                 </li>
-                                <?php
-                            }
-                            ?>
-                            <!-- End Level two -->
-
-                            <!-- Level two dropdown Reports->Agents -->
-                            <li class="dropdown-submenu">
-                                <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown"
-                                   aria-haspopup="true"
-                                   aria-expanded="false" class="dropdown-item dropdown-toggle">
-                                    <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Other', 'Άλλα'); ?>
-                                    &nbsp;&nbsp;<i class="fas fa-chevron-right"></i>
-                                </a>
-                                <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
-
-                                    <li>
-                                        <a class="dropdown-item"
-                                           href="<?php echo $main["site_url"]; ?>/eurosure/reports/claims/claims_list_full_details.php"><i
-                                                    class="fas fa-eye"></i> <?php echo $db->showLangText('Claims Full List', 'Claims Full List'); ?>
-                                        </a>
-                                    </li>
-
-                                    <li>
-                                        <a class="dropdown-item"
-                                           href="<?php echo $main["site_url"]; ?>/eurosure/functions/all_docs_to_pdf.php"><i
-                                                    class="fas fa-eye"></i> <?php echo $db->showLangText('Save all docs to PDF', 'Φύλαξη Αρχείων σε PDF'); ?>
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a class="dropdown-item"
-                                           href="<?php echo $main["site_url"]; ?>/eurosure/functions/update_access_clients.php"><i
-                                                    class="fas fa-eye"></i> <?php echo $db->showLangText('Clients List for Access Fire', 'Clients List for Access Fire'); ?>
-                                        </a>
-                                    </li>
-
-                                </ul>
-                            </li>
-                            <!-- End Level two -->
-                        </ul>
-                    </li>
-
+                                <!-- End Level two -->
+                            </ul>
+                        </li>
+                        <?php
+                    }
+                    ?>
 
                     <!-- Functions -->
                     <?php
-                    if ($db->user_data['usr_user_rights'] <= 2 || $db->user_data['usr_users_groups_ID'] == 2) {
+                    if ($db->user_data['usr_user_rights'] <= 3 || $db->user_data['usr_users_groups_ID'] == 2) {
                         ?>
 
                         <li class="nav-item dropdown">
@@ -481,12 +512,34 @@ global $main, $db;
                                         </a>
                                     </li>
                                 <?php } ?>
-                                <li>
-                                    <a class="dropdown-item"
-                                       href="<?php echo $main["site_url"]; ?>/eurosure/functions/all_docs_to_pdf.php"><i
-                                                class="fas fa-eye"></i> <?php echo $db->showLangText('Save all docs to PDF', 'Φύλαξη Αρχείων σε PDF'); ?>
-                                    </a>
-                                </li>
+
+                                <?php
+                                if ($db->user_data['usr_user_rights'] <= 2) {
+                                    ?>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="<?php echo $main["site_url"]; ?>/eurosure/functions/all_docs_to_pdf.php"><i
+                                                    class="fas fa-eye"></i> <?php echo $db->showLangText('Save all docs to PDF', 'Φύλαξη Αρχείων σε PDF'); ?>
+                                        </a>
+                                    </li>
+                                    <?php
+                                }
+                                ?>
+
+                                <?php
+                                if ($db->user_data['usr_user_rights'] <= 2) {
+                                    ?>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="<?php echo $main["site_url"]; ?>/eurosure/functions/check_create_policy_folders.php"><i
+                                                    class="fas fa-eye"></i> <?php echo $db->showLangText('Check/Create Policy Folders', 'Check/Create Policy Folders'); ?>
+                                        </a>
+                                    </li>
+                                    <?php
+                                }
+                                ?>
+
+
                                 <?php
                                 if ($db->user_data['usr_user_rights'] <= 2) {
                                     ?>
@@ -497,6 +550,7 @@ global $main, $db;
                                         </a>
                                     </li>
                                 <?php } ?>
+
                                 <?php
                                 if ($db->user_data['usr_user_rights'] <= 2) {
                                     ?>
@@ -508,11 +562,23 @@ global $main, $db;
                                     </li>
                                 <?php } ?>
 
+                                <?php
+                                if ($db->user_data['usr_user_rights'] <= 3) {
+                                    ?>
+                                    <li>
+                                        <a class="dropdown-item"
+                                           href="<?php echo $main["site_url"]; ?>/eurosure/functions/claims_odyky/odyky_incidents.php"><i
+                                                    class="fas fa-eye"></i> <?php echo $db->showLangText('Odyky Incidents', 'Ατυχήματα Odyky'); ?>
+                                        </a>
+                                    </li>
+                                <?php } ?>
+
                                 <li class="dropdown-divider"></li>
 
                                 <?php
                                 if ($db->user_data['usr_user_rights'] <= 2) {
                                     ?>
+
                                     <!-- Level two dropdown-->
                                     <li class="dropdown-submenu">
                                         <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown"

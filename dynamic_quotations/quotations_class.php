@@ -468,7 +468,7 @@ class dynamicQuotation
 
     public function sendEmail($replaceSubject='',$replaceBody='',$subjectPrefix='',$subjectSuffix='',$bodyPrefix='',$bodySuffix='',$replaceAttachName='')
     {
-        global $db,$main;
+        global $db,$main,$quote;
 
         $quotationUnderwriter = $db->query_fetch(
             'SELECT * FROM 

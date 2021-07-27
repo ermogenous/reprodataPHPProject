@@ -6,7 +6,7 @@
  * Time: 10:50 π.μ.
  */
 
-ini_set('max_execution_time', 1800);
+ini_set('max_execution_time', 3600);
 ini_set('memory_limit', '4096M');
 
 include("../../include/main.php");

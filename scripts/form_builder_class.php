@@ -25,6 +25,7 @@ class FormBuilder
     private $inputSelectQuery;
     private $inputSelectArrayOptions;
     private $inputSelectAddEmptyOption;
+    private $inputSelectAddTopOption;
     private $fieldOnChange;
     private $fieldOnKeyUp;
     private $disableField = false;
@@ -81,6 +82,7 @@ class FormBuilder
         $this->fieldOnKeyUp = '';
         $this->fieldDescription = '';
         $this->radioLabelDescription = '';
+        $this->inputSelectAddTopOption = [];
         return $this;
     }
 
@@ -169,12 +171,21 @@ class FormBuilder
     private function buildInputSelect()
     {
         global $db;
+        $disabled = '';
+        if ($this->disableField == true){
+            $disabled = 'disabled';
+        }
         echo '<select id="' . $this->fieldName . '" name="' . $this->fieldName . '" class="' . $this->defaultInputClass .' style="'.$this->fieldStyle.'"'
-            . ' onkeyup="'.$this->fieldOnKeyUp.'" onchange="'.$this->fieldOnChange.'"  ' . $this->inputExtraClasses . '">' . PHP_EOL;
+            . ' onkeyup="'.$this->fieldOnKeyUp.'" '.$disabled.' onchange="'.$this->fieldOnChange.'"  ' . $this->inputExtraClasses . '">' . PHP_EOL;
 
         if ($this->inputSelectAddEmptyOption == true) {
             echo '<option value=""></option>' . PHP_EOL;
         }
+
+        if ($this->inputSelectAddTopOption['name'] != ''){
+            echo '<option value="'.$this->inputSelectAddTopOption['value'].'">'.$this->inputSelectAddTopOption['name'].'</option>' . PHP_EOL;
+        }
+
         if ($this->inputSelectQuery != '') {
             while ($row = $db->fetch_assoc($this->inputSelectQuery)) {
 
@@ -397,7 +408,7 @@ class FormBuilder
     }
 
     /**
-     * @param $fieldInputType: text/number/date/dateTime
+     * @param $fieldInputType: text/number/date/dateTime/password
      * @return $this
      */
     public function setFieldInputType($fieldInputType)
@@ -444,11 +455,19 @@ class FormBuilder
         return $this;
     }
 
+    /**
+     * @param $description
+     * @return $this
+     */
     public function setRadioLabelDescription($description){
         $this->radioLabelDescription = $description;
         return $this;
     }
 
+    /**
+     * @param $value
+     * @return $this
+     */
     public function setRadioValue($value){
         $this->radioValue = $value;
         return $this;
@@ -474,12 +493,22 @@ class FormBuilder
     }
 
     /**
-     * @param $inputSelectAddEmptyOption true/false
+     * @param $inputSelectAddEmptyOption true/false Always this one is on top
      * @return $this
      */
     public function setInputSelectAddEmptyOption($inputSelectAddEmptyOption)
     {
         $this->inputSelectAddEmptyOption = $inputSelectAddEmptyOption;
+        return $this;
+    }
+
+    /**
+     * @param $name Adds an extra option with defined values
+     * @param $value
+     */
+    public function setInputSelectAddTopOption($name,$value){
+        $this->inputSelectAddTopOption['value'] = $value;
+        $this->inputSelectAddTopOption['name'] = $name;
         return $this;
     }
 

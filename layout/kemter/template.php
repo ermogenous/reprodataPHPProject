@@ -1,38 +1,39 @@
 <?php
 function template_header()
 {
-    //template used
-    //https://blackrockdigital.github.io/startbootstrap-sb-admin-2/pages/index.html
-    global $main, $db;
-    if ($db->user_data['usr_users_ID'] > 0) {
-        $underwriter = $db->query_fetch('SELECT * FROM oqt_quotations_underwriters WHERE oqun_user_ID = ' . $db->user_data['usr_users_ID']);
-    }
-    ?>
+//template used
+//https://blackrockdigital.github.io/startbootstrap-sb-admin-2/pages/index.html
+global $main, $db;
+if ($db->user_data['usr_users_ID'] > 0) {
+    $underwriter = $db->query_fetch('SELECT * FROM oqt_quotations_underwriters WHERE oqun_user_ID = ' . $db->user_data['usr_users_ID']);
+}
+?>
     <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Kemter Insurance Agencies Sub-Agencies &amp; Consultants, Limassol - Cyprus <?php if ($main["conf_title"] == 'KemterTest') echo "TEST";?></title>
-        <LINK REL="SHORTCUT ICON" HREF="<?php echo $main["site_url"]; ?>/favicon-kemter.png">
-        <link rel="stylesheet" href="<?php echo $db->admin_layout_url; ?>style.css" rel="stylesheet">
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Kemter Insurance Agencies Sub-Agencies &amp; Consultants, Limassol -
+        Cyprus <?php if ($main["conf_title"] == 'KemterTest') echo "TEST"; ?></title>
+    <LINK REL="SHORTCUT ICON" HREF="<?php echo $main["site_url"]; ?>/favicon-kemter.png">
+    <link rel="stylesheet" href="<?php echo $db->admin_layout_url; ?>style.css" rel="stylesheet">
 
-        <link rel="stylesheet" href="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/css/bootstrap.min.css"
-              rel="stylesheet">
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
-              integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
-              crossorigin="anonymous">
+    <link rel="stylesheet" href="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/css/bootstrap.min.css"
+          rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css"
+          integrity="sha384-mzrmE5qonljUremFsqc01SB46JvROS7bZs3IO2EmfFsd15uHvIt+Y8vEf7N7fWAU"
+          crossorigin="anonymous">
 
-        <script src="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/js/jquery-3.3.1.min.js"></script>
-        <!--Fall back to a local copy of jQuery if the CDN fails-->
-        <script>
-            window.jQuery || document.write('<script src="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/js/jquery-3.3.1.min.js"><\/script>');
-        </script>
-        <!-- More Head -->
-        <?php echo $db->admin_more_head; ?>
+    <script src="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/js/jquery-3.3.1.min.js"></script>
+    <!--Fall back to a local copy of jQuery if the CDN fails-->
+    <script>
+        window.jQuery || document.write('<script src="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/js/jquery-3.3.1.min.js"><\/script>');
+    </script>
+    <!-- More Head -->
+    <?php echo $db->admin_more_head; ?>
 
-    </head>
-    <body onload="<?php echo $db->admin_on_load; ?>">
-    <?php if ($db->admin_layout_printer != 'yes') { ?>
+</head>
+<body onload="<?php echo $db->admin_on_load; ?>">
+<?php if ($db->admin_layout_printer != 'yes') { ?>
     <nav class="navbar navbar-expand-lg navbar-mycustom">
         &nbsp;&nbsp;&nbsp;
         <img src="<?php echo $db->admin_layout_url; ?>images/Kemter-Icon.png" height="40">
@@ -154,6 +155,20 @@ function template_header()
                         </div>
                     </li>
 
+                    <?php
+                    if ($db->user_data['usr_users_groups_ID'] == 2
+                        || $db->user_data['usr_user_rights'] == 0
+                        || $db->imitationMode === true) {
+                        ?>
+                        <li class="nav-item">
+                            <a class="nav-link" href="<?php echo $main["site_url"]; ?>/settings/imitate_user.php"><i
+                                        class="fas fa-user-secret"></i> </a>
+                        </li>
+                        <?php
+                    }
+                    ?>
+
+
                     <!-- MY USERS -->
                     <?php if ($db->user_data["usr_user_rights"] <= 2 || $db->user_data['usr_users_groups_ID'] == 2) { ?>
                         <li class="nav-item dropdown">
@@ -253,15 +268,26 @@ function template_header()
             </span>
         </div>
     </nav>
-
-    <?php if ($main["db_database"] == 'kemter_extranet_test') { ?>
-    <div class="container-fluid">
+    <?php
+    if ($db->imitationMode === true) {
+        ?>
         <div class="row">
-            <div class="col-12 text-center alert alert-danger">
-                <b>TEST DATABASE</b>
+            <div class="col alert alert-danger text-center font-weight-bold">
+                User: <u><?php echo $db->originalUserData['usr_name']; ?></u>
+                Imitating: <u><?php echo $db->user_data['usr_name']; ?></u>
+                <a href="<?php echo $main['site_url'];?>/settings/imitate_user.php">Disable</a>
             </div>
         </div>
-    </div>
+    <?php } ?>
+
+    <?php if ($main["db_database"] == 'kemter_extranet_test') { ?>
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-12 text-center alert alert-danger">
+                    <b>TEST DATABASE</b>
+                </div>
+            </div>
+        </div>
     <?php } ?>
 
     <br>
@@ -269,154 +295,153 @@ function template_header()
 
 }//printer layout
 
-    if ($_GET['alert-success'] != '') {
-        ?>
+if ($_GET['alert-success'] != '') {
+    ?>
 
-        <br>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-3"></div>
-                <div class="alert alert-success alert-dismissible fade show col-6" role="alert">
-                    <?php echo $_GET["alert-success"]; ?>
+    <br>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="alert alert-success alert-dismissible fade show col-6" role="alert">
+                <?php echo $_GET["alert-success"]; ?>
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="col-3"></div>
+        </div>
+    </div>
+    <?php
+}
+
+if ($db->dismissWarning != '') { ?>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                    <strong>Warning! </strong> <?php echo $db->dismissWarning; ?>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="col-3"></div>
             </div>
+            <div class="col-3"></div>
         </div>
-        <?php
-    }
-
-    if ($db->dismissWarning != '') { ?>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-3"></div>
-                <div class="col-6">
-                    <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                        <strong>Warning! </strong> <?php echo $db->dismissWarning; ?>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
+    </div>
+<?php }
+if ($db->dismissError != '') { ?>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                    <strong>Error! </strong> <?php echo $db->dismissError; ?>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="col-3"></div>
             </div>
+            <div class="col-3"></div>
         </div>
-    <?php }
-    if ($db->dismissError != '') { ?>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-3"></div>
-                <div class="col-6">
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        <strong>Error! </strong> <?php echo $db->dismissError; ?>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
+    </div>
+<?php }
+if ($db->dismissSuccess != '') { ?>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <strong>Success! </strong> <?php echo $db->dismissSuccess; ?>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="col-3"></div>
             </div>
+            <div class="col-3"></div>
         </div>
-    <?php }
-    if ($db->dismissSuccess != '') { ?>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-3"></div>
-                <div class="col-6">
-                    <div class="alert alert-success alert-dismissible fade show" role="alert">
-                        <strong>Success! </strong> <?php echo $db->dismissSuccess; ?>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
+    </div>
+<?php }
+if ($db->dismissInfo != '') { ?>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="alert alert-info alert-dismissible fade show" role="alert">
+                    <strong>Info! </strong> <?php echo $db->dismissInfo; ?>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                <div class="col-3"></div>
             </div>
+            <div class="col-3"></div>
         </div>
-    <?php }
-    if ($db->dismissInfo != '') { ?>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-3"></div>
-                <div class="col-6">
-                    <div class="alert alert-info alert-dismissible fade show" role="alert">
-                        <strong>Info! </strong> <?php echo $db->dismissInfo; ?>
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
+    </div>
+<?php }
+if ($db->alertWarning != '') { ?>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="alert alert-warning" role="alert">
+                    <strong>Warning! </strong> <?php echo $db->alertWarning; ?>
                 </div>
-                <div class="col-3"></div>
             </div>
+            <div class="col-3"></div>
         </div>
-    <?php }
-    if ($db->alertWarning != '') { ?>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-3"></div>
-                <div class="col-6">
-                    <div class="alert alert-warning" role="alert">
-                        <strong>Warning! </strong> <?php echo $db->alertWarning; ?>
-                    </div>
+    </div>
+<?php }
+if ($db->alertError != '') { ?>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="alert alert-danger" role="alert">
+                    <strong>Error! </strong> <?php echo $db->alertError; ?>
                 </div>
-                <div class="col-3"></div>
             </div>
+            <div class="col-3"></div>
         </div>
-    <?php }
-    if ($db->alertError != '') { ?>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-3"></div>
-                <div class="col-6">
-                    <div class="alert alert-danger" role="alert">
-                        <strong>Error! </strong> <?php echo $db->alertError; ?>
-                    </div>
+    </div>
+<?php }
+if ($db->alertSuccess != '') { ?>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="alert alert-success" role="alert">
+                    <strong>Success! </strong> <?php echo $db->alertSuccess; ?>
                 </div>
-                <div class="col-3"></div>
             </div>
+            <div class="col-3"></div>
         </div>
-    <?php }
-    if ($db->alertSuccess != '') { ?>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-3"></div>
-                <div class="col-6">
-                    <div class="alert alert-success" role="alert">
-                        <strong>Success! </strong> <?php echo $db->alertSuccess; ?>
-                    </div>
+    </div>
+<?php }
+if ($db->alertInfo != '') { ?>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="alert alert-info" role="alert">
+                    <strong>Info! </strong> <?php echo $db->alertInfo; ?>
                 </div>
-                <div class="col-3"></div>
             </div>
+            <div class="col-3"></div>
         </div>
-    <?php }
-    if ($db->alertInfo != '') { ?>
-        <div class="container-fluid">
-            <div class="row">
-                <div class="col-3"></div>
-                <div class="col-6">
-                    <div class="alert alert-info" role="alert">
-                        <strong>Info! </strong> <?php echo $db->alertInfo; ?>
-                    </div>
-                </div>
-                <div class="col-3"></div>
-            </div>
-        </div>
-    <?php }
+    </div>
+<?php }
 
 
 }//template_header
 function template_footer()
 {
-    global $db, $main;
+global $db, $main;
 
-if ($db->admin_layout_printer != 'yes')
-{
+if ($db->admin_layout_printer != 'yes') {
 
     ?>
 
-<br>
+    <br>
 
     <div id="footer-extra-space"></div>
     <footer class="footer">
@@ -491,15 +516,15 @@ if ($db->admin_layout_printer != 'yes')
         fix_footer();
     </script>
 
-<?php
+    <?php
 }//printer layout
 ?>
 
-    <script src="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/js/popper.min.js"></script>
-    <script src="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/js/bootstrap.min.js"></script>
+<script src="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/js/popper.min.js"></script>
+<script src="<?php echo $main["site_url"]; ?>/scripts/bootstrap-4/js/bootstrap.min.js"></script>
 
-    </body>
-    </html>
-    <?php
+</body>
+</html>
+<?php
 }//template_footer
 ?>

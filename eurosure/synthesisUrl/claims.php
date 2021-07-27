@@ -12,7 +12,14 @@ $claimData = '';
 $data = findClaimFolder();
 $subFolders = [];
 
+$db->enable_jquery();
+$db->include_js_file('../../scripts/uploadfile/jquery.uploadfile.min.js');
+$db->include_css_file('../../scripts/uploadfile/uploadfile.css');
+
+
 $db->show_header();
+
+$claimFolder = '';
 ?>
 
 <div class="container">
@@ -90,8 +97,9 @@ $db->show_header();
         ccmaccts
         WHERE
         ( ccmaccts.ccac_acct_serl = acmblnce.acbl_acct_serl )
-        //and ccac_acct_code = '" . $claimData['incl_account_code'] . "'
-        and ccac_acct_code = '1615AG477E012115' and acbl_fncl_year = 2020
+        and ccac_acct_code = '" . $claimData['incl_account_code'] . "'
+        //and ccac_acct_code = '1615AG477E012115' 
+        and acbl_fncl_year = ".date("Y")."
         
         ORDER BY
         acbl_fncl_year DESC
@@ -212,7 +220,7 @@ $db->show_header();
         </div>
     </div>
     <!-- POLICY DOCUMENTS -->
-    <div class="container" id="policyDocuments" style="display: ">
+    <div class="container" id="policyDocuments" style="display: none">
         <?php
         //find all policy records of the same policy, same period starting date and serial less or equal of the claim/policy
         $sql = "
@@ -326,19 +334,102 @@ $db->show_header();
 
                 <?php
                 //show only the first folder found
+                $claimFolder = $data[0];
                 listFolderItems($data[0]);
                 //Also find all subfolders
                 findSubFolders($data[0]);
-
                 //now show all the subfolders
                 foreach ($subFolders as $sbFolder) {
-                    //echo $sbFolder." - ";
+                    //echo $sbFolder." MICMIC- ";
                     listFolderItems($sbFolder);
                 }
 
                 ?>
             </div>
         </div>
+    </div>
+
+    <!-- CLIENT CLAIMS PROFILE HEADER -->
+    <div class="row">
+        <div class="col alert alert-primary font-weight-bold text-center"
+             onclick="showHide('clientClaimsProfileContainer');" style="cursor: pointer">
+            Client Claims Profile
+            <i class="far fa-plus-square" id="clientClaimsProfileContainer_plus"></i>
+            <i class="far fa-minus-square" id="clientClaimsProfileContainer_minus" style="display: none"></i>
+            <input type="hidden" id="clientClaimsProfileContainer_status" value="closed">
+        </div>
+    </div>
+    <!-- CLIENT CLAIMS PROFILE BODY -->
+    <div class="row" id="clientClaimsProfileContainer" style="display: none">
+        <iframe src="claims_client_profile.php?claimID=<?php echo $_GET['claimID'];?>&clientID=<?php echo $claimData['incl_identity_card'];?>"
+        frameborder="0" width="100%" height="250px"></iframe>
+    </div>
+
+
+    <!-- VEHICLE CLAIMS PROFILE HEADER -->
+    <div class="row">
+        <div class="col alert alert-primary font-weight-bold text-center"
+             onclick="showHide('vehicleClaimsProfileContainer');" style="cursor: pointer">
+            Vehicle Claims Profile
+            <i class="far fa-plus-square" id="vehicleClaimsProfileContainer_plus"></i>
+            <i class="far fa-minus-square" id="vehicleClaimsProfileContainer_minus" style="display: none"></i>
+            <input type="hidden" id="vehicleClaimsProfileContainer_status" value="closed">
+        </div>
+    </div>
+    <!-- VEHICLE CLAIMS PROFILE BODY -->
+    <div class="row" id="vehicleClaimsProfileContainer" style="display: none">
+        <iframe src="claims_vehicle_profile.php?claimID=<?php echo $_GET['claimID'];?>&vehicle=<?php echo $claimData['initm_item_code'];?>"
+                frameborder="0" width="100%" height="250px"></iframe>
+    </div>
+
+
+
+    <!-- UPLOAD FILE HEADER -->
+    <div class="row">
+        <div class="col alert alert-primary font-weight-bold text-center"
+             onclick="showHide('UploadContainer');" style="cursor: pointer">
+            Upload Files
+            <i class="far fa-plus-square" id="UploadContainer_plus"></i>
+            <i class="far fa-minus-square" id="UploadContainer_minus" style="display: none"></i>
+            <input type="hidden" id="UploadContainer_status" value="closed">
+        </div>
+    </div>
+    <!-- UPLOAD FILE BODY -->
+    <div class="row" id="UploadContainer" style="display: none">
+        <div class="container">
+            <div class="row">
+                <div class="col">
+                    <?php
+                    if ($claimFolder == '') {
+                        ?>
+                        No Folder found to upload
+                        <?php
+                    }
+                    else {
+                    ?>
+                    <div id="fileuploader" style="width: 100%">Upload</div>
+                    <?php
+                    }
+                    ?>
+                </div>
+            </div>
+
+        </div>
+
+        <script>
+            $(document).ready(function()
+            {
+                $("#fileuploader").uploadFile({
+                    url:"uploadClaimsFile.php",
+                    multiple:true,
+                    dragDrop:true,
+                    fileName:"myfile",
+                    formData: {"folder":"<?php echo str_replace('\\','/',$claimFolder)."/";?>"},
+                    returnType:"json",
+                    showDone:true
+            });
+            });
+        </script>
     </div>
 
 </div>
@@ -442,16 +533,19 @@ function findClaimFolder()
 function findSubFolders($folder)
 {
     global $subFolders;
-    $mainFolder = scandir($folder);
-    foreach ($mainFolder as $item) {
-        if ($item != '.' && $item != '..')
-            if (is_dir($folder . "\\" . $item)) {
-                //echo "Folder:->".$item;
-                //add it in the list
-                $subFolders[] = $folder . "\\" . $item;
-                //recursive find if sub folders exists
-                findSubFolders($folder . "\\" . $item);
-            }
+    if ($folder != '') {
+        $mainFolder = scandir($folder);
+
+        foreach ($mainFolder as $item) {
+            if ($item != '.' && $item != '..')
+                if (is_dir($folder . "\\" . $item)) {
+                    //echo "Folder:->".$item;
+                    //add it in the list
+                    $subFolders[] = $folder . "\\" . $item;
+                    //recursive find if sub folders exists
+                    findSubFolders($folder . "\\" . $item);
+                }
+        }
     }
 
 }

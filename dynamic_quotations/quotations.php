@@ -13,6 +13,12 @@ if ($_GET['action'] == 'activate' && $_GET['lid'] > 0) {
     $db->start_transaction();
     if ($quote->activate() == true) {
         $db->generateSessionAlertSuccess($quote->getQuotationType() . " activated successfully");
+
+        //check if the email was sent
+        if ($quote->error == true) {
+            $db->generateSessionAlertError('Activated! Error sending the email. Please check in AutoEmails.');
+        }
+
     } else {
         if ($quote->errorType == 'warning') {
             $db->generateSessionAlertWarning($quote->errorDescription);
@@ -67,11 +73,22 @@ if ($_SESSION['dyqt_filter']) {
         OR oqq_insureds_name LIKE '%".$_SESSION['dyqt_filter_number']."%'
         OR oqq_quotations_ID = '".$_SESSION['dyqt_filter_number']."'
         
-        OR IF (oqq_quotations_type_ID = 2,  
+        OR IF (oqq_quotations_type_ID = 2,  #MARINE
             (SELECT oqqit_rate_7 FROM oqt_quotations_items WHERE oqqit_quotations_ID = oqq_quotations_ID AND oqqit_items_ID = 4)
-            ,'') LIKE '%".$_SESSION['dyqt_filter_number']."%'
+            ,'') COLLATE UTF8_GENERAL_CI LIKE '%".$_SESSION['dyqt_filter_number']."%'
+            
+        OR IF (oqq_quotations_type_ID = 2,  #MARINE
+            (SELECT oqqit_rate_5 FROM oqt_quotations_items WHERE oqqit_quotations_ID = oqq_quotations_ID AND oqqit_items_ID = 4)
+            ,'') COLLATE UTF8_GENERAL_CI LIKE '%".$_SESSION['dyqt_filter_number']."%'
         
         )";
+
+        /*
+         * Modify search for MARINE as follows
+         * Destination city, destination country, supplier,
+         *
+         * */
+
     }
 
     $statusFilterNum = 0;

@@ -33,15 +33,18 @@ if ($today == $lastExecuteDay || $today < $lastExecuteDay) {
     //needs to be executed.
     //check if the time is after 18:00
     if (date("G") > 15) {
-        echo "execute";
+        echo "execute http://126.0.0.13/intranet/eurosure/api/rescueline_send_data.php";
         $ch = curl_init();
         // set URL and other appropriate options
         curl_setopt($ch, CURLOPT_URL, "http://126.0.0.13/intranet/eurosure/api/rescueline_send_data.php");
         curl_setopt($ch, CURLOPT_HEADER, 0);
         // grab URL and pass it to the browser
-        curl_exec($ch);
+        $result = curl_exec($ch);
         // close cURL resource, and free up system resources
         curl_close($ch);
+        echo "<hr>http://126.0.0.13/intranet/eurosure/api/rescueline_send_data.php<hr>";
+        echo $result;
+        echo "<hr><hr>";
     }
 }
 
@@ -49,14 +52,18 @@ if ($today == $lastExecuteDay || $today < $lastExecuteDay) {
  * 2************************************2****************************2***************************2*********************2
  * Verifies that all the incidents in odyky exists in extranet
  */
+
 $ch = curl_init();
 // set URL and other appropriate options
 curl_setopt($ch, CURLOPT_URL, "http://126.0.0.13/intranet/eurosure/api/verify_odyky_incidents_by_day.php");
 curl_setopt($ch, CURLOPT_HEADER, 0);
 // grab URL and pass it to the browser
-curl_exec($ch);
+$result = curl_exec($ch);
 // close cURL resource, and free up system resources
 curl_close($ch);
+echo "<hr>http://126.0.0.13/intranet/eurosure/api/verify_odyky_incidents_by_day.php<hr>";
+echo $result;
+echo "<hr><hr>";
 
 
 /*
@@ -69,6 +76,9 @@ $ch = curl_init();
 curl_setopt($ch, CURLOPT_URL, "http://126.0.0.13/intranet/eurosure/api/get_latest_odyky_incidents.php");
 curl_setopt($ch, CURLOPT_HEADER, 0);
 // grab URL and pass it to the browser
-curl_exec($ch);
+$result = curl_exec($ch);
 // close cURL resource, and free up system resources
 curl_close($ch);
+echo "<hr>http://126.0.0.13/intranet/eurosure/api/get_latest_odyky_incidents.php<hr>";
+echo $result;
+echo "<hr><hr>";

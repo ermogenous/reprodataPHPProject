@@ -20,7 +20,7 @@ include("../../include/main.php");
 include("../lib/odbccon.php");
 $db = new Main(0);
 $db->working_section = 'Eurosure check extranet to get the latests odyky incidents';
-$db->update_log_file('Eurosure check extranet to get the latests odyky incidents',0,
+$db->update_log_file('Get latest odyky incidents',0,
     'Eurosure check extranet to get the latests odyky incidents'
     ,'Eurosure check extranet to get the latests odyky incidents');
 $log = 'Starting Intranet Get latest odyky incidents'.PHP_EOL;
@@ -28,44 +28,67 @@ $log = 'Starting Intranet Get latest odyky incidents'.PHP_EOL;
 //connect to extranet
 $extranet = new mysqli('136.243.227.37', 'mic.ermogenous', '4Xd3l5&w','eurosureADMIN_extranet');
 if ($extranet -> connect_errno) {
-    $log .= 'Failed to connect to Extranet DB: '.$extranet->connect_error;
-    $db->update_log_file('import rescueline api',0,$log,'');
+    $log .= PHP_EOL.'Failed to connect to Extranet DB: '.$extranet->connect_error;
+    $db->update_log_file('import Odyky api',0,$log,'');
     exit();
 }
-//find the last incident id (primary of the table es_odyky_incidents) saved in the settings table
-$lastIncidentID = $db->get_setting('eurosure_last_odyky_incident');
+else {
+    $log .= PHP_EOL.'Connected to extranet ok.';
+}
 
 //now find on extranet any new incidents
-$sql = 'SELECT * FROM es_odyky_incidents WHERE esoin_processed = 0 ORDER BY esoin_incident_id ASC ';
+if ($_GET['by_incident'] > 0){
+    $sql = 'SELECT * FROM es_odyky_incidents 
+            WHERE esoin_incident_id = '.$_GET['by_incident'];
+}
+else {
+    $sql = 'SELECT * FROM es_odyky_incidents 
+            WHERE esoin_processed = 0
+            AND esoin_call_type IN ("Accident","Accident care from Phone")
+            ORDER BY esoin_incident_id ASC ';
+}
 
 $result = $extranet->query($sql);
 $lastID = 0;
 $incidentData = '';
+$log .= PHP_EOL.'FOUND '.mysqli_num_rows($result)." Incidents:";
 while ($row = $result->fetch_assoc()){
+
     $lastID = $row['esoin_incident_id'];
     //connect to odyky api to get the information and files for this incident
-    getOdykyFiles($row['esoin_odyky_incident_id']);
-
-    //update extranet that this record has been processed
-    $sql = 'UPDATE es_odyky_incidents 
+    $log .= PHP_EOL.'Checking documents for Incident ID:'.$row['esoin_odyky_incident_id']." REG:".$incidentData->Incident->InsurancePolicy->vehicle_registration;
+    echo "<hr>Downloading for Incident ID:".$row['esoin_odyky_incident_id']." REG:".$incidentData->Incident->InsurancePolicy->vehicle_registration."<hr>";
+    $totalDocuments = getOdykyFiles($row['esoin_odyky_incident_id']);
+    $log .= PHP_EOL.'Found '.$totalDocuments;
+    if ($totalDocuments > 0) {
+        $log .= ' Proceed to download the files. REG:'.$incidentData->Incident->InsurancePolicy->vehicle_registration;
+        //update extranet that this record has been processed - and odyky considers this incident as completed
+        if ($row['esoin_odyky_status'] == 1) {
+            $sql = 'UPDATE es_odyky_incidents 
             SET esoin_processed = 1
-            ,esoin_vehicle_registration = "'.$incidentData->Incident->InsurancePolicy->vehicle_registration.'"
-            ,esoin_last_update_date_time = "'.date("Y-m-d G:i:s").'"
-            WHERE esoin_incident_id = '.$row['esoin_incident_id'];
-    //echo $sql;
+            ,esoin_vehicle_registration = "' . $incidentData->Incident->InsurancePolicy->vehicle_registration . '"
+            ,esoin_last_update_date_time = "' . date("Y-m-d G:i:s") . '"
+            ,esoin_odyky_status = 1
+            WHERE esoin_incident_id = ' . $row['esoin_incident_id'];
+            $log .= ' Update extranet incidents as completed';
+        }
+        else {
+            $log .= ' Found documents but odyky status is not completed';
+        }
+    }
+    else {
+        $log .= ' No Records skip and check again later';
+    }
+
     $extranet->query($sql);
 
 }
-
-//update settings
-if ($lastID > $lastIncidentID){
-    //temp disable
-    //$db->update_setting('eurosure_last_odyky_incident',$lastID);
-}
-
+$db->update_log_file_custom($log,'import Odyky api Result');
+$time_elapsed_secs = microtime(true) - $startTime;
+echo "<br>Total Seconds:".$time_elapsed_secs;
 
 function getOdykyFiles($odykyID){
-    global $main,$incidentData;
+    global $main,$incidentData,$log;
 
     //retrieve the incidents data
     $ch = curl_init();
@@ -77,7 +100,7 @@ function getOdykyFiles($odykyID){
     curl_setopt($ch, CURLOPT_URL, $url);
     $incidentData = json_decode(curl_exec($ch));
     curl_close($ch);
-//return '';
+    //return '';
     //print_r($incidentData);exit();
 
     //retrieve the list of documents
@@ -93,7 +116,9 @@ function getOdykyFiles($odykyID){
 
     $obj = json_decode($result);
     //echo $obj->access_token;
+    $totalFilesFound = 0;
     foreach ($obj as $document){
+        $totalFilesFound++;
         $fileUrl = $document->Documents->document_link."/".$document->Documents->document_file_name;
         $getDocumentUrl = 'https://portal.odyky.com/webservices/eurosure/get_document.json?user=eurosure&pass=Tt04U17paE7WSJvNwFFz';
         $getDocumentUrl .= '&incident_id='.$odykyID.'&doc_id='.$document->Documents->document_id;
@@ -124,7 +149,10 @@ function getOdykyFiles($odykyID){
                 echo "Success";
             }
             else {
-                echo "Failed creating the file";
+                echo "Failed creating the file. Maybe the file is open by someone. Leave the incident uncompleted to try again later.";
+                echo "<hr>";
+                //better to return 0 so it will try again later
+                return 0;
             }
         }
         else {
@@ -133,6 +161,13 @@ function getOdykyFiles($odykyID){
 
         echo "<hr>";
     }
+    if ($totalFilesFound == 0){
+        echo PHP_EOL.'No Documents Found for the Incident: '.$odykyID.'<hr>';
+    }
+    else {
+        echo PHP_EOL.'Total Documents Processed:'.$totalFilesFound."<hr>";
+    }
+    return $totalFilesFound;
 
 }
 
@@ -141,7 +176,7 @@ function makeFileOnServer($fileName,$fileData,$claimNumber,$incidentData,$docume
     $folder = getFolder($claimNumber,$incidentData);
     $fullPath = $folder."//".$fileType."-".$fileName;
 
-    if (file_put_contents($fullPath,$fileData) === false){
+    if (@file_put_contents($fullPath,$fileData) === false){
         //echo "Failed making the file";
         return false;
     }
@@ -174,6 +209,7 @@ function makeCheckFolderOnServer($claimNumber,$incidentData){
     }
 
 }
+
 function getFolder($claimNumber,$incidentData){
     $incidentDate = $incidentData->Incident->AccidentData->accepted_at;
     $incidentDateParts = explode(' ',$incidentDate);
@@ -186,5 +222,4 @@ function getFolder($claimNumber,$incidentData){
     return $folder;
 }
 
-$time_elapsed_secs = microtime(true) - $startTime;
-echo "Total Seconds:".$time_elapsed_secs;
+

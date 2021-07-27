@@ -38,13 +38,13 @@ $syn = new ODBCCON();
                 </div>
                 <form name="myForm" id="myForm" method="post" action="" onsubmit=""
                     <?php $formValidator->echoFormParameters(); ?>>
-                    <div class="row">
+                    <div class="row form-group">
                         <?php
 
                         $sql = "SELECT * FROM inagents
                             WHERE
                             inag_agent_type = 'A'
-                            AND inag_status_flag = 'N'";
+                            //AND inag_status_flag = 'N'";
                         $result = $syn->query($sql);
                         $allAgents = [];
                         while ($agent = $syn->fetch_assoc($result)) {
@@ -98,6 +98,40 @@ $syn = new ODBCCON();
                             ?>
                         </div>
                     </div>
+
+                    <div class="row form-group">
+                        <?php
+
+                        $currentYear = date("Y");
+                        for ($i=$currentYear-5; $i<=$currentYear; $i++){
+                            $allYears[$i] = $i;
+                        }
+
+                        $formB = new FormBuilder();
+                        $formB->setFieldName('sch_year')
+                            ->setFieldDescription('Select Year')
+                            ->setLabelClasses('col-xs-12 col-sm-3 com-md-2 col-lg-2')
+                            ->setFieldType('select')
+                            ->setInputValue($_POST['sch_year'])
+                            ->setInputSelectArrayOptions($allYears)
+                            ->setInputSelectAddEmptyOption(true)
+                            ->buildLabel();
+                        ?>
+                        <div class="col-xs-12 col-sm-3">
+                            <?php
+                            $formB->buildInput();
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => $formB->fieldName,
+                                    'fieldDataType' => 'select',
+                                    'required' => true,
+                                    'invalidTextAutoGenerate' => true
+                                ]);
+                            ?>
+                        </div>
+
+                    </div>
+
 
                     <div class="row" style="height: 25px;"></div>
 
@@ -207,10 +241,8 @@ if ($_POST['action'] == 'show') {
             ( inagentsinsurancetypes.inait_insurance_type_serial = ininsurancetypes.inity_insurance_type_serial )
             and ( inagentsinsurancetypes.inait_agent_serial = inagents.inag_agent_serial )
             and ( 
-                //( inagentsinsurancetypes.inait_agent_serial = 235 )
                 (inagents.inag_agent_code BETWEEN '" . $_POST['sch_agent_from'] . "' AND '" . $_POST['sch_agent_to'] . "') 
-                And ( inagentsinsurancetypes.inait_insurance_year = 2020 )
-                //and ( inagentsinsurancetypes.inait_insurance_type_serial = 38 ) 
+                And ( inagentsinsurancetypes.inait_insurance_year = ".$_POST['sch_year']." )
             ) 
             
             ORDER BY
