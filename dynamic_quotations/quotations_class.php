@@ -318,19 +318,25 @@ class dynamicQuotation
     
     private function issueNumber(){
         global $db;
-        
-        $newNumber = $db->buildNumber($this->quotationData['oqqt_quotation_number_prefix'],
-            $this->quotationData['oqqt_quotation_number_leading_zeros'],
-            $this->quotationData['oqqt_quotation_number_last_used']+1);
-        //update db
-        $newData['quotation_number_last_used'] = $this->quotationData['oqqt_quotation_number_last_used']+1;
-        $db->db_tool_update_row('oqt_quotations_types',
-            $newData,
-            'oqqt_quotations_types_ID = '.$this->quotationData['oqqt_quotations_types_ID'],
-            $this->quotationData['oqqt_quotations_types_ID'],
-            '',
-            'execute',
-            'oqqt_');
+
+        if (function_exists('customIssueNumber')){
+            $newNumber = customIssueNumber($this->quotationData);
+        }
+        else{
+            $newNumber = $db->buildNumber($this->quotationData['oqqt_quotation_number_prefix'],
+                $this->quotationData['oqqt_quotation_number_leading_zeros'],
+                $this->quotationData['oqqt_quotation_number_last_used']+1);
+            //update db
+            $newData['quotation_number_last_used'] = $this->quotationData['oqqt_quotation_number_last_used']+1;
+            $db->db_tool_update_row('oqt_quotations_types',
+                $newData,
+                'oqqt_quotations_types_ID = '.$this->quotationData['oqqt_quotations_types_ID'],
+                $this->quotationData['oqqt_quotations_types_ID'],
+                '',
+                'execute',
+                'oqqt_');
+        }
+
         return $newNumber;
         
     }

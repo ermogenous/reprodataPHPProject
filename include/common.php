@@ -126,4 +126,6 @@ else {
 //ini_set('html_errors', '1');
 //if ($temp_var["show_all_errors"] != 1) {
 //    ini_set('error_reporting','E_ALL & ~E_NOTICE & ~E_WARNING');
+//  ini_set('max_execution_time', 1800);
+//  ini_set('memory_limit','4096M');
 //}

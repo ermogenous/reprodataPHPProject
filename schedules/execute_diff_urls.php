@@ -28,12 +28,15 @@ $lastExecuteParts = explode('-', explode(' ', $lastExecute)[0]);
 $lastExecuteDay = ($lastExecuteParts[0] * 10000) + ($lastExecuteParts[1] * 100) + $lastExecuteParts[2];
 //echo $today . " - " . $lastExecuteDay;
 if ($today == $lastExecuteDay || $today < $lastExecuteDay) {
+    $db->update_log_file('Extranet Odyky Vehicles SEND', 0, 'SKIP SENDING', 'SKIP SENDING');
+    echo "SKIPPING: http://126.0.0.13/intranet/eurosure/api/rescueline_send_data.php";
     //process already executed today
 } else if ($today > $lastExecuteDay) {
+    $db->update_log_file('Extranet Odyky Vehicles SEND', 0, 'STARTING PROCESS', 'STARTING PROCESS');
     //needs to be executed.
     //check if the time is after 18:00
-    if (date("G") > 15) {
-        echo "execute http://126.0.0.13/intranet/eurosure/api/rescueline_send_data.php";
+    if (date("G") > 10) {
+
         $ch = curl_init();
         // set URL and other appropriate options
         curl_setopt($ch, CURLOPT_URL, "http://126.0.0.13/intranet/eurosure/api/rescueline_send_data.php");
@@ -47,7 +50,6 @@ if ($today == $lastExecuteDay || $today < $lastExecuteDay) {
         echo "<hr><hr>";
     }
 }
-
 /*
  * 2************************************2****************************2***************************2*********************2
  * Verifies that all the incidents in odyky exists in extranet

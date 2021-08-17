@@ -29,6 +29,7 @@ if ($_POST["action"] == "insert") {
     else {
         $db->working_section = 'My Users Insert';
         $_POST['fld_default_lang'] = 'eng';
+        $_POST['fld_last_login'] = '0000-00-00 00:00:00';
         $db->db_tool_insert_row('users', $_POST, 'fld_',0, 'usr_');
         header("Location: users.php");
         exit();

@@ -751,7 +751,7 @@ function mc_cargo_details_4()
         </label>
         <div class="col-sm-8">
             <?php
-            if ($db->user_data['usr_user_rights'] == 0 || $db->user_data['usr_users_ID'] == 14) {
+            if ($db->user_data['usr_user_rights'] == 0 || $db->user_data['usr_users_groups_ID'] == 2) {
                 ?>
                     <div class="row">
                         <div class="col-9">
@@ -877,6 +877,8 @@ function mc_cargo_details_4()
                 rate = '<?php echo $underwriter["oqun_excess_owner_packed_rate"];?>';
             } else if (commodity == 'Other') {
                 rate = '<?php echo $underwriter["oqun_excess_other_rate"];?>';
+            }else if (commodity == 'Tobacco') {
+                rate = '<?php echo $underwriter["oqun_excess_tobacco_rate"];?>';
             }
 
             if (clause == 'Clause C') {
@@ -900,12 +902,46 @@ function mc_cargo_details_4()
 
 function insured_amount_custom_rates($array, $values, $quotation_id)
 {
+    global $quotationUnderwriter;
+
+    //find the underwriters minimum premium
+    switch ($values[3][4]['rate']){
+        case 'General Cargo & Merchandise': $minPremium = $quotationUnderwriter['oqun_mc_general_min_premium']; break;
+        case 'New/Used Vehicles': $minPremium = $quotationUnderwriter['oqun_mc_vehicles_min_premium'];break;
+        case 'Machinery': $minPremium = $quotationUnderwriter['oqun_mc_machinery_min_premium'];break;
+        case 'Temp. Controlled Cargo other than meat': $minPremium = $quotationUnderwriter['oqun_mc_temp_no_meat_min_premium'];break;
+        case 'Temp. Controlled Cargo Meat': $minPremium = $quotationUnderwriter['oqun_mc_temp_meat_min_premium'];break;
+        case 'Special Cover Mobile Phones, Electronic Equipment': $minPremium = $quotationUnderwriter['oqun_mc_special_cover_min_premium'];break;
+        case 'Personal Effects professionally packed': $minPremium = $quotationUnderwriter['oqun_mc_pro_packed_min_premium'];break;
+        case 'CPMB - Cyprus Potato Marketing Board': $minPremium = $quotationUnderwriter['oqun_mc_owner_packed_min_premium'];break;
+        case 'Other': $minPremium = $quotationUnderwriter['oqun_mc_other_min_premium'];break;
+        case 'Tobacco': $minPremium = $quotationUnderwriter['oqun_mc_tobacco_min_premium'];break;
+        default: $minPremium = 0;
+    }
 
     //rate $values[4][8]['rate']
     //print_r($array);exit();
+
     $array[4][8] = round($values[3][3]['rate'] * ($values[4][8]['rate'] / 100), 2);
+    if ($array[4][8] < $minPremium) {
+        $array[3][4] = $minPremium - $array[4][8];
+    }
+    //echo $array[3][4]."<br>";
+    //echo $array[4][8]."<br>";
+    //echo $minPremium;print_r($values);exit();
 
     return $array;
+}
+
+function get_custom_fees_amount($data)
+{
+
+    global $quotationUnderwriter;
+
+    $data['stamps'] = $quotationUnderwriter['oqun_min_stamps'];
+    $data['fees'] = $quotationUnderwriter['oqun_min_fees'];
+
+    return $data;
 }
 
 function activate_custom_validation($data, $returnJS = false)
@@ -1110,6 +1146,33 @@ function customCheckForApproval($data)
     }
 
     return $result;
+}
+
+function customIssueNumber($data){
+    global $db;
+    if ($data['oqq_users_ID'] == 42 || $data['oqq_users_ID'] == 58){
+        $prefix = 'KMCE2';
+        $leadingZeros = 5;
+        $lastNumber = $db->get_setting('kemter_mc_number_last_used');
+        $newNumber = $db->buildNumber($prefix,$leadingZeros,$lastNumber+1);
+        $db->update_setting('kemter_mc_number_last_used',$lastNumber+1);
+    }
+    else {
+        $newNumber = $db->buildNumber($data['oqqt_quotation_number_prefix'],
+            $data['oqqt_quotation_number_leading_zeros'],
+            $data['oqqt_quotation_number_last_used']+1);
+        //update db
+        $newData['quotation_number_last_used'] = $data['oqqt_quotation_number_last_used']+1;
+        $db->db_tool_update_row('oqt_quotations_types',
+            $newData,
+            'oqqt_quotations_types_ID = '.$data['oqqt_quotations_types_ID'],
+            $data['oqqt_quotations_types_ID'],
+            '',
+            'execute',
+            'oqqt_');
+    }
+
+    return $newNumber;
 }
 
 ?>

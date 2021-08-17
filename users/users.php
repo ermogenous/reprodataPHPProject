@@ -129,7 +129,7 @@ $table->generate_data();
                             <th scope="row"><?php echo $row["usr_users_ID"]; ?></th>
                             <td><?php echo $row["usr_name"]; ?></td>
                             <td><?php echo $row["usr_user_rights"]; ?></td>
-                            <td><?php echo $row["usg_group_name"]; ?></td>
+                            <td><?php echo $row["usg_group_name"]."(".$row['usr_users_groups_ID'].")"; ?></td>
                             <td><?php echo $row["usr_active"]; ?></td>
                             <td>
                                 <a href="users_modify.php?lid=<?php echo $row["usr_users_ID"];?>"><i class="fas fa-edit"></i></a>&nbsp

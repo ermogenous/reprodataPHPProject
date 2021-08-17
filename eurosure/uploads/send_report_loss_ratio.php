@@ -21,7 +21,7 @@ $db->admin_title = "Eurosure - Uploads - Loss Ratio";
 $sybase = new ODBCCON();
 */
 
-
+$db->update_log_file_custom('Starting process','Upload Extranet loss ratio');
 
 $log = '';
 

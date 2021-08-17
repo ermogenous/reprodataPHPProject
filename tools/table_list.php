@@ -536,7 +536,7 @@ class TableList
             $this->generateSQL();
         }
 
-        echo $this->sql;
+        //echo $this->sql;
 
         $this->sqlResult = $$mainObjectVar->query($this->sql);
         $this->sqlTotalResults = $$mainObjectVar->num_rows($this->sqlResult);

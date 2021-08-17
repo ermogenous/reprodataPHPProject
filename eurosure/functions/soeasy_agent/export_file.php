@@ -102,6 +102,11 @@ if ($_POST['action'] == 'export') {
                 $row['Policy_Product_Code'] = 3;
             }
 
+            //check for *** MOTOR
+            if ($row['MOT_PS_KW_Power'] == '*' || $row['MOT_PS_KW_Power'] == '**' || $row['MOT_PS_KW_Power'] == '***'){
+                $row['MOT_PS_KW_Power'] = '';
+            }
+
             //if ()
 
             $i++;

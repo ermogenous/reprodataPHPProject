@@ -80,8 +80,9 @@ class Synthesis
             ),
         );
 
-        @$response = file_get_contents($url, false, stream_context_create($arrContextOptions));
-        if ($response == false) {
+        $response = file_get_contents($url, false, stream_context_create($arrContextOptions));
+
+        if ($response == false || $response == '') {
             $this->errorDescription = 'Cannot reach the database.';
             $this->error = true;
             return false;
@@ -194,6 +195,7 @@ class Synthesis
             return false;
         }
 
+
         //set the class parameters for the admin to validate the user
         $this->setCompanyID($webUser['syco_company_ID']);
         $this->setCompanyName($webUser['syco_name']);
@@ -203,6 +205,9 @@ class Synthesis
 
         //validate the user
         $synUserData = $this->getWebUser($_SESSION[$main['environment']."_usernm"]);
+        if ($this->error){
+            return false;
+        }
 
         //check if the token generated error or the return user is not the same
         if ($this->error == true || $synUserData[0]->ccwu_web_user != $_SESSION[$main['environment']."_usernm"]){
@@ -307,6 +312,9 @@ class Synthesis
     {
         global $db;
         $this->getToken();
+        if ($this->error){
+            return false;
+        }
         $url = $this->url . '/ws_webusers?arg_username='.$this->username.'&arg_token=' . $this->currentToken
                 .'&arg_web_user='.$webUser;
         //echo $url."<br>";
@@ -445,7 +453,7 @@ class Synthesis
         $data = json_decode($response);
         $data['totalRows'] = count($data);
         if ($data[0]->status == 'error') {
-            echo "An error has been found.";
+            //echo "An error has been found.";
             if ($db->user_data['usr_user_rights'] == 0) {
                 echo "<br><br>" . $url;
                 echo "<br><br>" . $data[0]->message;

@@ -17,8 +17,7 @@
 //- 09/8/2018 add insert/update automatically fields insert_date_time, last_update_date_time and by
 //- 04/01/2019 db_tool_delete_row check if the record exists before deleting
 //- 09/04/2019 setDebugMode. When true prints all queries executed
-//- 10/07/2019 Fixed function error. was giving sql error to all users.
-//- 18/07/2021 Fix imitating user from the settings on the user level. Also originalUserData is always loaded
+//- 10/7/2019 Fixed function error. was giving sql error to all users.
 //usefull information
 //
 //mysqli_query("SET NAMES 'utf8'");
@@ -94,7 +93,7 @@ class Main
     {
         global $main;
 
-        $this->encryptionKey = base64_encode('Euro$surEBen-654');
+        $this->encryptionKey = base64_encode('lcsEncryption123321');
 
         if ($use_this_main != 'no') {
             $this->settings = $use_this_main;
@@ -110,20 +109,6 @@ class Main
         if ($this->settings["disable_headers"] != 'yes') {
             header('Content-Type: text/html; charset=' . $enc);
             session_start();
-
-            /*
-            if ($login == 0){
-                echo "Login:0";
-                print_r($_SESSION);
-            }
-            else {
-                echo "Login:1";
-                print_r($_SESSION);
-                exit();
-            }
-            */
-
-            //print_r($_SESSION);exit();
         }
 
         //check if to use $main or $bypass
@@ -300,38 +285,11 @@ class Main
             $this->user_data = $this->fetch_assoc($result);
 
             //if imitate user keep the admin login into the originalUserData
-            //also keep the originalUserData even if no imitate
-            $this->originalUserData = $this->user_data;/*18/07/2021*/
-            /*if ($this->dbSettings['admin_imitate_user']['value'] != 'No'
-                    && $this->user_data['usr_user_rights'] == 0
-                    && $this->dbSettings['admin_imitate_user']['value'] > 0) {
-            18/7/2021*/
-            if ($this->user_data['usr_user_rights'] == 0 && $this->user_data['usr_imitate_user'] > 0
-                    || (
-                            $this->user_data['usr_allow_imitate'] == 1
-                            && $this->user_data['usr_imitate_user'] > 0
-                        )){
-                //check the last login time
-                //if last login longer than 1 hour
-                if (strtotime('now') - strtotime($this->originalUserData['usr_last_login']) > 3600){
-                    $disableImitate['fld_imitate_user'] = 0;
-                    $this->db_tool_update_row('users',$disableImitate,
-                        'usr_users_ID = '.$this->user_data['usr_users_ID'],$this->user_data['usr_users_ID'],
-                        'fld_','execute','usr_');
-                }
-                else {
-                    $this->imitationMode = true;
-                    $this->originalUserData = $this->user_data;
-                    $this->user_data = $this->query_fetch('SELECT * FROM users WHERE usr_users_ID = ' . $this->user_data['usr_imitate_user']);
-                }
-
+            if ($this->dbSettings['admin_imitate_user']['value'] != 'No' && $this->user_data['usr_user_rights'] == 0) {
+                $this->imitationMode = true;
+                $this->originalUserData = $this->user_data;
+                $this->user_data = $this->query_fetch('SELECT * FROM users WHERE usr_users_ID = ' . $this->dbSettings['admin_imitate_user']['value']);
             }
-
-            //check if imitate user is active for more than one hour then disable
-            if ($this->imitationMode === true){
-
-            }
-            //print_r($this->originalUserData);exit();
 
             //verify the users ip
             if ($this->get_setting("admin_check_users_ip") == 1) {
@@ -490,11 +448,6 @@ class Main
 
         }//else
         $this->adminLogin = true;
-        //update the last login for the user
-        $lastUpdate['fld_last_login'] = date("Y-m-d G:i:s");
-        $this->db_tool_update_row('users',$lastUpdate,
-            'usr_users_ID = '.$this->originalUserData['usr_users_ID'],$this->originalUserData['usr_users_ID'],
-            'fld_','execute','usr_');
     }
 
     private function getAllStartUpSettings()
@@ -823,11 +776,10 @@ class Main
         }
     }
 
-    public function update_setting($section, $newValue = '', $startup = 0,$dateValue = null)
+    public function update_setting($section, $newValue = '', $startup = 0)
     {
         $newData['value'] = $newValue;
         $newData['section'] = $section;
-        $newData['value_date'] = $dateValue;
         $newData['fetch_on_startup'] = $this->get_check_value($startup);
         $this->db_tool_update_row('settings', $newData, "stg_section = '" . $section . "'", ''
             , '', 'execute', 'stg_');
@@ -1579,6 +1531,7 @@ class Main
 		`lgf_new_values` = \"" . addslashes($new_values) . "\" ,
 		`lgf_old_values` = \"" . addslashes($old_values) . "\" ,
 		`lgf_description` = \"" . addslashes($description) . "\" ";
+
         $this->query($sql);
         $sql = '';
         unset($sql);
@@ -1760,7 +1713,7 @@ class Main
 
     }
 
-    //returns 1 if date1 > date2, returns -1 if date1 < date2, returns 0 if date1 = date2
+    //returns 1 if date1 > date2, returns 0 if date1 < date2, returns 0 if date1 = date2
     //works with date format dd/mm/yyyy but also converts with 3rd parameter from yyyy-mm-dd
     function compare2dates($date1, $date2, $format = 'dd/mm/yyyy')
     {
@@ -1864,7 +1817,6 @@ class Main
     function export_file_for_download($data, $filename)
     {
         global $db;
-        //$data = mb_convert_encoding($data,'UTF-8');
         header("Content-Type: application/octet-stream");
         header("Content-Disposition: attachment; filename=\"" . $filename . "\"");
         header("Content-Transfer-Encoding: binary");

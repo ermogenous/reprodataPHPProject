@@ -81,7 +81,7 @@ class customFormValidator
         //datePickerValue: the value date to be inserted on creation
         //invalidText: the text to show when invalid.
         //invalidTextAutoGenerate: true/false gets automatically the value in the label field and generates the error. invalidText must be empty for this to work
-        //requiredAddedCustomCode: added custom code in the if statement for the required section
+        //requiredAddedCustomCode: added custom code in the if statement for the required section if true then error
         //dateMinDate : dd/mm/yyyy compares the 2 dates and if lower than min date then error
         //dateMaxDate : dd/mm/yyyy compares the 2 dates and if higher than max date then error
         //validateEmail: Validates if the email has the right format
@@ -246,7 +246,7 @@ class customFormValidator
             //for RADIO
             if ($fieldData['fieldDataType'] == 'radio') {
                 $return .= "
-            if (typeof $('input[name=" . $fieldData['fieldName'] . "]:checked').val() == 'undefined' " . $requiredAddedCustomCode . "){
+            if ((typeof $('input[name=" . $fieldData['fieldName'] . "]:checked').val() == 'undefined' )" . $requiredAddedCustomCode . "){
                 $('#" . $fieldData['fieldName'] . "').addClass('is-invalid');
                 $('#" . $fieldData['fieldName'] . "').removeClass('is-valid');
                 $('#" . $fieldData['fieldName'] . "-invalid-text').show();

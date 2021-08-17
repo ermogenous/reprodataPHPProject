@@ -129,7 +129,7 @@ $db->show_header();
                             let fees = $('#fld_fees').val() * 1;
                             let stamps = $('#fld_stamps').val() * 1;
                             let total = premium + fees + stamps;
-                            $('#totalPremium').html('€' + total);
+                            $('#totalPremium').html('€' + total.toFixed(2));
                         }
 
                         $(document).ready(function () {

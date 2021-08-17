@@ -6,7 +6,7 @@
  * Time: 10:09 π.μ.
  */
 
-
+/*
 ini_set('max_execution_time', 1800);
 ini_set('memory_limit', '4096M');
 
@@ -14,13 +14,13 @@ include("../../include/main.php");
 include('../lib/odbccon.php');
 
 $db = new Main(0);
-$db->admin_title = "Eurosure - Uploads - Loss Ratio";
+$db->admin_title = "Eurosure - Uploads - Send Report Claims";
 
 
 $sybase = new ODBCCON();
+*/
 
-
-
+$db->update_log_file_custom('Starting process','Upload Extranet Report Claims');
 
 
 $log = '';

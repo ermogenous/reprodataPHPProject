@@ -929,11 +929,11 @@ function getConditionsOfInsurance($commodity,$clause){
         <br>Institute Classification Clause CL354 dated 1.1.01.
         <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10/11/03.
         <br>Institute Cyber Attack Exclusion Clause CL380 dated 10/11/03.
+        <br>Termination of Transit Clause (Terrorism) JC2009/056 1.1.09
+        <br>Marine Cyber Exclusion Clause LMA5402 11.11.19
+        <br>Communicable Disease Exclusion Clause (Cargo) JC2020/011 17.04.20
         <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
-        <br>
-        <br>
-        <br>
-        <br>
+        <br>Including transhipment, barge and lightering risks whether customary or otherwise.
         <br>
         <br>
         <br>

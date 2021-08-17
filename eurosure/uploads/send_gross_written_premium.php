@@ -20,6 +20,7 @@ $db->admin_title = "Eurosure - Uploads - Gross Written Premium";
 
 $sybase = new ODBCCON();
 */
+$db->update_log_file_custom('Starting process','Upload Extranet gross written premium');
 //connect to extranet
 $log = '';
 $extranet = new mysqli('136.243.227.37', 'mic.ermogenous', '4Xd3l5&w','eurosureADMIN_extranet');

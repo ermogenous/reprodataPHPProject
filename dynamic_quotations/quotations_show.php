@@ -75,7 +75,7 @@ $db->show_header();
                     <div class="row">
                         <div class="col-5 text-right"><strong>Total Price </strong></div>
                         <div class="col-7">
-                            €<?php echo $data["clo_total_price"]
+                            €<?php echo round($data["clo_total_price"],2)
                                 . " (Premium:€" . $data['oqq_premium'] . " Fees:€" . $data['oqq_fees'] . " Stamps:€" . $data['oqq_stamps'] . ")"; ?>
                             <?php if ($db->user_data['usr_user_rights'] <= 2) { ?>
                                 <a href="quotation_premium_modify.php?lid=<?php echo $_GET['lid']; ?>">Modify Premium

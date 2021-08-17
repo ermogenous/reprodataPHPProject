@@ -62,13 +62,21 @@ class soeasyClass
                 //proceed with the rest of the validations
                 //check if cancellation
                 $result = [];
+
                 if ($row['Policy_Refund'] == '1') {
                     echo "[CANCELLATION]";
                     $result = $this->validateCancellation($row);
-                } else if ($policyType === false) {
+                } else if ($policyType === false && strpos($row['Policy_Number'],'-END-') === false) {
                     echo "[NEW]";
                     $result = $this->validateNew($row);
-                } else {
+                }
+                else if (strpos($row['Policy_Number'],'-END-') !== false){
+                    echo "[ENDORSEMENT]";
+                    //all endorsments should be skipped at this moment
+                    $result['validation_status'] = 'SKIP';
+                    $result['message'] = 'Synthesis Cannot process endorsements at this moment.';
+                }
+                else {
                     echo "[RENEWAL]";
                     $result = $this->validateRenewal($row);
                 }

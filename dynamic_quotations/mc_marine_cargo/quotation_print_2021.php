@@ -61,6 +61,8 @@ body{
     padding: 0;
  }
 </style>
+</head>
+<body>
 ';
 
     for ($i=1; $i<=3; $i++) {
@@ -186,10 +188,25 @@ body{
         //for currency money format
         setlocale(LC_MONETARY, 'it_IT');
 
+        if ($quotationData['oqq_status'] == 'Active'){
+            $signature = '<img src="' . $main['site_url'] . '/dynamic_quotations/images/stamp_signature.png" width="150px"><br>Authorised Signatory Kemter Insurance Agencies, Sub-Agencies & Consultants Ltd.';
+        }
+        else {
+            $signature = 'Signature Pending';
+        }
+
+        if ($i > 1){
+            //$pageBreak = '<hr style="page-break-after: always; color: white;">';
+            //Duplicate/Non negotiable copy
+            $pageBreak = '<pagebreak>';
+        }
+        else {
+            //ORIGINAL
+            $pageBreak = '';
+        }
 
         $html .= '
-</head>
-<body>
+'.$pageBreak.'
 <div style="font-family: Tahoma;">
 
     <table width="900" style="font-size: 12px; '.$draftImage.'">
@@ -243,14 +260,16 @@ body{
                         <td width="25%"><b>Issue Date</b></td>
                         <td width="25%"><b>Insured Value/Currency</b></td>
                         <td width="25%" rowspan="5" align="center" style="font-size: 10px">
-                            <img src="' . $main['site_url'] . '/dynamic_quotations/images/stamp_signature.png" width="150px">
-                            <br>Authorised Signatory Kemter Insurance Agencies, Sub-Agencies & Consultants Ltd.
+                            '.$signature.'
                         </td>
                     </tr>
                     <tr>
                         <td>' . $sect1['oqqit_rate_6'] . '</td>
                         <td>'.$db->convert_date_format($quotationData['oqq_effective_date'],'yyyy-mm-dd','dd/mm/yyyy',1,1).'</td>
                         <td>' .number_format($sect1['oqqit_rate_3'],2,',','.')." ".$sect1['oqqit_rate_2'] . '</td>
+                    </tr>
+                    <tr>
+                        <td>&nbsp;</td>
                     </tr>
 
                     <tr>
@@ -285,7 +304,7 @@ body{
         </tr>
         
         <tr>
-            <td colspan="3" height="220px" valign="top">
+            <td colspan="3" height="150px" valign="top">
                 <table width="100%">
                     <tr>
                         <td width="50%" valign="top">
@@ -307,294 +326,58 @@ body{
         <tr>
             <td colspan="3" align="left">
                 <strong>Shipment Date: on or about </strong> '.$db->convert_date_format($sect1['oqqit_date_1'],'yyyy-mm-dd','dd/mm/yyyy').'
-                <hr style="color: #000000; height: 1px;">
             </td>
         </tr>
-        <tr>
-            <td colspan="3" height="230px" valign="top">
-                <b>Conditions of Insurance '.$approvalCommodity.'</b><br><br>
-                ' . $conditionsOfInsurance[0] . '<br>'.$sect2['oqqit_rate_6'].'
-            </td>
+        </table>
+        <hr style="color: #000000; height: 1px;">
+        <div style="font-size: 9px">
+            <p align="center">
+                <b>Conditions of Insurance '.$approvalCommodity.'</b>
+            </p>
+            ' . $conditionsOfInsurance[0] . '<br>
+            '.$sect2['oqqit_rate_6'].'
+            <p align="center"><b>Conditions Continued on the back hereof</b></p>
+            <b>Underwriters Agree Losses, if any, shall be payable to the order of 
+            '.$quotationData['oqq_insureds_name'].'
+            on surrender of this Certificate</b>
+            <br>
+            <p align="center"><b>IMPORTANT INSTRUCTIONS IN THE EVENT OF CLAIM</b></p>
+            <p align="justify" style="font-size: 10px">
+                In the event of physical evidence of loss or damage which may result in a claim under this insurance 
+                immediate notice must be given <strong>Within Cyprus</strong> to Kemter Insurance Agencies Sub-Agencies 
+                and Consultants Ltd or Claims outside of Cyprus the nearest Lloyd’s Agent at the port or place where 
+                the loss or damage is discovered in order that they may examine the goods and issue a survey report 
+                if required. All documentation to be submitted to:
+            </p>
+            <table width="900" style="font-size: 10px">
+                <tr>
+                    <td width="10%"></td>
+                    <td width="50%">
+                        Kemter Insurance Agencies Sub-Agencies and Consultants Ltd,<br>
+                        Akinita Ieras Mitropolis,<br>
+                        Block B’, Office 112,<br>
+                        3040 Limassol, Cyprus
+                    </td>
+                    <td width="40%">
+                        Tel. : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+357 25 755 952 <br>
+                        Fax. : &nbsp;&nbsp;&nbsp;&nbsp;+357 25 755 953 <br>
+                        E-mail: &nbsp;&nbsp;<u>claims@kemterinsurance.com</u>
+                    </td>
+                </tr>
+                <tr><td height="25"></td></tr>
+                <tr>
+                    <td colspan="2">Certificate No. '.$certificateNumber.' '.$underwriterOpenCoverNumber.'</td>
+                    <td align="right">Page 1 of 2</td>
+                </tr>
+            </table>
             
-        </tr>
-        
-        <tr>
-            <td colspan="3" align="center">
-                <b>Conditions Continued on the back hereof</b><br><br>
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="3">
-                <b>Underwriters Agree Losses, if any, shall be payable to the order of 
-                '.$quotationData['oqq_insureds_name'].'
-                on surrender of this Certificate
-                </b><br><br><br><br>
-                
-            </td>
-        </tr>
-
-        <tr>
-            <td width="200"><b>
-                    Place of Issue: Athens 
-                    <br>
-                    Date: '.$db->convert_date_format($quotationData['oqq_effective_date'],'yyyy-mm-dd','dd/mm/yyyy',1,1).'
-                </b>
-            </td>
-            <td align="right">
-                <img src="' . $db->admin_layout_url . '/images/tokiomarinesignature.jpg" width="250px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            </td>
-            <td align="right" style="font-size: 12px;">
-                <img src="' . $db->admin_layout_url . '/images/cromar-signature-agency.jpg" width="200px">
-            </td>
-        </tr>
-    </table>
-    <hr style="page-break-after: always; color: white;">
-    <table width="900" style="font-size: 10px; '.$draftImage.'">
-        <tr>
-            <td colspan="3" align="center">
-                <b>IMPORTANT INSTRUCTIONS IN THE EVENT OF CLAIM</b>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="3" align="justify">
-                In the event of physical evidence of loss or damage which may result in a claim under this insurance immediate notice must be given 
-                <b>Within Cyprus</b> to Kemter Insurance Agencies, Sub-Agencies and Consultants Ltd or Claims outside of Cyprus the nearest Lloyd’s Agent 
-                at the port or place where the loss or damage is discovered in order that they may examine the goods and issue a survey report if 
-                required. All documentation to be submitted to:
-                <br>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="3">
-                <table>
-                    <tr>
-                        <td width="15%"></td>
-                        <td width="60%">
-                            Claims Department, Cromar Insurance Broker Ltd,<br>
-                            17 Agiou Konstantinou Street,<br>
-                            Marousi, 15124, Greece<br>
-                        </td>
-                        <td>
-                            Tel. : &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+30 210 8028946 <br>
-                            Fax. : &nbsp;&nbsp;&nbsp;&nbsp;+30 210 8029055 <br>
-                            E-mail: &nbsp;&nbsp;<u>claims@cromar.gr</u>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
-
-    </table>
-    
-    <table width="900" style="font-size: 10px; '.$draftImage.'">
-        <tr>
-            <td colspan="3" align="center">
-                <b>TERMINATION OF TRANSIT CLAUSE (TERRORISM)</b>
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="3">
-                <b>This clause shall be paramount and shall override anything contained in this insurance inconsistent therewith.</b>
-            </td>
-        </tr>
-        
-        <tr>
-            <td valign="top" width="20">1.</td>
-            <td colspan="2" align="justify">
-            Notwithstanding any provision to the contrary contained in this Policy or the Clauses referred to therein, it is 
-            agreed that in so far as the Policy covers loss of or damage to the subject-matter insured caused by any terrorist 
-            or any person acting from a political motive, such cover is conditional upon the subject matter either
-            </td>
-        </tr>
-        
-        <tr>
-            <td></td>
-            <td width="20" valign="top">1.1</td>
-            <td width="860" align="justify">
-                As per the transit clauses contained within the Policy.<br>or
-            </td>
-        </tr>
-        
-        <tr>
-            <td></td>
-            <td valign="top">1.2</td>
-            <td align="justify">
-                on delivery to the Consignee`s or other final warehouse or place of storage  at the destination named herein,
-            </td>
-        </tr>
-        
-        <tr>
-            <td></td>
-            <td valign="top">1.3</td>
-            <td align="justify">
-                on delivery to any other warehouse or place of storage, whether prior to or at the destination named herein, 
-                which the Assured elect to use either for storage other than tin the ordinary course of transit or for 
-                allocation or distribution, <br> or 
-            </td>
-        </tr>
-        
-        <tr>
-            <td></td>
-            <td valign="top">1.4</td>
-            <td align="justify">
-                in respect of marine transits, on the expiry of 60 days after completion of discharge overside of the 
-                goods hereby insured from the oversea vessel at the final port of discharge, 
-            </td>
-        </tr>
-        
-        <tr>
-            <td></td>
-            <td valign="top">1.5</td>
-            <td align="justify">
-                in respect of air transits, on the expiry of 30 days after unloading the subject-matter insured from 
-                the aircraft at the final place of discharge, whichever shall first occur.  
-            </td>
-        </tr>
-        
-        <tr>
-            <td valign="top">2.</td>
-            <td valign="top"></td>
-            <td align="justify">
-                If this Policy or the Clauses referred to therein specifically provide cover for inland or other further 
-                transits following on from storage, or termination as provided for above, cover will re-attach, and 
-                continues during the ordinary course of that transit terminating again in accordance with the clause 1.  
-            </td>
-        </tr>
-        
-        <tr>
-            <td valign="top">3.</td>
-            <td></td>
-            <td align="justify">
-                This clause is subject to English law and practice.
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="3" align="center">
-                <b>CARGO ISM ENDORSEMENT</b>
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="3">
-                Applicable to shipments on board Ro-Ro passenger ferries.<br>
-                Applicable with effect from 1 July 1998 to shipments on board:
-            </td>
-        </tr>
-        
-        <tr>
-            <td>1.</td>
-            <td colspan="2">
-                Passenger vessels transporting more than 12 passengers and
-            </td>
-        </tr>
-        
-        <tr>
-            <td valign="top">2.</td>
-            <td colspan="2" align="justify">
-                oil tankers, chemical tankers, gas carriers, bulk carriers and cargo high speed craft of 500 gt or more.<br>
-                Applicable with effect from 1 July 2002 to shipments on board all other cargo ships and mobile offshore
-                drilling units of 500 gt or more
-            </td>
-        </tr>
-        
-        <tr>
-            <td valign="top">3.</td>
-            <td colspan="2" align="justify">
-                In no case shall this Insurance cover loss, damage or expense where the subject matter insured is carried 
-                by a vessel that is not ISM Code certified or whose owners or operators do not hold an ISM Code Document 
-                of Compliance when, at the time of loading of the subject matter insured on board the vessel, the Assured
-                were aware, or in the ordinary course of business should have been aware: 
-            </td>
-        </tr>
-        
-        <tr>
-            <td></td>
-            <td valign="top">(a)</td>
-            <td>
-                Either that such vessel was not certified in accordance with the ISM Code.
-            </td>
-        </tr>
-        
-        <tr>
-            <td></td>
-            <td valign="top">(b)</td>
-            <td>
-                Or that a current Document of Compliance was not held by her owners or operators as required under the
-                SOLAS Convention 1974 as amended.
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="3" align="justify">
-                This exclusion shall not apply where this insurance has been assigned to the party claiming hereunder
-                who has bought or agreed to buy the subject matter insured in good faith under a binding contract.
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="3" align="center"><br>
-                <b>CARGO ISM FORWARDING CHARGES CLAUSE</b>
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="3" align="justify">
-                This insurance is extended to reimburse the Assured, up to the limit of the sum insured for the voyage,
-                for any extra charges properly and reasonably incurred in unloading, storing and forwarding the 
-                subject-matter to the destination to which it is insured hereunder following release of cargo from a vessel
-                arrested or detained at or diverted to any other port or place (other than the intended port of destination)
-                where the voyage is terminated due either:
-            </td>
-        </tr>
-        
-        <tr>
-            <td valign="top">a)</td>
-            <td colspan="2" align="justify">
-                to such vessel not being certified in accordance with the ISM Code; <br>
-                or
-            </td>
-        </tr>
-        
-        <tr>
-            <td valign="top">b)</td>
-            <td colspan="2" align="justify">
-                to a current Document of Compliance not being held by her owners or operators;<br>
-                as required under the SOLAS Convention 1974 as amended.
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="3" align="justify">
-                This clause, which does not apply to General Average or Salvage or Salvage Charges, is subject to all other 
-                terms conditions and exclusions contained in the policy.
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="3" align="center">
-                <b>SANCTION LIMITATION AND EXCLUSION CLAUSE JC2010/014 (11/08/10)</b>
-            </td>
-        </tr>
-        
-        <tr>
-            <td colspan="3" align="justify">
-                No (re)insurer shall be deemed to provide cover and no (re)insurer shall be liable to pay any claim or 
-                provide any benefit hereunder to the extent that the provision of such cover, payment of cuch claim or
-                provision of such benefit would expose that (re)insurer to any sanction, prohibition or restriction under 
-                United Nations resolutions or the trade or economic sanctions, laws or regulations of the European Union,
-                United Kingdom or United States of America.
-            </td>
-        </tr>
-        
-    </table>
-   
-    <div style="width:900px" style="font-size: 10px; text-align:center">
-    <b>IMPORTANT INSTRUCTIONS IN THE EVENT OF A CLAIM</b>
-    </div> 
-    
+            <pagebreak></pagebreak>
+            <p align="center"><strong>This is page 2 of 2 total pages of Certificate No. '.$certificateNumber.' '.$underwriterOpenCoverNumber.'</strong></p>
+            '.$conditionsOfInsurance[1].'
+            
+            </b>
+        </div>
+           
 <table width="900" class="tableTdBorder" cellpadding="0" cellspacing="0" style="'.$draftImage.'">
     <tr>
         <td width="400" align="center" valign="top">
@@ -713,22 +496,6 @@ body{
     
 </div>
 ';
-        if ($conditionsOfInsurance[1] != ''){
-            //<hr style="page-break-after: always; color: white;">
-            $html .= '
-            <div style="font-size: 10px;">
-            Page 3:<br>
-            </div>
-            <div style="font-size: 10px;" align="center">
-                <b>Conditions Of Insurance:</b><br>
-            </div>
-            <br>
-            <div style="font-size: 10px;">
-                '.$conditionsOfInsurance[1].'
-            </div>
-            ';
-
-        }
     }
 
 
@@ -742,21 +509,18 @@ function getConditionsOfInsurance($commodity,$clause){
             $return[0] = '
             
             <strong>General Cargo - Shipments by Sea, Air or Land</strong>
-            <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009. and/or Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009 as applicable.
-            <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009 and/or Institute War Clauses (Air Cargo)
-            <br>(excluding sendings by Post) CL388 dated 01.01.2009 as applicable.
-            <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009 and/ or Institute Strikes Clauses (Cargo)
-            <br>(Air Cargo) CL389 dated 01.01.2009 as applicable.
+            <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009 and/or Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009 as applicable.
+            <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009 and/or Institute War Clauses (Air Cargo) (excluding sendings by Post) CL388 dated 01.01.2009 as applicable.
+            <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009 and/ or Institute Strikes Clauses (Air Cargo) CL389 dated 01.01.2009 as applicable.
             <br>Institute Classification Clause CL354 dated 1.1.01.
-            <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical &amp; Electromagnetic Weapons
-            <br>Exclusion Clause CL370 dated 10.11.03.
+            <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical &amp; Electromagnetic Weapons Exclusion Clause CL370 dated 10.11.03.
             <br>Institute Cyber Attack Exclusion Clause CL380 dated 10.11.03.
-            <br>Termination of Transit Clause (Terrorism) JC 2009/056 1.1.09 JC 2009/056 1.1.09
+            <br>Termination of Transit Clause (Terrorism) JC2009/056 1.1.09
             <br>Marine Cyber Exclusion Clause LMA5402 11.11.19
             <br>Communicable Disease Exclusion Clause (Cargo) JC2020/011 17.04.20
             <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
-            <br>Including transhipment, barge and lightering risks whether customary or otherwise.
-            <br><br>
+            <br>Including transhipment, barge and lightering risks whether customary or otherwise.';
+            $return[1] = '
             <strong>Excluded Risks and Interests:</strong>
             <ul>
                 <li>New or Used Machinery etc.</li>
@@ -789,23 +553,21 @@ function getConditionsOfInsurance($commodity,$clause){
                 <li>Jewellery, watches, precious stones and precious metals </li>
                 <li>Aircrafts, ships, boats, any floating structures</li>
                 <li>Tanks and other armoured fighting vehicles</li>
-                <li>Arms and ammunitions; parts and accessories thereof</li>
-                <li>Explosives; Pyrotechnic Products; Matches; Pyrophoric Alloys</li>
-                <li>Fur skins and Artificial Fur; Manufactures Thereof</li>
+                <li>Arms and ammunitions, parts and accessories thereof</li>
+                <li>Explosives, Pyrotechnic Products, Matches, Pyrophoric Alloys</li>
+                <li>Fur skins and Artificial Fur, Manufactures Thereof</li>
                 <li>Raw Hides and Skins (Other Than Fur skins) and Leather</li>
                 <li>Blood & Life Science Products</li>
                 <li>Cash in transit</li>
                 <li>Fishmeal</li>
                 <li>Railway or Tramway Locomotives</li>
             </ul>
-            <br>
-            <br>
-            <strong>Bulk merchandise</strong>
+            <strong>Excluded Bulk Merchandise</strong>
             <ul>
                 <li>Coffee, Tea, Mate and Spices / Cocoa Beans</li> 
-                <li>Lac; Gums, Resins and Other Vegetable Saps and Extracts</li> 
-                <li>Products of the Milling Industry; Malt; Starches; Inulin; Wheat Gluten; Cereals</li> 
-                <li>Animal or Vegetable Fats and Oils and Their Cleavage Products Prepared Edible Fats; Animal or Vegetable Waxes / Cocoa butter, fat and oil / Sugars and Sugar Confectionery</li> 
+                <li>Lac, Gums, Resins and Other Vegetable Saps and Extracts</li> 
+                <li>Products of the Milling Industry, Malt, Starches, Inulin, Wheat Gluten, Cereals</li> 
+                <li>Animal or Vegetable Fats and Oils and Their Cleavage Products Prepared Edible Fats, Animal or Vegetable Waxes / Cocoa butter, fat and oil / Sugars and Sugar Confectionery</li> 
                 <li>Residues and Waste from the Food Industries</li>
                 <li>Beverages, Spirits and Vinegar</li>
             </ul>
@@ -820,16 +582,13 @@ function getConditionsOfInsurance($commodity,$clause){
         <br>Institute Classification Clause CL354 dated 1.1.01.
         <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10.11.03.
         <br>Institute Cyber Attack Exclusion Clause CL380 dated 10.11.03.
-        <br>Termination of Transit Clause (Terrorism) JC 2009/056 1.1.09.
-        <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
         <br>Institute Replacement Clause CL372 dated 01.12.2008 or Second-hand Replacement Clause as attached as applicable.
-        <br>Excluding Electrical and Mechanical derangement unless caused by a peril insured against.
-        <br>Termination of Transit Clause (Terrorism) JC 2009/056 1.1.09 JC 2009/056 1.1.09
+        <br>Termination of Transit Clause (Terrorism) JC2009/056 1.1.09
         <br>Marine Cyber Exclusion Clause LMA5402 11.11.19
         <br>Communicable Disease Exclusion Clause (Cargo) JC2020/011 17.04.20
         <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
         <br>Including transhipment, barge and lightering risks whether customary or otherwise.
-";
+        ";
         }
     }/* updated 23/07/2021*/
 
@@ -842,17 +601,15 @@ function getConditionsOfInsurance($commodity,$clause){
         <br>Institute Classification Clause CL354 dated 1.1.01.
         <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10.11.03.
         <br>Institute Cyber Attack Exclusion Clause CL380 dated 10.11.03.
-        <br>Termination of Transit Clause (Terrorism) JC 2009/056 1.1.09 JC 2009/056 1.1.09
+        <br>Termination of Transit Clause (Terrorism) JC2009/056 1.1.09
         <br>Marine Cyber Exclusion Clause LMA5402 11.11.19
         <br>Communicable Disease Exclusion Clause (Cargo) JC2020/011 17.04.20
         <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
         <br>Institute Replacement Clause CL372 dated 01.12.2008 or Second-hand Replacement Clause as attached as applicable.
         <br>Including transhipment, barge and lightering risks whether customary or otherwise.
-        <br>Subject also to Additional Conditions as attached.
         <br>Subject to a Certificate of Condition defined as: A document stating the condition of the vehicle at the time the vehicle enters the custody of the freight forwarder or steamship company noting all defects agreed by both the freight forwarder and the owner of the vehicle and signed at the same time.
-        <br>Subject also to Automobile & Motorcycle Additional Conditions as follows:
-        <br>
-        <br>
+        ';
+        $return[1] = '
         <strong>Additional Exclusions:</strong>
         <ul>
         <li>Excluding the risks of scratching, denting, chipping, bruising, marring, staining.</li>
@@ -909,9 +666,9 @@ function getConditionsOfInsurance($commodity,$clause){
                         <li>Jewellery, watches, precious stones and precious metals </li>
                         <li>Aircrafts, ships, boats, any floating structures</li>
                         <li>Tanks and other armoured fighting vehicles</li>
-                        <li>Arms and ammunitions; parts and accessories thereof</li>
-                        <li>Explosives; Pyrotechnic Products; Matches; Pyrophoric Alloys</li>
-                        <li>Fur skins and Artificial Fur; Manufactures Thereof</li>
+                        <li>Arms and ammunitions, parts and accessories thereof</li>
+                        <li>Explosives, Pyrotechnic Products, Matches, Pyrophoric Alloys</li>
+                        <li>Fur skins and Artificial Fur, Manufactures Thereof</li>
                         <li>Raw Hides and Skins (Other Than Fur skins) and Leather</li>
                         <li>Blood & Life Science Products</li>
                         <li>Cash in transit</li>
@@ -924,14 +681,14 @@ function getConditionsOfInsurance($commodity,$clause){
         
         <br>
         <br>
-        <strong>Bulk merchandise</strong>
+        <strong>Excluded Bulk merchandise</strong>
         <br>
         <ul>
             <li>Coffee, Tea, Mate and Spices / Cocoa Beans</li> 
-            <li>Lac; Gums, Resins and Other Vegetable Saps and Extracts</li> 
-            <li>Products of the Milling Industry; Malt; Starches; Inulin; Wheat Gluten; Cereals</li> 
-            <li>Animal or Vegetable Fats and Oils and Their Cleavage Products Prepared Edible Fats; Animal or Vegetable Waxes / Cocoa butter, fat and oil / Sugars and Sugar Confectionery</li> 
-            <li>Residues and Waste from the Food Industries; </li>
+            <li>Lac, Gums, Resins and Other Vegetable Saps and Extracts</li> 
+            <li>Products of the Milling Industry, Malt, Starches, Inulin, Wheat Gluten, Cereals</li> 
+            <li>Animal or Vegetable Fats and Oils and Their Cleavage Products Prepared Edible Fats, Animal or Vegetable Waxes / Cocoa butter, fat and oil / Sugars and Sugar Confectionery</li> 
+            <li>Residues and Waste from the Food Industries </li>
             <li>Beverages, Spirits and Vinegar </li>
         </ul>
         ';
@@ -947,7 +704,7 @@ function getConditionsOfInsurance($commodity,$clause){
         <br>Institute Classification Clause CL354 dated 1.1.01.
         <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical & Electromagnetic Weapons Exclusion Clause CL370 dated 10.11.03.
         <br>Institute Cyber Attack Exclusion Clause CL380 dated 10.11.03.
-        <br>Termination of Transit Clause (Terrorism) JC 2009/056 1.1.09 JC 2009/056 1.1.09
+        <br>Termination of Transit Clause (Terrorism) JC2009/056 1.1.09
         <br>Marine Cyber Exclusion Clause LMA5402 11.11.19
         <br>Communicable Disease Exclusion Clause (Cargo) JC2020/011 17.04.20
         <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
@@ -955,7 +712,8 @@ function getConditionsOfInsurance($commodity,$clause){
         <br>Excluding Electrical and Mechanical derangement unless caused by a peril insured against.
         <br>Excluding rusting, oxidisation & discolouration unless caused by an insured peril.
         <br>Including transhipment, barge and lightering risks whether customary or otherwise.
-        <br>
+        ';
+        $return[1] = '
         <strong>Excluded Risks and Interests:</strong>
         <br>
         <ul>
@@ -990,7 +748,7 @@ function getConditionsOfInsurance($commodity,$clause){
             <li>Aircrafts, ships, boats, any floating structures</li>
             <li>Tanks and other armoured fighting vehicles</li>
             <li>Arms and ammunitions; parts and accessories thereof</li>
-            <li>Explosives; Pyrotechnic Products; Matches; Pyrophoric Alloys</li>
+            <li>Explosives, Pyrotechnic Products, Matches, Pyrophoric Alloys</li>
             <li>Fur skins and Artificial Fur; Manufactures Thereof</li>
             <li>Raw Hides and Skins (Other Than Fur skins) and Leather</li>
             <li>Blood & Life Science Products</li>
@@ -999,14 +757,14 @@ function getConditionsOfInsurance($commodity,$clause){
             <li>Railway or Tramway Locomotives</li>
         </ul>
         <br>
-        <strong>Bulk merchandise</strong>
+        <strong>Excluded Bulk merchandise</strong>
         <br>
         <ul>
         <li>Coffee, Tea, Mate and Spices / Cocoa Beans</li> 
         <li>Lac; Gums, Resins and Other Vegetable Saps and Extracts</li> 
-        <li>Products of the Milling Industry; Malt; Starches; Inulin; Wheat Gluten; Cereals</li> 
-        <li>Animal or Vegetable Fats and Oils and Their Cleavage Products Prepared Edible Fats; Animal or Vegetable Waxes / Cocoa butter, fat and oil / Sugars and Sugar Confectionery</li> 
-        <li>Residues and Waste from the Food Industries; </li>
+        <li>Products of the Milling Industry, Malt; Starches, Inulin, Wheat Gluten, Cereals</li> 
+        <li>Animal or Vegetable Fats and Oils and Their Cleavage Products Prepared Edible Fats, Animal or Vegetable Waxes / Cocoa butter, fat and oil / Sugars and Sugar Confectionery</li> 
+        <li>Residues and Waste from the Food Industries </li>
         <li>Beverages, Spirits and Vinegar </li>
         </ul>
         
@@ -1022,14 +780,13 @@ function getConditionsOfInsurance($commodity,$clause){
         <br>Institute Classification Clause CL354 dated 1.1.01.
         <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10.11.03.
         <br>Institute Cyber Attack Exclusion Clause CL380 dated 10.11.03.
-        <br>Termination of Transit Clause (Terrorism) JC 2009/056 1.1.09 JC 2009/056 1.1.09
+        <br>Termination of Transit Clause (Terrorism) JC2009/056 1.1.09
         <br>Marine Cyber Exclusion Clause LMA5402 11.11.19
         <br>Communicable Disease Exclusion Clause (Cargo) JC2020/011 17.04.20
         <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
         <br>Including transhipment, barge and lightering risks whether customary or otherwise.
-        <br>Subject also to Additional Conditions as attached.
-        <br>
-        <br>
+        ';
+        $return[1] = '
         <strong>Excluded Risks and Interests:</strong>
         <br>
         <ul>
@@ -1064,8 +821,8 @@ function getConditionsOfInsurance($commodity,$clause){
         <li>Jewellery, watches, precious stones and precious metals </li>
         <li>Aircrafts, ships, boats, any floating structures</li>
         <li>Tanks and other armoured fighting vehicles</li>
-        <li>Arms and ammunitions; parts and accessories thereof</li>
-        <li>Explosives; Pyrotechnic Products; Matches; Pyrophoric Alloys</li>
+        <li>Arms and ammunitions, parts and accessories thereof</li>
+        <li>Explosives, Pyrotechnic Products, Matches, Pyrophoric Alloys</li>
         <li>Fur skins and Artificial Fur; Manufactures Thereof</li>
         <li>Raw Hides and Skins (Other Than Fur skins) and Leather</li>
         <li>Blood & Life Science Products</li>
@@ -1075,13 +832,13 @@ function getConditionsOfInsurance($commodity,$clause){
         </ul>
         <br>
         <br>
-        <strong>Bulk merchandise</strong>
+        <strong>Excluded Bulk merchandise</strong>
         <ul> 
         <li>Coffee, Tea, Mate and Spices / Cocoa Beans</li> 
         <li>Lac; Gums, Resins and Other Vegetable Saps and Extracts</li> 
-        <li>Products of the Milling Industry; Malt; Starches; Inulin; Wheat Gluten; Cereals</li> 
-        <li>Animal or Vegetable Fats and Oils and Their Cleavage Products Prepared Edible Fats; Animal or Vegetable Waxes / Cocoa butter, fat and oil / Sugars and Sugar Confectionery</li> 
-        <li>Residues and Waste from the Food Industries; </li>
+        <li>Products of the Milling Industry, Malt, Starches, Inulin, Wheat Gluten, Cereals</li> 
+        <li>Animal or Vegetable Fats and Oils and Their Cleavage Products Prepared Edible Fats, Animal or Vegetable Waxes / Cocoa butter, fat and oil / Sugars and Sugar Confectionery</li> 
+        <li>Residues and Waste from the Food Industries </li>
         <li>Beverages, Spirits and Vinegar </li>
         </ul>
         ';
@@ -1097,14 +854,13 @@ function getConditionsOfInsurance($commodity,$clause){
         <br>Institute Classification Clause CL354 dated 1.1.01.
         <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10.11.03.
         <br>Institute Cyber Attack Exclusion Clause CL380 dated 10.11.03.
-        <br>Termination of Transit Clause (Terrorism) JC 2009/056 1.1.09 JC 2009/056 1.1.09
+        <br>Termination of Transit Clause (Terrorism) JC2009/056 1.1.09
         <br>Marine Cyber Exclusion Clause LMA5402 11.11.19
         <br>Communicable Disease Exclusion Clause (Cargo) JC2020/011 17.04.20
         <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
         <br>Including transhipment, barge and lightering risks whether customary or otherwise.
-        <br>Subject also to Additional Conditions as attached.
-        <br>
-        <br>
+        ';
+        $return[1] = '
         <strong>Excluded Risks and Interests:</strong>
         <br>
         <ul>
@@ -1139,23 +895,23 @@ function getConditionsOfInsurance($commodity,$clause){
             <li>Jewellery, watches, precious stones and precious metals </li>
             <li>Aircrafts, ships, boats, any floating structures</li>
             <li>Tanks and other armoured fighting vehicles</li>
-            <li>Arms and ammunitions; parts and accessories thereof</li>
-            <li>Explosives; Pyrotechnic Products; Matches; Pyrophoric Alloys</li>
-            <li>Fur skins and Artificial Fur; Manufactures Thereof</li>
+            <li>Arms and ammunitions, parts and accessories thereof</li>
+            <li>Explosives, Pyrotechnic Products, Matches, Pyrophoric Alloys</li>
+            <li>Fur skins and Artificial Fur, Manufactures Thereof</li>
             <li>Raw Hides and Skins (Other Than Fur skins) and Leather</li>
             <li>Blood & Life Science Products</li>
             <li>Cash in transit</li>
             <li>Fishmeal</li>
             <li>Railway or Tramway Locomotives</li>
         </ul>
-        <strong>Bulk merchandise</strong>
+        <strong>Excluded Bulk merchandise</strong>
         <br>
         <ul>
             <li>Coffee, Tea, Mate and Spices / Cocoa Beans</li> 
             <li>Lac; Gums, Resins and Other Vegetable Saps and Extracts</li> 
-            <li>Products of the Milling Industry; Malt; Starches; Inulin; Wheat Gluten; Cereals</li> 
-            <li>Animal or Vegetable Fats and Oils and Their Cleavage Products Prepared Edible Fats; Animal or Vegetable Waxes / Cocoa butter, fat and oil / Sugars and Sugar Confectionery</li> 
-            <li>Residues and Waste from the Food Industries; </li>
+            <li>Products of the Milling Industry, Malt, Starches, Inulin, Wheat Gluten, Cereals</li> 
+            <li>Animal or Vegetable Fats and Oils and Their Cleavage Products Prepared Edible Fats, Animal or Vegetable Waxes / Cocoa butter, fat and oil / Sugars and Sugar Confectionery</li> 
+            <li>Residues and Waste from the Food Industries </li>
             <li>Beverages, Spirits and Vinegar </li>
         </ul>
         <br><br>
@@ -1170,7 +926,7 @@ function getConditionsOfInsurance($commodity,$clause){
         <br>Institute Strikes Clauses (Cargo) (Air Cargo) CL389 dated 01.01.2009. 
         <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical & Electromagnetic Weapons Exclusion Clause CL370 dated 10.11.03.
         <br>Institute Cyber Attack Exclusion Clause CL380 dated 10.11.03.
-        <br>Termination of Transit Clause (Terrorism) JC 2009/056 1.1.09 JC 2009/056 1.1.09
+        <br>Termination of Transit Clause (Terrorism) JC2009/056 1.1.09
         <br>Marine Cyber Exclusion Clause LMA5402 11.11.19
         <br>Communicable Disease Exclusion Clause (Cargo) JC2020/011 17.04.20
         <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
@@ -1178,8 +934,8 @@ function getConditionsOfInsurance($commodity,$clause){
         <br>Excluding loss or damage due to mechanical, electrical or electronic derangement.
         <br>Excluding mysterious disappearance.
         <br>Warranted pallets are shrink wrapped and contents obscured from view.
-        <br>
-        <br>
+        ';
+        $return[1] = '
         <strong>Excluded Risks and Interests:</strong>
         <ul>
         <li>General Cargo, Goods and/or Merchandise of every description 
@@ -1213,9 +969,9 @@ function getConditionsOfInsurance($commodity,$clause){
         <li>Jewellery, watches, precious stones and precious metals </li>
         <li>Aircrafts, ships, boats, any floating structures</li>
         <li>Tanks and other armoured fighting vehicles</li>
-        <li>Arms and ammunitions; parts and accessories thereof</li>
-        <li>Explosives; Pyrotechnic Products; Matches; Pyrophoric Alloys</li>
-        <li>Fur skins and Artificial Fur; Manufactures Thereof</li>
+        <li>Arms and ammunitions, parts and accessories thereof</li>
+        <li>Explosives, Pyrotechnic Products, Matches, Pyrophoric Alloys</li>
+        <li>Fur skins and Artificial Fur, Manufactures Thereof</li>
         <li>Raw Hides and Skins (Other Than Fur skins) and Leather</li>
         <li>Blood & Life Science Products</li>
         <li>Cash in transit</li>
@@ -1225,13 +981,13 @@ function getConditionsOfInsurance($commodity,$clause){
         <br>
         <br>
         
-        <strong>Bulk merchandise</strong> 
+        <strong>Excluded Bulk merchandise</strong> 
         <ul>
             <li>Coffee, Tea, Mate and Spices / Cocoa Beans</li> 
             <li>Lac; Gums, Resins and Other Vegetable Saps and Extracts</li> 
-            <li>Products of the Milling Industry; Malt; Starches; Inulin; Wheat Gluten; Cereals</li> 
-            <li>Animal or Vegetable Fats and Oils and Their Cleavage Products Prepared Edible Fats; Animal or Vegetable Waxes / Cocoa butter, fat and oil / Sugars and Sugar Confectionery</li> 
-            <li>Residues and Waste from the Food Industries; </li>
+            <li>Products of the Milling Industry, Malt; Starches, Inulin, Wheat Gluten, Cereals</li> 
+            <li>Animal or Vegetable Fats and Oils and Their Cleavage Products Prepared Edible Fats, Animal or Vegetable Waxes / Cocoa butter, fat and oil / Sugars and Sugar Confectionery</li> 
+            <li>Residues and Waste from the Food Industries </li>
             <li>Beverages, Spirits and Vinegar </li>
         </ul>
         ';
@@ -1246,14 +1002,14 @@ function getConditionsOfInsurance($commodity,$clause){
         <br>Institute Classification Clause CL354 dated 1.1.01.
         <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical and Electromagnetic Weapons Exclusion Clause CL370 dated 10.11.03.
         <br>Institute Cyber Attack Exclusion Clause CL380 dated 10.11.03.
-        <br>Termination of Transit Clause (Terrorism) JC 2009/056 1.1.09 JC 2009/056 1.1.09
+        <br>Termination of Transit Clause (Terrorism) JC2009/056 1.1.09
         <br>Marine Cyber Exclusion Clause LMA5402 11.11.19
         <br>Communicable Disease Exclusion Clause (Cargo) JC2020/011 17.04.20
         <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
         <br>Including transhipment, barge and lightering risks whether customary or otherwise.
-        <br>Subject also to Additional Conditions as attached.
-        <br>Subject also to Household Goods & Personal Effects Additional Conditions as follows:
-        <br>
+        
+        ';
+        $return[1] = '
         <br>a)	Average Clause. This Policy is subject to the condition of average, that is to say, if the property covered by this Insurance shall at the time of loss be of greater value than the sum insured hereby the Assured shall only be entitled to recover hereunder such proportion of the said loss as the sum insured by this Policy bears to the total value of the said property.
         <br>b)	Pairs and Sets Clause. Where any insured item consists of articles in a pair or set this Policy is not to pay more than the value of any particular part or parts which may be lost without reference to any special value which such article or articles may have as part of such pair or set, nor more than a proportionate part of such pair or set.
         <br>c)	Depreciation. Underwriters’ liability is restricted to the reasonable cost of repair and no claim is to attach hereto for depreciation consequent thereon.
@@ -1263,10 +1019,9 @@ function getConditionsOfInsurance($commodity,$clause){
         <br>g)	Professional Packing. Excluding losses arising as a result of goods not having been professionally packed.
         <br>h)	Excluded Goods. Excluding loss of or damage to furs valued over €200, or any cash, notes, stamps, deeds, tickets, travellers’ cheques, jewellery, watches, or similar valuable articles other than as declared and agreed herein.
         <br>i)	Itemised Inventory. Subject to valued, itemised inventory to be lodged with Freight Forwarder prior to shipment.
-        <br>
-        <br>
+        <br><br>
         <strong>Excluded Risks and Interests:</strong>
-        <table width="900">
+        <table width="900" style="font-size: 10px">
             <tr>
                 <td width="450">
                     <ul>
@@ -1305,8 +1060,8 @@ function getConditionsOfInsurance($commodity,$clause){
                         <li>Jewellery, watches, precious stones and precious metals </li>
                         <li>Aircrafts, ships, boats, any floating structures</li>
                         <li>Tanks and other armoured fighting vehicles</li>
-                        <li>Arms and ammunitions; parts and accessories thereof</li>
-                        <li>Explosives; Pyrotechnic Products; Matches; Pyrophoric Alloys</li>
+                        <li>Arms and ammunitions, parts and accessories thereof</li>
+                        <li>Explosives, Pyrotechnic Products, Matches, Pyrophoric Alloys</li>
                         <li>Fur skins and Artificial Fur; Manufactures Thereof</li>
                         <li>Raw Hides and Skins (Other Than Fur skins) and Leather</li>
                         <li>Blood & Life Science Products</li>
@@ -1318,13 +1073,13 @@ function getConditionsOfInsurance($commodity,$clause){
             </tr>
         </table>
         <br>
-        <strong>Bulk merchandise</strong> 
+        <strong>Excluded Bulk merchandise</strong> 
         <ul>
             <li>Coffee, Tea, Mate and Spices / Cocoa Beans</li> 
-            <li>Lac; Gums, Resins and Other Vegetable Saps and Extracts</li> 
-            <li>Products of the Milling Industry; Malt; Starches; Inulin; Wheat Gluten; Cereals</li> 
-            <li>Animal or Vegetable Fats and Oils and Their Cleavage Products Prepared Edible Fats; Animal or Vegetable Waxes / Cocoa butter, fat and oil / Sugars and Sugar Confectionery</li> 
-            <li>Residues and Waste from the Food Industries; </li>
+            <li>Lac, Gums, Resins and Other Vegetable Saps and Extracts</li> 
+            <li>Products of the Milling Industry, Malt, Starches, Inulin, Wheat Gluten, Cereals</li> 
+            <li>Animal or Vegetable Fats and Oils and Their Cleavage Products Prepared Edible Fats, Animal or Vegetable Waxes / Cocoa butter, fat and oil / Sugars and Sugar Confectionery</li> 
+            <li>Residues and Waste from the Food Industries </li>
             <li>Beverages, Spirits and Vinegar </li>
         </ul>
         <br><br><br>
@@ -1364,13 +1119,13 @@ function getConditionsOfInsurance($commodity,$clause){
         <br>Institute Classification Clause CL354 dated 1.1.01.
         <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical & Electromagnetic Weapons Exclusion Clause CL370 dated 10.11.03.
         <br>Institute Cyber Attack Exclusion Clause CL380 dated 10.11.03.
-        <br>Termination of Transit Clause (Terrorism) JC 2009/056 1.1.09 JC 2009/056 1.1.09
+        <br>Termination of Transit Clause (Terrorism) JC2009/056 1.1.09
         <br>Marine Cyber Exclusion Clause LMA5402 11.11.19
         <br>Communicable Disease Exclusion Clause (Cargo) JC2020/011 17.04.20
         <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
         <br>Including transhipment, barge and lightering risks whether customary or otherwise.
-        <br>Subject also to Additional Conditions as attached.
-        <br>
+        ';
+        $return[1] = '
         <strong>Excluded Risks and Interests:</strong>
         <ul>
             <li>General Cargo, Goods and/or Merchandise of every description</li> 
@@ -1403,9 +1158,9 @@ function getConditionsOfInsurance($commodity,$clause){
             <li>Jewellery, watches, precious stones and precious metals </li>
             <li>Aircrafts, ships, boats, any floating structures</li>
             <li>Tanks and other armoured fighting vehicles</li>
-            <li>Arms and ammunitions; parts and accessories thereof</li>
-            <li>Explosives; Pyrotechnic Products; Matches; Pyrophoric Alloys</li>
-            <li>Fur skins and Artificial Fur; Manufactures Thereof</li>
+            <li>Arms and ammunitions, parts and accessories thereof</li>
+            <li>Explosives, Pyrotechnic Products, Matches, Pyrophoric Alloys</li>
+            <li>Fur skins and Artificial Fur, Manufactures Thereof</li>
             <li>Raw Hides and Skins (Other Than Fur skins) and Leather</li>
             <li>Blood & Life Science Products</li>
             <li>Cash in transit</li>
@@ -1413,14 +1168,13 @@ function getConditionsOfInsurance($commodity,$clause){
             <li>Railway or Tramway Locomotives</li>
         </ul>
         <br>
-        <br>
-        <strong>Bulk merchandise</strong> 
+        <strong>Excluded Bulk merchandise</strong> 
         <ul>
             <li>Coffee, Tea, Mate and Spices / Cocoa Beans</li> 
-            <li>Lac; Gums, Resins and Other Vegetable Saps and Extracts</li> 
-            <li>Products of the Milling Industry; Malt; Starches; Inulin; Wheat Gluten; Cereals</li> 
-            <li>Animal or Vegetable Fats and Oils and Their Cleavage Products Prepared Edible Fats; Animal or Vegetable Waxes / Cocoa butter, fat and oil / Sugars and Sugar Confectionery</li> 
-            <li>Residues and Waste from the Food Industries; </li>
+            <li>Lac, Gums, Resins and Other Vegetable Saps and Extracts</li> 
+            <li>Products of the Milling Industry, Malt, Starches, Inulin, Wheat Gluten, Cereals</li> 
+            <li>Animal or Vegetable Fats and Oils and Their Cleavage Products Prepared Edible Fats, Animal or Vegetable Waxes / Cocoa butter, fat and oil / Sugars and Sugar Confectionery</li> 
+            <li>Residues and Waste from the Food Industries </li>
             <li>Beverages, Spirits and Vinegar </li>
         </ul>
         ';
@@ -1436,14 +1190,14 @@ function getConditionsOfInsurance($commodity,$clause){
         <br>Institute Classification Clause CL354 dated 1.1.01.
         <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical & Electromagnetic Weapons Exclusion Clause CL370 dated 10.11.03.
         <br>Institute Cyber Attack Exclusion Clause CL380 dated 10.11.03.
-        <br>Termination of Transit Clause (Terrorism) JC 2009/056 1.1.09 JC 2009/056 1.1.09
+        <br>Termination of Transit Clause (Terrorism) JC2009/056 1.1.09
         <br>Marine Cyber Exclusion Clause LMA5402 11.11.19
         <br>Communicable Disease Exclusion Clause (Cargo) JC2020/011 17.04.20
         <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
         <br>Including transhipment, barge and lightering risks whether customary or otherwise.
         <br>Subject also to Additional Conditions as attached.
-        <br>
-        <br>
+        ';
+        $return[1] = '
         <strong>Excluded Risks and Interests:</strong>
         <ul>
             <li>General Cargo, Goods and/or Merchandise of every description</li> 
@@ -1477,8 +1231,8 @@ function getConditionsOfInsurance($commodity,$clause){
             <li>Aircrafts, ships, boats, any floating structures</li>
             <li>Tanks and other armoured fighting vehicles</li>
             <li>Arms and ammunitions; parts and accessories thereof</li>
-            <li>Explosives; Pyrotechnic Products; Matches; Pyrophoric Alloys</li>
-            <li>Fur skins and Artificial Fur; Manufactures Thereof</li>
+            <li>Explosives, Pyrotechnic Products, Matches, Pyrophoric Alloys</li>
+            <li>Fur skins and Artificial Fur, Manufactures Thereof</li>
             <li>Raw Hides and Skins (Other Than Fur skins) and Leather</li>
             <li>Blood & Life Science Products</li>
             <li>Cash in transit</li>
@@ -1487,13 +1241,13 @@ function getConditionsOfInsurance($commodity,$clause){
         </ul>
         <br>
         <br>
-        <strong>Bulk merchandise</strong>
+        <strong>Excluded Bulk merchandise</strong>
         <ul> 
             <li>Coffee, Tea, Mate and Spices / Cocoa Beans</li> 
-            <li>Lac; Gums, Resins and Other Vegetable Saps and Extracts</li> 
-            <li>Products of the Milling Industry; Malt; Starches; Inulin; Wheat Gluten; Cereals</li> 
-            <li>Animal or Vegetable Fats and Oils and Their Cleavage Products Prepared Edible Fats; Animal or Vegetable Waxes / Cocoa butter, fat and oil / Sugars and Sugar Confectionery</li> 
-            <li>Residues and Waste from the Food Industries; </li>
+            <li>Lac, Gums, Resins and Other Vegetable Saps and Extracts</li> 
+            <li>Products of the Milling Industry, Malt, Starches, Inulin, Wheat Gluten, Cereals</li> 
+            <li>Animal or Vegetable Fats and Oils and Their Cleavage Products Prepared Edible Fats, Animal or Vegetable Waxes / Cocoa butter, fat and oil / Sugars and Sugar Confectionery</li> 
+            <li>Residues and Waste from the Food Industries </li>
             <li>Beverages, Spirits and Vinegar </li>
         </ul>
         ';
