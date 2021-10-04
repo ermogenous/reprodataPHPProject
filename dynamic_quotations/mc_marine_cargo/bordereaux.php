@@ -26,7 +26,12 @@ if ($_POST['action'] == 'search') {
     }
 
     if ($_POST['status'] != '') {
-        $where .= "AND oqq_status = '" . $_POST['status'] . "' ";
+        if ($_POST['status'] == 'Active'){
+            $where .= "AND oqq_status IN ('" . $_POST['status'] . "','Cancelled') ";
+        }
+        else {
+            $where .= "AND oqq_status IN ('" . $_POST['status'] . "') ";
+        }
     }
 
     if ($_POST['numberFrom'] != '') {
@@ -34,16 +39,42 @@ if ($_POST['action'] == 'search') {
     }
 
     if ($_POST['effectiveFrom'] != '') {
-        $where .= "AND oqq_effective_date BETWEEN 
+        $where .= "AND IF (
+        oqq_status = 'Active' , oqq_effective_date,
+            IF (oqq_status = 'Cancelled',oqq_cancellation_effective_date,null)
+        ) BETWEEN 
         '" . $db->convertDateToUS($_POST['effectiveFrom']) . " 00:00:00' AND '" . $db->convertDateToUS($_POST['effectiveTo']) . " 23:59:59' ";
     }
 
 
 
     if ($_POST['type'] == 'Marine') {
-        $sql = "
+
+        $where = 'oqq_quotations_type_ID = 2 ';
+        $whereCanceled = 'oqq_quotations_type_ID = 2 ';
+
+        $where .= PHP_EOL."AND oqq_status IN ('" . $_POST['status'] . "','Cancelled') ";
+        $whereCanceled .= PHP_EOL."AND oqq_status = 'Cancelled' ";
+        if ($_POST['numberFrom'] != '') {
+            $where .= PHP_EOL."AND oqq_number BETWEEN '" . $_POST['numberFrom'] . "' AND '" . $_POST['numberTo'] . "' ";
+            $whereCanceled .= PHP_EOL."AND oqq_number BETWEEN '" . $_POST['numberFrom'] . "' AND '" . $_POST['numberTo'] . "' ";
+        }
+        if ($_POST['effectiveFrom'] != '') {
+            $where .= PHP_EOL."AND oqq_effective_date BETWEEN 
+        '" . $db->convertDateToUS($_POST['effectiveFrom']) . " 00:00:00' AND '" . $db->convertDateToUS($_POST['effectiveTo']) . " 23:59:59' ";
+
+            $whereCanceled .= PHP_EOL." AND oqq_cancellation_effective_date BETWEEN 
+            '".$db->convertDateToUS($_POST['effectiveFrom']) . " 00:00:00' AND '" . $db->convertDateToUS($_POST['effectiveTo']) . " 23:59:59' ";
+
+        }
+
+        $sql1 = "
           SELECT
-          oqt_quotations.*
+          oqt_quotations.*";
+        $sql1a = PHP_EOL.",'Active' as clo_status ";
+        $sql1c = PHP_EOL.",oqq_status as clo_status ";
+
+        $sql2 = "
           ,ship.oqqit_date_1 as shipmentDate
           ,ship.oqqit_rate_1 as typeOfShipment
           ,ship.oqqit_rate_2 as valueCurrency
@@ -59,7 +90,7 @@ if ($_POST['action'] == 'search') {
           ,ship.oqqit_rate_13 as conditions
           ,ship.oqqit_rate_14 as cityOrigin
           ,ship.oqqit_rate_15 as cityDestination
-          
+          ,ship.oqqit_rate_20 as totalInsuredValue
           ,cargo.oqqit_rate_1 as fullDescription 
           ,cargo.oqqit_rate_2 as marksNumbers
           ,cargo.oqqit_rate_3 as letterCredit
@@ -67,15 +98,35 @@ if ($_POST['action'] == 'search') {
           ,cargo.oqqit_rate_6 as excess
           ,cargo.oqqit_rate_7 as reference
           ,cargo.oqqit_rate_8 as rate
+          ,usr_name as users_name
           FROM 
           oqt_quotations
           JOIN oqt_quotations_items as ship ON oqq_quotations_ID = ship.oqqit_quotations_ID AND ship.oqqit_items_ID = 3
           JOIN oqt_quotations_items as cargo ON oqq_quotations_ID = cargo.oqqit_quotations_ID AND cargo.oqqit_items_ID = 4
-          
+          LEFT OUTER JOIN users ON usr_users_ID = oqq_users_ID
+          ";
+
+        $sqlWhereA = "
           WHERE
-          1=1
           " . $where . "
+          ";
+
+        $sqlWhereC = "
+          WHERE
+          " . $whereCanceled . "
           ORDER BY oqq_number ASC";
+
+        if ($_POST['status'] == 'Active'){
+            $sql = $sql1.$sql1a.$sql2.$sqlWhereA."
+            UNION all
+            ".$sql1.$sql1c.$sql2.$sqlWhereC;
+        }
+        else {
+            $sql = $sql1.$sql1a.$sql2.$sqlWhereA." ORDER BY oqq_number ASC";
+        }
+
+        //echo $sql;
+
     } else if ($_POST['type'] == 'Travel') {
         $sql = "
           SELECT
@@ -368,6 +419,7 @@ if ($_POST['action'] == 'search') {
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Number</th>
+                                <th scope="col">Status</th>
                                 <th scope="col">Activation Date</th>
                                 <th scope="col">
                                     <?php
@@ -401,6 +453,7 @@ if ($_POST['action'] == 'search') {
                                 <tr>
                                     <td><?php echo $row['oqq_quotations_ID']; ?></td>
                                     <td><?php echo $row['oqq_number']; ?></td>
+                                    <td><?php echo $row['clo_status']; ?></td>
                                     <td><?php echo $db->convert_date_format($row['oqq_last_update_date_time'], 'yyyy-mm-dd', 'dd/mm/yyyy', 1, 1); ?></td>
                                     <td><?php
                                         if ($_POST['type'] == 'Marine') {
@@ -463,10 +516,18 @@ function outputExcelMarine($sql)
         ->setCellValue($str . '1', 'Type')
         ->setCellValue(++$str . '1', '#')
         ->setCellValue(++$str . '1', 'Number')
+        ->setCellValue(++$str . '1', 'User')
         ->setCellValue(++$str . '1', 'Activation Date')
+        ->setCellValue(++$str . '1', 'Cancellation Date')
+        ->setCellValue(++$str . '1', 'Cancellation Effective Date')
+        ->setCellValue(++$str . '1', 'Status')
         ->setCellValue(++$str . '1', 'Shipment Date')
         ->setCellValue(++$str . '1', 'Client Name')
         ->setCellValue(++$str . '1', 'Client ID')
+        ->setCellValue(++$str . '1', 'Address')
+        ->setCellValue(++$str . '1', 'City')
+        ->setCellValue(++$str . '1', 'Postal Code')
+        ->setCellValue(++$str . '1', 'Industrial Sector')
         ->setCellValue(++$str . '1', 'Insured Val Cur.')
         ->setCellValue(++$str . '1', 'Insured Val')
         ->setCellValue(++$str . '1', 'Exchange Rate')
@@ -489,7 +550,9 @@ function outputExcelMarine($sql)
         ->setCellValue(++$str . '1', 'Reference')
         ->setCellValue(++$str . '1', 'Rate')
         ->setCellValue(++$str . '1', 'SI Euro')
-        ->setCellValue(++$str . '1', 'Premium');
+        ->setCellValue(++$str . '1', 'Premium')
+        ->setCellValue(++$str . '1', 'Stamps')
+        ->setCellValue(++$str . '1', 'Fees');
 //make all align of the row LEFT
     $spreadsheet->getActiveSheet()->getStyle('A1:' . $str . '1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 //make all row Bold
@@ -504,10 +567,18 @@ function outputExcelMarine($sql)
             ->setCellValue($str . $line, 'Marine Cargo')
             ->setCellValue(++$str . $line, $row['oqq_quotations_ID'])
             ->setCellValue(++$str . $line, $row['oqq_number'])
-            ->setCellValue(++$str . $line, $db->convert_date_format($row['oqq_last_update_date_time'], 'yyyy-mm-dd', 'dd/mm/yyyy', 1, 1))
+            ->setCellValue(++$str . $line, $row['users_name'])
+            ->setCellValue(++$str . $line, $db->convert_date_format($row['oqq_effective_date'], 'yyyy-mm-dd', 'dd/mm/yyyy', 1, 1))
+            ->setCellValue(++$str . $line, $db->convert_date_format($row['oqq_cancellation_date'], 'yyyy-mm-dd', 'dd/mm/yyyy', 1, 1))
+            ->setCellValue(++$str . $line, $db->convert_date_format($row['oqq_cancellation_effective_date'], 'yyyy-mm-dd', 'dd/mm/yyyy', 1, 1))
+            ->setCellValue(++$str . $line, $row['clo_status'])
             ->setCellValue(++$str . $line, $db->convertDateToEU($row['shipmentDate']))
             ->setCellValue(++$str . $line, $row['oqq_insureds_name'])
             ->setCellValue(++$str . $line, $row['oqq_insureds_id'])
+            ->setCellValue(++$str . $line, $row['oqq_insureds_address'])
+            ->setCellValue(++$str . $line, $row['oqq_insureds_city'])
+            ->setCellValue(++$str . $line, $row['oqq_insureds_postal_code'])
+            ->setCellValue(++$str . $line, $row['oqq_extra_field_1'])
             ->setCellValue(++$str . $line, $row['valueCurrency'])
             ->setCellValue(++$str . $line, $row['insuredValue'])
             ->setCellValue(++$str . $line, $row['exchangeRate'])
@@ -529,8 +600,10 @@ function outputExcelMarine($sql)
             ->setCellValue(++$str . $line, $row['excess'])
             ->setCellValue(++$str . $line, $row['reference'])
             ->setCellValue(++$str . $line, $row['rate'])
-            ->setCellValue(++$str . $line, round(($row['insuredValue'] * $row['exchangeRate']),2))
-            ->setCellValue(++$str . $line, round((($row['insuredValue'] * $row['exchangeRate']) * ($row['rate']/100)),2) );
+            ->setCellValue(++$str . $line, $row['totalInsuredValue'])
+            ->setCellValue(++$str . $line, $row['oqq_premium'])
+            ->setCellValue(++$str . $line, $row['oqq_stamps'])
+            ->setCellValue(++$str . $line, $row['oqq_fees']);
 
         $spreadsheet->getActiveSheet()->getStyle('A1:' . $str . $line)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_LEFT);
 

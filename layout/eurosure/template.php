@@ -427,6 +427,11 @@ global $main, $db;
                                                         class="fas fa-eye"></i> <?php echo $db->showLangText('Transaction Count By Last User', 'Transaction Count By Last User'); ?>
                                             </a>
 
+                                            <a class="dropdown-item"
+                                               href="<?php echo $main["site_url"]; ?>/eurosure/reports/accounts/policies_balances_by_account.php"><i
+                                                        class="fas fa-eye"></i> <?php echo $db->showLangText('Policies Balances By Account', 'Policies Balances By Account'); ?>
+                                            </a>
+
                                         </ul>
                                     </li>
                                     <!-- End Level two -->
@@ -550,7 +555,7 @@ global $main, $db;
                                 <?php } ?>
 
                                 <?php
-                                if ($db->user_data['usr_user_rights'] <= 2) {
+                                if ($db->user_data['usr_user_rights'] <= 2 || $db->user_data['usr_users_groups_ID'] == 2) {
                                     ?>
                                     <li>
                                         <a class="dropdown-item"

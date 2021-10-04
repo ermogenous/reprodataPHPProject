@@ -41,6 +41,7 @@ $db->show_header();
                             <?php
                             echo $row['inity_insurance_type']." - ".$row['inity_long_description'];
                             ?>
+                                <a href="ins_type_validation_rules.php?lid=<?php echo $row['inity_insurance_type_serial'];?>">Validation Rules</a>
                             </b>
                         </div>
                     </div>

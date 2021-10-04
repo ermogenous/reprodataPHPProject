@@ -12,13 +12,14 @@ class ODBCCON
 
     private $startTransaction = false;
 
-    function __construct($database = 'EUROSURE', $charset = 'UTF-8') /*windows-1253*/
+    function __construct($database = 'EUROSURE', $charset = 'UTF-8',$username='PHPINTRANET', $password = 'Php$Intranet') /*windows-1253*/
     {
         global $db;
         $this->database = $database;
-        $this->databaseHandler = @odbc_connect('dsn=' . $database . ';charset=' . $charset . ';', 'PHPINTRANET', 'Php$Intranet');
+        $this->databaseHandler = @odbc_connect('dsn=' . $database . ';charset=' . $charset . ';', $username, $password);
         if ($this->databaseHandler == false){
-            echo "Could not connect to odbc";
+            echo "Could not connect to odbc<br>".PHP_EOL;
+            echo odbc_errormsg();
             exit();
         }
         else {
@@ -134,5 +135,13 @@ class ODBCCON
 
     public function getDatabaseName(){
         return $this->database;
+    }
+
+    public function getError(){
+        return $this->error;
+    }
+
+    public function getErrorDescription(){
+        return $this->errorDescription;
     }
 }

@@ -185,6 +185,15 @@ body{
         else {
             $oceanVessel = '';
         }
+
+        if ($sect2['oqqit_rate_10'] != ''){
+            $bolInvoice = '<br><b>BOL/AWB:</b> '.$sect2['oqqit_rate_10']."<br>";
+        }
+        if ($sect2['oqqit_rate_11'] != ''){
+            $bolInvoice .= '<b>Invoice:</b> '.$sect2['oqqit_rate_11'];
+        }
+
+
         //for currency money format
         setlocale(LC_MONETARY, 'it_IT');
 
@@ -203,6 +212,20 @@ body{
         else {
             //ORIGINAL
             $pageBreak = '';
+        }
+
+        //if declared value currency and freight value currency are the same then show that currency else show eur
+        if ($sect1['oqqit_rate_2'] == $sect1['oqqit_rate_16']){
+            $insuredValue = ($sect1['oqqit_rate_3'] + $sect1['oqqit_rate_17']) * (($sect1['oqqit_rate_19'] / 100) + 1);
+            $insuredValue = round($insuredValue,2);
+            $insuredValueCurrency = $sect1['oqqit_rate_2'];
+
+            //echo $sect1['oqqit_rate_19'];
+            //exit();
+        }
+        else {
+            $insuredValue = $sect1['oqqit_rate_20'];
+            $insuredValueCurrency = 'EUR';
         }
 
         $html .= '
@@ -266,7 +289,7 @@ body{
                     <tr>
                         <td>' . $sect1['oqqit_rate_6'] . '</td>
                         <td>'.$db->convert_date_format($quotationData['oqq_effective_date'],'yyyy-mm-dd','dd/mm/yyyy',1,1).'</td>
-                        <td>' .number_format($sect1['oqqit_rate_3'],2,',','.')." ".$sect1['oqqit_rate_2'] . '</td>
+                        <td>' .number_format($insuredValue,2,',','.').' '.$insuredValueCurrency.'</td>
                     </tr>
                     <tr>
                         <td>&nbsp;</td>
@@ -318,6 +341,7 @@ body{
                             <b>Goods Insured</b><br><br>
                             ' . nl2br($sect2['oqqit_rate_1']) . '<br>
                             '.$oceanVessel.'
+                            '.$bolInvoice.'
                         </td>
                     </tr>
                 </table>
@@ -594,7 +618,7 @@ function getConditionsOfInsurance($commodity,$clause){
 
     if ($commodity == 'New/Used Vehicles'){
         $return[0] = '
-        <strong>3.	Automobiles, Motorcycles & Caravans – New Used, Second Hand up to 7 years old</strong>
+        <strong>Automobiles, Motorcycles & Caravans – New Used, Second Hand up to 7 years old</strong>
         <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009.
         <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009.
         <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009.
@@ -628,7 +652,7 @@ function getConditionsOfInsurance($commodity,$clause){
         <br>
         <strong>Excluded Risks and Interests:</strong>
         <br>
-        <table width="900">
+        <table width="900" style="font-size: 12px">
             <tr>
                 <td>
                     <ul>
@@ -679,7 +703,6 @@ function getConditionsOfInsurance($commodity,$clause){
             </tr>
         </table>
         
-        <br>
         <br>
         <strong>Excluded Bulk merchandise</strong>
         <br>
@@ -920,7 +943,7 @@ function getConditionsOfInsurance($commodity,$clause){
 
     if ($commodity == 'Special Cover Mobile Phones, Electronic Equipment'){
         $return[0] = '
-        <strong>Special Airfreight Cargo (Courier Service)</strong> 
+        <strong>Special Airfreight Cargo</strong> 
         <br>Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009.
         <br>Institute War Clauses (Air Cargo) (excluding sendings by Post) CL388 dated 01.01.2009.
         <br>Institute Strikes Clauses (Cargo) (Air Cargo) CL389 dated 01.01.2009. 
@@ -930,7 +953,7 @@ function getConditionsOfInsurance($commodity,$clause){
         <br>Marine Cyber Exclusion Clause LMA5402 11.11.19
         <br>Communicable Disease Exclusion Clause (Cargo) JC2020/011 17.04.20
         <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
-        <br>Including transhipment, barge and lightering risks whether customary or otherwise.
+        <br>Institute Replacement Clause CL372 dated 01.12.2008 or Second-hand Replacement Clause as attached as applicable.
         <br>Excluding loss or damage due to mechanical, electrical or electronic derangement.
         <br>Excluding mysterious disappearance.
         <br>Warranted pallets are shrink wrapped and contents obscured from view.

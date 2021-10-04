@@ -12,6 +12,7 @@ class dynamicQuotation
     private $quotationData = [];
     private $quotationID;
     private $underwriterData = [];
+    private $quotationUnderwriterData = [];
     private $quotationTypeData = [];
 
     public $error = false;
@@ -56,6 +57,24 @@ class dynamicQuotation
         $this->underwriterData = $db->query_fetch('SELECT * FROM oqt_quotations_underwriters WHERE oqun_user_ID = ' . $db->user_data['usr_users_ID']);
     }
 
+    private function loadQuotationUnderwriterData()
+    {
+        global $db;
+        $this->quotationUnderwriterData = $db->query_fetch(
+            'SELECT * FROM 
+                  oqt_quotations_underwriters 
+                  WHERE oqun_user_ID = ' . $this->quotationData()['oqq_users_ID']
+        );
+    }
+
+    public function getQuotationUnderwriterData()
+    {
+        if (empty($this->quotationUnderwriterData)){
+            $this->loadQuotationUnderwriterData();
+        }
+        return $this->quotationUnderwriterData;
+    }
+
     public function getQuotationType()
     {
         $label = $this->quotationData['oqqt_quotation_or_cover_note'];
@@ -98,11 +117,11 @@ class dynamicQuotation
         $this->getUnderwriterData();
         if ($db->user_data["usr_users_ID"] != $this->quotationData["oqq_users_ID"] && $db->user_data["usr_user_rights"] >= 3) {
             //if ($this->underwriterData['oqun_view_group_ID'] > 0 && $this->underwriterData['oqun_view_group_ID'] == $this->quotationData['usr_users_groups_ID']){
-                //user is allowed
+            //user is allowed
             //}
             //else {
-                $this->error = true;
-                $this->errorDescription = 'You are not allowed to activate this '.$this->getQuotationType();
+            $this->error = true;
+            $this->errorDescription = 'You are not allowed to activate this ' . $this->getQuotationType();
             //}
         }
 
@@ -125,19 +144,16 @@ class dynamicQuotation
             $newData['effective_date'] = date('Y-m-d G:i:s');
 
             //check if renewal and if to issue new number or not
-            if ($this->quotationData['oqq_replacing_ID'] > 0){
-                if ($this->quotationData['oqqt_renewal_issue_new_number'] == 1){
+            if ($this->quotationData['oqq_replacing_ID'] > 0) {
+                if ($this->quotationData['oqqt_renewal_issue_new_number'] == 1) {
                     $newData['number'] = $this->issueNumber();
-                }
-                else {
+                } else {
                     //not issue new number
                 }
-            }
-            //all other except renewals.
+            } //all other except renewals.
             else {
                 $newData['number'] = $this->issueNumber();
             }
-
 
 
             //update the data of the current object
@@ -146,8 +162,8 @@ class dynamicQuotation
             $this->quotationData['oqq_number'] = $newData['number'];
 
 
-             $db->db_tool_update_row('oqt_quotations', $newData,
-                'oqq_quotations_ID = '.$this->quotationID, $this->quotationID,'','execute','oqq_');
+            $db->db_tool_update_row('oqt_quotations', $newData,
+                'oqq_quotations_ID = ' . $this->quotationID, $this->quotationID, '', 'execute', 'oqq_');
 
             $this->sendEmail();
 
@@ -159,7 +175,7 @@ class dynamicQuotation
 
     public function checkForApproval()
     {
-        global $db;
+        global $db, $quotationUnderwriter;
         $needApproval = false;
         //first check if the quotation is outstanding
         if ($this->quotationData['oqq_status'] == 'Outstanding') {
@@ -181,10 +197,9 @@ class dynamicQuotation
                 $newData['status'] = 'Pending';
                 $this->quotationData['oqq_status'] = 'Pending';
                 //success sending the approval email
-                if ($this->sendApprovalEmail()){
+                if ($this->sendApprovalEmail()) {
 
-                }
-                //failure sending the email.
+                } //failure sending the email.
                 else {
 
                 }
@@ -206,12 +221,13 @@ class dynamicQuotation
         }
     }
 
-    private function sendApprovalEmail(){
-        global $db,$main;
+    private function sendApprovalEmail()
+    {
+        global $db, $main;
         include_once('../send_auto_emails/send_auto_emails_class.php');
 
         //check if status = pending
-        if ($this->quotationData['oqq_status'] == 'Pending'){
+        if ($this->quotationData['oqq_status'] == 'Pending') {
 
             //check parameters if send mail is enabled
             if ($this->quotationData['oqqt_approval_send_mail'] != '') {
@@ -246,7 +262,7 @@ class dynamicQuotation
                 $attachment_file_name = str_replace('[QTNUMBER]', $this->quotationData['oqq_number'], $attachment_file_name);
 
                 //[QTLINK]
-                $link = $main["site_url"]."/dynamic_quotations/quotations_modify.php?quotation_type=".$this->quotationData['oqq_quotations_type_ID']."&quotation=".$this->quotationData['oqq_quotations_ID'];
+                $link = $main["site_url"] . "/dynamic_quotations/quotations_modify.php?quotation_type=" . $this->quotationData['oqq_quotations_type_ID'] . "&quotation=" . $this->quotationData['oqq_quotations_ID'];
                 $dataArray['email_subject'] = str_replace('[QTLINK]', $link, $dataArray['email_subject']);
                 $dataArray['email_body'] = str_replace('[QTLINK]', $link, $dataArray['email_body']);
 
@@ -256,7 +272,7 @@ class dynamicQuotation
                 $attachment_file_name = str_replace('[USERSNAME]', $this->quotationData['usr_name'], $attachment_file_name);
 
                 //[PDFLINK]
-                $link = $main["site_url"]."/dynamic_quotations/quotation_print.php?quotation=".$this->quotationData['oqq_quotations_ID']."&pdf=1";
+                $link = $main["site_url"] . "/dynamic_quotations/quotation_print.php?quotation=" . $this->quotationData['oqq_quotations_ID'] . "&pdf=1";
                 $dataArray['email_subject'] = str_replace('[PDFLINK]', $link, $dataArray['email_subject']);
                 $dataArray['email_body'] = str_replace('[PDFLINK]', $link, $dataArray['email_body']);
 
@@ -266,7 +282,7 @@ class dynamicQuotation
                 $attachment_file_name = str_replace('[IDENTIFIER]', $this->quotationData['oqq_unique_identifier'], $attachment_file_name);
 
                 //file attachment
-                if ($this->quotationData['oqqt_approval_attach_print_filename'] != ''){
+                if ($this->quotationData['oqqt_approval_attach_print_filename'] != '') {
                     //get the pdf data
                     include($this->quotationData['oqqt_print_layout']);
                     require_once '../vendor/autoload.php';
@@ -276,17 +292,16 @@ class dynamicQuotation
                     ]);
 
                     $mpdf->WriteHTML($html);
-                    $filename = date('YmdGisu').".pdf";
-                    $mpdf->Output($main['local_url'].'/send_auto_emails/attachment_files/'.$filename, \Mpdf\Output\Destination::FILE);
-                    $dataArray['attachment_files'] = $filename."||".$attachment_file_name;
+                    $filename = date('YmdGisu') . ".pdf";
+                    $mpdf->Output($main['local_url'] . '/send_auto_emails/attachment_files/' . $filename, \Mpdf\Output\Destination::FILE);
+                    $dataArray['attachment_files'] = $filename . "||" . $attachment_file_name;
                 }
-                if ($this->approvalExtraAttachments != ''){
-                    if ($dataArray['attachment_files'] != ''){
+                if ($this->approvalExtraAttachments != '') {
+                    if ($dataArray['attachment_files'] != '') {
                         $dataArray['attachment_files'] .= PHP_EOL;
                     }
                     $dataArray['attachment_files'] .= $this->approvalExtraAttachments;
                 }
-
 
 
                 //create the record
@@ -294,43 +309,40 @@ class dynamicQuotation
                 //send the email
                 $email = new send_auto_emails($autoEmailID);
                 $email->send_email();
-                if ($email->count_errors > 0){
+                if ($email->count_errors > 0) {
                     $this->errorDescription = 'There was an error sending the email. You can manually resend the email in auto emails.';
                     $this->error = true;
                     return false;
-                }
-                else {
+                } else {
                     return true;
                 }
-            }
-            else {
+            } else {
                 return true;
             }
 
-        }
-        else {
+        } else {
             $this->errorDescription = 'Not Pending. Cannot send approval email.';
             $this->error = true;
             return false;
         }
 
     }
-    
-    private function issueNumber(){
+
+    private function issueNumber()
+    {
         global $db;
 
-        if (function_exists('customIssueNumber')){
+        if (function_exists('customIssueNumber')) {
             $newNumber = customIssueNumber($this->quotationData);
-        }
-        else{
+        } else {
             $newNumber = $db->buildNumber($this->quotationData['oqqt_quotation_number_prefix'],
                 $this->quotationData['oqqt_quotation_number_leading_zeros'],
-                $this->quotationData['oqqt_quotation_number_last_used']+1);
+                $this->quotationData['oqqt_quotation_number_last_used'] + 1);
             //update db
-            $newData['quotation_number_last_used'] = $this->quotationData['oqqt_quotation_number_last_used']+1;
+            $newData['quotation_number_last_used'] = $this->quotationData['oqqt_quotation_number_last_used'] + 1;
             $db->db_tool_update_row('oqt_quotations_types',
                 $newData,
-                'oqqt_quotations_types_ID = '.$this->quotationData['oqqt_quotations_types_ID'],
+                'oqqt_quotations_types_ID = ' . $this->quotationData['oqqt_quotations_types_ID'],
                 $this->quotationData['oqqt_quotations_types_ID'],
                 '',
                 'execute',
@@ -338,7 +350,7 @@ class dynamicQuotation
         }
 
         return $newNumber;
-        
+
     }
 
     public function delete()
@@ -357,17 +369,18 @@ class dynamicQuotation
     }
 
     //renews a quotation. Starting date one day after the expiry of the previous. Expiry is by parameter
-    public function makeRenewal($newExpiry){
+    public function makeRenewal($newExpiry)
+    {
         global $db;
 
         //echo "Renewing with new expiry ".$newExpiry;
 
-        if ($this->quotationData['oqq_status'] != 'Active'){
+        if ($this->quotationData['oqq_status'] != 'Active') {
             $this->error = true;
             $this->errorDescription = 'Only active can be renewed';
             return false;
         }
-        if ($this->quotationData['oqq_replaced_by_ID'] > 0){
+        if ($this->quotationData['oqq_replaced_by_ID'] > 0) {
             $this->error = true;
             $this->errorDescription = 'Already being renewed';
             return false;
@@ -375,18 +388,18 @@ class dynamicQuotation
 
         //get the new starting date. One day after previous expiry
         $expiryDate = $this->quotationData['oqq_expiry_date'];
-        $expiryDate = explode(' ',$expiryDate);
+        $expiryDate = explode(' ', $expiryDate);
         $expiryDate = explode('-', $expiryDate[0]);
         $newStartingDate = date('Y-m-d', mktime(0, 0, 0, $expiryDate[1], ($expiryDate[2] + 1), $expiryDate[0]));
-        $newExpiry = explode("/",$newExpiry);
-        $newExpiryDate = $newExpiry[2]."-".$newExpiry[1]."-".$newExpiry[0];
+        $newExpiry = explode("/", $newExpiry);
+        $newExpiryDate = $newExpiry[2] . "-" . $newExpiry[1] . "-" . $newExpiry[0];
 
         //create the quotation. Only the quotation data
         $newData = [];
-        foreach($this->quotationData as $name => $value){
-            $prefix = substr($name,0,4);
-            if ($prefix == 'oqq_'){
-                $newData[substr($name,4)] = $value;
+        foreach ($this->quotationData as $name => $value) {
+            $prefix = substr($name, 0, 4);
+            if ($prefix == 'oqq_') {
+                $newData[substr($name, 4)] = $value;
             }
         }
         unset($newData['created_date_time']);
@@ -394,7 +407,7 @@ class dynamicQuotation
         unset($newData['last_update_date_time']);
         unset($newData['last_update_by']);
         unset($newData['quotations_ID']);
-        if ($this->quotationData['oqqt_renewal_issue_new_number'] == 1){
+        if ($this->quotationData['oqqt_renewal_issue_new_number'] == 1) {
             $newData['number'] = '';
             //echo "here";
         }
@@ -408,28 +421,28 @@ class dynamicQuotation
         $newData['replacing_ID'] = $this->quotationID;
 
         //remove the unesserary to avoid db errors
-        if ($newData['nationality_ID'] == ''){
+        if ($newData['nationality_ID'] == '') {
             unset($newData['nationality_ID']);
         }
-        if ($newData['birthdate'] == ''){
+        if ($newData['birthdate'] == '') {
             unset($newData['birthdate']);
         }
-        if ($newData['replaced_by_ID'] == ''){
+        if ($newData['replaced_by_ID'] == '') {
             unset($newData['replaced_by_ID']);
         }
 
         //print_r($newData);exit();
 
-        $newID = $db->db_tool_insert_row('oqt_quotations', $newData,'',1, 'oqq_');
+        $newID = $db->db_tool_insert_row('oqt_quotations', $newData, '', 1, 'oqq_');
 
         //update current quotation
         $currentNewData['replaced_by_ID'] = $newID;
-        $db->db_tool_update_row('oqt_quotations', $currentNewData, 'oqq_quotations_ID = '.$this->quotationID, $this->quotationID, '', 'execute','oqq_');
+        $db->db_tool_update_row('oqt_quotations', $currentNewData, 'oqq_quotations_ID = ' . $this->quotationID, $this->quotationID, '', 'execute', 'oqq_');
 
         //insert the quotation items
-        $sql = 'SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = '.$this->quotationID.' ORDER BY oqqit_quotations_items_ID ASC ';
+        $sql = 'SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = ' . $this->quotationID . ' ORDER BY oqqit_quotations_items_ID ASC ';
         $result = $db->query($sql);
-        while($row = $db->fetch_assoc($result)){
+        while ($row = $db->fetch_assoc($result)) {
             $itemNewData = $row;
 
             //clean data
@@ -441,14 +454,14 @@ class dynamicQuotation
             $itemNewData['oqqit_quotations_ID'] = $newID;
 
             //remove the empty ones to avoid db errors
-            foreach ($itemNewData as $name => $value){
-                if ($itemNewData[$name] == '' ){
+            foreach ($itemNewData as $name => $value) {
+                if ($itemNewData[$name] == '') {
                     unset($itemNewData[$name]);
                 }
             }
             //print_r($itemNewData);exit();
 
-            $db->db_tool_insert_row('oqt_quotations_items', $itemNewData,'', 0, '');
+            $db->db_tool_insert_row('oqt_quotations_items', $itemNewData, '', 0, '');
         }
 
         //echo "New quotations ID ".$newID;
@@ -457,24 +470,23 @@ class dynamicQuotation
 
     }
 
-    public function isAdvancedEdit(){
+    public function isAdvancedEdit()
+    {
         global $db;
-        if ($this->quotationData()['oqq_status'] != 'Outstanding'){
+        if ($this->quotationData()['oqq_status'] != 'Outstanding') {
             if ($db->user_data['usr_user_rights'] <= 3) {
                 return true;
-            }
-            else {
+            } else {
                 return false;
             }
-        }
-        else {
+        } else {
             return false;
         }
     }
 
-    public function sendEmail($replaceSubject='',$replaceBody='',$subjectPrefix='',$subjectSuffix='',$bodyPrefix='',$bodySuffix='',$replaceAttachName='')
+    public function sendEmail($replaceSubject = '', $replaceBody = '', $subjectPrefix = '', $subjectSuffix = '', $bodyPrefix = '', $bodySuffix = '', $replaceAttachName = '')
     {
-        global $db,$main,$quote;
+        global $db, $main, $quote;
 
         $quotationUnderwriter = $db->query_fetch(
             'SELECT * FROM 
@@ -488,19 +500,17 @@ class dynamicQuotation
             $autoEmail = new createNewAutoEmail();
             $dataArray['email_to'] = $this->quotationData['oqqt_active_send_mail'];
 
-            if ($replaceSubject == ''){
-                $subject = $subjectPrefix.$this->quotationData['oqqt_active_send_mail_subject'].$subjectSuffix;
-            }
-            else {
+            if ($replaceSubject == '') {
+                $subject = $subjectPrefix . $this->quotationData['oqqt_active_send_mail_subject'] . $subjectSuffix;
+            } else {
                 $subject = $replaceSubject;
             }
             $dataArray['email_subject'] = $subject;
             $dataArray['email_cc'] = $this->quotationData['oqqt_active_send_mail_cc'];
             $dataArray['email_bcc'] = $this->quotationData['oqqt_active_send_mail_bcc'];
-            if ($replaceBody == ''){
-                $body = $bodyPrefix.$this->quotationData['oqqt_active_send_mail_body'].$bodySuffix;
-            }
-            else {
+            if ($replaceBody == '') {
+                $body = $bodyPrefix . $this->quotationData['oqqt_active_send_mail_body'] . $bodySuffix;
+            } else {
                 $body = $replaceBody;
             }
             $dataArray['email_body'] = $body;
@@ -512,7 +522,7 @@ class dynamicQuotation
             $dataArray['user_ID'] = $this->quotationData['oqq_users_ID'];
             //file attachment filename
             $attachment_file_name = $this->quotationData['oqqt_attach_print_filename'];
-            if ($replaceAttachName != ''){
+            if ($replaceAttachName != '') {
                 $attachment_file_name = $replaceAttachName;
             }
 
@@ -529,7 +539,7 @@ class dynamicQuotation
             $attachment_file_name = str_replace('[QTNUMBER]', $this->quotationData['oqq_number'], $attachment_file_name);
 
             //[QTLINK]
-            $link = $main["site_url"]."/dynamic_quotations/quotations_modify.php?quotation_type=".$this->quotationData['oqq_quotations_type_ID']."&quotation=".$this->quotationData['oqq_quotations_ID'];
+            $link = $main["site_url"] . "/dynamic_quotations/quotations_modify.php?quotation_type=" . $this->quotationData['oqq_quotations_type_ID'] . "&quotation=" . $this->quotationData['oqq_quotations_ID'];
             $dataArray['email_subject'] = str_replace('[QTLINK]', $link, $dataArray['email_subject']);
             $dataArray['email_body'] = str_replace('[QTLINK]', $link, $dataArray['email_body']);
 
@@ -539,7 +549,7 @@ class dynamicQuotation
             $attachment_file_name = str_replace('[USERSNAME]', $this->quotationData['usr_name'], $attachment_file_name);
 
             //[PDFLINK]
-            $link = $main["site_url"]."/dynamic_quotations/quotation_print.php?quotation=".$this->quotationData['oqq_quotations_ID']."&pdf=1";
+            $link = $main["site_url"] . "/dynamic_quotations/quotation_print.php?quotation=" . $this->quotationData['oqq_quotations_ID'] . "&pdf=1";
             $dataArray['email_subject'] = str_replace('[PDFLINK]', $link, $dataArray['email_subject']);
             $dataArray['email_body'] = str_replace('[PDFLINK]', $link, $dataArray['email_body']);
 
@@ -549,7 +559,7 @@ class dynamicQuotation
             $attachment_file_name = str_replace('[IDENTIFIER]', $this->quotationData['oqq_unique_identifier'], $attachment_file_name);
 
             //file attachment
-            if ($this->quotationData['oqqt_attach_print_filename'] != ''){
+            if ($this->quotationData['oqqt_attach_print_filename'] != '') {
                 //get the pdf data
                 include($this->quotationData['oqqt_print_layout']);
                 require_once '../vendor/autoload.php';
@@ -559,9 +569,9 @@ class dynamicQuotation
                 ]);
 
                 $mpdf->WriteHTML($html);
-                $filename = date('YmdGisu').".pdf";
-                $mpdf->Output($main['local_url'].'/send_auto_emails/attachment_files/'.$filename, \Mpdf\Output\Destination::FILE);
-                $dataArray['attachment_files'] = $filename."||".$attachment_file_name;
+                $filename = date('YmdGisu') . ".pdf";
+                $mpdf->Output($main['local_url'] . '/send_auto_emails/attachment_files/' . $filename, \Mpdf\Output\Destination::FILE);
+                $dataArray['attachment_files'] = $filename . "||" . $attachment_file_name;
             }
 
             //create the record
@@ -569,13 +579,12 @@ class dynamicQuotation
             //send the email
             $email = new send_auto_emails($autoEmailID);
             $email->send_email();
-            if ($email->count_errors > 0){
+            if ($email->count_errors > 0) {
                 $this->errorDescription = 'There was an error sending the email. You can manually resend the email in auto emails.';
                 $this->error = true;
             }
         }
     }
-
 
     private function createApprovalRecord($description)
     {
@@ -601,24 +610,29 @@ class dynamicQuotation
 
     }
 
-    public function cancelQuotation(){
+    public function cancelQuotation($cancelDate)
+    {
         global $db;
 
-        if ($this->quotationData['oqqt_enable_cancellation'] != 1){
+        $cancelEffectiveDate = date("Y-m-d G:i:s");
+
+        if ($this->quotationData['oqqt_enable_cancellation'] != 1) {
             $this->error = true;
             $this->errorDescription = 'Cannot cancel from this quotation type. Check quotation types settings.';
             return false;
         }
 
-        if ($this->quotationData['oqq_status'] != 'Active'){
+        if ($this->quotationData['oqq_status'] != 'Active') {
             $this->error = true;
-            $this->errorDescription = 'Must be active to cancel this '.$this->getQuotationType();
+            $this->errorDescription = 'Must be active to cancel this ' . $this->getQuotationType();
             return false;
         }
 
         $newData['status'] = 'Cancelled';
-        $db->db_tool_update_row('oqt_quotations', $newData, 'oqq_quotations_ID = '.$this->quotationID,
-            $this->quotationID,'','execute','oqq_');
+        $newData['cancellation_date'] = $cancelDate;
+        $newData['cancellation_effective_date'] = $cancelEffectiveDate;
+        $db->db_tool_update_row('oqt_quotations', $newData, 'oqq_quotations_ID = ' . $this->quotationID,
+            $this->quotationID, '', 'execute', 'oqq_');
 
         return true;
 

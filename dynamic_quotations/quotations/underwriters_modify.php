@@ -349,6 +349,14 @@ $formValidator->showErrorList();
                             </div>
 
                             <div class="row">
+                                <div class="col-sm-4"></div>
+                                <div class="col-sm-4"></div>
+                                <div class="col-sm-1 font-weight-bold text-center">Rate</div>
+                                <div class="col-sm-1 font-weight-bold text-center">Min Premium</div>
+                                <div class="col-sm-1 font-weight-bold text-center">Max Ins.Amount</div>
+                            </div>
+
+                            <div class="row">
                                 <label for="allow_mc" class="col-sm-4 col-form-label">
                                     Allow Marine Cargo
                                 </label>
@@ -398,7 +406,7 @@ $formValidator->showErrorList();
                                     Merchandise</label>
                                 <div class="col-sm-4">
                                     <input name="fld_excess_general_cargo" type="text" id="fld_excess_general_cargo"
-                                           class="form-control" maxlength="100"
+                                           class="form-control" maxlength="250"
                                            value="<?php echo $defExcGeneralCargo; ?>">
                                     <?php
                                     $formValidator->addField([
@@ -411,7 +419,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_excess_general_cargo_rate" class="col-xl-1">Rate</label>
                                 <div class="col-xl-1">
                                     <input name="fld_excess_general_cargo_rate" type="text"
                                            id="fld_excess_general_cargo_rate"
@@ -428,7 +435,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_mc_general_min_premium" class="col-xl-1">Min Prm.</label>
                                 <div class="col-xl-1">
                                     <input name="fld_mc_general_min_premium" type="text"
                                            id="fld_mc_general_min_premium"
@@ -445,6 +451,22 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
+                                <div class="col-xl-1">
+                                    <input name="fld_mc_general_max_ins_amount" type="text"
+                                           id="fld_mc_general_max_ins_amount"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_mc_general_max_ins_amount']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_mc_general_max_ins_amount",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide Max Ins.Amount",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+
                             </div>
 
                             <div class="form-group row">
@@ -452,7 +474,7 @@ $formValidator->showErrorList();
                                     Vehicles</label>
                                 <div class="col-sm-4">
                                     <input name="fld_excess_vehicles" type="text" id="fld_excess_vehicles"
-                                           class="form-control" maxlength="100"
+                                           class="form-control" maxlength="250"
                                            value="<?php echo $defExcVehicles; ?>">
                                     <?php
                                     $formValidator->addField([
@@ -465,7 +487,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_excess_vehicles_rate" class="col-xl-1">Rate</label>
                                 <div class="col-xl-1">
                                     <input name="fld_excess_vehicles_rate" type="text"
                                            id="fld_excess_vehicles_rate"
@@ -482,7 +503,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_mc_vehicles_min_premium" class="col-xl-1">Min Prm.</label>
                                 <div class="col-xl-1">
                                     <input name="fld_mc_vehicles_min_premium" type="text"
                                            id="fld_mc_vehicles_min_premium"
@@ -499,6 +519,22 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
+                                <div class="col-xl-1">
+                                    <input name="fld_mc_vehicles_max_ins_amount" type="text"
+                                           id="fld_mc_vehicles_max_ins_amount"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_mc_vehicles_max_ins_amount']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_mc_vehicles_max_ins_amount",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide Max Ins.Amount",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+
                             </div>
 
                             <div class="form-group row">
@@ -506,7 +542,7 @@ $formValidator->showErrorList();
                                     Machinery</label>
                                 <div class="col-sm-4">
                                     <input name="fld_excess_machinery" type="text" id="fld_excess_machinery"
-                                           class="form-control" maxlength="100"
+                                           class="form-control" maxlength="250"
                                            value="<?php echo $defExcMachinery; ?>">
                                     <?php
                                     $formValidator->addField([
@@ -519,7 +555,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_excess_machinery_rate" class="col-xl-1">Rate</label>
                                 <div class="col-xl-1">
                                     <input name="fld_excess_machinery_rate" type="text"
                                            id="fld_excess_machinery_rate"
@@ -536,7 +571,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_mc_machinery_min_premium" class="col-xl-1">Min Prm.</label>
                                 <div class="col-xl-1">
                                     <input name="fld_mc_machinery_min_premium" type="text"
                                            id="fld_mc_machinery_min_premium"
@@ -553,6 +587,22 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
+                                <div class="col-xl-1">
+                                    <input name="fld_mc_machinery_max_ins_amount" type="text"
+                                           id="fld_mc_machinery_max_ins_amount"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_mc_machinery_max_ins_amount']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_mc_machinery_max_ins_amount",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide Max Ins.Amount",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+
                             </div>
 
                             <div class="form-group row">
@@ -561,7 +611,7 @@ $formValidator->showErrorList();
                                     Cargo other than meat</label>
                                 <div class="col-sm-4">
                                     <input name="fld_excess_temp_no_meat" type="text" id="fld_excess_temp_no_meat"
-                                           class="form-control" maxlength="100"
+                                           class="form-control" maxlength="250"
                                            value="<?php echo $defExcTempNoMeat; ?>">
                                     <?php
                                     $formValidator->addField([
@@ -574,7 +624,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_excess_temp_no_meat_rate" class="col-xl-1">Rate</label>
                                 <div class="col-xl-1">
                                     <input name="fld_excess_temp_no_meat_rate" type="text"
                                            id="fld_excess_temp_no_meat_rate"
@@ -591,7 +640,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_mc_temp_no_meat_min_premium" class="col-xl-1">Min Prm.</label>
                                 <div class="col-xl-1">
                                     <input name="fld_mc_temp_no_meat_min_premium" type="text"
                                            id="fld_mc_temp_no_meat_min_premium"
@@ -608,6 +656,22 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
+                                <div class="col-xl-1">
+                                    <input name="fld_mc_temp_no_meat_max_ins_amount" type="text"
+                                           id="fld_mc_temp_no_meat_max_ins_amount"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_mc_temp_no_meat_max_ins_amount']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_mc_temp_no_meat_max_ins_amount",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide Max Ins.Amount",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+
                             </div>
 
                             <div class="form-group row">
@@ -616,7 +680,7 @@ $formValidator->showErrorList();
                                     meat</label>
                                 <div class="col-sm-4">
                                     <input name="fld_excess_temp_meat" type="text" id="fld_excess_temp_meat"
-                                           class="form-control" maxlength="100"
+                                           class="form-control" maxlength="250"
                                            value="<?php echo $defExcTempMeat; ?>">
                                     <?php
                                     $formValidator->addField([
@@ -629,7 +693,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_excess_temp_meat_rate" class="col-xl-1">Rate</label>
                                 <div class="col-xl-1">
                                     <input name="fld_excess_temp_meat_rate" type="text"
                                            id="fld_excess_temp_meat_rate"
@@ -646,7 +709,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_mc_temp_meat_min_premium" class="col-xl-1">Min Prm.</label>
                                 <div class="col-xl-1">
                                     <input name="fld_mc_temp_meat_min_premium" type="text"
                                            id="fld_mc_temp_meat_min_premium"
@@ -662,6 +724,22 @@ $formValidator->showErrorList();
                                     ]);
                                     ?>
                                 </div>
+
+                                <div class="col-xl-1">
+                                    <input name="fld_mc_temp_meat_max_ins_amount" type="text"
+                                           id="fld_mc_temp_meat_max_ins_amount"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_mc_temp_meat_max_ins_amount']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_mc_temp_meat_max_ins_amount",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide Max Ins.Amount",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
                             </div>
 
                             <div class="form-group row">
@@ -670,7 +748,7 @@ $formValidator->showErrorList();
                                     Mobile Phones, El. Equip.</label>
                                 <div class="col-sm-4">
                                     <input name="fld_excess_special_cover" type="text" id="fld_excess_special_cover"
-                                           class="form-control" maxlength="100"
+                                           class="form-control" maxlength="250"
                                            value="<?php echo $defExcSpecialCover; ?>">
                                     <?php
                                     $formValidator->addField([
@@ -683,7 +761,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_excess_special_cover_rate" class="col-xl-1">Rate</label>
                                 <div class="col-xl-1">
                                     <input name="fld_excess_special_cover_rate" type="text"
                                            id="fld_excess_special_cover_rate"
@@ -700,7 +777,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_mc_special_cover_min_premium" class="col-xl-1">Min Prm.</label>
                                 <div class="col-xl-1">
                                     <input name="fld_mc_special_cover_min_premium" type="text"
                                            id="fld_mc_special_cover_min_premium"
@@ -716,6 +792,22 @@ $formValidator->showErrorList();
                                     ]);
                                     ?>
                                 </div>
+
+                                <div class="col-xl-1">
+                                    <input name="fld_mc_special_cover_max_ins_amount" type="text"
+                                           id="fld_mc_special_cover_max_ins_amount"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_mc_special_cover_max_ins_amount']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_mc_special_cover_max_ins_amount",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide Max Ins.Amount",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
                             </div>
 
                             <div class="form-group row">
@@ -724,7 +816,7 @@ $formValidator->showErrorList();
                                     pro. packed</label>
                                 <div class="col-sm-4">
                                     <input name="fld_excess_pro_packed" type="text" id="fld_excess_pro_packed"
-                                           class="form-control" maxlength="100"
+                                           class="form-control" maxlength="250"
                                            value="<?php echo $defExcProPacked; ?>">
                                     <?php
                                     $formValidator->addField([
@@ -737,7 +829,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_excess_pro_packed_rate" class="col-xl-1">Rate</label>
                                 <div class="col-xl-1">
                                     <input name="fld_excess_pro_packed_rate" type="text"
                                            id="fld_excess_pro_packed_rate"
@@ -754,7 +845,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_mc_pro_packed_min_premium" class="col-xl-1">Min Prm.</label>
                                 <div class="col-xl-1">
                                     <input name="fld_mc_pro_packed_min_premium" type="text"
                                            id="fld_mc_pro_packed_min_premium"
@@ -770,13 +860,29 @@ $formValidator->showErrorList();
                                     ]);
                                     ?>
                                 </div>
+
+                                <div class="col-xl-1">
+                                    <input name="fld_mc_pro_packed_max_ins_amount" type="text"
+                                           id="fld_mc_pro_packed_max_ins_amount"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_mc_pro_packed_max_ins_amount']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_mc_pro_packed_max_ins_amount",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide Max Ins.Amount",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
                             </div>
 
                             <div class="form-group row">
                                 <label for="fld_excess_owner_packed" class="col-sm-4 col-form-label">Excess - CPMB - Cyprus Potato Marketing Board</label>
                                 <div class="col-sm-4">
                                     <input name="fld_excess_owner_packed" type="text" id="fld_excess_owner_packed"
-                                           class="form-control" maxlength="100"
+                                           class="form-control" maxlength="250"
                                            value="<?php echo $defExcOwnerPacked; ?>">
                                     <?php
                                     $formValidator->addField([
@@ -789,7 +895,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_excess_owner_packed_rate" class="col-xl-1">Rate</label>
                                 <div class="col-xl-1">
                                     <input name="fld_excess_owner_packed_rate" type="text"
                                            id="fld_excess_owner_packed_rate"
@@ -806,7 +911,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_mc_owner_packed_min_premium" class="col-xl-1">Min Prm.</label>
                                 <div class="col-xl-1">
                                     <input name="fld_mc_owner_packed_min_premium" type="text"
                                            id="fld_mc_owner_packed_min_premium"
@@ -822,13 +926,29 @@ $formValidator->showErrorList();
                                     ]);
                                     ?>
                                 </div>
+
+                                <div class="col-xl-1">
+                                    <input name="fld_mc_owner_packed_max_ins_amount" type="text"
+                                           id="fld_mc_owner_packed_max_ins_amount"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_mc_owner_packed_max_ins_amount']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_mc_owner_packed_max_ins_amount",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide Max Ins.Amount",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
                             </div>
 
                             <div class="form-group row">
                                 <label for="fld_excess_other" class="col-sm-4 col-form-label">Pharmaceutical</label>
                                 <div class="col-sm-4">
                                     <input name="fld_excess_other" type="text" id="fld_excess_other"
-                                           class="form-control" maxlength="100"
+                                           class="form-control" maxlength="250"
                                            value="<?php echo $defExcOther; ?>">
                                     <?php
                                     $formValidator->addField([
@@ -841,7 +961,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_excess_other_rate" class="col-xl-1">Rate</label>
                                 <div class="col-xl-1">
                                     <input name="fld_excess_other_rate" type="text"
                                            id="fld_excess_other_rate"
@@ -858,7 +977,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_mc_other_min_premium" class="col-xl-1">Min Prm.</label>
                                 <div class="col-xl-1">
                                     <input name="fld_mc_other_min_premium" type="text"
                                            id="fld_mc_other_min_premium"
@@ -875,13 +993,29 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
+                                <div class="col-xl-1">
+                                    <input name="fld_mc_other_max_ins_amount" type="text"
+                                           id="fld_mc_other_max_ins_amount"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_mc_other_max_ins_amount']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_mc_other_max_ins_amount",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide Max Ins.Amount",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+
                             </div>
 
                             <div class="form-group row">
                                 <label for="fld_excess_tobacco" class="col-sm-4 col-form-label">Tobacco</label>
                                 <div class="col-sm-4">
                                     <input name="fld_excess_tobacco" type="text" id="fld_excess_tobacco"
-                                           class="form-control" maxlength="100"
+                                           class="form-control" maxlength="250"
                                            value="<?php echo $defExcTobacco; ?>">
                                     <?php
                                     $formValidator->addField([
@@ -894,7 +1028,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_excess_tobacco_rate" class="col-xl-1">Rate</label>
                                 <div class="col-xl-1">
                                     <input name="fld_excess_tobacco_rate" type="text"
                                            id="fld_excess_tobacco_rate"
@@ -911,7 +1044,6 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
-                                <label for="fld_mc_tobacco_min_premium" class="col-xl-1">Min Prm.</label>
                                 <div class="col-xl-1">
                                     <input name="fld_mc_tobacco_min_premium" type="text"
                                            id="fld_mc_tobacco_min_premium"
@@ -923,6 +1055,22 @@ $formValidator->showErrorList();
                                         "fieldDataType" => "number",
                                         "required" => true,
                                         "invalidText" => "Provide Min Premium",
+                                        "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
+                                    ]);
+                                    ?>
+                                </div>
+
+                                <div class="col-xl-1">
+                                    <input name="fld_mc_tobacco_max_ins_amount" type="text"
+                                           id="fld_mc_tobacco_max_ins_amount"
+                                           class="form-control"
+                                           value="<?php echo $data['oqun_mc_tobacco_max_ins_amount']; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_mc_tobacco_max_ins_amount",
+                                        "fieldDataType" => "number",
+                                        "required" => true,
+                                        "invalidText" => "Provide Max Ins.Amount",
                                         "requiredAddedCustomCode" => "&& $('#allow_mc').is(':checked')"
                                     ]);
                                     ?>
@@ -1031,6 +1179,35 @@ $formValidator->showErrorList();
                                     ?>
                                 </div>
 
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="fld_mc_premium_rounding" class="col-sm-4 col-form-label">Premium Rounding
+                                </label>
+                                <div class="col-sm-4">
+                                    <select name="fld_mc_premium_rounding" id="fld_mc_premium_rounding"
+                                            class="form-control">
+                                        <option value="no" <?php if ($data['oqun_mc_premium_rounding'] == 'no') echo 'selected'; ?>>
+                                            No Rounding
+                                        </option>
+                                        <option value="next" <?php if ($data['oqun_mc_premium_rounding'] == 'next') echo 'selected'; ?>>
+                                            Round to next Euro
+                                        </option>
+                                        <option value="previous" <?php if ($data['oqun_mc_premium_rounding'] == 'previous') echo 'selected'; ?>>
+                                            Round to previous Euro
+                                        </option>
+                                        <option value="normal" <?php if ($data['oqun_mc_premium_rounding'] == 'normal') echo 'selected'; ?>>
+                                            Normal Rounding (down when 0 to 49, up when 50 to 99)
+                                        </option>
+                                    </select>
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_mc_premium_rounding",
+                                        "fieldDataType" => "select",
+                                        "required" => true
+                                    ]);
+                                    ?>
+                                </div>
                             </div>
 
 

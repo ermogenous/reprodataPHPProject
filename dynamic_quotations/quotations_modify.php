@@ -12,6 +12,12 @@ $db->include_js_file("jscripts.js");
 include("quotations_functions.php");
 include('quotations_class.php');
 $underwriter = $db->query_fetch('SELECT * FROM oqt_quotations_underwriters WHERE oqun_user_ID = ' . $db->user_data['usr_users_ID']);
+
+if ($db->originalUserData['usr_user_rights'] == '0'){
+    //print_r($underwriter);
+    //echo $underwriter['oqun_quotations_underwriter_ID'];
+}
+
 if (strpos($underwriter['oqun_allow_quotations'], '#' . $_GET["quotation_type"] . '-1#') === false) {
     header('Location: quotations.php');
     exit();
@@ -37,6 +43,11 @@ if ($_GET["quotation"] != "") {
     $quotation_type_data = $db->query_fetch("SELECT * FROM oqt_quotations_types WHERE oqqt_quotations_types_ID = " . $_GET["quotation_type"]);
     $quote = new dynamicQuotation($_GET['quotation']);
     $quotationUnderwriter = $underwriter;
+}
+if ($db->originalUserData['usr_users_ID'] == 1){
+    //print_r($underwriter);
+    //echo "-".$quotationUnderwriter['oqun_quotations_underwriter_ID'];
+    //print_r($quotationUnderwriter);
 }
 
 //first check if the user is allowed to view this quotation
@@ -102,7 +113,7 @@ $items_sql = "SELECT * FROM `oqt_items` WHERE
 
 //update the quotation if not change language and is new quotation.
 
-
+//=====================================ACTION SAVE======================================================================ACTION SAVE
 if ($_POST["action"] == "save") {
 
     //check if change language and new quotation
@@ -111,6 +122,7 @@ if ($_POST["action"] == "save") {
     } else {
         if ($quote->quotationData()['oqit_status'] == 'Outstanding' || $db->user_data['usr_user_rights'] <= 1 || $_POST['lid'] == '') {
             $db->start_transaction();
+
 
             //execute the modify_post_function if exists
             if (function_exists('modify_post_values')) {
@@ -888,11 +900,16 @@ $formB->setLabelClasses('col-sm-4');
                         <input name="save_and_print" id="save_and_print" type="hidden" value="0"/>
                         <?php if ($allowEdit == true) { ?>
                             <input type="submit" value="Save Quotation"
-                                   class="btn btn-secondary"
+                                   class="btn btn-secondary" id="submitFormButton"
                                    onclick="document.getElementById('save_and_print').value = 0;">
                         <?php } ?>
                         <input name="save_and_print" id="save_and_print" type="hidden" value="0"/>
 
+                        <script>
+                            function disableSubmitButton(){
+                                $('#submitFormButton').attr('disabled', true);
+                            }
+                        </script>
                         <?php
                         //copy button
                         if ($quotation_type_data['oqqt_enable_copy'] == 1 && $q_data['oqq_status'] == 'Active') {

@@ -127,6 +127,8 @@ class synExport
         $i = count($this->finalList[$table]);
         foreach ($this->fieldsList[$table] as $name => $value) {
 
+            echo $name." -> ".$value."<br>";
+
             //first remove the first 3 characters from the name. The first 3 characters should always be different to stop one field overwrite another
             $name = substr($name,3);
             //echo $name."<HR>";

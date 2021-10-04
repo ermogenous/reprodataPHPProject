@@ -15,7 +15,7 @@ $db->admin_title = "My Users";
 $db->show_header();
 
 $table = new draw_table('users', 'usr_users_ID', 'ASC');
-
+$table->per_page = 100;
 $table->generate_data();
 
 ?>

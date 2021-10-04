@@ -218,6 +218,7 @@ class FormBuilder
 
         $checked = '';
         if ($this->inputValue == $this->inputCheckBoxValue){
+
             $checked = 'checked';
         }
 

@@ -112,6 +112,30 @@ FormBuilder::buildPageLoader();
 
                     </div>
 
+                    <div class="row form-group">
+                        <div class="col col-6"></div>
+                        <?php
+                        $formB = new FormBuilder();
+                        $formB->setFieldName('fld_client_name')
+                            ->setFieldDescription('Add Column Client Name')
+                            ->setLabelClasses('col-sm-2')
+                            ->setFieldType('checkbox')
+                            ->setInputCheckBoxValue('Y')
+                            ->setInputValue($_POST['fld_client_name'])
+                            ->buildLabel();
+                        ?>
+                        <div class="col-4">
+                            <?php
+                            $formB->buildInput();
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => $formB->fieldName,
+                                    'fieldDataType' => 'checkbox'
+                                ]);
+                            ?>
+                        </div>
+                    </div>
+
                     <div class="form-group row">
                         <label for="name" class="col-4 d-none d-sm-block col-form-label"></label>
                         <div class="col-sm-8">
@@ -198,10 +222,12 @@ function makeReportMotor($asAtDate, $excelFile = true){
 			SUM(clo_ped_fees) as clo_fees,
 			SUM(clo_pri_premium) as clo_ri_premium,
 			SUM(clo_pri_mif) as clo_ri_mif,
-			SUM(clo_pri_commission) as clo_ri_commission			
+			SUM(clo_pri_commission) as clo_ri_commission,
+			incl_first_name || ' ' || incl_long_description as clo_client_name			
 		  -- ALL POLICIES TP COVER --
 	FROM (SELECT STRING(inpol_policy_number,'/',clo_doc_ref) as clo_policy_link, 
 				inpol_policy_number,
+				incl_first_name, incl_long_description,
 				COALESCE(intrh_document_number, '?')as clo_doc_ref,
 				'' as clo_cancelled,
 				IF inpva_policy_serial IS NULL THEN 'NO' ELSE 'YES' ENDIF as clo_transaction_in_force,
@@ -328,7 +354,7 @@ function makeReportMotor($asAtDate, $excelFile = true){
 			clo_days1, clo_days2, clo_days3, 
 			clo_expiry_days, clo_cover_code, intrh_document_date, inpol_commission_percentage,
 			clo_acnt_code, clo_uw_year,
-			clo_ri
+			clo_ri, clo_client_name
 			
 	UNION ALL -- POLICIES F&T or COMPREHENSIVE --
 	
@@ -348,9 +374,11 @@ function makeReportMotor($asAtDate, $excelFile = true){
 			SUM(clo_ped_fees) as clo_fees,
 			SUM(clo_pri_premium) as clo_ri_premium,
 			SUM(clo_pri_mif) as clo_ri_mif,
-			SUM(clo_pri_commission) as clo_ri_commission			
+			SUM(clo_pri_commission) as clo_ri_commission,
+			incl_first_name || ' ' || incl_long_description as clo_client_name
 	FROM (SELECT STRING(inpol_policy_number,'/',clo_doc_ref) as clo_policy_link, 
 				inpol_policy_number,
+				incl_first_name, incl_long_description,
 				COALESCE(intrh_document_number, '?')as clo_doc_ref,
 				'' as clo_cancelled,
 				IF inpva_policy_serial IS NULL THEN 'NO' ELSE 'YES' ENDIF as clo_transaction_in_force,
@@ -478,7 +506,7 @@ function makeReportMotor($asAtDate, $excelFile = true){
 			clo_days1, clo_days2, clo_days3, 
 			clo_expiry_days, clo_cover_code, intrh_document_date, inpol_commission_percentage,
 			clo_acnt_code, clo_uw_year,
-			clo_ri
+			clo_ri, clo_client_name
 		ORDER BY clo_ri desc, clo_policy_start, clo_tran_start, clo_transaction_type --CASE WHEN clo_transaction_type IN ('RNLOG', 'NEWOG') THEN 1 WHEN clo_transaction_type IN ('ADDOG', 'RETOG') THEN 2 ELSE 3 END
 	/*) AS DT1 GROUP BY inped_year ORDER BY inped_year desc*/
 	
@@ -492,6 +520,11 @@ END;
         $i = 0;
         while ($row = $sybase->fetch_assoc($result)) {
             $i++;
+
+            if ($_POST['fld_client_name'] != 'Y'){
+                unset($row['clo_client_name']);
+            }
+
             if ($i == 1) {
                 $spreadSheet->buildTopRowFromFieldNames($row);
             }
@@ -507,6 +540,11 @@ END;
         $line = '';
         while ($row = $sybase->fetch_assoc($result)) {
             $i++;
+
+            if ($_POST['fld_client_name'] != 'Y'){
+                unset($row['clo_client_name']);
+            }
+
             if ($i == 1) {
                 $line = '';
                 foreach($row as $name => $value){
@@ -587,9 +625,11 @@ function makeReportOther($asAtDate, $type, $excelFile = true){
 			SUM(COALESCE(clo_ped_fees,0)) as clo_fees,
 			SUM(COALESCE(clo_pri_premium,0)) as clo_ri_premium,
 			SUM(COALESCE(clo_pri_mif,0)) as clo_ri_mif,
-			SUM(COALESCE(clo_pri_commission,0)) as clo_ri_commission
+			SUM(COALESCE(clo_pri_commission,0)) as clo_ri_commission,
+			incl_first_name || ' ' || incl_long_description as clo_client_name
 	FROM (SELECT STRING(inpol_policy_number,'/',clo_doc_ref) as clo_policy_link, 
 				inpol_policy_number,
+				incl_first_name, incl_long_description,
 				COALESCE(intrh_document_number, '?')as clo_doc_ref,
 				'' as clo_cancelled,
 				IF inpva_policy_serial IS NULL THEN 'NO' ELSE 'YES' ENDIF as clo_transaction_in_force,
@@ -720,7 +760,7 @@ function makeReportOther($asAtDate, $type, $excelFile = true){
 			clo_days1, clo_days2, clo_days3, 
 			clo_expiry_days, clo_cover_code, intrh_document_date, inpol_commission_percentage,
 			clo_acnt_code, clo_uw_year,
-			clo_ri
+			clo_ri, clo_client_name
 	   ORDER BY inpol_policy_number,intrh_document_date, clo_policy_link, clo_doc_ref, 
 				clo_cover_code, inpae_year, inpae_period,clo_transaction_type;
 	
@@ -734,6 +774,11 @@ END;
         $i = 0;
         while ($row = $sybase->fetch_assoc($result)) {
             $i++;
+
+            if ($_POST['fld_client_name'] != 'Y'){
+                unset($row['clo_client_name']);
+            }
+
             if ($i == 1) {
                 $spreadSheet->buildTopRowFromFieldNames($row);
             }
@@ -749,6 +794,11 @@ END;
         $line = '';
         while ($row = $sybase->fetch_assoc($result)) {
             $i++;
+
+            if ($_POST['fld_client_name'] != 'Y'){
+                unset($row['clo_client_name']);
+            }
+
             if ($i == 1) {
                 $line = '';
                 foreach($row as $name => $value){

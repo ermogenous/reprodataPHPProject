@@ -48,8 +48,9 @@ class TableList
     private $disableDeleteIcon = false;
     private $disableIconColumn = false;
     private $disableClickRowLink = false;
-    private $functionIconArea; //Set a function name here and will be called passed the row data
+    private $functionIconArea = []; //Set a function name here and will be called passed the row data
     private $extraColumns = [];
+
 
     //output
     private $outputAsPDF = false;
@@ -283,7 +284,8 @@ class TableList
 
     public function setFunctionIconArea($function)
     {
-        $this->functionIconArea = $function;
+        //$this->functionIconArea = $function;
+        $this->functionIconArea[] = $function;
         return $this;
     }
 
@@ -439,9 +441,13 @@ class TableList
                    <i class="fas fa-minus-circle"></i></a>
                 ';
                 }
-                if ($this->functionIconArea != '') {
-                    $funName = $this->functionIconArea;
-                    $this->tableHtml .= $funName($row);
+                if ($this->functionIconArea[0] != '') {
+
+                    foreach($this->functionIconArea as $fiaValue){
+                        //echo $fiaName." - ".$fiaValue."<br>";
+                        $funName = $fiaValue;
+                        $this->tableHtml .= $funName($row);
+                    }
                 }
 
                 $this->tableHtml .= '

@@ -24,7 +24,6 @@ $list->setTable('sms','sms')
     ->setSqlSelect('sms_source_module','Source')
     ->setSqlSelect('sms_status','Status')
     ->setSqlSelect('sms_to_num','To')
-    ->setSqlSelect('sms_subject','Subject')
     ->setSqlOrder('sms_sms_ID', 'DESC')
     ->setPerPage(50)
     ->generateData();
@@ -39,6 +38,7 @@ $list->setMainColumn('col-lg-10')
     ->showPagesLinksTop()
     ->showPagesLinksBottom()
     ->setFunctionIconArea('makeIconFn')
+    ->setFunctionIconArea('makeIconVerify')
     ->setDeleteConfirmText('Are you sure you want to delete this sms?')
     ->setMainFieldID('ID')
     ->setModifyLink('sms_modify.php?lid=')
@@ -52,6 +52,16 @@ $db->show_footer();
 function makeIconFn($row){
     if ($row['Status'] == 'Pending'){
         $html = '<a href="sms_send.php?lid='.$row['ID'].'"><i class="fas fa-share"></i></a>';
+    }
+    else {
+        $html = '';
+    }
+    return $html;
+}
+
+function makeIconVerify($row){
+    if ($row['Status'] == 'Send'){
+        $html = '<a href="sms_verify.php?lid='.$row['ID'].'" title="Check status"><i class="fas fa-retweet"></i></a>';
     }
     else {
         $html = '';

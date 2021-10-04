@@ -19,14 +19,18 @@ if ($_POST['action'] == 'insert'){
 
     $_POST['fld_status'] = 'Pending';
     $newID = $db->db_tool_insert_row('sms',$_POST,'fld_',1,'sms_');
-    header("Location: sms_modify.php?lid=".$newID );
+    $db->generateSessionAlertSuccess('SMS Inserted Successfully');
+    //header("Location: sms_modify.php?lid=".$newID );
+    header("Location: sms.php" );
     exit();
 
 }
 else if ($_POST['action'] == 'update'){
 
     $db->db_tool_update_row('sms',$_POST,'sms_sms_ID = '.$_POST['lid'],$_POST['lid'],'fld_','execute','sms_');
-    header("Location: sms_modify.php?lid=".$_POST['lid'] );
+    //header("Location: sms_modify.php?lid=".$_POST['lid'] );
+    $db->generateSessionAlertSuccess('SMS Updated Successfully');
+    header("Location: sms.php" );
     exit();
 }
 
@@ -58,8 +62,26 @@ FormBuilder::buildPageLoader();
         <?php if ($_GET['lid'] != '') { ?>
         <div class="row form-group">
             <div class="col-sm-4">Status</div>
-            <div class="col-sm-8"><?php echo $data['sms_status'];?></div>
+            <div class="col-sm-8">
+                <span id="smsStatus"><?php echo $data['sms_status'];?></span>
+                <?php
+                if ($data['sms_status'] == 'Error') {
+                    ?>
+                    <span id="resetToPending"><a
+                                href="#" onclick="resetToPending()">Reset To Pending</a></span>
+                    <?php
+                }
+                ?>
+                <input type="hidden" id="fld_status" name="fld_status" value="Pending" disabled>
+            </div>
         </div>
+            <script>
+                function resetToPending(){
+                    $('#smsStatus').html('Pending');
+                    $('#resetToPending').html('');
+                    $('#fld_status').prop('disabled',false);
+                }
+            </script>
         <?php } ?>
 
         <div class="row form-group">
@@ -143,30 +165,6 @@ FormBuilder::buildPageLoader();
             </div>
         </div>
 
-        <div class="row form-group">
-            <?php
-            $formB = new FormBuilder();
-            $formB->setFieldName('fld_subject')
-                ->setFieldDescription('Subject')
-                ->setLabelClasses('col-sm-4')
-                ->setFieldType('input')
-                ->setFieldInputType('text')
-                ->setInputValue($data['sms_subject'])
-                ->buildLabel();
-            ?>
-            <div class="col-8">
-                <?php
-                $formB->buildInput();
-                $formValidator->addField(
-                    [
-                        'fieldName' => $formB->fieldName,
-                        'fieldDataType' => 'text',
-                        'required' => true,
-                        'invalidTextAutoGenerate' => true
-                    ]);
-                ?>
-            </div>
-        </div>
 
         <div class="row form-group">
             <?php
@@ -191,6 +189,11 @@ FormBuilder::buildPageLoader();
                     ]);
                 ?>
             </div>
+        </div>
+
+        <div class="row form-group">
+            <div class="col-4">Status Description</div>
+            <div class="col-8"><?php echo $data['sms_status_description'];?></div>
         </div>
 
         <div class="row form-group">

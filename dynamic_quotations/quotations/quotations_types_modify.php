@@ -309,6 +309,40 @@ FormBuilder::buildPageLoader();
                             </div>
 
                             <div class="form-group row">
+                                <label for="fld_print_layout2_name" class="col-sm-4 col-form-label">Print Layout 2 Name</label>
+                                <div class="col-sm-8">
+                                    <input name="fld_print_layout2_name" type="text" id="fld_print_layout2_name"
+                                           class="form-control"
+                                           value="<?php echo $data["oqqt_print_layout2_name"]; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_print_layout2_name",
+                                        "fieldDataType" => "text",
+                                        "required" => false,
+                                        "invalidText" => "Fill Print Layout 2 File",
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="fld_print_layout2" class="col-sm-4 col-form-label">Print Layout 2 File</label>
+                                <div class="col-sm-8">
+                                    <input name="fld_print_layout2" type="text" id="fld_print_layout2"
+                                           class="form-control"
+                                           value="<?php echo $data["oqqt_print_layout2"]; ?>">
+                                    <?php
+                                    $formValidator->addField([
+                                        "fieldName" => "fld_print_layout2",
+                                        "fieldDataType" => "text",
+                                        "required" => false,
+                                        "invalidText" => "Fill Print Layout 2 File",
+                                    ]);
+                                    ?>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
                                 <label for="fld_js_file" class="col-sm-4 col-form-label">Java Script File</label>
                                 <div class="col-sm-8">
                                     <input name="fld_js_file" type="text" id="fld_js_file"

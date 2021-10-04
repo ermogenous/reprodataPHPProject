@@ -870,4 +870,10 @@ function get_custom_fees_amount($data)
     return $data;
 }
 
+function modify_post_values($post){
+
+    $post['starting_date'] = $post['5_oqqit_date_1'];
+    return $post;
+
+}
 ?>

@@ -11,7 +11,7 @@ $db = new Main();
 $db->admin_title = "Codes Modify";
 
 
-if ($db->user_data["usr_user_rights"] > 0) {
+if ($db->user_data["usr_user_rights"] > 2) {
 
     header("Location: codes.php");
     exit();
@@ -37,7 +37,11 @@ if ($_POST["action"] == "insert") {
 
     $db->db_tool_insert_row('codes', $_POST, 'fld_', 0, 'cde_');
     $db->commit_transaction();
-    header("Location: codes.php?type=" . $_POST['codeSelection'] . "&search_code=search");
+    if ($_SESSION['codesVesselsReturnPage'] != '') {
+        header("Location: " . $_SESSION['codesVesselsReturnPage']);
+    } else {
+        header("Location: codes.php?type=" . $_POST['codeSelection'] . "&search_code=search");
+    }
     exit();
 
 } else if ($_POST["action"] == "update") {
@@ -51,7 +55,11 @@ if ($_POST["action"] == "insert") {
 
     $db->db_tool_update_row('codes', $_POST, "`cde_code_ID` = " . $_POST["lid"], $_POST["lid"], 'fld_', 'execute', 'cde_');
     $db->commit_transaction();
-    header("Location: codes.php?type=" . $_POST['codeSelection'] . "&search_code=search");
+    if ($_SESSION['codesVesselsReturnPage'] != '') {
+        header("Location: " . $_SESSION['codesVesselsReturnPage']);
+    } else {
+        header("Location: codes.php?type=" . $_POST['codeSelection'] . "&search_code=search");
+    }
     exit();
 
 }
@@ -86,9 +94,16 @@ $formValidator = new customFormValidator();
                 <div class="form-group row">
                     <label for="business_type_ID" class="col-sm-4 col-form-label">Code Type</label>
                     <div class="col-sm-8">
+                        <?php
+                        if ($_GET['lid'] != '' || $db->user_data["usr_user_rights"] > 0) {
+                            ?>
+                            <input type="hidden" id="fld_type" name="fld_type" value="<?php echo $data['cde_type']; ?>">
+                            <?php
+                        }
+                        ?>
                         <select name="fld_type" id="fld_type"
                                 class="form-control"
-                            <?php if ($_GET['lid'] != '') echo 'disabled'; ?>>
+                            <?php if ($_GET['lid'] != '' || $db->user_data["usr_user_rights"] > 0) echo 'disabled'; ?>>
                             <option value="code" <?php if ($data['cde_type'] == 'code') echo 'selected'; ?>>Code
                             </option>
 
@@ -194,25 +209,25 @@ $formValidator = new customFormValidator();
                         </div>
                     </div>
                     <?php
-                        }
-                    ?>
-                    <div class="form-group row">
-                        <label for="surname"
-                               class="col-sm-4 col-form-label"><?php echo $codeLabels['cde_value_label']; ?></label>
-                        <div class="col-sm-8">
-                            <input name="fld_value" type="text" id="fld_value"
-                                   class="form-control"
-                                   value="<?php echo $data["cde_value"]; ?>">
-                            <?php
-                            $formValidator->addField([
-                                "fieldName" => "fld_value",
-                                "fieldDataType" => "text",
-                                "required" => true,
-                                "invalidText" => "Must fill",
-                            ]);
-                            ?>
-                        </div>
+                }
+                ?>
+                <div class="form-group row">
+                    <label for="surname"
+                           class="col-sm-4 col-form-label"><?php echo $codeLabels['cde_value_label']; ?></label>
+                    <div class="col-sm-8">
+                        <input name="fld_value" type="text" id="fld_value"
+                               class="form-control"
+                               value="<?php echo $data["cde_value"]; ?>">
+                        <?php
+                        $formValidator->addField([
+                            "fieldName" => "fld_value",
+                            "fieldDataType" => "text",
+                            "required" => true,
+                            "invalidText" => "Must fill",
+                        ]);
+                        ?>
                     </div>
+                </div>
                 <?php
                 if ($_GET['codeSelection'] == 'code') {
                     ?>
@@ -375,7 +390,9 @@ $formValidator = new customFormValidator();
                         "invalidText" => "Must fill",
                     ]);
                     ?>
-                <?php }
+                <?php } ?>
+
+                <?php
                 if ($codeLabels['cde_value_label_2'] != '') {
                     ?>
                     <div class="form-group row">
@@ -395,7 +412,129 @@ $formValidator = new customFormValidator();
                             ?>
                         </div>
                     </div>
-                <?php }
+                <?php } ?>
+
+                <?php
+                if ($_GET['codeSelection'] == 'code') {
+                    ?>
+                    <div class="row">
+                        <div class="col-12">
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="fld_value_label_3" class="col-sm-4 col-form-label">Value Label 3</label>
+                        <div class="col-sm-8">
+                            <input name="fld_value_label_3" type="text" id="fld_value_label_3"
+                                   class="form-control"
+                                   value="<?php echo $data["cde_value_label_3"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_value_label_3",
+                                "fieldDataType" => "select",
+                                "required" => false,
+                                "invalidText" => "Must fill",
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+                <?php } else { ?>
+                    <input type="hidden" name="fld_value_label_3" id="fld_value_label_3"
+                           value="<?php echo $codeLabels['cde_value_label_3']; ?>">
+                    <?php
+                    $formValidator->addField([
+                        "fieldName" => "fld_value_label_3",
+                        "fieldDataType" => "select",
+                        "required" => false,
+                        "invalidText" => "Must fill",
+                    ]);
+                    ?>
+                <?php } ?>
+
+                <?php
+                if ($codeLabels['cde_value_label_3'] != '') {
+                    ?>
+                    <div class="form-group row">
+                        <label for="fld_value_3"
+                               class="col-sm-4 col-form-label"><?php echo $codeLabels['cde_value_label_3']; ?></label>
+                        <div class="col-sm-8">
+                            <input name="fld_value_3" type="text" id="fld_value_3"
+                                   class="form-control"
+                                   value="<?php echo $data["cde_value_3"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_value_3",
+                                "fieldDataType" => "select",
+                                "required" => false,
+                                "invalidText" => "Must fill",
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+                <?php } ?>
+
+
+                <?php
+                if ($_GET['codeSelection'] == 'code') {
+                    ?>
+                    <div class="row">
+                        <div class="col-12">
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="fld_value_label_4" class="col-sm-4 col-form-label">Value Label 4</label>
+                        <div class="col-sm-8">
+                            <input name="fld_value_label_4" type="text" id="fld_value_label_4"
+                                   class="form-control"
+                                   value="<?php echo $data["cde_value_label_4"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_value_label_4",
+                                "fieldDataType" => "select",
+                                "required" => false,
+                                "invalidText" => "Must fill",
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+                <?php } else { ?>
+                    <input type="hidden" name="fld_value_label_4" id="fld_value_label_4"
+                           value="<?php echo $codeLabels['cde_value_label_4']; ?>">
+                    <?php
+                    $formValidator->addField([
+                        "fieldName" => "fld_value_label_4",
+                        "fieldDataType" => "select",
+                        "required" => false,
+                        "invalidText" => "Must fill",
+                    ]);
+                    ?>
+                <?php } ?>
+
+                <?php
+                if ($codeLabels['cde_value_label_4'] != '') {
+                    ?>
+                    <div class="form-group row">
+                        <label for="fld_value_4"
+                               class="col-sm-4 col-form-label"><?php echo $codeLabels['cde_value_label_4']; ?></label>
+                        <div class="col-sm-8">
+                            <input name="fld_value_4" type="text" id="fld_value_4"
+                                   class="form-control"
+                                   value="<?php echo $data["cde_value_4"]; ?>">
+                            <?php
+                            $formValidator->addField([
+                                "fieldName" => "fld_value_4",
+                                "fieldDataType" => "select",
+                                "required" => false,
+                                "invalidText" => "Must fill",
+                            ]);
+                            ?>
+                        </div>
+                    </div>
+                <?php } ?>
+
+
+                <?php
                 if ($_GET['codeSelection'] != 'code' && $codeLabels['cde_option_label'] != '') { ?>
                     <div class="form-group row">
                         <label for="fld_option_value"
@@ -453,6 +592,14 @@ $formValidator = new customFormValidator();
                     </div>
                 <?php } ?>
 
+                <?php
+                $returnPage = 'codes.php?type=' . $_GET['codeSelection'] . '&search_code=search';
+                if ($_SESSION['codesVesselsReturnPage'] != '') {
+                    $returnPage = $_SESSION['codesVesselsReturnPage'];
+                }
+
+                ?>
+
 
                 <div class="form-group row">
                     <label for="name" class="col-sm-4 col-form-label"></label>
@@ -463,7 +610,7 @@ $formValidator = new customFormValidator();
                         <input name="codeSelection" id="codeSelection" type="hidden"
                                value="<?php echo $_GET['codeSelection']; ?>">
                         <input type="button" value="Back" class="btn btn-secondary"
-                               onclick="window.location.assign('codes.php?type=<?php echo $_GET['codeSelection']; ?>&search_code=search')">
+                               onclick="window.location.assign('<?php echo $returnPage; ?>')">
                         <input type="submit" name="Submit" id="Submit" value="Save Code" class="btn btn-secondary">
                     </div>
                 </div>

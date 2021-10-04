@@ -6,9 +6,12 @@
  * Time: 10:12 ΠΜ
  */
 
+include("update_exchange_rates.php");
+updateExchangeRates();
+
 function mc_shipment_details_3()
 {
-    global $db, $items_data, $qitem_data, $formValidator, $underwriter, $quote;
+    global $db, $items_data, $qitem_data, $formValidator, $underwriter, $quote, $quotationUnderwriter;
     ?>
 
     <div class="form-group row">
@@ -77,7 +80,7 @@ function mc_shipment_details_3()
         ?>
         <div class="col-sm-8">
             <select name="3_oqqit_rate_4" id="3_oqqit_rate_4"
-                    class="form-control">
+                    class="form-control" onchange="updateRate(); calculateTotalInsuredValue();">
                 <option value=""></option>
                 <?php
                 if ($clausesRestriction[1] == 1) {
@@ -223,14 +226,14 @@ function mc_shipment_details_3()
 
     <div class="form-group row">
         <label for="3_oqqit_rate_2" class="col-sm-4 col-form-label">
-            <?php show_quotation_text("Insured Value Currency", "Insured Value Currency"); ?>
+            <?php show_quotation_text("Declared Value Currency", "Declared Value Currency"); ?>
         </label>
         <div class="col-sm-8">
             <select name="3_oqqit_rate_2" id="3_oqqit_rate_2"
-                    class="form-control" onchange="autoUpdateExchangeRate();">
+                    class="form-control" onchange="autoUpdateExchangeRate(this.value,'3_oqqit_rate_5');">
                 <option value=""></option>
                 <?php
-                $sql = "SELECT * FROM codes WHERE cde_type = 'Currency' ORDER BY cde_value ASC";
+                $sql = "SELECT * FROM codes WHERE cde_type = 'Currency' ORDER BY cde_value_4 DESC,cde_value ASC";
                 $result = $db->query($sql);
                 while ($currency = $db->fetch_assoc($result)) {
                     ?>
@@ -253,23 +256,30 @@ function mc_shipment_details_3()
 
     <script>
         //update the exchange rate to 1 only if currency selected is EUR
-        function autoUpdateExchangeRate() {
-            let currency = $('#3_oqqit_rate_2').val();
-            console.log('#' + currency + '#');
-            if (currency == 'EUR') {
-                console.log('EUR');
-                $('#3_oqqit_rate_5').val('1');
+        function autoUpdateExchangeRate(curSelected, fieldToUpdate) {
+            <?php
+            $sql = 'SELECT * FROM codes WHERE cde_type = "Currency"';
+            $result = $db->query($sql);
+            echo "let currencies = [];" . PHP_EOL;
+            while ($row = $db->fetch_assoc($result)) {
+                echo "currencies['" . $row['cde_value'] . "'] = " . $row['cde_value_3'] . " * 1;" . PHP_EOL;
             }
+
+            ?>
+            let value = currencies[curSelected];
+            $('#' + fieldToUpdate).val(value);
+            calculateTotalInsuredValue();
+
         }
     </script>
 
     <div class="form-group row">
         <label for="3_oqqit_rate_3" class="col-sm-4">
-            <?php show_quotation_text("Insured Value", "Insured Value"); ?>
+            <?php show_quotation_text("Declared Value", "Declared Value"); ?>
         </label>
         <div class="col-sm-3">
             <input name="3_oqqit_rate_3" type="text" id="3_oqqit_rate_3"
-                   class="form-control"
+                   class="form-control" onchange="calculateTotalInsuredValue();"
                    value="<?php echo $qitem_data["oqqit_rate_3"]; ?>">
             <?php
             $formValidator->addField(
@@ -277,7 +287,7 @@ function mc_shipment_details_3()
                     'fieldName' => '3_oqqit_rate_3',
                     'fieldDataType' => 'number',
                     'required' => true,
-                    'invalidText' => show_quotation_text("Συμπληρώστε Insured Value.", "Must Enter Insured Value.", 'Return')
+                    'invalidText' => show_quotation_text("Συμπληρώστε Declared Value.", "Must Enter Declared Value.", 'Return')
                 ]);
             ?>
         </div>
@@ -287,7 +297,7 @@ function mc_shipment_details_3()
         </label>
         <div class="col-sm-2">
             <input name="3_oqqit_rate_5" type="text" id="3_oqqit_rate_5"
-                   class="form-control"
+                   class="form-control" onchange="calculateTotalInsuredValue();"
                    value="<?php echo $qitem_data["oqqit_rate_5"]; ?>">
             <?php
             $formValidator->addField(
@@ -301,6 +311,192 @@ function mc_shipment_details_3()
         </div>
     </div>
 
+    <div class="form-group row">
+        <label for="3_oqqit_rate_16" class="col-sm-4 col-form-label">
+            <?php show_quotation_text("Freight Value Currency", "Freight Value Currency"); ?>
+        </label>
+        <div class="col-sm-8">
+            <select name="3_oqqit_rate_16" id="3_oqqit_rate_16"
+                    class="form-control" onchange="autoUpdateExchangeRate(this.value,'3_oqqit_rate_18');;">
+                <option value=""></option>
+                <?php
+                $sql = "SELECT * FROM codes WHERE cde_type = 'Currency' ORDER BY cde_value_4 DESC,cde_value ASC";
+                $result = $db->query($sql);
+                while ($currency = $db->fetch_assoc($result)) {
+                    ?>
+                    <option value="<?php echo $currency['cde_value']; ?>" <?php if ($qitem_data['oqqit_rate_16'] == $currency['cde_value']) echo 'selected'; ?>>
+                        <?php echo $currency['cde_value'] . " - " . $currency['cde_value_2']; ?>
+                    </option>
+                <?php } ?>
+            </select>
+            <?php
+            $formValidator->addField(
+                [
+                    'fieldName' => '3_oqqit_rate_16',
+                    'fieldDataType' => 'select',
+                    'required' => false,
+                    'invalidText' => show_quotation_text("Επιλέξτε Freight Value Currency.", "Must Input Freight Value Currency", 'Return')
+                ]);
+            ?>
+        </div>
+    </div>
+
+
+    <div class="form-group row">
+        <label for="3_oqqit_rate_17" class="col-sm-4">
+            <?php show_quotation_text("Freight Value", "Freight Value"); ?>
+        </label>
+        <div class="col-sm-3">
+            <input name="3_oqqit_rate_17" type="text" id="3_oqqit_rate_17"
+                   class="form-control" onchange="calculateTotalInsuredValue();"
+                   value="<?php echo $qitem_data["oqqit_rate_17"]; ?>">
+            <?php
+            $formValidator->addField(
+                [
+                    'fieldName' => '3_oqqit_rate_17',
+                    'fieldDataType' => 'number',
+                    'required' => false,
+                    'invalidText' => show_quotation_text("Συμπληρώστε Freight Value.", "Must Enter Freight Value.", 'Return')
+                ]);
+            ?>
+        </div>
+
+        <label for="3_oqqit_rate_18" class="col-sm-3">
+            <?php show_quotation_text("Exchange Rate", "Exchange Rate"); ?>
+        </label>
+        <div class="col-sm-2">
+            <input name="3_oqqit_rate_18" type="text" id="3_oqqit_rate_18"
+                   class="form-control" onchange="calculateTotalInsuredValue();"
+                   value="<?php echo $qitem_data["oqqit_rate_18"]; ?>">
+            <?php
+            $formValidator->addField(
+                [
+                    'fieldName' => '3_oqqit_rate_18',
+                    'fieldDataType' => 'number',
+                    'required' => false,
+                    'invalidText' => show_quotation_text("Συμπληρώστε Exchange Rate.", "Must Enter Exchange Rate (Decimal)", 'Return')
+                ]);
+            ?>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="col-sm-4">Total Insured Value</div>
+        <div class="col-sm-8" id="totalInsuredValue">0</div>
+        <input type="hidden" id="3_oqqit_rate_20" name="3_oqqit_rate_20" value="">
+        <?php
+        $formValidator->addField(
+            [
+                'fieldName' => '3_oqqit_rate_20',
+                'fieldDataType' => 'number',
+                'required' => true
+            ]);
+        ?>
+    </div>
+
+    <?php
+    //get the list of max insured amounts from the underwriter
+    $maxInsAmount['general'] = $quotationUnderwriter['oqun_mc_general_max_ins_amount'];
+    $maxInsAmount['vehicles'] = $quotationUnderwriter['oqun_mc_vehicles_max_ins_amount'];
+    $maxInsAmount['machinery'] = $quotationUnderwriter['oqun_mc_machinery_max_ins_amount'];
+    $maxInsAmount['no_meat'] = $quotationUnderwriter['oqun_mc_temp_no_meat_max_ins_amount'];
+    $maxInsAmount['meat'] = $quotationUnderwriter['oqun_mc_temp_meat_max_ins_amount'];
+    $maxInsAmount['special'] = $quotationUnderwriter['oqun_mc_special_cover_max_ins_amount'];
+    $maxInsAmount['pro_packed'] = $quotationUnderwriter['oqun_mc_pro_packed_max_ins_amount'];
+    $maxInsAmount['owner_packed'] = $quotationUnderwriter['oqun_mc_owner_packed_max_ins_amount'];
+    $maxInsAmount['other'] = $quotationUnderwriter['oqun_mc_other_max_ins_amount'];
+    $maxInsAmount['tobacco'] = $quotationUnderwriter['oqun_mc_tobacco_max_ins_amount'];
+    ?>
+
+    <div class="row form-group">
+        <label for="3_oqqit_rate_19" class="col-sm-4 col-form-label">
+            <?php show_quotation_text("CIF Increase", "CIF Increase"); ?>
+        </label>
+        <div class="col-sm-8">
+            <select name="3_oqqit_rate_19" id="3_oqqit_rate_19"
+                    class="form-control"
+                    onchange="checkConveyanceDropDown(); calculateTotalInsuredValue();">
+                <option value="0" <?php if ($qitem_data['oqqit_rate_19'] == '0') echo 'selected'; ?>>
+                    0%
+                </option>
+                <option value="10" <?php if ($qitem_data['oqqit_rate_19'] == '10') echo 'selected'; ?>>
+                    10%
+                </option>
+                <option value="20" <?php if ($qitem_data['oqqit_rate_19'] == '20') echo 'selected'; ?>>
+                    20% To Be Referred
+                </option>
+            </select>
+            <?php
+            $formValidator->addField(
+                [
+                    'fieldName' => '3_oqqit_rate_19',
+                    'fieldDataType' => 'select',
+                    'required' => true,
+                    'invalidText' => show_quotation_text("Επιλέξτε CIF Increase.", "Must select CIF Increase", 'Return')
+                ]);
+            ?>
+        </div>
+    </div>
+
+    <script>
+        function calculateTotalInsuredValue() {
+            let total = 0;
+            total = ($('#3_oqqit_rate_3').val() / $('#3_oqqit_rate_5').val()) + ($('#3_oqqit_rate_17').val() / $('#3_oqqit_rate_18').val());
+            //calculate the cif
+            let cif = $('#3_oqqit_rate_19').val() / 100;
+            //console.log(cif);
+            total = (total * cif) + total;
+            total = roundNumber(total, 2);
+            $('#totalInsuredValue').html('€' + total);
+
+            //validate with max insured amount
+            //get the commodity
+            let commodity = $('#3_oqqit_rate_4').val();
+            let maxInsAmount = 0;
+
+            if (commodity == 'General Cargo & Merchandise') {
+                maxInsAmount = <?php echo $maxInsAmount['general'];?>;
+            } else if (commodity == 'New/Used Vehicles') {
+                maxInsAmount = <?php echo $maxInsAmount['vehicles'];?>;
+            } else if (commodity == 'Machinery') {
+                maxInsAmount = <?php echo $maxInsAmount['machinery'];?>;
+            } else if (commodity == 'Temp. Controlled Cargo other than meat') {
+                maxInsAmount = <?php echo $maxInsAmount['no_meat'];?>;
+            } else if (commodity == 'Temp. Controlled Cargo Meat') {
+                maxInsAmount = <?php echo $maxInsAmount['meat'];?>;
+            } else if (commodity == 'Special Cover Mobile Phones, Electronic Equipment') {
+                maxInsAmount = <?php echo $maxInsAmount['special'];?>;
+            } else if (commodity == 'Personal Effects professionally packed') {
+                maxInsAmount = <?php echo $maxInsAmount['pro_packed'];?>;
+            } else if (commodity == 'CPMB - Cyprus Potato Marketing Board') {
+                maxInsAmount = <?php echo $maxInsAmount['owner_packed'];?>;
+            } else if (commodity == 'Other') {
+                maxInsAmount = <?php echo $maxInsAmount['other'];?>;
+            } else if (commodity == 'Tobacco') {
+                maxInsAmount = <?php echo $maxInsAmount['tobacco'];?>;
+            }
+            if (maxInsAmount < 1) {
+                maxInsAmount = 500000;
+            }
+            //send the amount to be saved in database
+            $('#3_oqqit_rate_20').val(total);
+            if (total > maxInsAmount) {
+                let html = '€' + total;
+                html = html + ' &nbsp;<span class="alert-danger">Insured Amount is more than allowed. Need Approval (' + maxInsAmount + ')</span>';
+                $('#totalInsuredValue').html(html);
+                //if you keep the field empty it will generate error
+            }
+        }
+
+        calculateTotalInsuredValue();
+
+        function ApprovaltotalInsuredValueCheck() {
+            var result = {"result": "1", "info": ""};
+            alert('ok');
+            return result;
+        }
+
+    </script>
 
     <div class="form-group row">
         <label for="3_oqqit_rate_6" class="col-sm-4 col-form-label">
@@ -309,7 +505,7 @@ function mc_shipment_details_3()
         <div class="col-sm-8">
             <select name="3_oqqit_rate_6" id="3_oqqit_rate_6"
                     class="form-control"
-                    onchange="checkConveyanceDropDown();">
+                    onchange="checkConveyanceDropDown(); newVesselNameOnChange();">
                 <option value=""></option>
                 <option value="Air" <?php if ($qitem_data['oqqit_rate_6'] == 'Air') echo 'selected'; ?>>
                     Air
@@ -361,21 +557,116 @@ function mc_shipment_details_3()
             <?php show_quotation_text("Vessel Name", "Vessel Name"); ?>
         </label>
         <div class="col-7">
-            <input name="3_oqqit_rate_7" type="text" id="3_oqqit_rate_7"
-                   class="form-control"
-                   value="<?php echo $qitem_data["oqqit_rate_7"]; ?>">
+
+            <select name="3_oqqit_rate_7" id="3_oqqit_rate_7"
+                    class="form-control" onchange="newVesselNameOnChange();">
+                <option value=""></option>
+                <?php
+                $sqlVessels = 'SELECT * FROM codes WHERE cde_type = "VesselNames" ORDER BY cde_value';
+                $resultVessels = $db->query($sqlVessels);
+                while ($vessel = $db->fetch_assoc($resultVessels)) {
+                    $vValue = $vessel['cde_value'] . " - " . $vessel['cde_value_2'] . " [" . $vessel['cde_option_value'] . "]";
+                    ?>
+                    <option value="<?php echo $vValue; ?>" <?php if ($qitem_data['oqqit_rate_7'] == $vValue) echo 'selected'; ?>>
+                        <?php echo $vValue; ?>
+                    </option>
+                    <?php
+                }
+                ?>
+                <option value="NewVessel" <?php if ($qitem_data['oqqit_rate_7'] == 'NewVessel') echo 'selected'; ?>
+                        class="alert-warning">New Vessel - Requires Approval
+                </option>
+            </select>
             <?php
             $formValidator->addField(
                 [
                     'fieldName' => '3_oqqit_rate_7',
-                    'fieldDataType' => 'text',
+                    'fieldDataType' => 'select',
                     'required' => true,
                     'requiredAddedCustomCode' => "&& $('#3_oqqit_rate_6').val() == 'Ocean Vessel'",
-                    'invalidText' => show_quotation_text("Συμπληρώστε Vessel Name.", "Must Enter Vessel Name", 'Return')
+                    'invalidText' => show_quotation_text("Επιλέξτε Vessel.", "Must select Vessel", 'Return')
                 ]);
             ?>
+
         </div>
     </div>
+
+    <div class="form-group row" id="ocean-vessel-age-approval-warning" style="display:none">
+        <div class="col-4"></div>
+        <div class="col-8 alert-warning" id="ocean-vessel-age-approval-warning-html">Vessel age requires approval</div>
+    </div>
+
+    <div class="form-group row" id="ocean-vessel-define-new-div" style="display: none">
+        <label for="3_oqqit_rate_21" class="col-5 text-right">
+            <?php show_quotation_text("Define New Vessel. <span class='alert-danger'>Requires Approval</span>"
+                , "Define New Vessel. <span class='alert-warning'> &nbsp;Requires Approval &nbsp;</span>"); ?>
+        </label>
+        <div class="col-7">
+            <input name="3_oqqit_rate_21" type="text" id="3_oqqit_rate_21"
+                   class="form-control"
+                   value="<?php echo $qitem_data["oqqit_rate_21"]; ?>">
+            <?php
+            $formValidator->addField(
+                [
+                    'fieldName' => '3_oqqit_rate_21',
+                    'fieldDataType' => 'text',
+                    'required' => true,
+                    'requiredAddedCustomCode' => "&& $('#3_oqqit_rate_7').val() == 'NewVessel'",
+                    'invalidText' => show_quotation_text("Συμπληρώστε το νέο όνομα.", "Must Enter the new name", 'Return')
+                ]);
+            ?>
+
+        </div>
+    </div>
+    <script>
+        //load all vessels into an array
+        let vesselList = [];
+        <?php
+            $resultVessels = $db->query($sqlVessels);
+            while ($vessel = $db->fetch_assoc($resultVessels)){
+                $value = $vessel['cde_value'] . " - " . $vessel['cde_value_2'] . " [" . $vessel['cde_option_value'] . "]";
+                echo PHP_EOL.'vesselList["'.$value.'"] = "'.$vessel['cde_value_2'].'";';
+            }
+        ?>
+        function newVesselNameOnChange() {
+
+            if ($('#3_oqqit_rate_6').val() == 'Ocean Vessel') {
+
+                if ($('#3_oqqit_rate_7').val() == 'NewVessel') {
+                    $('#ocean-vessel-define-new-div').show();
+                    //console.log('show');
+                } else {
+                    $('#ocean-vessel-define-new-div').hide();
+                    //console.log('hide');
+                }
+                //console.log($('#3_oqqit_rate_7').val());
+                //check for the vessel age
+                let vessel = $('#3_oqqit_rate_7').val();
+                let vesselYear = vesselList[vessel];
+                let vesselAge = <?php echo date("Y");?> - ( vesselYear * 1);
+
+                console.log('Vessel Age:' + vesselAge);
+                if (vesselAge > 35){
+                    $('#ocean-vessel-age-approval-warning').show();
+                    $('#ocean-vessel-age-approval-warning-html').html('Vessel Age <b>will</b> incur additional charges. Approval is needed.');
+                }
+                else if (vesselAge > 30) {
+                    $('#ocean-vessel-age-approval-warning').show();
+                    $('#ocean-vessel-age-approval-warning-html').html('Vessel Age <b>may</b> incur additional charges. Approval is needed.');
+                }
+                else {
+                    $('#ocean-vessel-age-approval-warning').hide();
+                }
+
+            }
+            else {
+                $('#ocean-vessel-define-new-div').hide();
+                $('#ocean-vessel-age-approval-warning').hide();
+            }
+        }
+
+        newVesselNameOnChange();
+    </script>
 
     <!-- removed
     <div class="form-group row" id="ocean-steamer-div">
@@ -421,6 +712,12 @@ function mc_shipment_details_3()
             <select name="3_oqqit_rate_9" id="3_oqqit_rate_9"
                     class="form-control">
                 <option value=""></option>
+                <option value="FCL" <?php if ($qitem_data['oqqit_rate_9'] == 'FCL') echo 'selected'; ?>>
+                    FCL - Full Container
+                </option>
+                <option value="LCL" <?php if ($qitem_data['oqqit_rate_9'] == 'LCL') echo 'selected'; ?>>
+                    LCL - Groupage Container
+                </option>
                 <option value="General" <?php if ($qitem_data['oqqit_rate_9'] == 'General') echo 'selected'; ?>>
                     General
                 </option>
@@ -624,7 +921,7 @@ function mc_shipment_details_3()
                 } else if ($db->user_data['usr_users_ID'] == 42) {
                     $dateMinDate = 30;
                 } else {
-                    $dateMinDate = 0;
+                    $dateMinDate = 7;
                 }
             }
             $formValidator->addField(
@@ -646,7 +943,7 @@ function mc_shipment_details_3()
 
 function mc_cargo_details_4()
 {
-    global $db, $items_data, $qitem_data, $formValidator, $underwriter;
+    global $db, $items_data, $qitem_data, $formValidator, $underwriter, $quotationUnderwriter;
     ?>
 
     <div class="form-group row">
@@ -682,6 +979,44 @@ function mc_cargo_details_4()
                     'fieldDataType' => 'text',
                     'required' => true,
                     'invalidText' => show_quotation_text("Συμπληρώστε Supplier.", "Must Fill Supplier", 'Return')
+                ]);
+            ?>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="4_oqqit_rate_10" class="col-4">
+            <?php show_quotation_text("BOL/AWB", "BOL/AWB"); ?>
+        </label>
+        <div class="col-8">
+            <input name="4_oqqit_rate_10" type="text" id="4_oqqit_rate_10"
+                   class="form-control"
+                   value="<?php echo $qitem_data["oqqit_rate_10"]; ?>">
+            <?php
+            $formValidator->addField(
+                [
+                    'fieldName' => '4_oqqit_rate_10',
+                    'fieldDataType' => 'text',
+                    'required' => false
+                ]);
+            ?>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="4_oqqit_rate_11" class="col-4">
+            <?php show_quotation_text("Invoice", "Invoice"); ?>
+        </label>
+        <div class="col-8">
+            <input name="4_oqqit_rate_11" type="text" id="4_oqqit_rate_11"
+                   class="form-control"
+                   value="<?php echo $qitem_data["oqqit_rate_11"]; ?>">
+            <?php
+            $formValidator->addField(
+                [
+                    'fieldName' => '4_oqqit_rate_11',
+                    'fieldDataType' => 'text',
+                    'required' => false
                 ]);
             ?>
         </div>
@@ -753,70 +1088,82 @@ function mc_cargo_details_4()
             <?php
             if ($db->user_data['usr_user_rights'] == 0 || $db->user_data['usr_users_groups_ID'] == 2) {
                 ?>
-                    <div class="row">
-                        <div class="col-9">
-                            <select id="4_oqqit_rate_6" name="4_oqqit_rate_6" class="form-control">
-                                <option value="For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR150 each & every loss or 1% of Total Sum Insured, whichever is greater."
-                                    <?php if ($qitem_data['oqqit_rate_6'] == 'For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR150 each & every loss or 1% of Total Sum Insured, whichever is greater.') echo "selected";?>
-                                >For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR150 each & every loss or 1% of Total Sum Insured, whichever is greater.</option>
+                <div class="row">
+                    <div class="col-9">
+                        <select id="4_oqqit_rate_6" name="4_oqqit_rate_6" class="form-control">
+                            <option value="DEDUCTIBLE: For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR150 each & every loss or 1% of Total Sum Insured, whichever is greater."
+                                <?php if ($qitem_data['oqqit_rate_6'] == 'DEDUCTIBLE: For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR150 each & every loss or 1% of Total Sum Insured, whichever is greater.') echo "selected"; ?>
+                            >DEDUCTIBLE: For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR150
+                                each & every loss or 1% of Total Sum Insured, whichever is greater.
+                            </option>
 
-                                <option value="For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR 250 each & every loss or 1% of Total Sum Insured, whichever is greater."
-                                    <?php if ($qitem_data['oqqit_rate_6'] == 'For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR 250 each & every loss or 1% of Total Sum Insured, whichever is greater.') echo "selected";?>
-                                >For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR250 each & every loss or 1% of Total Sum Insured, whichever is greater.</option>
+                            <option value="DEDUCTIBLE: For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR 250 each & every loss or 1% of Total Sum Insured, whichever is greater."
+                                <?php if ($qitem_data['oqqit_rate_6'] == 'DEDUCTIBLE: For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR 250 each & every loss or 1% of Total Sum Insured, whichever is greater.') echo "selected"; ?>
+                            >DEDUCTIBLE: For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR
+                                250 each & every loss or 1% of Total Sum Insured, whichever is greater.
+                            </option>
 
-                                <option value="For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR 500 each & every loss or 1% of Total Sum Insured, whichever is greater."
-                                    <?php if ($qitem_data['oqqit_rate_6'] == 'For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR 500 each & every loss or 1% of Total Sum Insured, whichever is greater.') echo "selected";?>
-                                >For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR 500 each & every loss or 1% of Total Sum Insured, whichever is greater.</option>
+                            <option value="DEDUCTIBLE: For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR500 each & every loss or 1% of Total Sum Insured, whichever is greater."
+                                <?php if ($qitem_data['oqqit_rate_6'] == 'DEDUCTIBLE: For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR500 each & every loss or 1% of Total Sum Insured, whichever is greater.') echo "selected"; ?>
+                            >DEDUCTIBLE: For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR500
+                                each & every loss or 1% of Total Sum Insured, whichever is greater.
+                            </option>
 
-                                <option value="€1.000 each & every loss or 3% of Total Sum Insured, whichever is greater."
-                                    <?php if ($qitem_data['oqqit_rate_6'] == '€1.000 each & every loss or 3% of Total Sum Insured, whichever is greater.') echo "selected";?>
-                                >€1.000 each & every loss or 3% of Total Sum Insured, whichever is greater.</option>
+                            <option value="DEDUCTIBLE: €1.000 each & every loss or 3% of Total Sum Insured, whichever is greater."
+                                <?php if ($qitem_data['oqqit_rate_6'] == 'DEDUCTIBLE: €1.000 each & every loss or 3% of Total Sum Insured, whichever is greater.') echo "selected"; ?>
+                            >DEDUCTIBLE: €1.000 each & every loss or 3% of Total Sum Insured, whichever is greater.
+                            </option>
 
-                                <option value="€250 each & every loss."
-                                    <?php if ($qitem_data['oqqit_rate_6'] == '€250 each & every loss.') echo "selected";?>
-                                >€250 each & every loss.</option>
+                            <option value="DEDUCTIBLE: €250 each & every loss."
+                                <?php if ($qitem_data['oqqit_rate_6'] == 'DEDUCTIBLE: €250 each & every loss.') echo "selected"; ?>
+                            >DEDUCTIBLE: €250 each & every loss.
+                            </option>
 
-                                <option value="€300 each & every loss."
-                                    <?php if ($qitem_data['oqqit_rate_6'] == '€300 each & every loss.') echo "selected";?>
-                                >€300 each & every loss.</option>
+                            <option value="DEDUCTIBLE: €300 each & every loss."
+                                <?php if ($qitem_data['oqqit_rate_6'] == 'DEDUCTIBLE: €300 each & every loss.') echo "selected"; ?>
+                            >DEDUCTIBLE: €300 each & every loss.
+                            </option>
 
-                                <option value="€500 each & every loss."
-                                    <?php if ($qitem_data['oqqit_rate_6'] == '€500 each & every loss.') echo "selected";?>
-                                >€500 each & every loss.</option>
-                            </select>
-                        </div>
-                        <div class="col-1">
-                            Lock
-                        </div>
-                        <div class="col-2">
-                            <select id="4_oqqit_rate_9" name="4_oqqit_rate_9" class="form-control">
-                                <option value="0" <?php if ($qitem_data['oqqit_rate_9'] != '1') echo "selected";?>>No</option>
-                                <option value="1" <?php if ($qitem_data['oqqit_rate_9'] == '1') echo "selected";?>>Yes</option>
-                            </select>
-                        </div>
+                            <option value="DEDUCTIBLE: €500 each & every loss."
+                                <?php if ($qitem_data['oqqit_rate_6'] == 'DEDUCTIBLE: €500 each & every loss.') echo "selected"; ?>
+                            >DEDUCTIBLE: €500 each & every loss.
+                            </option>
+                        </select>
                     </div>
+                    <div class="col-1">
+                        Lock
+                    </div>
+                    <div class="col-2">
+                        <select id="4_oqqit_rate_9" name="4_oqqit_rate_9" class="form-control">
+                            <option value="0" <?php if ($qitem_data['oqqit_rate_9'] != '1') echo "selected"; ?>>No
+                            </option>
+                            <option value="1" <?php if ($qitem_data['oqqit_rate_9'] == '1') echo "selected"; ?>>Yes
+                            </option>
+                        </select>
+                    </div>
+                </div>
 
                 <?php
-            }else {
-            ?>
+            } else {
+                ?>
                 <?php
                 if ($qitem_data['oqqit_rate_9'] == '1') {
                     echo $qitem_data['oqqit_rate_6'];
                     ?>
-                        <input type="hidden" id="4_oqqit_rate_6" name="4_oqqit_rate_6" value="<?php echo $qitem_data['oqqit_rate_6'];?>">
-                        <?php
-                }
-                else{
-                ?>
-            <textarea name="4_oqqit_rate_6" id="4_oqqit_rate_6"
-                      class="form-control"><?php echo $qitem_data['oqqit_rate_6']; ?></textarea>
-            <?php
-            $formValidator->addField(
-                [
-                    'fieldName' => '4_oqqit_rate_6',
-                    'fieldDataType' => 'text',
-                    'required' => false
-                ]);
+                    <input type="hidden" id="4_oqqit_rate_6" name="4_oqqit_rate_6"
+                           value="<?php echo $qitem_data['oqqit_rate_6']; ?>">
+                    <?php
+                } else {
+                    ?>
+                    <textarea name="4_oqqit_rate_6" id="4_oqqit_rate_6"
+                              class="form-control"><?php echo $qitem_data['oqqit_rate_6']; ?></textarea>
+                    <?php
+                    $formValidator->addField(
+                        [
+                            'fieldName' => '4_oqqit_rate_6',
+                            'fieldDataType' => 'text',
+                            'required' => false
+                        ]);
                 }//do not show if locked
             }
             ?>
@@ -860,40 +1207,40 @@ function mc_cargo_details_4()
             let clause = $('input[name=3_oqqit_rate_13]:checked', '#myForm').val();
             let rate = 0;
             if (commodity == 'General Cargo & Merchandise') {
-                rate = '<?php echo $underwriter["oqun_excess_general_cargo_rate"];?>';
+                rate = '<?php echo $quotationUnderwriter["oqun_excess_general_cargo_rate"];?>';
             } else if (commodity == 'New/Used Vehicles') {
-                rate = '<?php echo $underwriter["oqun_excess_vehicles_rate"];?>';
+                rate = '<?php echo $quotationUnderwriter["oqun_excess_vehicles_rate"];?>';
             } else if (commodity == 'Machinery') {
-                rate = '<?php echo $underwriter["oqun_excess_machinery_rate"];?>';
+                rate = '<?php echo $quotationUnderwriter["oqun_excess_machinery_rate"];?>';
             } else if (commodity == 'Temp. Controlled Cargo other than meat') {
-                rate = '<?php echo $underwriter["oqun_excess_temp_no_meat_rate"];?>';
+                rate = '<?php echo $quotationUnderwriter["oqun_excess_temp_no_meat_rate"];?>';
             } else if (commodity == 'Temp. Controlled Cargo Meat') {
-                rate = '<?php echo $underwriter["oqun_excess_temp_meat_rate"];?>';
+                rate = '<?php echo $quotationUnderwriter["oqun_excess_temp_meat_rate"];?>';
             } else if (commodity == 'Special Cover Mobile Phones, Electronic Equipment') {
-                rate = '<?php echo $underwriter["oqun_excess_special_cover_rate"];?>';
+                rate = '<?php echo $quotationUnderwriter["oqun_excess_special_cover_rate"];?>';
             } else if (commodity == 'Personal Effects professionally packed') {
-                rate = '<?php echo $underwriter["oqun_excess_pro_packed_rate"];?>';
+                rate = '<?php echo $quotationUnderwriter["oqun_excess_pro_packed_rate"];?>';
             } else if (commodity == 'CPMB - Cyprus Potato Marketing Board') {
-                rate = '<?php echo $underwriter["oqun_excess_owner_packed_rate"];?>';
+                rate = '<?php echo $quotationUnderwriter["oqun_excess_owner_packed_rate"];?>';
             } else if (commodity == 'Other') {
-                rate = '<?php echo $underwriter["oqun_excess_other_rate"];?>';
-            }else if (commodity == 'Tobacco') {
-                rate = '<?php echo $underwriter["oqun_excess_tobacco_rate"];?>';
+                rate = '<?php echo $quotationUnderwriter["oqun_excess_other_rate"];?>';
+            } else if (commodity == 'Tobacco') {
+                rate = '<?php echo $quotationUnderwriter["oqun_excess_tobacco_rate"];?>';
             }
 
             if (clause == 'Clause C') {
-                rate = '<?php echo $underwriter["oqun_icc_c_rate"];?>';
+                rate = '<?php echo $quotationUnderwriter["oqun_icc_c_rate"];?>';
             }
             $('#4_oqqit_rate_8').val(rate);
         }
 
         //add event to commodity and conditions of insurance on change
-        $("#3_oqqit_rate_4").change(function () {
-            updateRate();
-        });
-        $("input[name=3_oqqit_rate_13]", "#myForm").change(function () {
-            updateRate();
-        });
+        //$("#3_oqqit_rate_4").change(function () {
+        //    updateRate();
+        //});
+        //$("input[name=3_oqqit_rate_13]", "#myForm").change(function () {
+        //    updateRate();
+        //});
     </script>
 
 
@@ -905,30 +1252,80 @@ function insured_amount_custom_rates($array, $values, $quotation_id)
     global $quotationUnderwriter;
 
     //find the underwriters minimum premium
-    switch ($values[3][4]['rate']){
-        case 'General Cargo & Merchandise': $minPremium = $quotationUnderwriter['oqun_mc_general_min_premium']; break;
-        case 'New/Used Vehicles': $minPremium = $quotationUnderwriter['oqun_mc_vehicles_min_premium'];break;
-        case 'Machinery': $minPremium = $quotationUnderwriter['oqun_mc_machinery_min_premium'];break;
-        case 'Temp. Controlled Cargo other than meat': $minPremium = $quotationUnderwriter['oqun_mc_temp_no_meat_min_premium'];break;
-        case 'Temp. Controlled Cargo Meat': $minPremium = $quotationUnderwriter['oqun_mc_temp_meat_min_premium'];break;
-        case 'Special Cover Mobile Phones, Electronic Equipment': $minPremium = $quotationUnderwriter['oqun_mc_special_cover_min_premium'];break;
-        case 'Personal Effects professionally packed': $minPremium = $quotationUnderwriter['oqun_mc_pro_packed_min_premium'];break;
-        case 'CPMB - Cyprus Potato Marketing Board': $minPremium = $quotationUnderwriter['oqun_mc_owner_packed_min_premium'];break;
-        case 'Other': $minPremium = $quotationUnderwriter['oqun_mc_other_min_premium'];break;
-        case 'Tobacco': $minPremium = $quotationUnderwriter['oqun_mc_tobacco_min_premium'];break;
-        default: $minPremium = 0;
+    switch ($values[3][4]['rate']) {
+        case 'General Cargo & Merchandise':
+            $minPremium = $quotationUnderwriter['oqun_mc_general_min_premium'];
+            break;
+        case 'New/Used Vehicles':
+            $minPremium = $quotationUnderwriter['oqun_mc_vehicles_min_premium'];
+            break;
+        case 'Machinery':
+            $minPremium = $quotationUnderwriter['oqun_mc_machinery_min_premium'];
+            break;
+        case 'Temp. Controlled Cargo other than meat':
+            $minPremium = $quotationUnderwriter['oqun_mc_temp_no_meat_min_premium'];
+            break;
+        case 'Temp. Controlled Cargo Meat':
+            $minPremium = $quotationUnderwriter['oqun_mc_temp_meat_min_premium'];
+            break;
+        case 'Special Cover Mobile Phones, Electronic Equipment':
+            $minPremium = $quotationUnderwriter['oqun_mc_special_cover_min_premium'];
+            break;
+        case 'Personal Effects professionally packed':
+            $minPremium = $quotationUnderwriter['oqun_mc_pro_packed_min_premium'];
+            break;
+        case 'CPMB - Cyprus Potato Marketing Board':
+            $minPremium = $quotationUnderwriter['oqun_mc_owner_packed_min_premium'];
+            break;
+        case 'Other':
+            $minPremium = $quotationUnderwriter['oqun_mc_other_min_premium'];
+            break;
+        case 'Tobacco':
+            $minPremium = $quotationUnderwriter['oqun_mc_tobacco_min_premium'];
+            break;
+        default:
+            $minPremium = 0;
     }
-
+    $premiumRate = $values[4][8]['rate'];
     //rate $values[4][8]['rate']
     //print_r($array);exit();
+    //echo "Min Premium:".$minPremium;
+    //echo "<br>Rate:".$values[4][8]['rate'];
+    //exit();
 
-    $array[4][8] = round($values[3][3]['rate'] * ($values[4][8]['rate'] / 100), 2);
+    $array[4][8] = round(($values[3][20]['rate'] / 100) * ($premiumRate), 2);
     if ($array[4][8] < $minPremium) {
         $array[3][4] = $minPremium - $array[4][8];
+    } else {
+        $array[3][4] = 0;
     }
+    $totalPremium = $array[3][4] + $array[4][8];
+    //echo "Total Premium:".$totalPremium;
+    $rounding = 0;
+    //round to the next euro
+    if ($quotationUnderwriter['oqun_mc_premium_rounding'] == 'next') {
+        $rounding = ceil($totalPremium);
+        $rounding = round($rounding - $totalPremium, 2);
+    } //round to the previous euro
+    else if ($quotationUnderwriter['oqun_mc_premium_rounding'] == 'previous') {
+        $rounding = floor($totalPremium);
+        $rounding = round($rounding - $totalPremium, 2);
+    } //normal rounding
+    else if ($quotationUnderwriter['oqun_mc_premium_rounding'] == 'normal') {
+        $rounding = round($totalPremium, 0);
+        $rounding = round($rounding - $totalPremium, 2);
+    }
+    $array[3][4] += $rounding;
+    //echo "<br>Rounding:".$rounding;
+    //exit();
+
     //echo $array[3][4]."<br>";
     //echo $array[4][8]."<br>";
     //echo $minPremium;print_r($values);exit();
+    //echo $values[3][20]['rate']."<br>";
+    //echo $array[4][8]."<br>";
+    //echo $minPremium."<br>";
+    //echo $premiumRate;exit();
 
     return $array;
 }
@@ -940,7 +1337,7 @@ function get_custom_fees_amount($data)
 
     $data['stamps'] = $quotationUnderwriter['oqun_min_stamps'];
     $data['fees'] = $quotationUnderwriter['oqun_min_fees'];
-
+    //print_r($data);exit();
     return $data;
 }
 
@@ -1079,7 +1476,7 @@ function activate_custom_validation($data, $returnJS = false)
 
 function customCheckForApproval($data)
 {
-    global $db;
+    global $db, $underwriter, $quotationUnderwriter, $quote;
 
     $result['error'] = false;
     $result['errorDescription'] = '';
@@ -1145,27 +1542,115 @@ function customCheckForApproval($data)
         //$result['errorDescription'] .= 'Commodity Other Needs Approval.<br>';
     }
 
+    //total insured value validation/referral
+    $totalInsuredAmount = $item3['oqqit_rate_20'] * 1;
+    $commodity = $item3['oqqit_rate_4'];
+    $maxInsAmount = 0;
+
+    $quotationUnderwriter = $quote->getQuotationUnderwriterData();
+
+    if ($commodity == 'General Cargo & Merchandise') {
+        $maxInsAmount = $quotationUnderwriter['oqun_mc_general_max_ins_amount'];
+    } else if ($commodity == 'New/Used Vehicles') {
+        $maxInsAmount = $quotationUnderwriter['oqun_mc_vehicles_max_ins_amount'];
+    } else if ($commodity == 'Machinery') {
+        $maxInsAmount = $quotationUnderwriter['oqun_mc_machinery_max_ins_amount'];
+    } else if ($commodity == 'Temp. Controlled Cargo other than meat') {
+        $maxInsAmount = $quotationUnderwriter['oqun_mc_temp_no_meat_max_ins_amount'];
+    } else if ($commodity == 'Temp. Controlled Cargo Meat') {
+        $maxInsAmount = $quotationUnderwriter['oqun_mc_temp_meat_max_ins_amount'];
+    } else if ($commodity == 'Special Cover Mobile Phones, Electronic Equipment') {
+        $maxInsAmount = $quotationUnderwriter['oqun_mc_special_cover_max_ins_amount'];
+    } else if ($commodity == 'Personal Effects professionally packed') {
+        $maxInsAmount = $quotationUnderwriter['oqun_mc_pro_packed_max_ins_amount'];
+    } else if ($commodity == 'CPMB - Cyprus Potato Marketing Board') {
+        $maxInsAmount = $quotationUnderwriter['oqun_mc_owner_packed_max_ins_amount'];
+    } else if ($commodity == 'Tobacco') {
+        $maxInsAmount = $quotationUnderwriter['oqun_mc_tobacco_max_ins_amount'];
+    } else if ($commodity == 'Other') {
+        $maxInsAmount = $quotationUnderwriter['oqun_mc_other_max_ins_amount'];
+    }
+
+    if ($db->originalUserData['usr_user_rights'] == 0) {
+        //echo $totalInsuredAmount;
+        //echo "<br>".$commodity;
+        //echo "<br>".$maxInsAmount;
+        //exit();
+    }
+
+    $logAction = '
+    Check for validation.
+    Total Insured Amount: ' . $totalInsuredAmount . '
+    MaxInsAmount: ' . $maxInsAmount . '
+    Commodity: ' . $commodity . '
+    Original User: ' . $db->originalUserData['usr_users_ID'] . '
+    Actual User: ' . $db->user_data['usr_users_ID'] . '
+    ';
+    $qunderData = print_r($quotationUnderwriter, true);
+
+    $db->update_log_file('MarineApproval', $data['oqq_quotations_ID'], $logAction, 'QuotationUnderwriter Data\n' . $qunderData, '', '');
+
+    if ($quotationUnderwriter['oqun_quotations_underwriter_ID'] == '') {
+        //echo "An error has occurred. Call the system administrator.";
+        //exit();
+    }
+
+    //temp delete
+    if ($maxInsAmount < 1) {
+        //$maxInsAmount = 500000;
+    }
+    if ($totalInsuredAmount > $maxInsAmount) {
+        $result['error'] = true;
+        $result['errorDescription'] .= 'Total Insured Value Needs Approval';
+    }
+
+    //check for validation for CIF
+    $cifValue = $item3['oqqit_rate_19'];
+    if ($cifValue == '20') {
+        $result['error'] = true;
+        $result['errorDescription'] .= 'CIF Increase 20% Needs approval';
+    }
+
+    //check if new vessel that requires validation
+    if ($item3['oqqit_rate_7'] == 'NewVessel' && $item3['oqqit_rate_6'] == 'Ocean Vessel') {
+        $result['error'] = true;
+        $result['errorDescription'] .= 'New Vessel Needs to be created requires Approval! ' . $item3['oqqit_rate_21'];
+    }
+
+    if ($item3['oqqit_rate_6'] == 'Ocean Vessel') {
+        //vessel Age check
+        $sql = 'SELECT * FROM codes WHERE cde_type = "VesselNames"
+            AND CONCAT(cde_value, " - ", cde_value_2, " [", cde_option_value, "]") = "' . $item3['oqqit_rate_7'] . '"';
+        $vesselData = $db->query_fetch($sql);
+        $vesselAge = date("Y") - $vesselData['cde_value_2'];
+        //echo $vesselAge;
+        if ($vesselAge > 30) {
+            $result['error'] = true;
+            $result['errorDescription'] .= 'Ocean Vessel Age is more than 30 [' . $vesselAge . '] needs approval';
+        }
+    }
+
     return $result;
 }
 
-function customIssueNumber($data){
+function customIssueNumber($data)
+{
     global $db;
-    if ($data['oqq_users_ID'] == 42 || $data['oqq_users_ID'] == 58){
+    if ($data['oqq_users_ID'] == 42 || $data['oqq_users_ID'] == 58) {
         $prefix = 'KMCE2';
         $leadingZeros = 5;
         $lastNumber = $db->get_setting('kemter_mc_number_last_used');
-        $newNumber = $db->buildNumber($prefix,$leadingZeros,$lastNumber+1);
-        $db->update_setting('kemter_mc_number_last_used',$lastNumber+1);
-    }
-    else {
+        $newNumber = $db->buildNumber($prefix, $leadingZeros, $lastNumber + 1);
+        $db->update_setting('kemter_mc_number_last_used', $lastNumber + 1);
+    } else {
         $newNumber = $db->buildNumber($data['oqqt_quotation_number_prefix'],
             $data['oqqt_quotation_number_leading_zeros'],
-            $data['oqqt_quotation_number_last_used']+1);
+            $data['oqqt_quotation_number_last_used'] + 1);
         //update db
-        $newData['quotation_number_last_used'] = $data['oqqt_quotation_number_last_used']+1;
+        $newData['quotation_number_last_used'] = $data['oqqt_quotation_number_last_used'] + 1;
         $db->db_tool_update_row('oqt_quotations_types',
             $newData,
-            'oqqt_quotations_types_ID = '.$data['oqqt_quotations_types_ID'],
+            'oqqt_quotations_types_ID = ' . $data['oqqt_quotations_types_ID'],
             $data['oqqt_quotations_types_ID'],
             '',
             'execute',
@@ -1173,6 +1658,14 @@ function customIssueNumber($data){
     }
 
     return $newNumber;
+}
+
+function modify_post_values($post)
+{
+
+    $post['starting_date'] = $post['3_oqqit_date_1'];
+    return $post;
+
 }
 
 ?>

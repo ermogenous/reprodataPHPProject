@@ -437,7 +437,7 @@ $claimFolder = '';
 <?php
 function findClaimFolder()
 {
-    global $sybase, $claimData;
+    global $sybase, $claimData,$db;
     if (!$_GET['claimID'] > 0) {
         exit();
     }
@@ -490,19 +490,24 @@ function findClaimFolder()
         $tpVehicle[] = $tp['inctp_regno_id'];
     }
 
-    //echo "<hr>Looking for: ".$vehicleReg." Event Date: ".$claimEventDate." TP: ".$tpVehicle[0]."<hr>";
+    $db->admin_echo("<hr>Looking for: ".$vehicleReg." Event Date: ".$claimEventDate." TP: ".$tpVehicle[0]."<hr>");
 
     //search in folders to find this claim
     $mainFolder = '\\\\esapps2\\Eurosure Assist\\ODYKY';
     $folders = scandir($mainFolder, 1);
     $foldersFound = [];
+    //echo $claimEventDate."\\".$vehicleReg;
+
     foreach ($folders as $name) {
 
         //first check if the event date is found
         if (strpos($name, $claimEventDate) !== false) {
+            //echo $claimEventDate;
+            //$db->admin_echo($name."<br>");
 
             //now check to find the policy vehicle
             if (strpos($name, $vehicleReg) !== false) {
+
                 $foldersFound[] = $mainFolder . "\\" . $name;
             }
         }

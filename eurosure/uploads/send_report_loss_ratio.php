@@ -45,15 +45,19 @@ else {
     $period = $inParam['inpr_financial_period'] - 1;
 }
 
+//$year = 2021;
+//$period = 8;
+
 $asAtDate = date("Y-m-t",mktime(0,0,0,$period,1,$year));
 
-echo "<hr>Check if ".$period."/".$year." already exists on extranet -> <br>";
+echo "<hr>Check if ".$period."/".$year." with as at date ".$asAtDate." already exists on extranet -> <br>";
 $extranetCheck = $extranet->query('
     SELECT COUNT(*)as clo_total FROM report_loss_ratio WHERE rplr_year = '.$year.' AND rplr_up_to_period = '.$period.'
 ');
 $extranetCheck = mysqli_fetch_assoc($extranetCheck);
 if ($extranetCheck['clo_total'] > 0){
     echo "Period already exists on extranet.";
+    //updateOnlineLossRatio($year,$period,$asAtDate);
 }
 else {
     echo "Period does not exists. Proceeding to update.<br>";
@@ -70,7 +74,8 @@ function updateOnlineLossRatio($year,$uptoPeriod,$asAtDate)
     SELECT 
     LEFT(actln_anls_cod3,1) as clo_lob,
     SUBSTR(actln_anls_cod3, 2,3) as clo_class,
-    actln_anls_cod1,
+    actln_anls_cod1, /*Underwriting year*/
+    actln_docu_year,
     actln_anls_cod3,
     actln_refe_nmbr,
     '".$year."' as xclo_upto_year,
@@ -161,7 +166,12 @@ function updateOnlineLossRatio($year,$uptoPeriod,$asAtDate)
     AND actln_docu_stat <> '9'
     AND actln_docu_type = '1'
     AND LEN(clo_class) = 3
+    /* This gets transactions with underwriting year
     AND ((actln_anls_cod1 >= xclo_anal_1_from AND actln_anls_cod1 <= xclo_anal_1_to) OR TRIM(xclo_anal_1_from) = '')
+    */
+    AND actln_docu_year = xclo_upto_year AND actln_docu_perd >= xclo_from_period AND actln_docu_perd <= xclo_upto_period
+    
+     
     AND ((COALESCE(clo_group_code, '') >= xclo_account_from AND COALESCE(clo_group_code, '') <= xclo_account_to) OR (TRIM(xclo_account_from) = ''))
     
     /*AND clo_group_code = actln_anls_cod4*/
@@ -169,14 +179,15 @@ function updateOnlineLossRatio($year,$uptoPeriod,$asAtDate)
     
     AND (COALESCE(ccac_acct_stat, '1')='1')  /*to show lines with invalid actln_anls_cod4 shown under NONE*/
     
-    GROUP BY  clo_group_code,clo_name,LEFT(actln_anls_cod3,1),actln_anls_cod1,actln_anls_cod3,actln_refe_nmbr,xclo_lob,xclo_lob_to, xclo_as_at_date, xclo_upto_year,xclo_upto_period,xclo_from_period,ccac_acct_stat,ccad_anls_cod1,ccac_anls_cod1
+    GROUP BY  clo_group_code,clo_name,LEFT(actln_anls_cod3,1),actln_anls_cod1,actln_anls_cod3,actln_refe_nmbr
+    ,xclo_lob,xclo_lob_to, xclo_as_at_date, xclo_upto_year,xclo_upto_period,xclo_from_period,ccac_acct_stat,ccad_anls_cod1,ccac_anls_cod1,actln_docu_year
     ORDER BY  clo_group_code,clo_name,LEFT(actln_anls_cod3,1),actln_anls_cod1,actln_anls_cod3,actln_refe_nmbr,xclo_lob,xclo_lob_to, xclo_as_at_date, xclo_upto_year,xclo_upto_period,xclo_from_period,ccac_acct_stat,ccad_anls_cod1,ccac_anls_cod1 
     ;
         
     SELECT
     clo_group_code as clo_agent_code,
     clo_name,
-    actln_anls_cod1 as clo_year,
+    actln_docu_year as clo_year,
     case clo_lob
     WHEN 'A' THEN 'MOTOR'
     WHEN 'B' THEN 'Liability'
@@ -212,8 +223,8 @@ function updateOnlineLossRatio($year,$uptoPeriod,$asAtDate)
     GROUP BY
     clo_group_code,
     clo_name,
-    actln_anls_cod1,
-    clo_lob
+    clo_lob,
+    actln_docu_year
     ORDER BY clo_group_code,clo_lob ASC
     ";
 

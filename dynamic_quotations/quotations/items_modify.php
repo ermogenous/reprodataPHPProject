@@ -166,7 +166,7 @@ $formValidator->setFormName('myForm');
                     <div class="row">
                         <div class="col-12 text-center"><b>Fields</b></div>
                     </div>
-                    <?php for ($i = 1; $i <= 15; $i++) { ?>
+                    <?php for ($i = 1; $i <= 25; $i++) { ?>
                         <div class="form-group row">
                             <label for="fld_insured_amount_<?php echo $i; ?>" class="col-sm-4 col-form-label">Insured
                                 amount <?php echo $i; ?></label>
@@ -235,7 +235,7 @@ $formValidator->setFormName('myForm');
                             </div>
                     </div>
 
-                    <?php for ($i = 1; $i <= 15; $i++) { ?>
+                    <?php for ($i = 1; $i <= 25; $i++) { ?>
                         <div class="form-group row">
                             <label for="fld_rate_<?php echo $i; ?>" class="col-sm-4 col-form-label">Rate <?php echo $i; ?></label>
                             <div class="col-sm-8">

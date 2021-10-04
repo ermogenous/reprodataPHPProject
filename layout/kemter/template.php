@@ -223,8 +223,30 @@ if ($db->user_data['usr_users_ID'] > 0) {
                         </li>
                     <?php } ?>
 
+                    <?php if ($db->user_data["usr_user_rights"] <= 2) { ?>
+                        <!-- Advanced Users Settings -->
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="fas fa-cogs"></i>
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/codes/codesVessels.php">
+                                    <i class="fab fa-linode"></i> Codes - Ocean Vessels</a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/codes/codesOccupations.php">
+                                    <i class="fab fa-linode"></i> Codes - Occupations</a>
+                                <a class="dropdown-item"
+                                   href="<?php echo $main["site_url"]; ?>/send_auto_emails/send_auto_emails.php">
+                                    <i class="fas fa-envelope"></i> Auto Emails</a>
+                            </div>
+
+                        </li>
+                    <?php } ?>
+
                     <?php if ($db->user_data["usr_user_rights"] == 0) { ?>
-                        <!-- Settings -->
+                        <!-- Administrator Settings -->
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -275,7 +297,7 @@ if ($db->user_data['usr_users_ID'] > 0) {
             <div class="col alert alert-danger text-center font-weight-bold">
                 User: <u><?php echo $db->originalUserData['usr_name']; ?></u>
                 Imitating: <u><?php echo $db->user_data['usr_name']; ?></u>
-                <a href="<?php echo $main['site_url'];?>/settings/imitate_user.php">Disable</a>
+                <a href="<?php echo $main['site_url']; ?>/settings/imitate_user.php">Disable</a>
             </div>
         </div>
     <?php } ?>

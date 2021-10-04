@@ -36,7 +36,7 @@ if ($extranet -> connect_errno) {
 //always use from for 3 days but until tomorrow because if you use from today to today it gives no results. Maybe because of the time
 //$startDate = '2021-02-28';
 //$endDate = '2021-03-31';
-$startDate = date('Y-m-d',mktime(0,0,0,date('m'),date('d')-5,date('Y')   ));
+$startDate = date('Y-m-d',mktime(0,0,0,date('m'),date('d')-10,date('Y')   ));
 $endDate = date('Y-m-d',mktime(0,0,0,date('m'),date('d')+1,date('Y')   ));
 
 //echo $startDate." -> ".$endDate;exit();
