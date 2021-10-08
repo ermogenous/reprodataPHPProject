@@ -65,11 +65,11 @@ $sql = "
 	   fn_get_policy_premium_custom(inpol_policy_serial,'phase','fees') as iaipol_fees,
        fn_get_policy_premium_custom(inpol_policy_serial,'phase','stamps') as iaipol_stamps,
        fn_get_policy_premium_custom(inpol_policy_serial,'phase','mif') as iaipol_mif,
-	   2325 as iaipol_client_value,
-	   5 as iaipol_comm_perc_ins_comp01,
-	   115 as iaipol_comm_value_ins_comp01,
-	   10 as iaipol_agency_fee,
-	   2200 as iaipol_ins_comp_value,
+	   0 as iaipol_client_value,
+	   0 as iaipol_comm_perc_ins_comp01,
+	   fn_get_policy_premium_custom(inpol_policy_serial,'phase','commission_total') as iaipol_comm_value_ins_comp01,
+	   0 as iaipol_agency_fee,
+	   0 as iaipol_ins_comp_value,
 	   'N' as iaipol_agency_collect,
 	   'N' as iaipol_embedded_commission,
 	   'Y' as iaipol_ins_comp_embedded_commission,
@@ -99,7 +99,7 @@ $sql = "
         JOIN ininsurancetypes ON inity_insurance_type_serial = inpol_insurance_type_serial
     WHERE
          inag_agent_code = 'AG493' AND inpol_policy_serial > 564835
-         AND inpol_status = 'N' AND inpol_process_status = 'E'";
+         AND inpol_status = 'N' AND inpol_process_status = 'N'";
 $result = $sybase->query($sql);
 $clients = [];
 $policies = [];

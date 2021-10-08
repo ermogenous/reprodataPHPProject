@@ -70,7 +70,7 @@ function mc_shipment_details_3()
             if ($value > 0) $clausesRestriction[$value] = 1;
         }
 
-        if ($db->user_data['usr_user_rights'] <= 12 //set this to 2 if you want to activate the restriction
+        if ($db->user_data['usr_user_rights'] <= 2 //set this to 2 if you want to activate the restriction
             || ($quote->quotationData()['oqq_status'] != 'Outstanding' && $_GET['quotation'] > 0)
         ) {
             for ($i = 1; $i <= 10; $i++) {

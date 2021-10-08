@@ -46,9 +46,9 @@ $db->show_header();
                         </div>
                     </div>
                     <div class="row form-group">
-                        <div class="col-3">Schedule Object</div>
+                        <div class="col-3"><b>Schedule Object</b></div>
                         <div class="col-3"><?php echo $row['clo_schedule_object'];?></div>
-                        <div class="col-3">Certificate Object</div>
+                        <div class="col-3"><b>Certificate Object</b></div>
                         <div class="col-3"><?php echo $row['clo_certificate_object'];?></div>
                     </div>
                     <div class="row form-group">
@@ -58,13 +58,13 @@ $db->show_header();
                         <div class="col-3"><?php echo $row['inity_user_defined_doc2_layout'];?></div>
                     </div>
                     <div class="row form-group">
-                        <div class="col-3">Pol.Aux: <?php echo $row['inity_policy_aux_input_dw'];?></div>
-                        <div class="col-3">Sit.Obj: <?php echo $row['inity_situation_layout'];?></div>
-                        <div class="col-3">Pit.Obj: <?php echo $row['inity_detailed_policy_item_layout'];?></div>
-                        <div class="col-3">C.Note.Obj: <?php echo $row['inity_cover_note_layout'];?></div>
+                        <div class="col-3"><b>Pol.Aux:</b> <?php echo $row['inity_policy_aux_input_dw'];?></div>
+                        <div class="col-3"><b>Sit.Obj:</b> <?php echo $row['inity_situation_layout'];?></div>
+                        <div class="col-3"><b>Pit.Obj:</b> <?php echo $row['inity_detailed_policy_item_layout'];?></div>
+                        <div class="col-3"><b>C.Note.Obj:</b> <?php echo $row['inity_cover_note_layout'];?></div>
                     </div>
                     <div class="row form-group">
-                        <div class="col-3">Attachments RTF:</div>
+                        <div class="col-3"><b>Attachments RTF:</b></div>
                         <div class="col-3"><?php echo $row['inity_shedule_rtf'];?></div>
                         <div class="col-3"></div>
                         <div class="col-3"></div>

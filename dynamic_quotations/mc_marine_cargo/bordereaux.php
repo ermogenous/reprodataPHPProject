@@ -99,11 +99,13 @@ if ($_POST['action'] == 'search') {
           ,cargo.oqqit_rate_7 as reference
           ,cargo.oqqit_rate_8 as rate
           ,usr_name as users_name
+          ,oqun_open_cover_number
           FROM 
           oqt_quotations
           JOIN oqt_quotations_items as ship ON oqq_quotations_ID = ship.oqqit_quotations_ID AND ship.oqqit_items_ID = 3
           JOIN oqt_quotations_items as cargo ON oqq_quotations_ID = cargo.oqqit_quotations_ID AND cargo.oqqit_items_ID = 4
           LEFT OUTER JOIN users ON usr_users_ID = oqq_users_ID
+          LEFT OUTER JOIN oqt_quotations_underwriters ON oqun_user_ID = oqq_users_ID
           ";
 
         $sqlWhereA = "
@@ -128,8 +130,42 @@ if ($_POST['action'] == 'search') {
         //echo $sql;
 
     } else if ($_POST['type'] == 'Travel') {
-        $sql = "
-          SELECT
+
+
+        $where = 'oqq_quotations_type_ID = 3 ';
+        $whereCanceled = 'oqq_quotations_type_ID = 3 ';
+
+        $where .= PHP_EOL."AND oqq_status IN ('" . $_POST['status'] . "','Cancelled') ";
+        $whereCanceled .= PHP_EOL."AND oqq_status = 'Cancelled' ";
+        if ($_POST['numberFrom'] != '') {
+            $where .= PHP_EOL."AND oqq_number BETWEEN '" . $_POST['numberFrom'] . "' AND '" . $_POST['numberTo'] . "' ";
+            $whereCanceled .= PHP_EOL."AND oqq_number BETWEEN '" . $_POST['numberFrom'] . "' AND '" . $_POST['numberTo'] . "' ";
+        }
+        if ($_POST['effectiveFrom'] != '') {
+            $where .= PHP_EOL."AND oqq_effective_date BETWEEN 
+        '" . $db->convertDateToUS($_POST['effectiveFrom']) . " 00:00:00' AND '" . $db->convertDateToUS($_POST['effectiveTo']) . " 23:59:59' ";
+
+            $whereCanceled .= PHP_EOL." AND oqq_cancellation_effective_date BETWEEN 
+            '".$db->convertDateToUS($_POST['effectiveFrom']) . " 00:00:00' AND '" . $db->convertDateToUS($_POST['effectiveTo']) . " 23:59:59' ";
+        }
+
+
+            $sqlSelectA = "
+            SELECT
+            'Active' as clo_status,
+            '' as clo_cancellation_date,
+            '' as clo_cancellation_effective_date,
+            ";
+            $sqlSelectC = "
+            SELECT
+            oqq_status as clo_status,
+            oqq_cancellation_date as clo_cancellation_date,
+            oqq_cancellation_effective_date as clo_cancellation_effective_date,
+            ";
+
+
+        $sqlSelect = "
+        
           oqt_quotations.*
           ,(SELECT cde_value FROM codes WHERE cde_code_ID = oqq_nationality_ID) as clo_client_nationality
           
@@ -189,7 +225,9 @@ if ($_POST['action'] == 'search') {
           
           ,usr_name
           ,oqun_tr_open_cover_number
-          
+          ";
+
+        $sqlFrom = "
           FROM 
           oqt_quotations
           JOIN oqt_quotations_items as tr_info ON oqq_quotations_ID = tr_info.oqqit_quotations_ID AND tr_info.oqqit_items_ID = 5
@@ -198,10 +236,26 @@ if ($_POST['action'] == 'search') {
           JOIN oqt_quotations_items as members79 ON oqq_quotations_ID = members79.oqqit_quotations_ID AND members79.oqqit_items_ID = 8
           JOIN users ON usr_users_ID = oqq_users_ID
           JOIN oqt_quotations_underwriters ON oqun_user_ID = oqq_users_ID
+          ";
+        $sqlWhere = "
           WHERE
-          1=1
-          " . $where . "
-          ORDER BY oqq_number ASC";
+          
+          ";
+
+        $sqlOrder = PHP_EOL."ORDER BY oqq_number ASC";
+
+        if ($_POST['status'] == 'Active'){
+            $sql = $sqlSelectA.$sqlSelect.$sqlFrom.$sqlWhere.$where.
+                PHP_EOL."UNION all".PHP_EOL
+                .$sqlSelectC.$sqlSelect.$sqlFrom.$sqlWhere.$whereCanceled
+                .$sqlOrder;
+        }
+        else {
+            $sql = $sqlSelectA.$sqlSelect.$sqlFrom.$sqlWhere.$where.
+                PHP_EOL.$sqlOrder;
+        }
+
+
     }
 
 
@@ -517,6 +571,7 @@ function outputExcelMarine($sql)
         ->setCellValue(++$str . '1', '#')
         ->setCellValue(++$str . '1', 'Number')
         ->setCellValue(++$str . '1', 'User')
+        ->setCellValue(++$str . '1', 'Open Cover Number')
         ->setCellValue(++$str . '1', 'Activation Date')
         ->setCellValue(++$str . '1', 'Cancellation Date')
         ->setCellValue(++$str . '1', 'Cancellation Effective Date')
@@ -563,11 +618,16 @@ function outputExcelMarine($sql)
     while ($row = $db->fetch_assoc($result)) {
         $str = 'A';
         $line++;
+        $openCover = $row['oqun_open_cover_number'];
+        if ($openCover == ''){
+            $openCover = 'Direct';
+        }
         $spreadsheet->getActiveSheet()
             ->setCellValue($str . $line, 'Marine Cargo')
             ->setCellValue(++$str . $line, $row['oqq_quotations_ID'])
             ->setCellValue(++$str . $line, $row['oqq_number'])
             ->setCellValue(++$str . $line, $row['users_name'])
+            ->setCellValue(++$str . $line, $openCover)
             ->setCellValue(++$str . $line, $db->convert_date_format($row['oqq_effective_date'], 'yyyy-mm-dd', 'dd/mm/yyyy', 1, 1))
             ->setCellValue(++$str . $line, $db->convert_date_format($row['oqq_cancellation_date'], 'yyyy-mm-dd', 'dd/mm/yyyy', 1, 1))
             ->setCellValue(++$str . $line, $db->convert_date_format($row['oqq_cancellation_effective_date'], 'yyyy-mm-dd', 'dd/mm/yyyy', 1, 1))
@@ -684,6 +744,9 @@ function outputExcelTravel($sql)
         ->setCellValue(++$str . '1', 'Fees')
         ->setCellValue(++$str . '1', 'Stamps')
         ->setCellValue(++$str . '1', 'Activation Date')
+        ->setCellValue(++$str . '1', 'Cancellation Date')
+        ->setCellValue(++$str . '1', 'Cancellation Effective Date')
+        ->setCellValue(++$str . '1', 'Status')
         ->setCellValue(++$str . '1', 'Departure Date')
         ->setCellValue(++$str . '1', 'Return Date')
         ->setCellValue(++$str . '1', 'Client Name')
@@ -756,6 +819,9 @@ function outputExcelTravel($sql)
             ->setCellValue(++$str . $line, $row['oqq_fees'])
             ->setCellValue(++$str . $line, $row['oqq_stamps'])
             ->setCellValue(++$str . $line, $db->convert_date_format($row['oqq_last_update_date_time'], 'yyyy-mm-dd', 'dd/mm/yyyy', 1, 1))
+            ->setCellValue(++$str . $line, $db->convert_date_format($row['clo_cancellation_date'], 'yyyy-mm-dd', 'dd/mm/yyyy', 1, 1))
+            ->setCellValue(++$str . $line, $db->convert_date_format($row['clo_cancellation_effective_date'], 'yyyy-mm-dd', 'dd/mm/yyyy', 1, 1))
+            ->setCellValue(++$str . $line, $row['clo_status'])
             ->setCellValue(++$str . $line, $db->convertDateToEU($row['clo_departure_date']))
             ->setCellValue(++$str . $line, $db->convertDateToEU($row['oqq_expiry_date'],1,0))
             ->setCellValue(++$str . $line, $row['oqq_insureds_name'])

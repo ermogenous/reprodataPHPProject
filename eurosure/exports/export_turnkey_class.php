@@ -39,12 +39,15 @@ class exportTurnkey {
                 $endorsementSql .= ",".round($row['pclo_end_refund_premium'] + $row['pclo_end_refund_mif']
                         + $row['pclo_end_refund_stamps'] + $row['pclo_end_refund_fees'],2)." as iaipol_refund_client_value".PHP_EOL;
 
+
                 $row['iaipol_premium'] = $row['pclo_end_charge_premium'];
                 $row['iaipol_fees'] = $row['pclo_end_charge_fees'];
                 $row['iaipol_stamps'] = $row['pclo_end_charge_stamps'];
                 $row['iaipol_mif'] = $row['pclo_end_charge_mif'];
             }
 
+            //Client value is the total premium owed by the client
+            $row['iaipol_client_value'] = $row['iaipol_premium'] + $row['iaipol_fees'] + $row['iaipol_stamps'] + $row['iaipol_mif'];
 
             $sql = "
                 INSERT INTO iaimportpolicies WITH AUTO NAME
@@ -55,6 +58,7 @@ class exportTurnkey {
                        '".$row['iaipol_row_status_last_update_by']."' as iaipol_row_status_last_update_by,
                        '".$row['iaipol_policy_import_reference']."' as iaipol_policy_import_reference,
                        '".$row['iaipol_policy_number']."' as iaipol_policy_number,
+                       '".$row['iaipol_internal_reference']."' as iaipol_internal_reference,
                        '".$row['iaipol_inscomp_code']."' as iaipol_inscomp_code, /* Eurosure */ 
                        '".$row['iaipol_agent_code']."' as iaipol_agent_code,
                        '".$row['iaipol_client_code']."' as iaipol_client_code,

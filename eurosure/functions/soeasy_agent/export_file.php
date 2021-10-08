@@ -107,6 +107,21 @@ if ($_POST['action'] == 'export') {
                 $row['MOT_PS_KW_Power'] = '';
             }
 
+            //client mobile cannot be empty or not valid mobile number
+            //also check that the first number must be 9 or 0
+            if ($row['Client_Telephone_Mobile'] == '' || !in_array(substr($row['Client_Telephone_Mobile'],0,1),array('9','0')) ){
+                //check if the home number exists
+                if ($row['Client_Telephone_Home'] != '' && in_array(substr($row['Client_Telephone_Home'],0,1),array('9','0'))){
+                    $row['Client_Telephone_Mobile'] = $row['Client_Telephone_Home'];
+                }
+                else {
+                    $row['Client_Telephone_Mobile'] = '99999999';
+                }
+            }
+            else {
+                //should be ok. do nothing
+            }
+
             //if ()
 
             $i++;
