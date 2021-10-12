@@ -16,6 +16,8 @@ $db->admin_title = "Eurosure - Export - Turnkey V2";
 
 $sybase = new ODBCCON();
 
+$limitPolicyWhere = " AND inpol_policy_serial = 577672 AND inity_major_category = 'MOTOR' ";
+
 //get all the policies to export
 
 $sql = "
@@ -80,7 +82,7 @@ $sql = "
 	   '777' as iaipol_original_auto_serial, /* Important */
 	   'EUROSURE DUMMY' as iaipol_dummy_retention_reinsurer,
         inity_insurance_type as pclo_insurance_type,
-        inity_insurance_form as pclo_insurance_form,
+        inity_major_category as pclo_major_category,
         //for endorsements Refund
         fn_get_policy_premium_custom(inpol_policy_serial,'endorsementRefund','premium') as pclo_end_refund_premium,
         fn_get_policy_premium_custom(inpol_policy_serial,'endorsementRefund','fees') as pclo_end_refund_fees,
@@ -98,8 +100,8 @@ $sql = "
         JOIN inclients ON incl_client_serial = inpol_client_serial
         JOIN ininsurancetypes ON inity_insurance_type_serial = inpol_insurance_type_serial
     WHERE
-         inag_agent_code = 'AG493' AND inpol_policy_serial > 564835
-         AND inpol_status = 'N' AND inpol_process_status = 'N'";
+         inag_agent_code = 'AG493' ".$limitPolicyWhere."
+         AND inpol_status = 'N'";
 $result = $sybase->query($sql);
 $clients = [];
 $policies = [];
@@ -127,22 +129,24 @@ $sql = "SELECT
 	    'IMPORT' as iaipst_row_status_last_update_by,
 	    'N' as iaipst_inactive_for_endorsement, /* For Endorsement use if item no longer exists */
 	    'REF-' || inpol_policy_serial as iaipst_policy_import_reference,
-	    inpst_situation_code as iaipst_situation_code,
+	    if inpst_situation_code is null then 'SIT-'||inpol_policy_number||'-1' else inpst_situation_code endif as iaipst_situation_code,
 	    'Situation ' || inpst_situation_code || ' for Policy ' || inpol_policy_number as iaipst_description
         FROM
         inpolicies
-        JOIN inpolicysituations ON inpst_policy_serial = inpol_policy_serial
+        LEFT OUTER JOIN inpolicysituations ON inpst_policy_serial = inpol_policy_serial
         JOIN inagents ON inag_agent_serial = inpol_agent_serial
         JOIN inclients ON incl_client_serial = inpol_client_serial
+        JOIN ininsurancetypes ON inity_insurance_type_serial = inpol_insurance_type_serial
         WHERE
-         inag_agent_code = 'AG493' AND inpol_policy_serial > 564835
-         AND inpol_status = 'N' AND inpol_process_status = 'E'
+         inag_agent_code = 'AG493' ".$limitPolicyWhere."
+         AND inpol_status = 'N' 
 ";
+//echo $sql;exit();
 $sitResult = $sybase->query($sql);
 $situations = [];
 $i=0;
 while ($situation = $sybase->fetch_assoc($sitResult)){
-
+    //print_r($situation);exit();
     foreach($situation as $name => $value){
         $situations[$i][$name] = $value;
     }
@@ -159,10 +163,12 @@ $sql = "
 	    'IMPORT' as iaipit_row_status_last_update_by,
 	    'N' as iaipit_inactive_for_endorsement, /* For Endorsement use if item no longer exists */
 	    'REF-' || inpol_policy_serial as iaipit_policy_import_reference,
-	    inpst_situation_code as iaipit_situation_code,
+	    if inpst_situation_code is null then 'SIT-'||inpol_policy_number||'-1' else inpst_situation_code endif as iaipit_situation_code,
 	    NULL as iaipit_item_category_code, /* Item Category Null Or Valid Code! */
-	    initm_item_code as iaipit_item_code,
-	    inpit_pit_increment as iaipit_pit_increment,
+	    //initm_item_code as iaipit_item_code,
+	    'PRIVATE' as iaipit_item_code,
+	    //inpit_pit_increment as iaipit_pit_increment,
+	    '1' as iaipit_pit_increment,
 	    inpit_insured_amount as iaipit_insured_amount
         FROM
         inpolicies
@@ -171,10 +177,12 @@ $sql = "
         LEFT OUTER JOIN inpolicysituations ON inpit_situation_serial = inpst_situation_serial
         JOIN inagents ON inag_agent_serial = inpol_agent_serial
         JOIN inclients ON incl_client_serial = inpol_client_serial
+        JOIN ininsurancetypes ON inity_insurance_type_serial = inpol_insurance_type_serial
         WHERE
-         inag_agent_code = 'AG493' AND inpol_policy_serial > 564835
-         AND inpol_status = 'N' AND inpol_process_status = 'E'
+         inag_agent_code = 'AG493' ".$limitPolicyWhere."
+         AND inpol_status = 'N' 
 ";
+//echo $sql;exit();
 $pitResult = $sybase->query($sql);
 $policyItems = [];
 $i=0;
@@ -190,36 +198,39 @@ while ($pit = $sybase->fetch_assoc($pitResult)){
 //== RETRIEVE ITEMS PREMIUM ===============================RETRIEVE ITEMS PREMIUM=====================================  RETRIEVE ITEMS PREMIUM
 $sql = "
         SELECT
-'I' as iaipip_synthesis_in_out,
+        'I' as iaipip_synthesis_in_out,
         'IMPORT' as iaipip_row_created_by,
  	    'IMPORT' as iaipip_row_last_edit_by,
    	    'O' as iaipip_row_status,
 	    'IMPORT' as iaipip_row_status_last_update_by,
 	    'N' as iaipip_inactive_for_endorsement, /* For Endorsement use if item no longer exists */
 	    'REF-' || inpol_policy_serial as iaipip_policy_import_reference,
-	    inpst_situation_code as iaipip_situation_code,
+	    if inpst_situation_code is null then 'SIT-'||inpol_policy_number||'-1' else inpst_situation_code endif as iaipip_situation_code,
 	    NULL as iaipip_item_category_code, /* Item Category Null Or Valid Code! */
-initm_item_code as iaipip_item_code,
-inpit_pit_increment as iaipip_pit_increment,
-'2019 FIRE RI PREM ' as iaipip_peril_code,
-'A' as iaipip_amount_rate,
-	   500 as iaipip_peril_value,
-fn_get_policy_premium_custom(inpol_policy_serial,'phase','premium')as iaipip_period_premium,
-iaipip_period_premium as iaipip_year_premium,
-1 as iaipip_comm_type,
-iaipip_period_premium as iaipip_period_calculate
-FROM
-inpolicies
-JOIN inpolicyitems ON inpit_policy_serial = inpol_policy_serial
-JOIN initems ON initm_item_serial = inpit_item_serial
-LEFT OUTER JOIN inpolicysituations ON inpit_situation_serial = inpst_situation_serial
-JOIN inagents ON inag_agent_serial = inpol_agent_serial
-JOIN inclients ON incl_client_serial = inpol_client_serial
-WHERE
-inag_agent_code = 'AG493' 
-AND inpol_policy_serial > 564835
-AND inpol_status = 'N' 
-AND inpol_process_status = 'E'
+        //initm_item_code as iaipip_item_code,
+        'PRIVATE' as iaipip_item_code,
+        //inpit_pit_increment as iaipip_pit_increment,
+        '1' as iaipip_pit_increment,
+        '2019 FIRE RI PREM ' as iaipip_peril_code,
+        'A' as iaipip_amount_rate,
+               500 as iaipip_peril_value,
+        fn_get_policy_premium_custom(inpol_policy_serial,'phase','premium')as iaipip_period_premium,
+        iaipip_period_premium as iaipip_year_premium,
+        1 as iaipip_comm_type,
+        iaipip_period_premium as iaipip_period_calculate
+        FROM
+        inpolicies
+        JOIN inpolicyitems ON inpit_policy_serial = inpol_policy_serial
+        JOIN initems ON initm_item_serial = inpit_item_serial
+        LEFT OUTER JOIN inpolicysituations ON inpit_situation_serial = inpst_situation_serial
+        JOIN inagents ON inag_agent_serial = inpol_agent_serial
+        JOIN inclients ON incl_client_serial = inpol_client_serial
+        JOIN ininsurancetypes ON inity_insurance_type_serial = inpol_insurance_type_serial
+        WHERE
+        inag_agent_code = 'AG493' 
+        ".$limitPolicyWhere."
+        AND inpol_status = 'N' 
+
 ";
 $pitpResult = $sybase->query($sql);
 $policyItemPrem = [];
@@ -235,11 +246,11 @@ while ($pitp = $sybase->fetch_assoc($pitpResult)){
 
 $estkCon = new ODBCCON('ES_TK','UTF-8','dba','estk2021');
 $turnkey = new exportTurnkey();
-//$turnkey->exportClientsToDB($clients);
+$turnkey->exportClientsToDB($clients);
 $turnkey->exportPoliciesToDB($policies);
-//$turnkey->exportSituationsToDB($situations);
-//$turnkey->exportPolicyItemsToDB($policyItems);
-//$turnkey->exportPolicyItemsPremiumToDB($policyItemPrem);
+$turnkey->exportSituationsToDB($situations);
+$turnkey->exportPolicyItemsToDB($policyItems);
+$turnkey->exportPolicyItemsPremiumToDB($policyItemPrem);
 
 /*
 $estk = new ODBCCON('ES_TK','UTF-8','dba','estk2021');

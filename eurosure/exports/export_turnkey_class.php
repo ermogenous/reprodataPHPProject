@@ -22,8 +22,8 @@ class exportTurnkey {
         foreach ($policies as $row){
 
             //if motor
-            if ($row['pclo_insurance_form'] == 'M'){
-                $productCode = 'EUR-MOTOR';
+            if ($row['pclo_major_category'] == 'MOTOR'){
+                $row['iaipol_product_code'] = 'EUR-MOTOR';
             }
 
             //if endorsement
@@ -98,9 +98,9 @@ class exportTurnkey {
                        ".$endorsementSql."
                 FROM DUMMY; COMMIT;
             ";
-            print_r($row);
-            echo "<hr>".$sql;
-            exit();
+            //print_r($row);
+            //echo "<hr>".$sql;
+            //exit();
             if ($this->checkIfPolicyExists($row)){
                 //client already exists. Do nothing
                 echo "Policy:".$row['iaipol_policy_number']."(".$row['iaipol_policy_import_reference'].") Already exists. Skip<br>";
