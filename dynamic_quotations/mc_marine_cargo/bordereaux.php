@@ -622,6 +622,11 @@ function outputExcelMarine($sql)
         if ($openCover == ''){
             $openCover = 'Direct';
         }
+        if ($row['clo_status'] == 'Cancelled'){
+            $row['oqq_premium'] = $row['oqq_premium'] * -1;
+            $row['oqq_fees'] = $row['oqq_fees'] * -1;
+            $row['oqq_stamps'] = $row['oqq_stamps'] * -1;
+        }
         $spreadsheet->getActiveSheet()
             ->setCellValue($str . $line, 'Marine Cargo')
             ->setCellValue(++$str . $line, $row['oqq_quotations_ID'])

@@ -21,10 +21,16 @@ $syn = new ODBCCON();
 
 
 $list = new TableList();
+$list->defineMainObjectVar('syn');
 $list->setTable('inagents', 'SynthesisAgents')
     ->defineMainObjectVar('syn')
     //->setSqlFrom('JOIN users ON usr_users_ID = inaund_user_ID')
+    ->setSqlSelect('inag_agent_code', 'Agent Code')
+    ->setSqlSelect('inag_long_description', 'Description')
     ->setSqlSelect('inag_status_flag', 'Status')
+
+    ->setSqlWhere("inag_agent_type = 'A'")
+
     ->setSqlOrder('inag_agent_code', 'ASC')
     ->setPerPage(10)
     ->generateData();

@@ -429,7 +429,7 @@ global $main, $db;
 
                     <!-- Functions -->
                     <?php
-                    if ($db->user_data['usr_user_rights'] <= 2) {
+                    if ($db->user_data['usr_user_rights'] <= 1) {
                         ?>
 
                         <li class="nav-item dropdown">
@@ -550,7 +550,7 @@ global $main, $db;
                     ?>
 
                     <!-- USERS -->
-                    <?php if ($db->user_data["usr_user_rights"] == 0) { ?>
+                    <?php if ($db->user_data["usr_user_rights"] == 0 || $db->user_data['usr_users_groups_ID'] == 4) { ?>
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">

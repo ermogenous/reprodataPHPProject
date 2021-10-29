@@ -12,7 +12,7 @@ $sybase = new ODBCCON();
 
 
 if ($_POST['action'] == 'execute'){
-    $dateFields = explode('/',$_POST['fld_as_at_date']);
+
 
     //extraFields
     $extraSelect = '';
@@ -64,13 +64,24 @@ and ( inpolicies.inpol_client_serial = inclients.incl_client_serial )
 and ( inpolicies.inpol_agent_serial = inagents.inag_agent_serial )
 and ( ingeneralagents.inga_agent_serial = inpolicies.inpol_general_agent_serial )
 and ( inpolicyitems.inpit_policy_serial = inpolicies.inpol_policy_serial )
-and ( initems.initm_item_serial = inpolicyitems.inpit_item_serial ) AND 1=1 AND COALESCE(inped_process_status, inpol_process_status) IN ('N','R','E','D') 
-AND COALESCE(inped_phase_status, inpol_status) IN ('A','N') AND COALESCE(inped_status, CASE inpol_status WHEN 'Q' THEN '2' WHEN 'D' THEN '3' END, '?') IN ('1') 
-AND inity_insurance_form IN ('M','O','L','R','P','E','T') AND (inped_year*100+inped_period)<=(".$dateFields[2]."*100+".$dateFields[1].") 
+and ( initems.initm_item_serial = inpolicyitems.inpit_item_serial ) 
+AND 1=1 
+AND COALESCE(inped_process_status, inpol_process_status) IN ('N','R','E','D') 
+AND COALESCE(inped_phase_status, inpol_status) IN ('A','N') 
+AND COALESCE(inped_status, CASE inpol_status WHEN 'Q' THEN '2' WHEN 'D' THEN '3' END, '?') IN ('1') 
+AND inity_insurance_form IN ('M','O','L','R','P','E','T') 
+
+AND inped_year >= ".$_POST['fld_year_from']."
+AND inped_year <= ".$_POST['fld_year_to']."
+AND inped_period >= ".$_POST['fld_period_from']."
+AND inped_period >= ".$_POST['fld_period_to']."
+
+/*
 AND '".$dateFields[2]."/".$dateFields[1]."/".$dateFields[0]."' BETWEEN inpol_starting_date AND 
 COALESCE(IF (SELECT a.inped_year * 100 + a.inped_period FROM inpolicyendorsement a 
     WHERE a.inped_endorsement_serial = inpol_last_cancellation_endorsement_serial) 
-    <= YEAR('".$dateFields[2]."/".$dateFields[1]."/".$dateFields[0]."') * 100 + MONTH('".$dateFields[2]."/".$dateFields[1]."/".$dateFields[0]."') THEN inpol_cancellation_date ELSE NULL ENDIF, inpol_expiry_date) 
+    <= YEAR('".$dateFields[2]."/".$dateFields[1]."/".$dateFields[0]."') * 100 + MONTH('".$dateFields[2]."/".$dateFields[1]."/".$dateFields[0]."') THEN inpol_cancellation_date ELSE NULL ENDIF, inpol_expiry_date)
+*/     
 AND inity_insurance_type IN ('HSR','FPR')
 
 GROUP BY
@@ -112,7 +123,8 @@ inpol_policy_number ASC
         }
         $output .= PHP_EOL;
     }
-    $db->export_file_for_download($output,'hsr_as_at_'.$dateFields[0]."-".$dateFields[1]."-".$dateFields[2].".txt");
+    $db->export_file_for_download($output,'hsr_as_at_'.$_POST['fld_period_from']."-".$_POST['fld_year_from']
+        ."_to_".$_POST['fld_period_to']."-".$_POST['fld_year_to'].".txt");
     exit();
 }
 
@@ -141,12 +153,12 @@ FormBuilder::buildPageLoader();
                     <div class="row form-group">
                         <?php
                         $formB = new FormBuilder();
-                        $formB->setFieldName('fld_as_at_date')
-                            ->setFieldDescription('As At Date')
+                        $formB->setFieldName('fld_year_from')
+                            ->setFieldDescription('Year From')
                             ->setLabelClasses('col-sm-2')
                             ->setFieldType('input')
                             ->setFieldInputType('text')
-                            ->setInputValue($_POST['fld_as_at_date'])
+                            ->setInputValue($_POST['fld_year_from'])
                             ->buildLabel();
                         ?>
                         <div class="col-4">
@@ -155,14 +167,89 @@ FormBuilder::buildPageLoader();
                             $formValidator->addField(
                                 [
                                     'fieldName' => $formB->fieldName,
-                                    'fieldDataType' => 'date',
-                                    'enableDatePicker' => true,
-                                    'datePickerValue' => $_POST['fld_as_at_date'],
+                                    'fieldDataType' => 'number',
                                     'required' => true,
                                     'invalidTextAutoGenerate' => true
                                 ]);
                             ?>
                         </div>
+
+                        <?php
+                        $formB = new FormBuilder();
+                        $formB->setFieldName('fld_period_from')
+                            ->setFieldDescription('Period From')
+                            ->setLabelClasses('col-sm-2')
+                            ->setFieldType('input')
+                            ->setFieldInputType('text')
+                            ->setInputValue($_POST['fld_period_from'])
+                            ->buildLabel();
+                        ?>
+                        <div class="col-4">
+                            <?php
+                            $formB->buildInput();
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => $formB->fieldName,
+                                    'fieldDataType' => 'number',
+                                    'required' => true,
+                                    'invalidTextAutoGenerate' => true
+                                ]);
+                            ?>
+                        </div>
+
+
+                    </div>
+
+                    <div class="row form-group">
+                        <?php
+                        $formB = new FormBuilder();
+                        $formB->setFieldName('fld_year_to')
+                            ->setFieldDescription('Year To')
+                            ->setLabelClasses('col-sm-2')
+                            ->setFieldType('input')
+                            ->setFieldInputType('text')
+                            ->setInputValue($_POST['fld_year_to'])
+                            ->buildLabel();
+                        ?>
+                        <div class="col-4">
+                            <?php
+                            $formB->buildInput();
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => $formB->fieldName,
+                                    'fieldDataType' => 'number',
+                                    'required' => true,
+                                    'invalidTextAutoGenerate' => true
+                                ]);
+                            ?>
+                        </div>
+
+                        <?php
+                        $formB = new FormBuilder();
+                        $formB->setFieldName('fld_period_to')
+                            ->setFieldDescription('Period To')
+                            ->setLabelClasses('col-sm-2')
+                            ->setFieldType('input')
+                            ->setFieldInputType('text')
+                            ->setInputValue($_POST['fld_period_to'])
+                            ->buildLabel();
+                        ?>
+                        <div class="col-4">
+                            <?php
+                            $formB->buildInput();
+                            $formValidator->addField(
+                                [
+                                    'fieldName' => $formB->fieldName,
+                                    'fieldDataType' => 'number',
+                                    'required' => true,
+                                    'invalidTextAutoGenerate' => true
+                                ]);
+                            ?>
+                        </div>
+
+                    </div>
+
+                    <div class="row form-group">
 
                         <?php
                         $formB = new FormBuilder();

@@ -347,7 +347,7 @@ function mc_shipment_details_3()
             <?php show_quotation_text("Freight Value", "Freight Value"); ?>
         </label>
         <div class="col-sm-3">
-            <input name="3_oqqit_rate_17" type="text" id="3_oqqit_rate_17"
+            <input name="3_oqqit_rate_17" type="text" id="3_oqqit_rate_17" inputmode="decimal"
                    class="form-control" onchange="calculateTotalInsuredValue();"
                    value="<?php echo $qitem_data["oqqit_rate_17"]; ?>">
             <?php
@@ -380,34 +380,6 @@ function mc_shipment_details_3()
         </div>
     </div>
 
-    <div class="form-group row">
-        <div class="col-sm-4">Total Insured Value</div>
-        <div class="col-sm-8" id="totalInsuredValue">0</div>
-        <input type="hidden" id="3_oqqit_rate_20" name="3_oqqit_rate_20" value="">
-        <?php
-        $formValidator->addField(
-            [
-                'fieldName' => '3_oqqit_rate_20',
-                'fieldDataType' => 'number',
-                'required' => true
-            ]);
-        ?>
-    </div>
-
-    <?php
-    //get the list of max insured amounts from the underwriter
-    $maxInsAmount['general'] = $quotationUnderwriter['oqun_mc_general_max_ins_amount'];
-    $maxInsAmount['vehicles'] = $quotationUnderwriter['oqun_mc_vehicles_max_ins_amount'];
-    $maxInsAmount['machinery'] = $quotationUnderwriter['oqun_mc_machinery_max_ins_amount'];
-    $maxInsAmount['no_meat'] = $quotationUnderwriter['oqun_mc_temp_no_meat_max_ins_amount'];
-    $maxInsAmount['meat'] = $quotationUnderwriter['oqun_mc_temp_meat_max_ins_amount'];
-    $maxInsAmount['special'] = $quotationUnderwriter['oqun_mc_special_cover_max_ins_amount'];
-    $maxInsAmount['pro_packed'] = $quotationUnderwriter['oqun_mc_pro_packed_max_ins_amount'];
-    $maxInsAmount['owner_packed'] = $quotationUnderwriter['oqun_mc_owner_packed_max_ins_amount'];
-    $maxInsAmount['other'] = $quotationUnderwriter['oqun_mc_other_max_ins_amount'];
-    $maxInsAmount['tobacco'] = $quotationUnderwriter['oqun_mc_tobacco_max_ins_amount'];
-    ?>
-
     <div class="row form-group">
         <label for="3_oqqit_rate_19" class="col-sm-4 col-form-label">
             <?php show_quotation_text("CIF Increase", "CIF Increase"); ?>
@@ -438,6 +410,51 @@ function mc_shipment_details_3()
         </div>
     </div>
 
+    <div class="form-group row">
+        <div class="col-sm-4">Total Insured Value</div>
+        <div class="col-sm-4" id="totalInsuredValue">0</div>
+        <div class="col-sm-4" id="indicativePriceDiv">Indicative Price</div>
+
+        <input type="hidden" id="3_oqqit_rate_20" name="3_oqqit_rate_20" value="">
+        <?php
+        $formValidator->addField(
+            [
+                'fieldName' => '3_oqqit_rate_20',
+                'fieldDataType' => 'number',
+                'required' => true
+            ]);
+        ?>
+    </div>
+
+    <?php
+    //get the list of max insured amounts from the underwriter
+    $maxInsAmount['general'] = $quotationUnderwriter['oqun_mc_general_max_ins_amount'];
+    $maxInsAmount['vehicles'] = $quotationUnderwriter['oqun_mc_vehicles_max_ins_amount'];
+    $maxInsAmount['machinery'] = $quotationUnderwriter['oqun_mc_machinery_max_ins_amount'];
+    $maxInsAmount['no_meat'] = $quotationUnderwriter['oqun_mc_temp_no_meat_max_ins_amount'];
+    $maxInsAmount['meat'] = $quotationUnderwriter['oqun_mc_temp_meat_max_ins_amount'];
+    $maxInsAmount['special'] = $quotationUnderwriter['oqun_mc_special_cover_max_ins_amount'];
+    $maxInsAmount['pro_packed'] = $quotationUnderwriter['oqun_mc_pro_packed_max_ins_amount'];
+    $maxInsAmount['owner_packed'] = $quotationUnderwriter['oqun_mc_owner_packed_max_ins_amount'];
+    $maxInsAmount['other'] = $quotationUnderwriter['oqun_mc_other_max_ins_amount'];
+    $maxInsAmount['tobacco'] = $quotationUnderwriter['oqun_mc_tobacco_max_ins_amount'];
+
+    //get the list of min premium from the underwriter for the calculation of the premium
+    $minPremAmount['general'] = $quotationUnderwriter['oqun_mc_general_min_premium'];
+    $minPremAmount['vehicles'] = $quotationUnderwriter['oqun_mc_vehicles_min_premium'];
+    $minPremAmount['machinery'] = $quotationUnderwriter['oqun_mc_machinery_min_premium'];
+    $minPremAmount['no_meat'] = $quotationUnderwriter['oqun_mc_temp_no_meat_min_premium'];
+    $minPremAmount['meat'] = $quotationUnderwriter['oqun_mc_temp_meat_min_premium'];
+    $minPremAmount['special'] = $quotationUnderwriter['oqun_mc_special_cover_min_premium'];
+    $minPremAmount['pro_packed'] = $quotationUnderwriter['oqun_mc_pro_packed_min_premium'];
+    $minPremAmount['owner_packed'] = $quotationUnderwriter['oqun_mc_owner_packed_min_premium'];
+    $minPremAmount['other'] = $quotationUnderwriter['oqun_mc_other_min_premium'];
+    $minPremAmount['tobacco'] = $quotationUnderwriter['oqun_mc_tobacco_min_premium'];
+
+    ?>
+
+
+
     <script>
         function calculateTotalInsuredValue() {
             let total = 0;
@@ -453,31 +470,76 @@ function mc_shipment_details_3()
             //get the commodity
             let commodity = $('#3_oqqit_rate_4').val();
             let maxInsAmount = 0;
+            let minPremium = 0;
+            let premium = 0;
+            let fees = <?php echo $quotationUnderwriter['oqun_min_fees'];?> * 1;
+            let stamps = <?php echo $quotationUnderwriter['oqun_min_stamps'];?> * 1;
+            let rounding = '<?php echo $quotationUnderwriter['oqun_mc_premium_rounding'];?>';
 
             if (commodity == 'General Cargo & Merchandise') {
                 maxInsAmount = <?php echo $maxInsAmount['general'];?>;
+                minPremium = <?php echo $minPremAmount['general'];?>;
             } else if (commodity == 'New/Used Vehicles') {
                 maxInsAmount = <?php echo $maxInsAmount['vehicles'];?>;
+                minPremium = <?php echo $minPremAmount['vehicles'];?>;
             } else if (commodity == 'Machinery') {
                 maxInsAmount = <?php echo $maxInsAmount['machinery'];?>;
+                minPremium = <?php echo $minPremAmount['machinery'];?>;
             } else if (commodity == 'Temp. Controlled Cargo other than meat') {
                 maxInsAmount = <?php echo $maxInsAmount['no_meat'];?>;
+                minPremium = <?php echo $minPremAmount['no_meat'];?>;
             } else if (commodity == 'Temp. Controlled Cargo Meat') {
                 maxInsAmount = <?php echo $maxInsAmount['meat'];?>;
+                minPremium = <?php echo $minPremAmount['meat'];?>;
             } else if (commodity == 'Special Cover Mobile Phones, Electronic Equipment') {
                 maxInsAmount = <?php echo $maxInsAmount['special'];?>;
+                minPremium = <?php echo $minPremAmount['special'];?>;
             } else if (commodity == 'Personal Effects professionally packed') {
                 maxInsAmount = <?php echo $maxInsAmount['pro_packed'];?>;
+                minPremium = <?php echo $minPremAmount['pro_packed'];?>;
             } else if (commodity == 'CPMB - Cyprus Potato Marketing Board') {
                 maxInsAmount = <?php echo $maxInsAmount['owner_packed'];?>;
+                minPremium = <?php echo $minPremAmount['owner_packed'];?>;
             } else if (commodity == 'Other') {
                 maxInsAmount = <?php echo $maxInsAmount['other'];?>;
+                minPremium = <?php echo $minPremAmount['other'];?>;
             } else if (commodity == 'Tobacco') {
                 maxInsAmount = <?php echo $maxInsAmount['tobacco'];?>;
+                minPremium = <?php echo $minPremAmount['tobacco'];?>;
             }
             if (maxInsAmount < 1) {
                 maxInsAmount = 500000;
             }
+
+            //calculate the premium
+            //get the rate
+            //rund the update rate first
+            updateRate();
+            let rate = $('#4_oqqit_rate_8').val();
+            premium = (total / 100) * rate;
+            premium = premium.toFixed(2);
+            if (premium < minPremium){
+                premium = minPremium;
+            }
+            let premiumSplitHtml = 'Premium:' + premium + ' Fees: '+ fees + ' Stamps:' + stamps;
+            let totalPremium = (premium * 1) + fees + stamps;
+            totalPremium = totalPremium.toFixed(2);
+
+            //rounding
+            if (rounding == 'normal'){
+                totalPremium = Math.round(totalPremium);
+            }
+            else if (rounding == 'next') {
+                totalPremium = Math.ceil(totalPremium);
+            }
+            else if (rounding == 'previous'){
+                totalPremium = Math.floor(totalPremium);
+            }
+
+            console.log("Premium:" + rounding);
+            //$('#indicativePriceSplitDiv').html(premiumSplitHtml);
+            $('#indicativePriceDiv').html('Indicative Price: €' + totalPremium);
+
             //send the amount to be saved in database
             $('#3_oqqit_rate_20').val(total);
             if (total > maxInsAmount) {
@@ -488,7 +550,7 @@ function mc_shipment_details_3()
             }
         }
 
-        calculateTotalInsuredValue();
+
 
         function ApprovaltotalInsuredValueCheck() {
             var result = {"result": "1", "info": ""};
@@ -937,6 +999,15 @@ function mc_shipment_details_3()
             ?>
         </div>
     </div>
+
+    <script>
+
+        //
+        $( document ).ready(function() {
+            calculateTotalInsuredValue();
+        });
+
+    </script>
 
     <?php
 }

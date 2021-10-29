@@ -627,6 +627,8 @@ class TableList
     private function buildPagesLinks()
     {
 
+        echo "MIC:".$this->totalPages;
+
         if ($this->perPage > 0) {
             $this->totalPages = ceil($this->tableTotalResults / $this->perPage);
         }

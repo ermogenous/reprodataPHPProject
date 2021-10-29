@@ -18,6 +18,9 @@ $db->admin_title = "Eurosure - Uploads - Send Report Claims";
 
 
 $sybase = new ODBCCON();
+
+EXECUTED BY
+eurosure/uploads/upload_scheduler_daily.php
 */
 
 $db->update_log_file_custom('Starting process','Upload Extranet Report Claims');
@@ -54,13 +57,14 @@ $asAtDate = date("Y-m-t",mktime(0,0,0,$period,1,$year));
 //$period = 5;
 //$asAtDate = '2021-05-31';
 
-echo "<hr>Check if ".$period."/".$year." already exists on extranet -> <br>";
+echo "<hr>As At: ".$asAtDate." Check if ".$period."/".$year." already exists on extranet -> <br>";
 $extranetCheck = $extranet->query('
     SELECT COUNT(*)as clo_total FROM report_claims WHERE rpclm_year = '.$year.' AND rpclm_up_to_period = '.$period.'
 ');
 $extranetCheck = mysqli_fetch_assoc($extranetCheck);
 if ($extranetCheck['clo_total'] > 0){
-    echo "Period already exists on extranet.";
+    updateOnlineClaimsReport($year,$period,$asAtDate);
+    echo "Period already exists on extranet. Year:".$year." UpToPeriod:".$period." AsAtDate:".$asAtDate;
 }
 else {
     echo "Period not found on extranet.<br>";
@@ -76,7 +80,7 @@ function updateOnlineClaimsReport($year,$uptoPeriod,$asAtDate)
     $sql = "SELECT inclm_claim_number,   
          inpol_policy_number,   
          inpol_policy_serial,   
-         inag_agent_code,
+         inag_group_code,
          inag_long_description,
          incl_long_description,   
          incl_first_name,   
@@ -255,7 +259,7 @@ GROUP BY incl_long_description,
          incvsdt_reserve_code,   
          inclm_claim_serial,   
          inpol_policy_number,   
-         inag_agent_code,   
+         inag_group_code,   
          inag_long_description,
          incl_client_code,   
          initm_item_code,   
@@ -296,7 +300,7 @@ incl_long_description,
 incl_first_name,
 IF clo_active_status =1 THEN 'Active' ELSE if clo_last_status='C' THEN 'Cancelled' ELSE'Lapsed' ENDIF ENDIF as clo_policy_status,
 iF charindex('(',incl_client_code) = 0 THEN incl_client_code ELSE LEFT(incl_client_code, charindex('(',incl_client_code)-1) ENDIF as clo_client_code,
-inag_agent_code,
+inag_group_code,
 inag_long_description,
 YEAR(inpol_period_starting_date)as clo_underwriting_year,
 clo_yor as clo_loss_year,
@@ -318,7 +322,7 @@ WHERE
 1=1
 // AND inag_agent_code = 'AE014'
 ORDER BY
-inag_agent_code,inclm_claim_number,inclm_date_of_event
+inag_group_code,inclm_claim_number,inclm_date_of_event
     
     ";
  /*
@@ -329,6 +333,7 @@ inag_agent_code,inclm_claim_number,inclm_date_of_event
     }
     exit();
 */
+    //echo $sql; exit();
     //clear any records of the same period/year
     $sqlDelete = '
     DELETE FROM report_claims
@@ -341,11 +346,11 @@ inag_agent_code,inclm_claim_number,inclm_date_of_event
     while ($row = $sybase->fetch_assoc($result)){
         $sql = '
         INSERT INTO report_claims SET
-        rpclm_agent_code = "'.$row['inag_agent_code'].'",
+        rpclm_agent_code = "'.$row['inag_group_code'].'",
         rpclm_agent_description = "'.$row['inag_long_description'].'",
         rpclm_year = "'.$year.'",
         rpclm_up_to_period = "'.$uptoPeriod.'",
-        rpclm_client_name = "'.$row['incl_first_name'].' '.$row['incl_long_description'].'",
+        rpclm_client_name = "'.addslashes($row['incl_first_name'].' '.$row['incl_long_description']).'",
         rpclm_claim_number = "'.$row['inclm_claim_number'].'",
         rpclm_policy_number = "'.$row['inpol_policy_number'].'",
         rpclm_policy_status = "'.$row['clo_policy_status'].'",

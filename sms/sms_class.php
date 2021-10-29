@@ -26,7 +26,7 @@ class ME_SMS
     public $error = false;
     public $errorDescription = '';
     private $smsData;
-    private $API_KEY = '7fXUdeTCoZkz9Mw1LUitNQbJhaFSfdQk';
+    private $API_KEY = 'w8ZKuikviN1olDkeO4kjBsIF0Z6jKBn4';
 
     function __construct()
     {

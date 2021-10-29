@@ -454,6 +454,28 @@ if ($_POST["action"] == 'submit' && $error == -1) {
 		$prod->insert_select_group("IF instat.incd_long_description is null AND inity_major_category = '17' THEN 'Private' ELSE instat.incd_long_description ENDIF",'clo_risk_type_description');
 		$prod->insert_outer_select_group('clo_risk_type_description','Risk_Type');
 	}
+
+    if ($_POST['new_column_si_bn'] == 1){
+
+        $prod->insert_select("(SELECT SUM(inpit_insured_amount) FROM inpolicyitems 
+            JOIN initems ON inpit_item_serial = initm_item_serial 
+            WHERE inpit_policy_serial = inpol_policy_serial
+            AND initm_item_flag IN ('B','N')
+            )as clo_bn_si");
+        $prod->insert_outer_select_group('clo_bn_si','clo_building_contents_si');
+
+    }
+
+    if ($_POST['new_column_si_flag_4'] == 1){
+
+        $prod->insert_select("(SELECT SUM(inpit_insured_amount) FROM inpolicyitems 
+            JOIN initems ON inpit_item_serial = initm_item_serial 
+            WHERE inpit_policy_serial = inpol_policy_serial
+            AND initm_item_flag IN ('4')
+            )as clo_si_flag_4");
+        $prod->insert_outer_select_group('clo_si_flag_4','clo_flsg_4_si');
+
+    }
 	
 	if ($_POST["cresta_zones"] == 1 && $_POST["per_policy"] == "per_loading_premium") {
 		$prod->add_situations();
@@ -474,7 +496,7 @@ if ($_POST["action"] == 'submit' && $error == -1) {
 	}
 $prod->generate_sql();
 $sql = $prod->return_sql();
-
+//echo $sql;
 
 
 	if ($_POST["show_sql"] == 1) {
@@ -881,6 +903,18 @@ function update_to_field(from_field,to_field) {
 Count Situations
 <input type="checkbox" name="count_situations" id="count_situations" <?php if ($_POST["count_situations"] == 1) echo "checked=\"checked\"";?>/></td>
     </tr>
+
+      <tr>
+          <td>&nbsp;</td>
+          <td>Add Sum Insured Column Building(B),Contents(N)
+              <input name="new_column_si_bn" type="checkbox" id="new_column_si_bn" value="1" <?php if ($_POST["new_column_si_bn"] == 1) echo "checked=\"checked\"";?>/></td>
+      </tr>
+      <tr>
+          <td>&nbsp;</td>
+          <td>Add Sum Insured Column Section 4 (HSR-PL)
+              <input name="new_column_si_flag_4" type="checkbox" id="new_column_si_flag_4" value="1" <?php if ($_POST["new_column_si_flag_4"] == 1) echo "checked=\"checked\"";?>/></td>
+      </tr>
+
     <tr>
       <td>&nbsp;</td>
       <td>Remove Cancellations From Policy/Vehicle Totals 
@@ -916,9 +950,10 @@ Count Situations
     </tr>
     <tr>
       <td>&nbsp;</td>
-      <td>Add Fire Private/Commercial etc buildings column 
+      <td>Add Fire Private/Commercial etc buildings column
         <input name="new_column_fire_type" type="checkbox" id="new_column_fire_type" value="1" <?php if ($_POST["new_column_fire_type"] == 1) echo "checked=\"checked\"";?>/></td>
     </tr>
+
     <tr>
       <td>&nbsp;</td>
       <td>Add Cresta Zones (must be per loading to work) 

@@ -202,7 +202,15 @@ global $main, $db;
                                                        href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/hsr_export_for_quarter.php"
                                                        class="dropdown-item">
                                                         <i class="fas fa-exclamation-triangle"></i> HSR Export for
-                                                        quarter
+                                                        Quarter
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a tabindex="-1"
+                                                       href="<?php echo $main["site_url"]; ?>/eurosure/reports/production/hsr_export_for_quarter_with_premiums.php"
+                                                       class="dropdown-item">
+                                                        <i class="fas fa-exclamation-triangle"></i> HSR Export for
+                                                        Quarter With Premiums
                                                     </a>
                                                 </li>
                                                 <li>
@@ -350,6 +358,14 @@ global $main, $db;
                                                    href="<?php echo $main["site_url"]; ?>/eurosure/reports/users/user_connections.php"
                                                    class="dropdown-item">
                                                     <i class="fas fa-file-import"></i> Users Connections
+                                                </a>
+                                            </li>
+
+                                            <li>
+                                                <a tabindex="-1"
+                                                   href="<?php echo $main["site_url"]; ?>/eurosure/reports/users/users_table_locks.php"
+                                                   class="dropdown-item">
+                                                    <i class="fas fa-file-import"></i> Table Locks
                                                 </a>
                                             </li>
                                             <?php
