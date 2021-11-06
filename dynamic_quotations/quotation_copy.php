@@ -17,7 +17,7 @@ if ($_POST['proceed'] == 'Proceed'){
             $newData['fld_' . substr($name, 4)] = $value;
         }
     }
-    $newData['fld_status'] = 'Outstanding';
+    $newData['fld_status'] = 'Copy';
     $newData['fld_effective_date'] = date("Y-m-d G:i:s");
     $newData['fld_starting_date'] = date("Y-m-d G:i:s");
     $newData['fld_expiry_date'] = date("Y-m-d G:i:s");
@@ -25,6 +25,18 @@ if ($_POST['proceed'] == 'Proceed'){
     unset($newData['fld_created_by']);
     unset($newData['fld_last_update_date_time']);
     unset($newData['fld_last_update_by']);
+
+    //the premium calculation type should always be auto
+    $newData['fld_calculation_type'] = 'Auto';
+
+    //Put CP in front of the policy number. It will change on activation
+    $newData['fld_number'] = "CP".$newData['fld_number'];
+
+    $isMarine = false;
+    if ($newData['fld_quotations_type_ID'] == 2){
+        $isMarine = true;
+    }
+
 
     $newQuotationID = $db->db_tool_insert_row('oqt_quotations',$newData,'fld_',1,'oqq_');
     $sql = 'SELECT * FROM oqt_quotations_items WHERE oqqit_quotations_ID = '.$_POST['lid'];
@@ -39,6 +51,24 @@ if ($_POST['proceed'] == 'Proceed'){
         unset($newItemData['fld_created_by']);
         unset($newItemData['fld_last_update_date_time']);
         unset($newItemData['fld_last_update_by']);
+
+
+        if ($isMarine){
+            //When Marine Reset always the below
+            if ($newItemData['fld_items_ID'] == 3){
+                $newItemData['fld_rate_2'] = 'EUR';//Declared Value Currency
+                $newItemData['fld_rate_5'] = '1';//Declared Exchange rate
+                $newItemData['fld_rate_3'] = '';//Declared Value
+
+                $newItemData['fld_rate_16'] = 'EUR';//Freight Value Currency
+                $newItemData['fld_rate_18'] = '1';//Freight Exchange rate
+                $newItemData['fld_rate_17'] = '';//Freight Value
+
+                $newItemData['fld_rate_19'] = '0';//CIF Increase
+
+            }
+        }
+
         $db->db_tool_insert_row('oqt_quotations_items',$newItemData,'fld_',0,'oqqit_');
     }
 

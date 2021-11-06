@@ -811,7 +811,11 @@ function outputExcelTravel($sql)
 
     $line = 1;
     while ($row = $db->fetch_assoc($result)) {
-
+        if ($row['clo_status'] == 'Cancelled'){
+            $row['oqq_premium'] = $row['oqq_premium'] * -1;
+            $row['oqq_fees'] = $row['oqq_fees'] * -1;
+            $row['oqq_stamps'] = $row['oqq_stamps'] * -1;
+        }
         $str = 'A';
         $line++;
         $spreadsheet->getActiveSheet()

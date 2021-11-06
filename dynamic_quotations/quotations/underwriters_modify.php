@@ -949,7 +949,7 @@ $formValidator->showErrorList();
                                 <div class="col-sm-4">
                                     <input name="fld_excess_other" type="text" id="fld_excess_other"
                                            class="form-control" maxlength="250"
-                                           value="<?php echo $defExcOther; ?>">
+                                           value="<?php echo $data['oqun_excess_other']; ?>">
                                     <?php
                                     $formValidator->addField([
                                         "fieldName" => "fld_excess_other",

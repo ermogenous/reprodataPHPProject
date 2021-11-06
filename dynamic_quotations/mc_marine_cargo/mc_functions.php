@@ -454,7 +454,6 @@ function mc_shipment_details_3()
     ?>
 
 
-
     <script>
         function calculateTotalInsuredValue() {
             let total = 0;
@@ -472,8 +471,10 @@ function mc_shipment_details_3()
             let maxInsAmount = 0;
             let minPremium = 0;
             let premium = 0;
-            let fees = <?php echo $quotationUnderwriter['oqun_min_fees'];?> * 1;
-            let stamps = <?php echo $quotationUnderwriter['oqun_min_stamps'];?> * 1;
+            let fees = <?php echo $quotationUnderwriter['oqun_min_fees'];?> *
+            1;
+            let stamps = <?php echo $quotationUnderwriter['oqun_min_stamps'];?> *
+            1;
             let rounding = '<?php echo $quotationUnderwriter['oqun_mc_premium_rounding'];?>';
 
             if (commodity == 'General Cargo & Merchandise') {
@@ -514,25 +515,27 @@ function mc_shipment_details_3()
             //calculate the premium
             //get the rate
             //rund the update rate first
-            updateRate();
+            //updateRate();
             let rate = $('#4_oqqit_rate_8').val();
+            if (rate == ''){
+                updateRate();
+                rate = $('#4_oqqit_rate_8').val();
+            }
             premium = (total / 100) * rate;
             premium = premium.toFixed(2);
-            if (premium < minPremium){
+            if (premium < minPremium) {
                 premium = minPremium;
             }
-            let premiumSplitHtml = 'Premium:' + premium + ' Fees: '+ fees + ' Stamps:' + stamps;
+            let premiumSplitHtml = 'Premium:' + premium + ' Fees: ' + fees + ' Stamps:' + stamps;
             let totalPremium = (premium * 1) + fees + stamps;
             totalPremium = totalPremium.toFixed(2);
 
             //rounding
-            if (rounding == 'normal'){
+            if (rounding == 'normal') {
                 totalPremium = Math.round(totalPremium);
-            }
-            else if (rounding == 'next') {
+            } else if (rounding == 'next') {
                 totalPremium = Math.ceil(totalPremium);
-            }
-            else if (rounding == 'previous'){
+            } else if (rounding == 'previous') {
                 totalPremium = Math.floor(totalPremium);
             }
 
@@ -549,7 +552,6 @@ function mc_shipment_details_3()
                 //if you keep the field empty it will generate error
             }
         }
-
 
 
         function ApprovaltotalInsuredValueCheck() {
@@ -684,11 +686,11 @@ function mc_shipment_details_3()
         //load all vessels into an array
         let vesselList = [];
         <?php
-            $resultVessels = $db->query($sqlVessels);
-            while ($vessel = $db->fetch_assoc($resultVessels)){
-                $value = $vessel['cde_value'] . " - " . $vessel['cde_value_2'] . " [" . $vessel['cde_option_value'] . "]";
-                echo PHP_EOL.'vesselList["'.$value.'"] = "'.$vessel['cde_value_2'].'";';
-            }
+        $resultVessels = $db->query($sqlVessels);
+        while ($vessel = $db->fetch_assoc($resultVessels)) {
+            $value = $vessel['cde_value'] . " - " . $vessel['cde_value_2'] . " [" . $vessel['cde_option_value'] . "]";
+            echo PHP_EOL . 'vesselList["' . $value . '"] = "' . $vessel['cde_value_2'] . '";';
+        }
         ?>
         function newVesselNameOnChange() {
 
@@ -705,23 +707,20 @@ function mc_shipment_details_3()
                 //check for the vessel age
                 let vessel = $('#3_oqqit_rate_7').val();
                 let vesselYear = vesselList[vessel];
-                let vesselAge = <?php echo date("Y");?> - ( vesselYear * 1);
+                let vesselAge = <?php echo date("Y");?> -(vesselYear * 1);
 
                 console.log('Vessel Age:' + vesselAge);
-                if (vesselAge > 35){
+                if (vesselAge > 35) {
                     $('#ocean-vessel-age-approval-warning').show();
                     $('#ocean-vessel-age-approval-warning-html').html('Vessel Age <b>will</b> incur additional charges. Approval is needed.');
-                }
-                else if (vesselAge > 30) {
+                } else if (vesselAge > 30) {
                     $('#ocean-vessel-age-approval-warning').show();
                     $('#ocean-vessel-age-approval-warning-html').html('Vessel Age <b>may</b> incur additional charges. Approval is needed.');
-                }
-                else {
+                } else {
                     $('#ocean-vessel-age-approval-warning').hide();
                 }
 
-            }
-            else {
+            } else {
                 $('#ocean-vessel-define-new-div').hide();
                 $('#ocean-vessel-age-approval-warning').hide();
             }
@@ -1003,7 +1002,7 @@ function mc_shipment_details_3()
     <script>
 
         //
-        $( document ).ready(function() {
+        $(document).ready(function () {
             calculateTotalInsuredValue();
         });
 
@@ -1014,7 +1013,10 @@ function mc_shipment_details_3()
 
 function mc_cargo_details_4()
 {
-    global $db, $items_data, $qitem_data, $formValidator, $underwriter, $quotationUnderwriter;
+    global $db, $items_data, $qitem_data, $formValidator, $underwriter, $quotationUnderwriter, $quotationData;
+    $item3Data = $db->query_fetch('SELECT * FROM oqt_quotations_items 
+        WHERE oqqit_quotations_ID = "' . $qitem_data['oqqit_quotations_ID'] . '" AND oqqit_items_ID = 3');
+
     ?>
 
     <div class="form-group row">
@@ -1157,11 +1159,54 @@ function mc_cargo_details_4()
         </label>
         <div class="col-sm-8">
             <?php
+            $excessUnderwriter = '';
+            if ($item3Data['oqqit_rate_4'] == 'General Cargo & Merchandise') {
+                $excessUnderwriter = $quotationUnderwriter["oqun_excess_general_cargo"];
+            } else if ($item3Data['oqqit_rate_4'] == 'New/Used Vehicles') {
+                $excessUnderwriter = $quotationUnderwriter["oqun_excess_vehicles"];
+            } else if ($item3Data['oqqit_rate_4'] == 'Machinery') {
+                $excessUnderwriter = $quotationUnderwriter["oqun_excess_machinery"];
+            } else if ($item3Data['oqqit_rate_4'] == 'Temp. Controlled Cargo other than meat') {
+                $excessUnderwriter = $quotationUnderwriter["oqun_excess_temp_no_meat"];
+            } else if ($item3Data['oqqit_rate_4'] == 'Temp. Controlled Cargo Meat') {
+                $excessUnderwriter = $quotationUnderwriter["oqun_excess_temp_meat"];
+            } else if ($item3Data['oqqit_rate_4'] == 'Special Cover Mobile Phones, Electronic Equipment') {
+                $excessUnderwriter = $quotationUnderwriter["oqun_excess_special_cover"];
+            } else if ($item3Data['oqqit_rate_4'] == 'Personal Effects professionally packed') {
+                $excessUnderwriter = $quotationUnderwriter["oqun_excess_pro_packed"];
+            } else if ($item3Data['oqqit_rate_4'] == 'CPMB - Cyprus Potato Marketing Board') {
+                $excessUnderwriter = $quotationUnderwriter["oqun_excess_owner_packed"];
+            } else if ($item3Data['oqqit_rate_4'] == 'Other') {
+                $excessUnderwriter = $quotationUnderwriter["oqun_excess_other"];
+            } else if ($item3Data['oqqit_rate_4'] == 'Tobacco') {
+                $excessUnderwriter = $quotationUnderwriter["oqun_excess_tobacco"];
+            }
+
+            //get the excess from the underwriter
+            if ($qitem_data['oqqit_rate_6'] == '') {
+                $qitem_data['oqqit_rate_6'] = $excessUnderwriter;
+                //$qitem_data['oqqit_rate_6'] = $quotationUnderwriter['oqun_excess_other'];
+            }
+
             if ($db->user_data['usr_user_rights'] == 0 || $db->user_data['usr_users_groups_ID'] == 2) {
                 ?>
                 <div class="row">
                     <div class="col-9">
+                        <?php
+
+                        //do not show if its new. Need commodity for the below to work
+                        if ($item3Data['oqqit_rate_4'] == '') {
+                            //hide
+                            echo "Must first create the quotation to use the excess replace";
+                        } else {
+                            //show
+
+
+                        ?>
                         <select id="4_oqqit_rate_6" name="4_oqqit_rate_6" class="form-control">
+                            <option value="<?php echo $qitem_data['oqqit_rate_6']; ?>"
+                                <?php if ($qitem_data['oqqit_rate_6'] == $quotationUnderwriter['oqun_excess_other']) echo "selected"; ?>
+                            >By Underwriter: <?php echo $quotationUnderwriter['oqun_excess_other']; ?></option>
                             <option value="DEDUCTIBLE: For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR150 each & every loss or 1% of Total Sum Insured, whichever is greater."
                                 <?php if ($qitem_data['oqqit_rate_6'] == 'DEDUCTIBLE: For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR150 each & every loss or 1% of Total Sum Insured, whichever is greater.') echo "selected"; ?>
                             >DEDUCTIBLE: For consignments with Sum Insured under EUR2.000 Nil All other shipments EUR150
@@ -1180,38 +1225,64 @@ function mc_cargo_details_4()
                                 each & every loss or 1% of Total Sum Insured, whichever is greater.
                             </option>
 
-                            <option value="DEDUCTIBLE: €1.000 each & every loss or 3% of Total Sum Insured, whichever is greater."
-                                <?php if ($qitem_data['oqqit_rate_6'] == 'DEDUCTIBLE: €1.000 each & every loss or 3% of Total Sum Insured, whichever is greater.') echo "selected"; ?>
-                            >DEDUCTIBLE: €1.000 each & every loss or 3% of Total Sum Insured, whichever is greater.
+                            <option value="DEDUCTIBLE: EUR1.000 each & every loss or 3% of Total Sum Insured, whichever is greater."
+                                <?php if ($qitem_data['oqqit_rate_6'] == 'DEDUCTIBLE: EUR1.000 each & every loss or 3% of Total Sum Insured, whichever is greater.') echo "selected"; ?>
+                            >DEDUCTIBLE: EUR1.000 each & every loss or 3% of Total Sum Insured, whichever is greater.
                             </option>
 
-                            <option value="DEDUCTIBLE: €250 each & every loss."
-                                <?php if ($qitem_data['oqqit_rate_6'] == 'DEDUCTIBLE: €250 each & every loss.') echo "selected"; ?>
-                            >DEDUCTIBLE: €250 each & every loss.
+                            <option value="DEDUCTIBLE: EUR250 each & every loss."
+                                <?php if ($qitem_data['oqqit_rate_6'] == 'DEDUCTIBLE: EUR250 each & every loss.') echo "selected"; ?>
+                            >DEDUCTIBLE: EUR250 each & every loss.
                             </option>
 
-                            <option value="DEDUCTIBLE: €300 each & every loss."
-                                <?php if ($qitem_data['oqqit_rate_6'] == 'DEDUCTIBLE: €300 each & every loss.') echo "selected"; ?>
-                            >DEDUCTIBLE: €300 each & every loss.
+                            <option value="DEDUCTIBLE: EUR300 each & every loss."
+                                <?php if ($qitem_data['oqqit_rate_6'] == 'DEDUCTIBLE: EUR300 each & every loss.') echo "selected"; ?>
+                            >DEDUCTIBLE: EUR300 each & every loss.
                             </option>
 
-                            <option value="DEDUCTIBLE: €500 each & every loss."
-                                <?php if ($qitem_data['oqqit_rate_6'] == 'DEDUCTIBLE: €500 each & every loss.') echo "selected"; ?>
-                            >DEDUCTIBLE: €500 each & every loss.
+                            <option value="DEDUCTIBLE: EUR500 each & every loss."
+                                <?php if ($qitem_data['oqqit_rate_6'] == 'DEDUCTIBLE: EUR500 each & every loss.') echo "selected"; ?>
+                            >DEDUCTIBLE: EUR500 each & every loss.
+                            </option>
+
+                            <option value="FRANCHISE: EUR500 each & every loss."
+                                <?php if ($qitem_data['oqqit_rate_6'] == 'FRANCHISE: EUR500 each & every loss.') echo "selected"; ?>
+                            >FRANCHISE: EUR500 each & every loss.
+                            </option>
+
+                            <option value="DEDUCTIBLE: All shipments EUR150 each & every loss or 1% of Total Sum Insured, whichever is greater."
+                                <?php if ($qitem_data['oqqit_rate_6'] == 'DEDUCTIBLE: All shipments EUR150 each & every loss or 1% of Total Sum Insured, whichever is greater.') echo "selected"; ?>
+                            >DEDUCTIBLE: All shipments EUR150 each & every loss or 1% of Total Sum Insured, whichever is greater.
                             </option>
                         </select>
+                        <?php
+                        }
+                        ?>
                     </div>
+
+                    <?php
+                    if ($item3Data['oqqit_rate_4'] == '') {
+                        //hide
+
+                    } else {
+                    //show
+                    ?>
                     <div class="col-1">
                         Lock
                     </div>
                     <div class="col-2">
+
                         <select id="4_oqqit_rate_9" name="4_oqqit_rate_9" class="form-control">
                             <option value="0" <?php if ($qitem_data['oqqit_rate_9'] != '1') echo "selected"; ?>>No
                             </option>
                             <option value="1" <?php if ($qitem_data['oqqit_rate_9'] == '1') echo "selected"; ?>>Yes
                             </option>
                         </select>
+
                     </div>
+                        <?php
+                    }
+                    ?>
                 </div>
 
                 <?php
@@ -1219,7 +1290,7 @@ function mc_cargo_details_4()
                 ?>
                 <?php
                 if ($qitem_data['oqqit_rate_9'] == '1') {
-                    echo $qitem_data['oqqit_rate_6'];
+                    //echo $qitem_data['oqqit_rate_6'];
                     ?>
                     <input type="hidden" id="4_oqqit_rate_6" name="4_oqqit_rate_6"
                            value="<?php echo $qitem_data['oqqit_rate_6']; ?>">
@@ -1244,7 +1315,8 @@ function mc_cargo_details_4()
     ?>
 
     <?php
-    if ($db->user_data['usr_user_rights'] <= 2) { ?>
+    //even on imitate still use the original user permissions for the rate
+    if ($db->originalUserData['usr_user_rights'] <= 2) { ?>
         <div class="form-group row">
             <label for="4_oqqit_rate_8" class="col-sm-4 col-form-label">
                 <?php show_quotation_text("Rate", "Rate"); ?>
@@ -1274,6 +1346,7 @@ function mc_cargo_details_4()
 
     <script>
         function updateRate() {
+
             let commodity = $('#3_oqqit_rate_4').val();
             let clause = $('input[name=3_oqqit_rate_13]:checked', '#myForm').val();
             let rate = 0;
@@ -1707,25 +1780,15 @@ function customCheckForApproval($data)
 function customIssueNumber($data)
 {
     global $db;
+    $newNumber = '';
     if ($data['oqq_users_ID'] == 42 || $data['oqq_users_ID'] == 58) {
+        /* from 1/11/2021 the system will provide the nornal numbering
         $prefix = 'KMCE2';
         $leadingZeros = 5;
         $lastNumber = $db->get_setting('kemter_mc_number_last_used');
         $newNumber = $db->buildNumber($prefix, $leadingZeros, $lastNumber + 1);
         $db->update_setting('kemter_mc_number_last_used', $lastNumber + 1);
-    } else {
-        $newNumber = $db->buildNumber($data['oqqt_quotation_number_prefix'],
-            $data['oqqt_quotation_number_leading_zeros'],
-            $data['oqqt_quotation_number_last_used'] + 1);
-        //update db
-        $newData['quotation_number_last_used'] = $data['oqqt_quotation_number_last_used'] + 1;
-        $db->db_tool_update_row('oqt_quotations_types',
-            $newData,
-            'oqqt_quotations_types_ID = ' . $data['oqqt_quotations_types_ID'],
-            $data['oqqt_quotations_types_ID'],
-            '',
-            'execute',
-            'oqqt_');
+        */
     }
 
     return $newNumber;

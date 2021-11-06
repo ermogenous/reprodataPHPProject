@@ -732,6 +732,63 @@ global $main, $db;
                         <?php
                     }
                     ?>
+
+                    <?php
+                    if ($db->user_data['usr_user_rights'] <= 2 ) {
+                        ?>
+                        <li class="nav-item dropdown">
+                            <a href="#" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                               class="nav-link dropdown-toggle">
+                                <i class="far fa-comment-dots"></i> <?php echo $db->showLangText('SMS', 'SMS'); ?>
+                                <i class="fas fa-caret-down"></i>
+                            </a>
+                            <ul aria-labelledby="dropdownMenu1" class="dropdown-menu border-0 shadow">
+                                <li>
+                                    <a class="dropdown-item"
+                                       href="<?php echo $main["site_url"]; ?>/sms/sms.php"><i
+                                                class="fas fa-eye"></i>
+                                        <?php echo $db->showLangText('SMS View', 'SMS View'); ?>
+                                    </a>
+                                </li>
+
+
+
+                        <li class="dropdown-divider"></li>
+
+
+
+                            <!-- Level two dropdown-->
+                            <li class="dropdown-submenu">
+                                <a id="dropdownMenu2" href="#" role="button" data-toggle="dropdown"
+                                   aria-haspopup="true"
+                                   aria-expanded="false" class="dropdown-item dropdown-toggle">
+                                    <i class="far fa-file-alt"></i> <?php echo $db->showLangText('Input Reports', 'Input Reports'); ?>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                                <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
+                                    <li>
+                                        <a tabindex="-1"
+                                           href="<?php echo $main["site_url"]; ?>/sms/input_reports/account_balances.php"
+                                           class="dropdown-item">
+                                            <i class="fas fa-file-import"></i> <?php echo $db->showLangText('Account Balances Overdue', 'Account Balances Overdue'); ?>
+                                        </a>
+                                    </li>
+
+
+
+                                </ul>
+                            </li>
+
+
+
+
+                            </ul>
+                        </li>
+                    <?php } ?>
+
                     <?php
                     if ($db->user_data['usr_user_rights'] <= 2 ) {
                         ?>

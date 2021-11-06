@@ -16,6 +16,7 @@ if ($_GET["lid"] != "") {
 	,oqq_stamps
 	,oqq_premium
 	,oqq_calculation_type
+    ,oqq_number
 	FROM 
 	oqt_quotations 
 	JOIN oqt_quotations_types ON oqqt_quotations_types_ID = oqq_quotations_type_ID
@@ -61,7 +62,7 @@ $db->show_header();
 
             <div class="row">
                 <div class="col-12 text-center alert alert-primary">
-                    <strong><?php echo $quote->getQuotationType(); ?> Information</strong>
+                    <strong><?php echo $quote->getQuotationType(); ?> Information - <?php echo $data['oqq_number'];?></strong>
                 </div>
             </div>
 
@@ -126,7 +127,7 @@ $db->show_header();
                     <a href="#">
                         <i class="far fa-file-pdf fa-5x"
                             <?php
-                            if ($quote->quotationData()['oqq_status'] == 'Active' ||
+                            if ($quote->quotationData()['oqq_status'] == 'Active' || $quote->quotationData()['oqq_status'] == 'Approved' ||
                                 (($quote->quotationData()['oqq_status'] == 'Outstanding' || $quote->quotationData()['oqq_status'] == 'Pending')
                                     && $quote->quotationData()['oqqt_allow_print_outstanding'] == 1)) { ?>
                                 onclick="window.open('quotation_print.php?quotation=<?php echo $data["oqq_quotations_ID"]; ?>&pdf=1','_blank')"

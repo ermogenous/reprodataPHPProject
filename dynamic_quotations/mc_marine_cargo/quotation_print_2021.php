@@ -176,7 +176,7 @@ body{
             $sect2['oqqit_rate_6'] = $excess;
         }
 
-        $conditionsOfInsurance = getConditionsOfInsurance($sect1['oqqit_rate_4'],$sect1['oqqit_rate_13']);
+        $conditionsOfInsurance = getConditionsOfInsurance($sect1['oqqit_rate_4'],$sect1['oqqit_rate_13'],$quotationID);
 
         //ocean vessel name and steamer
         if ($sect1['oqqit_rate_6'] == 'Ocean Vessel') {
@@ -307,7 +307,7 @@ body{
                         <td>' . $sect1['oqqit_rate_11'] . $approvalViaCountry . '</td>
                     </tr>
                     <tr>
-                        <td height="70">&nbsp;</td>
+                        <td height="10">&nbsp;</td>
                         <td>&nbsp;</td>
                         <td>&nbsp;</td>
                     </tr>
@@ -527,13 +527,12 @@ body{
     return $html;
 }
 
-function getConditionsOfInsurance($commodity,$clause){
+function getConditionsOfInsurance($commodity,$clause,$quotationID){
     if ($commodity == 'General Cargo & Merchandise'){
         if ($clause == 'Clause A') {
             $return[0] = '
             
-            <strong>General Cargo - Shipments by Sea, Air or Land</strong>
-            <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009 and/or Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009 as applicable.
+            Institute Cargo Clauses “A” CL382 dated 01.01.2009 and/or Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009 as applicable.
             <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009 and/or Institute War Clauses (Air Cargo) (excluding sendings by Post) CL388 dated 01.01.2009 as applicable.
             <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009 and/ or Institute Strikes Clauses (Air Cargo) CL389 dated 01.01.2009 as applicable.
             <br>Institute Classification Clause CL354 dated 1.1.01.
@@ -618,8 +617,7 @@ function getConditionsOfInsurance($commodity,$clause){
 
     if ($commodity == 'New/Used Vehicles'){
         $return[0] = '
-        <strong>Automobiles, Motorcycles & Caravans – New Used, Second Hand up to 7 years old</strong>
-        <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009.
+        Institute Cargo Clauses “A” CL382 dated 01.01.2009.
         <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009.
         <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009.
         <br>Institute Classification Clause CL354 dated 1.1.01.
@@ -720,8 +718,7 @@ function getConditionsOfInsurance($commodity,$clause){
 
     if ($commodity == 'Machinery'){
         $return[0] = '
-        <strong>Machinery etc. - Shipments by Sea, Air or Land</strong>
-        <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009. and/or Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009 as applicable.
+        Institute Cargo Clauses “A” CL382 dated 01.01.2009. and/or Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009 as applicable.
         <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009 and/or Institute War Clauses (Air Cargo) (excluding sendings by Post) CL388 dated 01.01.2009 as applicable.
         <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009 and/ or Institute Strikes Clauses (Cargo) (Air Cargo) CL389 dated 01.01.2009 as applicable. 
         <br>Institute Classification Clause CL354 dated 1.1.01.
@@ -796,8 +793,7 @@ function getConditionsOfInsurance($commodity,$clause){
 
     if ($commodity == 'Temp. Controlled Cargo other than meat'){
         $return[0] = '
-        <strong>Shipments by Sea or Land of Refrigerated or Temperature Controlled Cargoes, other than Meat</strong>
-        <br>Institute Frozen / Chilled Food Clauses (A) – 24 Hour Breakdown Cl. 423 01.03.2017
+        Institute Frozen / Chilled Food Clauses (A) – 24 Hour Breakdown Cl. 423 01.03.2017
         <br>Strikes Clause (Frozen Chilled Food) CL. 424 01.03.2017 
         <br>Institute War Clauses (Cargo) CL385 1.1.09.
         <br>Institute Classification Clause CL354 dated 1.1.01.
@@ -869,8 +865,7 @@ function getConditionsOfInsurance($commodity,$clause){
 
     if ($commodity == 'Temp. Controlled Cargo Meat'){
         $return[0] = '
-        <strong>Shipments by Sea or Land of Refrigerated or Temperature Controlled Cargoes of Meat</strong>
-        <br>Institute Frozen / Chilled Meat Clauses (A) – 24 Hour Breakdown Cl. 426 01.03.2017
+        Institute Frozen / Chilled Meat Clauses (A) – 24 Hour Breakdown Cl. 426 01.03.2017
         <br>Duration Clause 8.1.2 to apply. w/h to w/h or Duration Clause 8.1.3 to apply. fob
         <br>Strikes Clause (Frozen Chilled Meat) CL. 428 01.03.2017 
         <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009
@@ -943,8 +938,7 @@ function getConditionsOfInsurance($commodity,$clause){
 
     if ($commodity == 'Special Cover Mobile Phones, Electronic Equipment'){
         $return[0] = '
-        <strong>Special Airfreight Cargo</strong> 
-        <br>Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009.
+        Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009.
         <br>Institute War Clauses (Air Cargo) (excluding sendings by Post) CL388 dated 01.01.2009.
         <br>Institute Strikes Clauses (Cargo) (Air Cargo) CL389 dated 01.01.2009. 
         <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical & Electromagnetic Weapons Exclusion Clause CL370 dated 10.11.03.
@@ -958,6 +952,7 @@ function getConditionsOfInsurance($commodity,$clause){
         <br>Excluding mysterious disappearance.
         <br>Warranted pallets are shrink wrapped and contents obscured from view.
         ';
+        $return[0] = adhocChanges($quotationID,$commodity,$return[0]);
         $return[1] = '
         <strong>Excluded Risks and Interests:</strong>
         <ul>
@@ -1018,8 +1013,7 @@ function getConditionsOfInsurance($commodity,$clause){
 
     if ($commodity == 'Personal Effects professionally packed'){
         $return[0] = '
-        <strong>Household Goods & Personal Effects – Professional packed (Refer)</strong>
-        <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009.
+        Institute Cargo Clauses “A” CL382 dated 01.01.2009.
         <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009.
         <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009.
         <br>Institute Classification Clause CL354 dated 1.1.01.
@@ -1134,9 +1128,7 @@ function getConditionsOfInsurance($commodity,$clause){
 
     if ($commodity == 'Tobacco'){
         $return[0] = '
-        <strong>Tobacco and Manufactured Tobacco Substitutes</strong>
-        <br>
-        <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009. and/or Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009 as applicable.
+        Institute Cargo Clauses “A” CL382 dated 01.01.2009. and/or Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009 as applicable.
         <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009 and/or Institute War Clauses (Air Cargo) (excluding sendings by Post) CL388 dated 01.01.2009 as applicable.
         <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009 and/ or Institute Strikes Clauses (Cargo) (Air Cargo) CL389 dated 01.01.2009 as applicable. 
         <br>Institute Classification Clause CL354 dated 1.1.01.
@@ -1205,9 +1197,7 @@ function getConditionsOfInsurance($commodity,$clause){
 
     if ($commodity == 'Other'){
         $return[0] = '
-        <strong>Pharmaceutical Products</strong>
-        <br>
-        <br>Institute Cargo Clauses “A” CL382 dated 01.01.2009. and/or Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009 Institute Frozen / Chilled Food Clauses (A) – amended to 8 consecutive hours Breakdown Cl. 423 01.03.2017 as applicable.
+        Institute Cargo Clauses “A” CL382 dated 01.01.2009. and/or Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009 Institute Frozen / Chilled Food Clauses (A) – amended to 8 consecutive hours Breakdown Cl. 423 01.03.2017 as applicable.
         <br>Institute Strikes Clauses (Cargo) CL386 dated 01.01.2009 and/ or Institute Strikes Clauses (Cargo) (Air Cargo) CL389 dated 01.01.2009 and/or Strikes Clause (Frozen Chilled Food) CL. 424 01.03.2017 as applicable.
         <br>Institute War Clauses (Cargo) CL385 dated 01.01.2009 and/or Institute War Clauses (Air Cargo) (excluding sendings by Post) CL388 dated 01.01.2009 as applicable.
         <br>Institute Classification Clause CL354 dated 1.1.01.
@@ -1278,4 +1268,26 @@ function getConditionsOfInsurance($commodity,$clause){
 
     return $return;
 
+}
+
+function adhocChanges($quotationID, $commodity,$text){
+    if ($quotationID == 7858 && $commodity == 'Special Cover Mobile Phones, Electronic Equipment'){
+        $text = '
+        Institute Cargo Clauses (Air) (excluding sendings by Post) CL387 dated 01.01.2009.
+        <br>Institute War Clauses (Air Cargo) (excluding sendings by Post) CL388 dated 01.01.2009.
+        <br>Institute Strikes Clauses (Cargo) (Air Cargo) CL389 dated 01.01.2009.
+        <br>Institute Radioactive Contamination, Chemical, Biological, Biochemical & Electromagnetic Weapons Exclusion Clause CL370 dated 10.11.03.
+        <br>Institute Cyber Attack Exclusion Clause CL380 dated 10.11.03.
+        <br>Termination of Transit Clause (Terrorism) JC2009/056 1.1.09
+        <br>Marine Cyber Exclusion Clause LMA5402 11.11.19
+        <br>Communicable Disease Exclusion Clause (Cargo) JC2020/011 17.04.20
+        <br>Subject to Sanction Limitation and Exclusion Clause JC2010/014 11.08.10
+        <br>Excluding mysterious disappearance.
+        <br>Excluding loss or damage caused by corkfly, ullage, unexplained shortages, contamination and discolouration, extremes of temperature or pecuniary loss caused by fall in market value.
+        <br>Excluding loss or damage caused directly or indirectly by water damage to labels.
+        <br>Warranted that the whisky is shipped in purpose-built cases and shipped under the “white glove” service. Failure to comply with this warranty will invalidate this policy from inception.
+        ';
+    }
+
+    return $text;
 }

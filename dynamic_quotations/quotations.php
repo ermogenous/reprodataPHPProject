@@ -404,11 +404,11 @@ if ($_GET["price_id"] != "") {
                                                 <i class="fas fa-info-circle" title="View Info"></i>
                                             </a>
 
-                                            <?php if ($row['oqq_status'] == 'Outstanding') { ?>
+                                            <?php if ($row['oqq_status'] == 'Outstanding' || $row['oqq_status'] == 'Copy') { ?>
                                                 <a href="quotations_modify.php?quotation_type=<?php echo $row["oqq_quotations_type_ID"]; ?>&quotation=<?php echo $row["oqq_quotations_ID"]; ?>"><i
                                                             class="fas fa-edit" title="Edit"></i></a>&nbsp
                                             <?php } ?>
-                                            <?php if ($row['oqq_status'] == 'Outstanding') { ?>
+                                            <?php if ($row['oqq_status'] == 'Outstanding' || $row['oqq_status'] == 'Copy') { ?>
                                                 <a href="quotations_delete.php?quotation_type=<?php echo $row["oqq_quotations_type_ID"]; ?>&quotation=<?php echo $row["oqq_quotations_ID"]; ?>"
                                                    onclick="ignoreEdit = true; return confirm('Are you sure you want to delete this quotation?');"><i
                                                             class="fas fa-minus-circle" title="Delete"></i></a>&nbsp

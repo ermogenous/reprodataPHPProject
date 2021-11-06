@@ -224,7 +224,7 @@ $formValidator->setFormName('myForm');
 //$formValidator->showErrorList();
 $allowEdit = true;
 $allowEditAdvanced = false;
-if ($quote->quotationData()['oqq_status'] != 'Outstanding' && $_GET['quotation'] > 0) {
+if ($quote->quotationData()['oqq_status'] != 'Outstanding' && $quote->quotationData()['oqq_status'] != 'Copy' && $_GET['quotation'] > 0) {
 
     if ($db->user_data['usr_user_rights'] >= 3) {
         $allowEdit = false;

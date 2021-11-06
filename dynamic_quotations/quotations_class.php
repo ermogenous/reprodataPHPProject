@@ -331,10 +331,13 @@ class dynamicQuotation
     private function issueNumber()
     {
         global $db;
-
+        $newNumber = '';
         if (function_exists('customIssueNumber')) {
             $newNumber = customIssueNumber($this->quotationData);
-        } else {
+        }
+
+        if ($newNumber == '' || $newNumber == null)
+        {
             $newNumber = $db->buildNumber($this->quotationData['oqqt_quotation_number_prefix'],
                 $this->quotationData['oqqt_quotation_number_leading_zeros'],
                 $this->quotationData['oqqt_quotation_number_last_used'] + 1);

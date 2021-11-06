@@ -10,6 +10,7 @@ include("../../include/main.php");
 
 $db = new Main(1);
 
+$dateTime = '29/11/2021 08:35 ΑΜ';
 
 $db->show_empty_header();
 ?>
@@ -117,7 +118,7 @@ $db->show_empty_header();
             ΗΜΕΡΟΜΗΝΙΑ ΚΑΙ ΩΡΑ ΔΕΙΓΜΑΤΟΛΗΨΙΑΣ <br>
             <span class="smallerText">TEST COLLECTION DATE AND ΤΙΜΕ</span> <br>
             <br>
-            <span class="smallerText"><b>19/10/2021 08:05ΑΜ</b></span> <br>
+            <span class="smallerText"><b><?php echo $dateTime;?></b></span> <br>
             <br>
             ΑΠΟΤΕΛΕΣΜΑ ΔΙΕΡΕΥΝΗΣΗΣ <br>
             <span class="smallerText">TEST RESULT</span> <br>
@@ -127,7 +128,7 @@ $db->show_empty_header();
             ΗΜΕΡΟΜΗΝΙΑ ΚΑΙ ΩΡΑ ΑΠΟΤΕΛΕΣΜΑΤΟΣ <br>
             <span class="smallerText">TEST RESULT DATE ΑΝΟ ΤΙΜΕ</span> <br>
             <br>
-            <span class="smallerText"><b>19/10/2021 08:05 ΑΜ</b></span> <br>
+            <span class="smallerText"><b><?php echo $dateTime;?></b></span> <br>
             ΟΝΟΜΑΤΕΠΩΝΥΜΟ ΥΠΕΥΘΥΝΟΥ ΕΠΑΓΓΕΛΜΑΤΙΑ ΥΓΕΙΑΣ <br>
             <span class="smallerText">FULL ΝΑΜΕ 0F LABORATORY OFFICIAL</span> <br>
             <br>

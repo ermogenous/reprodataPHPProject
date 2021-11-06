@@ -5,6 +5,7 @@ function insert_quotation_data_to_db($quotation_id, $quotation_type_id)
 {
     global $db;
 
+    $changeStatus = '';
     //new quotation use insert
     $sql2 = '';
     if ($quotation_id == "") {
@@ -19,6 +20,12 @@ function insert_quotation_data_to_db($quotation_id, $quotation_type_id)
 
         $sql = "UPDATE oqt_quotations SET ";
         $sql2 = " WHERE oqq_quotations_ID = " . $quotation_id;
+
+        //get quotation current data
+        $data = $db->query_fetch("SELECT * FROM oqt_quotations WHERE oqq_quotations_ID = " . $quotation_id);
+        if ($data['oqq_status'] == 'Copy'){
+            $changeStatus = "oqq_status = 'Outstanding',";
+        }
 
     }//use update
 
@@ -53,7 +60,9 @@ function insert_quotation_data_to_db($quotation_id, $quotation_type_id)
 
 
 
+
     $sql .= "
+".$changeStatus."
 oqq_language = '" . $_SESSION["oq_quotations_language"] . "', 
 oqq_quotations_type_ID = " . $quotation_type_id . ",
 oqq_person_company = '" . addslashes($_POST["person_company"]) . "',
