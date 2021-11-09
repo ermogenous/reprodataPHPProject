@@ -90,6 +90,10 @@ if ($_POST['action'] == 'search') {
           ,ship.oqqit_rate_13 as conditions
           ,ship.oqqit_rate_14 as cityOrigin
           ,ship.oqqit_rate_15 as cityDestination
+          ,ship.oqqit_rate_16 as freightCurrency
+          ,ship.oqqit_rate_17 as freightValue
+          ,ship.oqqit_rate_18 as freightRate
+          ,ship.oqqit_rate_19 as cifIncrease
           ,ship.oqqit_rate_20 as totalInsuredValue
           ,cargo.oqqit_rate_1 as fullDescription 
           ,cargo.oqqit_rate_2 as marksNumbers
@@ -586,6 +590,10 @@ function outputExcelMarine($sql)
         ->setCellValue(++$str . '1', 'Insured Val Cur.')
         ->setCellValue(++$str . '1', 'Insured Val')
         ->setCellValue(++$str . '1', 'Exchange Rate')
+        ->setCellValue(++$str . '1', 'Freight Currency')
+        ->setCellValue(++$str . '1', 'Freight Value')
+        ->setCellValue(++$str . '1', 'Freight Rate')
+        ->setCellValue(++$str . '1', 'CIF Increase')
         ->setCellValue(++$str . '1', 'Commodity')
         ->setCellValue(++$str . '1', 'Conveyance')
         ->setCellValue(++$str . '1', 'Conv.Vessel Name')
@@ -647,6 +655,10 @@ function outputExcelMarine($sql)
             ->setCellValue(++$str . $line, $row['valueCurrency'])
             ->setCellValue(++$str . $line, $row['insuredValue'])
             ->setCellValue(++$str . $line, $row['exchangeRate'])
+            ->setCellValue(++$str . $line, $row['freightCurrency'])
+            ->setCellValue(++$str . $line, $row['freightValue'])
+            ->setCellValue(++$str . $line, $row['freightRate'])
+            ->setCellValue(++$str . $line, $row['cifIncrease'])
             ->setCellValue(++$str . $line, $row['commodity'])
             ->setCellValue(++$str . $line, $row['conveyance'])
             ->setCellValue(++$str . $line, $row['convVesselName'])

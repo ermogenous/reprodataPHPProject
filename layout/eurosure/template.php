@@ -771,7 +771,7 @@ global $main, $db;
                                 <ul aria-labelledby="dropdownMenu2" class="dropdown-menu border-0 shadow">
                                     <li>
                                         <a tabindex="-1"
-                                           href="<?php echo $main["site_url"]; ?>/sms/input_reports/account_balances.php"
+                                           href="<?php echo $main["site_url"]; ?>/sms/input_reports/send_account_balances.php"
                                            class="dropdown-item">
                                             <i class="fas fa-file-import"></i> <?php echo $db->showLangText('Account Balances Overdue', 'Account Balances Overdue'); ?>
                                         </a>

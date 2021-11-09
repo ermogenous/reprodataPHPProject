@@ -153,7 +153,7 @@ while ($situation = $sybase->fetch_assoc($sitResult)){
     $i++;
 }
 
-//== RETRIEVE ITEMS ===============================RETRIEVE ITEMS=======================================================  RETRIEVE ITEMS
+//== RETRIEVE ITEMS & ITEM AUX ===============================RETRIEVE ITEMS=======================================================  RETRIEVE ITEMS
 $sql = "
         SELECT
         'I' as iaipit_synthesis_in_out,
@@ -169,7 +169,18 @@ $sql = "
 	    'PRIVATE' as iaipit_item_code,
 	    //inpit_pit_increment as iaipit_pit_increment,
 	    '1' as iaipit_pit_increment,
-	    inpit_insured_amount as iaipit_insured_amount
+	    inpit_insured_amount as iaipit_insured_amount,
+        //POLICY ITEMS AUX
+        'I' as iaipia_synthesis_in_out,
+        'IMPORT' as iaipia_row_created_by,
+        'IMPORT' as iaipia_row_last_edit_by,
+        'O' as iaipia_row_status,
+        'IMPORT' as iaipia_row_status_last_update_by,
+        'REF-' || inpol_policy_serial as iaipia_policy_import_reference,
+        if inpst_situation_code is null then 'SIT-'||inpol_policy_number||'-1' else inpst_situation_code endif as iaipia_situation_code,
+        'PRIVATE' as iaipia_item_code,
+        '1' as iaipia_pit_increment,
+        initm_item_code as iaipia_numeric_value01        
         FROM
         inpolicies
         JOIN inpolicyitems ON inpit_policy_serial = inpol_policy_serial
@@ -185,11 +196,18 @@ $sql = "
 //echo $sql;exit();
 $pitResult = $sybase->query($sql);
 $policyItems = [];
+$policyItemsAux = [];
 $i=0;
 while ($pit = $sybase->fetch_assoc($pitResult)){
 
     foreach($pit as $name => $value){
-        $policyItems[$i][$name] = $value;
+        if (substr($name,0,7) == 'iaipit_') {
+            $policyItems[$i][$name] = $value;
+        }
+        if (substr($name,0,7) == 'iaipia_') {
+            $policyItemsAux[$i][$name] = $value;
+        }
+
     }
     $i++;
 }
@@ -246,11 +264,12 @@ while ($pitp = $sybase->fetch_assoc($pitpResult)){
 
 $estkCon = new ODBCCON('ES_TK','UTF-8','dba','estk2021');
 $turnkey = new exportTurnkey();
-$turnkey->exportClientsToDB($clients);
-$turnkey->exportPoliciesToDB($policies);
-$turnkey->exportSituationsToDB($situations);
-$turnkey->exportPolicyItemsToDB($policyItems);
-$turnkey->exportPolicyItemsPremiumToDB($policyItemPrem);
+//$turnkey->exportClientsToDB($clients);
+//$turnkey->exportPoliciesToDB($policies);
+//$turnkey->exportSituationsToDB($situations);
+//$turnkey->exportPolicyItemsToDB($policyItems);
+$turnkey->exportPolicyItemAuxToDB($policyItemsAux);
+//$turnkey->exportPolicyItemsPremiumToDB($policyItemPrem);
 
 /*
 $estk = new ODBCCON('ES_TK','UTF-8','dba','estk2021');

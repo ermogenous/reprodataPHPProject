@@ -26,10 +26,13 @@ class ME_SMS
     public $error = false;
     public $errorDescription = '';
     private $smsData;
-    private $API_KEY = 'w8ZKuikviN1olDkeO4kjBsIF0Z6jKBn4';
+    private $API_KEY = '';
 
     function __construct()
     {
+        include('C:\\xampp\\mypwds\\espwds.php');
+        $this->API_KEY = $smsToken;
+        echo $this->API_KEY;exit();
     }
 
     private function loadSmsData($smsID){

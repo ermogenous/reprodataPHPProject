@@ -258,6 +258,45 @@ class exportTurnkey {
         }
     }
 
+    public function exportPolicyItemAuxToDB($policyItemAux){
+        global $estkCon;
+
+        foreach ($policyItemAux as $row){
+            $sql = "
+                INSERT INTO iaimportpolitems WITH AUTO NAME
+                SELECT '".$row['iaipia_synthesis_in_out']."' as iaipia_synthesis_in_out,
+                   '".$row['iaipia_row_created_by']."' as iaipia_row_created_by,
+                   '".$row['iaipia_row_last_edit_by']."' as iaipia_row_last_edit_by,
+                   '".$row['iaipia_row_status']."' as iaipia_row_status,
+                   '".$row['iaipia_row_status_last_update_by']."' as iaipia_row_status_last_update_by,
+                   '".$row['iaipia_policy_import_reference']."' as iaipia_policy_import_reference,
+                   '".$row['iaipia_situation_code']."' as iaipia_situation_code,
+                   NULL as iaipia_item_category_code, /* Item Category Null Or Valid Code! */
+                   '".$row['iaipia_item_code']."' as iaipia_item_code,
+                   ".$row['iaipia_pit_increment']." as iaipia_pit_increment,
+                   '".$row['iaipia_numeric_value01']."' as iaipia_numeric_value01
+                FROM DUMMY; COMMIT;
+            ";
+            if ($this->checkIfPolicyItemAuxExists($row)){
+                //policy item aux already exists. Do nothing
+                echo "Policy Item Aux:".$row['iaipia_item_code']." Already exists. Skip<br>";
+            }
+            else {
+                $estkCon->query($sql);
+                echo "Policy Item Aux:".$row['iaipia_item_code']." Executed ";
+                if ($this->checkIfPolicyItemAuxExists($row)){
+                    echo "Validated - Inserted<br>";
+                }
+                else {
+                    echo "Validated - NOT INSERTED. CHECK FOR ERRORS<hr>\n\n";
+                    echo $sql."\n\n";
+                    echo "<hr>\n\n";
+                }
+
+            }
+        }
+    }
+
     public function exportPolicyItemsPremiumToDB($policyItemsPremium){
         global $estkCon;
 
@@ -386,6 +425,25 @@ class exportTurnkey {
                     WHERE
                     iaipit_item_code = '".$policyItem['iaipit_item_code']."'
                     AND iaipit_policy_import_reference = '".$policyItem['iaipit_policy_import_reference']."'
+                    ";
+        $resultData = $estkCon->query_fetch($sql);
+        if ($resultData['clo_total'] > 0){
+            return true;
+        }
+        else {
+            return false;
+        }
+
+    }
+    private function checkIfPolicyItemAuxExists($policyItemAux){
+        global $estkCon;
+
+        $sql = "SELECT COUNT() as clo_total
+                    FROM iaimportpolitems
+                    WHERE
+                    iaipia_item_code = '".$policyItemAux['iaipia_item_code']."'
+                    AND iaipia_situation_code = '".$policyItemAux['iaipia_situation_code']."'
+                    AND iaipia_policy_import_reference = '".$policyItemAux['iaipia_policy_import_reference']."'
                     ";
         $resultData = $estkCon->query_fetch($sql);
         if ($resultData['clo_total'] > 0){
