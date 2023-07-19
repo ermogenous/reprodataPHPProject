@@ -1,6 +1,6 @@
 {
     "require": {
-        "mpdf/mpdf": "^7.0",
+        "mpdf/mpdf": "^8.1",
         "phpmailer/phpmailer": "^6.0",
         "nilportugues/sql-query-builder": "^1.6",
         "phpoffice/phpspreadsheet": "^1.8",
